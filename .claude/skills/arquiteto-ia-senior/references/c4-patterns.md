@@ -1,5 +1,7 @@
 # C4 PlantUML — Padrões de Referência (Currículo Online)
 
+Arquivo de saída: `docs/architecture/C4-NNN-titulo.md` (`NNN` sequencial, 3 dígitos, nunca reaproveitado — ver `docs/agents/CONTEXTO-PROJETO.md`).
+
 ## Regras de ouro (sempre seguir)
 
 1. **Tema obrigatório**: `!theme toy` em todo diagrama
@@ -9,6 +11,50 @@
 5. **Protocolo nas Rel**: sempre explícito — `"HTTPS"`, `"REST"`
 6. **Externos fora do Boundary**: provedor de LLM/embeddings fica fora do `Boundary` do site
 7. **Stack**: rótulos de tecnologia = **Next.js/TypeScript** (frontend) e **Python/FastAPI** (backend)
+8. **Toda fonte PlantUML entregue vira imagem** — sem exceção, ver "Renderização em imagem" abaixo
+
+---
+
+## Renderização em imagem (obrigatório)
+
+Diagrama só em código PlantUML não é visualizável direto no GitHub/editor. Todo diagrama gerado ou editado precisa virar SVG salvo em `docs/architecture/images/` e embutido no `.md`, com a fonte mantida logo abaixo (editável, é a fonte da verdade).
+
+**Como renderizar** (serviço público [Kroki](https://kroki.io), sem instalação local — Java/Graphviz não estão disponíveis no ambiente):
+
+```bash
+curl -sS -X POST -H "Content-Type: text/plain" \
+  --data-binary @diagrama.puml \
+  https://kroki.io/plantuml/svg \
+  -o docs/architecture/images/C4-NNN-<slug-diagrama>.svg
+```
+
+`slug-diagrama` precisa deixar o nível C4 identificável só de olhar o nome do arquivo — nunca usar `contexto`/`containers` sozinhos:
+
+| Diagrama | slug |
+|---|---|
+| Context (L1) | `n1-contexto` |
+| Container (L2) | `n2-containers` |
+| Component (L3) | `n3-componentes` |
+| Sequence (sem nível C4 formal) | `seq-<fluxo>` |
+| Deployment (L4) | `n4-deployment` |
+
+Exemplo: `docs/architecture/images/C4-001-n1-contexto.svg`, `C4-001-n2-containers.svg`.
+
+**Padrão de embed no `.md`** — imagem primeiro (é o que se lê), fonte depois:
+
+````markdown
+## Contexto (Nível 1)
+
+![Contexto (Nível 1)](images/C4-NNN-n1-contexto.svg)
+
+```plantuml
+@startuml
+...
+@enduml
+```
+````
+
+Se o Kroki estiver fora do ar ou o conteúdo do diagrama for sensível (não é o caso deste projeto — arquitetura pública de um currículo pessoal), avisar o usuário em vez de pular a renderização silenciosamente.
 
 ---
 

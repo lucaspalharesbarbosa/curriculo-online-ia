@@ -10,6 +10,6 @@
 | Acessibilidade/Performance | Lighthouse | Contraste, alt, navegação por teclado, score de performance | Antes de deploy relevante |
 | Regressão | Suite completa | `npm test` + `pytest` | Mudança no schema do `resume.json` ou em módulo compartilhado |
 
-**Proporcional ao projeto:** não é sistema crítico — não perseguir cobertura global de 100%. Meta: **70% de cobertura nos módulos de lógica principal** (`rag.py`, `chat.py`, componentes centrais do frontend); fora desses módulos, cobrir o caminho feliz + fallback do chat é suficiente.
+**Proporcional ao projeto:** não é sistema crítico — não perseguir cobertura global de 100%. Piso do DoD (`@product-owner`): **70% de cobertura no código tocado por cada história**, com atenção redobrada em `rag.py`, `chat.py` e componentes centrais do frontend; fora desses módulos, cobrir o caminho feliz + fallback do chat é suficiente para ultrapassar o piso.
 
 **Mudança em `resume.json` (schema):** rodar a suite de componentes que leem o campo alterado — regressão rápida, não é preciso E2E completo.

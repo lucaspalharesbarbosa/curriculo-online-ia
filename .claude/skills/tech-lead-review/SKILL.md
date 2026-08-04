@@ -72,7 +72,7 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 | Nível | Exemplos deste projeto |
 |---|---|
 | **Critical** | Chave de API commitada ou chamada de LLM feita direto do client; CORS `allow_origins=["*"]` em produção |
-| **High** | Componente/endpoint principal do diff sem teste; dado do currículo hardcoded em vez de vir do `resume.json` |
+| **High** | Componente/endpoint principal do diff sem teste, ou cobertura abaixo do piso de 70% do DoD; dado do currículo hardcoded em vez de vir do `resume.json`; contrato implementado diverge do documentado no DoR |
 | **Medium** | Componente fazendo mais de uma coisa; falta de tratamento de erro no fetch do chat |
 | **Low** / **Nit** | Nome, formatação, comentário desnecessário |
 
@@ -102,12 +102,15 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 - [ ] Sem chave de API no client
 - [ ] CORS restrito ao domínio do frontend
 - [ ] Dado do currículo vem de `resume.json`
-- [ ] Componente/endpoint principal do diff tem teste
+- [ ] Componente/endpoint principal do diff tem teste, com cobertura ≥ 70% (piso do DoD)
+- [ ] Contrato de API implementado bate com o documentado no DoR (se aplicável)
 - [ ] Build (`npm run build` / `pytest`) ok
 
 ## Próximos passos
 1. ...
 ```
+
+**Registrar o veredito na história**: além do review acima, preencher a linha "Tech Lead" da tabela **Vereditos** na história correspondente (`docs/product/backlog/fase-FF/US-FF-NN-<slug>.md`, formato em `story-template.md` do `@product-owner`) — é item de DoD, não fica só narrado no chat.
 
 ---
 

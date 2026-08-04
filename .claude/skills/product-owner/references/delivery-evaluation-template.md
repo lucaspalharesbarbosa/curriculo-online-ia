@@ -24,5 +24,5 @@
 1. ...
 
 ## Backlog
-Atualizar `**Status:**` da US no arquivo em `docs/product/backlog/`.
+Atualizar `**Status:**` da US no arquivo em `docs/product/backlog/` e preencher a linha "PO" da tabela **Vereditos** da história com este veredito — confirmar antes que as linhas "QA" e "Tech Lead" já estão preenchidas (item de DoD).
 ```

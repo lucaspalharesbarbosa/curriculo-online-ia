@@ -1,6 +1,6 @@
 ---
 name: open-merge-request
-description: Prepara abertura de merge request (GitLab) ou pull request (GitHub) com URL pronta, título intuitivo e descrição organizada (entrega + como testar). Use quando o usuário pedir abrir MR/PR, merge request, pull request, ou @open-merge-request.
+description: Abre pull request (GitHub) ou merge request (GitLab) automaticamente via CLI quando possível, com título intuitivo e descrição organizada (entrega + como testar). Use quando o usuário pedir abrir MR/PR, merge request, pull request, ou @open-merge-request.
 ---
 
 # Abrir Merge Request
@@ -9,20 +9,30 @@ description: Prepara abertura de merge request (GitLab) ou pull request (GitHub)
 
 Acione com `@open-merge-request` ou quando o usuário pedir abrir MR, merge request, PR ou pull request.
 
-**Não criar MR via CLI por padrão.** Entregar URL, título e descrição para o usuário colar no GitLab/GitHub — mais rápido e confiável que `glab`/`gh`.
+**Este repositório usa GitHub** (`github.com/lucaspalharesbarbosa/curriculo-online-ia`) — o fluxo é **pull request**, não merge request. Preferir **criação automática via `gh`**. O suporte a GitLab (`glab`) abaixo é só para reuso do skill em outros projetos.
 
-**Não fazer push** salvo pedido explícito do usuário.
+**Não fazer push** salvo pedido explícito do usuário (ou se o pré-voo mostrar que a branch ainda não está no remote e o usuário pediu abrir o PR — aí fazer `git push -u origin HEAD` antes do `gh pr create`).
 
-**Este repositório usa GitHub** (`github.com/lucaspalharesbarbosa/curriculo-online-ia`) — o fluxo é **pull request**, não merge request. A detecção automática pela URL do remote (seção "Montar URL do MR") cobre isso; o suporte a GitLab abaixo é só para reuso do skill em outros projetos.
+## Pré-requisito — GitHub CLI
+
+Neste projeto o agente deve usar `gh` para abrir PR automaticamente.
+
+1. Garantir `gh` no PATH (instalação preferencial sem UAC):
+   - Portátil: `%LOCALAPPDATA%\Programs\gh\bin\gh.exe` (já usado neste ambiente)
+   - Ou `winget install --id GitHub.cli -e` (pode pedir elevação)
+2. Autenticado: `gh auth status` deve mostrar a conta; se não, `gh auth login --hostname github.com --git-protocol https --web`
+3. Escopos mínimos: `repo` (e `read:org` se necessário)
+
+Se `gh` não estiver autenticado, **iniciar o login web**, mostrar o one-time code + URL `https://github.com/login/device` ao usuário e **aguardar** a autenticação antes de criar o PR.
 
 ## Fluxo principal (obrigatório)
 
 1. **Pré-voo** — analisar branch, remote e diff
 2. **Redigir** — título e descrição a partir do diff/commits
-3. **Montar URL** — link direto para a tela "New merge request" / "Compare & pull request"
-4. **Entregar** — três blocos copiáveis separados (URL, título, descrição) conforme seção "Formato de saída"
+3. **Criar via CLI** — `gh pr create` (GitHub) ou `glab mr create` (GitLab)
+4. **Entregar** — URL do PR criado + título/descrição usados
 
-**Nunca** executar `glab mr create` ou `gh pr create` salvo pedido explícito do usuário para criar via CLI.
+**Fallback** (só se a CLI falhar ou não estiver disponível): montar URL compare + três blocos copiáveis (seção "Formato de saída — fallback").
 
 ## Pré-voo (obrigatório)
 
@@ -53,7 +63,7 @@ Verificar:
 Consultar quando relevante:
 
 - `docs/agents/CONTEXTO-PROJETO.md` — stack, branching, convenções
-- `docs/product/backlog/<feature>.md` — história/tasks da feature, para resumir entregas
+- `docs/product/backlog/fase-FF/US-FF-NN-<slug>.md` — história/tasks da feature, para resumir entregas
 - `docs/architecture/ADR-*.md` — se a mudança envolveu decisão de arquitetura
 
 ## Montar URL do MR
@@ -155,7 +165,7 @@ Diretrizes:
 - **Contexto**: branch origem → destino, spec, US, PRD, contrato/ADR
 - Não incluir secrets, tokens ou dados sensíveis
 
-## Formato de saída (obrigatório)
+## Formato de saída — fallback (obrigatório se a CLI falhar)
 
 O objetivo é **copiar e colar com um clique** — sem selecionar texto manualmente, sem remover labels ou prefixos.
 
@@ -216,7 +226,7 @@ Checklist DoD (mencionar se faltar):
 
 - [ ] Testes verdes para o componente/endpoint alterado (`npm test` / `pytest`)
 - [ ] Sem chave de API exposta no diff (frontend nunca chama o LLM direto)
-- [ ] História do backlog (`docs/product/backlog/`) marcada como concluída
+- [ ] História do backlog (`docs/product/backlog/fase-FF/US-FF-NN-<slug>.md`) marcada como concluída
 
 ## Push (somente se pedido)
 
@@ -228,73 +238,69 @@ git push -u origin HEAD
 
 Depois do push, **regenerar a URL** (mesma fórmula) e entregar novamente título + descrição.
 
-## Criação via CLI (opcional, só sob pedido explícito)
+## Criação via CLI (padrão neste repositório)
 
-Usar `glab` (GitLab) ou `gh` (GitHub) **apenas** quando o usuário pedir para "criar o MR automaticamente" ou "usar glab/gh".
+Após pré-voo e redação de título/descrição:
 
-Pré-requisitos: CLI instalada e autenticada (`glab auth login` / `gh auth login`).
-
-GitLab:
-
-```bash
-glab mr create -t "Título" -F .mr-description.md --target-branch develop --assignee @me --remove-source-branch
-```
+1. Confirmar `gh auth status` (GitHub) ou `glab auth status` (GitLab)
+2. Se a branch não estiver no remote e o usuário pediu abrir o PR: `git push -u origin HEAD`
+3. Criar o PR/MR
 
 GitHub:
 
 ```bash
-gh pr create --title "Título" --body-file .mr-description.md --base develop --assignee @me
+# Escrever corpo em arquivo temporário evita problemas de aspas no PowerShell
+gh pr create --title "Título" --body-file .pr-body.md --base develop
 ```
 
-Se a CLI falhar, **não insistir** — voltar ao fluxo principal (URL + título + descrição).
+GitLab:
+
+```bash
+glab mr create -t "Título" -F .mr-description.md --target-branch develop --remove-source-branch
+```
+
+4. Remover o arquivo temporário de body (`.pr-body.md`) se não for versionado
+5. Entregar ao usuário a **URL do PR criado** (retorno do `gh pr create`)
+
+Se a CLI falhar, **uma tentativa de diagnóstico** (`gh auth status`, branch pushada?) e então fallback para o formato de saída com URL compare + título + descrição.
+
+## Formato de saída — sucesso via CLI
+
+```markdown
+PR criado: [URL]
+
+**Título:** ...
+
+## O que foi aberto
+- base: `develop`
+- head: `feature/...`
+```
+
+## Formato de saída — fallback
+
+Usar a seção "Formato de saída" (três blocos copiáveis) **somente** quando a CLI não puder criar o PR.
 
 ## Anti-padrões
 
-- Tentar `glab mr create` / `gh pr create` sem pedido explícito
+- Entregar só blocos copiáveis quando `gh` está autenticado e poderia criar o PR
 - Título genérico (`Update`, `Fix`, `Changes`)
 - Descrição vazia ou só com links de commit
 - Seção "Como testar" ausente ou vaga ("rodar os testes")
-- Push sem pedido explícito
-- MR da branch base para ela mesma
-- Omitir a URL pronta para abrir no browser
-- **Um único bloco de código** com URL, título e descrição juntos — impede copiar com um clique
-- Labels ou prefixos (`Título sugerido`, `URL para abrir MR:`) dentro do conteúdo copiável
-- Título e descrição no mesmo fence
+- Push sem pedido explícito (exceto o caso "abrir PR" com branch ainda sem remote)
+- MR/PR da branch base para ela mesma
+- Commitar `.pr-body.md` / `.mr-description.md` por engano
+- No fallback: **um único bloco** com URL + título + descrição juntos
 
 ## Exemplo completo
 
 **Entrada:** usuário na branch `feature/adiciona-footer` pede "abre o PR".
 
-**Análise:** diff adiciona `frontend/components/Footer.tsx` + teste + inclusão no layout.
+**Análise:** diff adiciona `Footer.tsx` + teste; `gh` autenticado; branch pushada.
 
-**Saída (formato esperado na resposta ao usuário):**
+**Ação:** `gh pr create --base develop --title "..." --body-file .pr-body.md`
 
-[Abrir PR no GitHub](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/compare/develop...feature%2Fadiciona-footer?expand=1)
+**Saída:**
 
-```
-https://github.com/lucaspalharesbarbosa/curriculo-online-ia/compare/develop...feature%2Fadiciona-footer?expand=1
-```
+PR criado: https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/4
 
-Copie o título abaixo e cole no campo **Title** do PR:
-
-```
-Footer com links de contato
-```
-
-Copie a descrição abaixo e cole no campo **Description** do PR:
-
-```
-## O que está sendo entregue
-- Componente `Footer.tsx` com e-mail, LinkedIn e GitHub vindos de `resume.json`
-- Inclusão do Footer no layout raiz (`app/layout.tsx`)
-
-## Como testar
-- [ ] `cd frontend && npm test -- Footer`
-- [ ] Rodar `npm run dev` e conferir o footer em todas as páginas
-
-## Contexto
-- Branch: `feature/adiciona-footer` → `develop`
-- Backlog: `docs/product/backlog/frontend.md`
-```
-
-**Ação do usuário:** abrir a URL (link ou bloco), copiar cada bloco com o botão do fence, colar nos campos do formulário, revisar diff e submeter.
+**Título:** Footer com links de contato

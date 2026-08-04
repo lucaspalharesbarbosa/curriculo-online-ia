@@ -6,6 +6,7 @@
 cd frontend
 npm test                      # suite completa
 npm test -- ExperienceCard    # arquivo específico
+npm test -- --coverage        # cobertura — evidência do piso de 70% (DoD)
 npm run lint
 ```
 
@@ -16,6 +17,7 @@ cd backend
 pytest                        # suite completa
 pytest tests/test_chat.py     # arquivo específico
 pytest -k "fallback"          # por nome
+pytest --cov=app --cov-report=term-missing   # cobertura — evidência do piso de 70% (DoD)
 ruff check .
 ```
 
