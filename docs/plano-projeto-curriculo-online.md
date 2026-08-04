@@ -241,13 +241,13 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 
 - [x] Repo antigo excluído; repo novo criado no GitHub (`curriculo-ia`, público, com README e licença MIT)
 - [x] Clonar o repo localmente
-- [ ] Criar estrutura de pastas do monorepo (`frontend/`, `backend/`, `docs/`) com um README placeholder em cada
-- [ ] Criar `.gitignore` combinado (Node + Python) — não veio pronto do GitHub, precisa ser feito manualmente
+- [x] Criar estrutura de pastas do monorepo (`frontend/`, `backend/`, `docs/`) com um README placeholder em cada
+- [x] Criar `.gitignore` combinado (Node + Python) — não veio pronto do GitHub, precisa ser feito manualmente
 - [ ] Configurar **git flow**: criar branch `develop` a partir de `main`, convenção `feature/`*, `fix/`*
 - [ ] Configurar **branch protection**: `main` e `develop` protegidas (exigir PR, exigir CI passando antes de merge, bloquear push direto e force-push)
-- [ ] Arquivos base adicionais: `.editorconfig`, template de PR/issue
-- [ ] Esqueleto de CI (`frontend-ci.yml` e `backend-ci.yml`) mesmo que só com um step de lint por enquanto
-- [ ] Primeiro commit/PR: "chore: estrutura inicial do repositório"
+- [x] Arquivos base adicionais: `.editorconfig`, template de PR/issue
+- [x] Esqueleto de CI (`frontend-ci.yml` e `backend-ci.yml`) mesmo que só com um step de lint por enquanto
+- [ ] Primeiro commit/PR: "chore: estrutura inicial do repositório" (commits prontos na branch `chore/estrutura-inicial-repositorio`, PR a abrir)
 
 **Fase 1 — Descoberta e planejamento**
 
