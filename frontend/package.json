@@ -7,17 +7,19 @@
   },
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run validate:resume && next build",
     "start": "next start",
     "lint": "eslint .",
     "format": "prettier --check .",
     "format:write": "prettier --write .",
+    "validate:resume": "vitest run content/resume.schema.test.ts",
     "test": "vitest"
   },
   "dependencies": {
     "next": "16.3.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
