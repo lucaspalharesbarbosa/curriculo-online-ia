@@ -2,15 +2,23 @@
 
 Python + FastAPI (serviço de RAG).
 
-Esqueleto da aplicação ainda não criado (ver Fase 2 do [plano do projeto](../docs/plano-projeto-curriculo-online.md)).
-
 ## Stack
 
 - Python + FastAPI
 - Testes: pytest (AAA), `TestClient` para integração do endpoint `/chat`
-- Lint/format: ruff (ou flake8) + black
+- Lint/format: ruff + black
 
-## Estrutura prevista
+## Comandos
+
+```bash
+pip install -r requirements.txt
+uvicorn app.main:app --reload   # servidor local (a partir de backend/)
+ruff check .                    # lint
+black --check .                 # format check
+pytest                          # testes
+```
+
+## Estrutura
 
 ```
 backend/

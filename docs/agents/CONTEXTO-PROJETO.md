@@ -139,7 +139,9 @@ O dono técnico final é o autor (humano). Sugestões dos agentes (arquitetura, 
 
 Fase 0 (preparação) concluída — registrada retroativamente em `docs/product/backlog/fase-00/` ([US-00-01](../product/backlog/fase-00/US-00-01-customizacao-agentes-ia.md): agentes customizados; [US-00-02](../product/backlog/fase-00/US-00-02-estrutura-inicial-repositorio.md): monorepo, `.gitignore`, branch protection, CI esqueleto, PR inicial).
 
-Fase 1 (descoberta e planejamento) concluída — registrada retroativamente em `docs/product/backlog/fase-01/`: PRD criado pelo `product-owner` para os 4 épicos ([US-01-01](../product/backlog/fase-01/US-01-01-prd-backlog-inicial.md)), `ADR-001` + diagramas C4 de contexto/containers registrados pelo `arquiteto-ia-senior` ([US-01-02](../product/backlog/fase-01/US-01-02-adr-stack-c4-contexto.md)) e DoR/DoD padrão + cadência de acompanhamento revisados formalmente pelo `scrum-master` ([US-01-03](../product/backlog/fase-01/US-01-03-dor-dod-scrum-master.md) — Done). Pendência restante: dados de Projetos/Portfólio e parte do Contato aguardando o autor (ver `docs/product/README.md`), sem relação com esta fase do backlog. Próximo passo: Fase 2 — setup do projeto (`senior-developer`: `create-next-app` em `frontend/` + esqueleto FastAPI em `backend/`, [US-02-01](../product/backlog/fase-02/US-02-01-setup-nextjs.md) e [US-02-02](../product/backlog/fase-02/US-02-02-setup-fastapi.md) do backlog).
+Fase 1 (descoberta e planejamento) concluída — registrada retroativamente em `docs/product/backlog/fase-01/`: PRD criado pelo `product-owner` para os 4 épicos ([US-01-01](../product/backlog/fase-01/US-01-01-prd-backlog-inicial.md)), `ADR-001` + diagramas C4 de contexto/containers registrados pelo `arquiteto-ia-senior` ([US-01-02](../product/backlog/fase-01/US-01-02-adr-stack-c4-contexto.md)) e DoR/DoD padrão + cadência de acompanhamento revisados formalmente pelo `scrum-master` ([US-01-03](../product/backlog/fase-01/US-01-03-dor-dod-scrum-master.md) — Done). Pendência restante: dados de Projetos/Portfólio e parte do Contato aguardando o autor (ver `docs/product/README.md`), sem relação com esta fase do backlog.
+
+Fase 2 (setup do projeto) concluída — [US-02-01](../product/backlog/fase-02/US-02-01-setup-nextjs.md) (Next.js + TS + Tailwind), [US-02-02](../product/backlog/fase-02/US-02-02-setup-fastapi.md) (FastAPI + health check), [US-02-03](../product/backlog/fase-02/US-02-03-ci-frontend-real.md) e [US-02-04](../product/backlog/fase-02/US-02-04-ci-backend-real.md) (CI real) — Done. Próximo passo: Fase 3 — MVP estático (conteúdo real + componentes de UI).
 
 ## Fases do roadmap e backlog correspondente
 
@@ -147,7 +149,7 @@ Fase 1 (descoberta e planejamento) concluída — registrada retroativamente em 
 |---|---|---|
 | Fase 0 — Preparação | Agentes + repositório | `docs/product/backlog/fase-00/` (US-00-01 a US-00-02) — Done |
 | Fase 1 — Descoberta e planejamento | PRD, ADR, C4 | `docs/product/backlog/fase-01/` (US-01-01 a US-01-03) — Done |
-| Fase 2 — Setup do projeto | Esqueleto Next.js + FastAPI, CI real | `docs/product/backlog/fase-02/` (US-02-01 a US-02-04) |
+| Fase 2 — Setup do projeto | Esqueleto Next.js + FastAPI, CI real | `docs/product/backlog/fase-02/` (US-02-01 a US-02-04) — Done |
 | Fase 3 — MVP estático | Conteúdo real + componentes de UI + deploy inicial | `docs/product/backlog/fase-03/` (US-03-01 a US-03-17) |
 | Fase 4 — Polimento | SEO, acessibilidade | `docs/product/backlog/fase-04/` (US-04-01 a US-04-02) |
 | Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/fase-05/` (US-05-01 a US-05-09) |
