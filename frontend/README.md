@@ -19,10 +19,13 @@ Next.js + TypeScript + Tailwind CSS.
 npm run dev              # servidor local
 npm run lint             # ESLint
 npm run format           # Prettier (check)
+npm run format:write     # Prettier (aplica formatação)
 npm test                 # Vitest
 npm run validate:resume  # valida resume.json contra o schema Zod
 npm run build            # validate:resume + build de produção
 ```
+
+Após `npm install`, o Husky configura o hook `pre-commit` (Prettier + ESLint nos arquivos staged via `lint-staged`), para o mesmo tipo de problema do CI falhar no commit — antes de abrir o PR.
 
 ## Deploy (Vercel)
 
