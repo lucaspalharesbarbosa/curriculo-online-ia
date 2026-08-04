@@ -16,6 +16,12 @@
 | `npm test` (frontend) | X passed, Y failed | |
 | `pytest` (backend) | X passed, Y failed | |
 
+## Cobertura (piso de 70% — DoD)
+
+| Escopo | Cobertura | Meta | Status |
+|---|---|---|---|
+| Código tocado nesta história | X% | ≥70% | OK / FALHA / N/A (sem lógica testável) |
+
 ## Critérios de aceite (CA-*)
 
 | ID | Resultado | Evidência |

@@ -8,23 +8,19 @@
 
 ## Estrutura no backlog
 
+Arquivo: `docs/product/backlog/fase-FF/US-FF-NN-<slug>.md` — uma história por arquivo, tasks **dentro** da própria história (não num arquivo de tasks separado por épico). `FF` é a fase de implementação, `NN` a sequência dentro dela (ver `docs/agents/CONTEXTO-PROJETO.md` e `references/story-template.md`).
+
 ```markdown
-# Tarefas: [História / Épico]
+# US-03-11 — Componente de Experiência Profissional
 
-**Entrada**: docs/product/<epico>.md
-**Pré-requisitos**: PRD, ADR se envolver decisão de stack
+...(demais seções da história — ver references/story-template.md)...
 
-## Frontend
-- [ ] T001 [US1] Criar `frontend/components/ExperienceCard.tsx`
-- [ ] T002 [P] [US1] Teste `ExperienceCard.test.tsx`
-
-## Backend
-- [ ] T010 [US2] Criar endpoint `/chat` em `backend/app/chat.py`
-- [ ] T011 [P] [US2] Teste `test_chat.py`
-
-## Conteúdo
-- [ ] T020 [US1] Popular `frontend/content/resume.json` com dados reais
+### Tasks
+- [ ] T01 Criar `frontend/components/ExperienceCard.tsx`
+- [ ] T02 [P] Teste `ExperienceCard.test.tsx`
 ```
+
+Tasks usam ID local `T01`, `T02`... (não precisam ser globalmente únicas no backlog — já vivem dentro do arquivo da própria história). `[P]` marca task paralelizável com a anterior.
 
 ## Tamanho ideal
 
