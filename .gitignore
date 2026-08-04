@@ -41,3 +41,9 @@ test-results/
 .idea/
 .DS_Store
 Thumbs.db
+
+# ---- Deploy ----
+.vercel/
+
+# ---- Claude Code (config local, não portável entre máquinas) ----
+.claude/settings.local.json
