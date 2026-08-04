@@ -16,9 +16,10 @@ describe("SiteHeader", () => {
       "href",
       "#experience",
     );
-    expect(
-      screen.getByRole("link", { name: "Certificações" }),
-    ).toHaveAttribute("href", "#certifications");
+    expect(screen.getByRole("link", { name: "Certificações" })).toHaveAttribute(
+      "href",
+      "#certifications",
+    );
     expect(screen.getByRole("link", { name: "Contato" })).toHaveAttribute(
       "href",
       "#contact",

@@ -165,9 +165,7 @@
     },
     {
       "category": "Cloud",
-      "items": [
-        "AWS (ECS, EKS, Lambda, RDS, API Gateway, CloudWatch)"
-      ]
+      "items": ["AWS (ECS, EKS, Lambda, RDS, API Gateway, CloudWatch)"]
     },
     {
       "category": "Devops",
@@ -219,7 +217,13 @@
     {
       "title": "Currículo Online com IA",
       "description": "Site pessoal de currículo com assistente RAG que responde perguntas sobre a trajetória profissional. Monorepo Next.js + FastAPI com pipeline de agentes de IA para desenvolvimento.",
-      "technologies": ["Next.js", "TypeScript", "Tailwind CSS", "FastAPI", "Python"],
+      "technologies": [
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS",
+        "FastAPI",
+        "Python"
+      ],
       "repositoryUrl": "https://github.com/lucaspalharesbarbosa/curriculo-online-ia"
     }
   ],

@@ -19,6 +19,8 @@ describe("Home page", () => {
     expect(
       screen.getByRole("heading", { name: /habilidades técnicas/i }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: /contato/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("heading", { name: /contato/i }),
+    ).toBeInTheDocument();
   });
 });
