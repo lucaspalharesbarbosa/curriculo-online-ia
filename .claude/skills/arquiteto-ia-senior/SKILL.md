@@ -55,6 +55,7 @@ Documentar em `docs/architecture/`:
 3. Estratégia de deploy: Vercel (frontend) + Render/Cloud Run (backend), CORS entre os dois
 4. Quando (se) migrar de JSON para um banco vetorial de verdade — só se o volume de conteúdo crescer muito; não é o caso do MVP
 5. Onde ficam as chaves de API (variável de ambiente / serverless function — nunca no client)
+6. Modelagem de dados (diagrama ER) para história com entidades relacionadas entre si — item de DoR do `@product-owner`, ver `references/data-model-patterns.md`
 
 ---
 
@@ -93,10 +94,23 @@ Proposta | Aceita | Obsoleta
 
 ### C4 PlantUML
 
+Salvar em `docs/architecture/C4-NNN-titulo.md` (sequência própria, independente do `ADR-NNN`):
+
 - `!theme toy`, `title` obrigatórios
 - Protocolo nas `Rel` (`HTTPS`, `REST`)
 - Containers com nomes reais (`frontend` / Next.js, `backend` / FastAPI)
+- **Toda diagrama PlantUML entregue também vira imagem** (SVG) em `docs/architecture/images/`, embutida no `.md` acima do bloco de fonte — nunca entregar só o código-fonte. Processo de renderização: `references/c4-patterns.md`
 - Ver `references/c4-patterns.md`
+
+### Modelagem de dados (ER)
+
+Salvar em `docs/architecture/DATA-NNN-titulo.md` (sequência própria):
+
+- Só quando a história envolve **entidades com relação entre si** (ex.: experiência ↔ skill) — campo isolado novo não precisa de ER, basta o schema no corpo da história
+- Nomes de entidade/campo iguais ao schema real (`resume.json` ou modelo Pydantic)
+- Renderizar em imagem, mesma regra do C4 — ver `references/data-model-patterns.md`
+
+`NNN` de `ADR-NNN`, `C4-NNN` e `DATA-NNN` nunca é reaproveitado. Convenção completa: `docs/agents/CONTEXTO-PROJETO.md` (seção "Convenção de nomenclatura de documentos").
 
 ---
 
@@ -135,6 +149,7 @@ Proposta | Aceita | Obsoleta
 | Arquivo | Quando ler |
 |---|---|
 | `references/c4-patterns.md` | Diagramas C4 do site + fluxo de RAG |
+| `references/data-model-patterns.md` | Diagrama ER — DoR de história com entidades relacionadas |
 | `references/ci-cd-templates.md` | GitHub Actions (frontend/backend) |
 | `references/stack-boilerplates.md` | Boilerplate Next.js + FastAPI |
 | `references/ai-architecture-patterns.md` | Padrões de RAG aplicados ao projeto |

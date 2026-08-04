@@ -23,7 +23,7 @@ Um único agente cobre as duas camadas de propósito: neste projeto, front e bac
 - Diff mínimo — sem over-engineering nem abstração prematura (é um site de currículo, não um sistema crítico)
 - Não reabre decisões de stack já tomadas em `CONTEXTO-PROJETO.md` sem escalar ao `@arquiteto-ia-senior`
 - Mantém dados (`resume.json`) separados de UI e lógica
-- Escreve teste dos componentes/endpoints principais que tocar — sem exigir cobertura de sistema crítico
+- Escreve teste dos componentes/endpoints principais que tocar — piso de 70% de cobertura no código tocado (DoD da história), sem perseguir cobertura de sistema crítico acima disso
 - Nunca expõe API keys no client; sempre via variável de ambiente / função serverless
 - Pergunta no máximo 2 questões se faltar informação crítica
 
@@ -51,11 +51,11 @@ Detalhes completos (estrutura de pastas, hospedagem, branching) em `docs/agents/
 
 ### Modo A — Feature com história de usuário (preferencial)
 
-1. Ler a história/critérios de aceite em `docs/product/`, e ADR relevante em `docs/architecture/` se existir
+1. Ler a história e conferir que o **DoR está fechado** (contrato de API, modelagem de dados, plano de testes, critérios de aceite — `docs/product/`); ADR relevante em `docs/architecture/` se existir. DoR aberto → devolver ao `@product-owner`, não implementar
 2. Confirmar se a feature é frontend, backend ou ambos
-3. Implementar; manter `resume.json` como única fonte dos dados do currículo
-4. Escrever/atualizar teste do componente ou endpoint tocado
-5. Marcar a história como concluída no backlog
+3. Implementar; manter `resume.json` como única fonte dos dados do currículo; contrato de API implementado deve bater com o documentado no DoR
+4. Escrever/atualizar teste do componente ou endpoint tocado, cobrindo o plano de testes do DoR (unitário, integração, mocks) — piso de 70% de cobertura no código tocado
+5. Marcar a história como concluída no backlog (Done fica a cargo do `@product-owner`, após DoD fechado)
 
 ### Modo B — Ad-hoc (bug / ajuste pontual)
 
@@ -148,7 +148,7 @@ ruff check .
 pytest
 ```
 
-Nível de teste proporcional ao projeto: cobrir os componentes/endpoints principais e o fluxo de chat (resposta, fallback), não perseguir 100% de cobertura.
+Nível de teste proporcional ao projeto: cobrir os componentes/endpoints principais e o fluxo de chat (resposta, fallback), não perseguir 100% de cobertura — mas respeitar o piso de 70% no código tocado, exigido pelo DoD da história (ver `@product-owner`).
 
 ---
 
@@ -167,6 +167,7 @@ Nível de teste proporcional ao projeto: cobrir os componentes/endpoints princip
 ### Documentação
 - [ ] História do backlog marcada como concluída (se aplicável)
 - [ ] ADR atualizado (se decisão de arquitetura mudou)
+- [ ] Contrato de API implementado bate com o documentado no DoR (se aplicável)
 
 ### Pendências
 - ...
@@ -176,6 +177,7 @@ Nível de teste proporcional ao projeto: cobrir os componentes/endpoints princip
 
 ## Anti-padrões
 
+- Começar a implementar com o DoR da história aberto (contrato de API, modelagem de dados ou plano de testes faltando quando aplicável)
 - Hardcodar dado do currículo em componente em vez de usar `resume.json`
 - Chamar API de LLM diretamente do frontend (expõe chave)
 - Recalcular embeddings a cada request do chat

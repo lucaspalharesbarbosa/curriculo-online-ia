@@ -32,7 +32,7 @@ PO → Arquiteto? → Dev → QA → Tech Lead → PO (aceite)
 
 | Fase | Skill | Entregável |
 |---|---|---|
-| 1 | `@product-owner` | História/tasks DoR em `docs/product/` |
+| 1 | `@product-owner` | História/tasks com DoR fechado em `docs/product/` |
 | 2 | `@arquiteto-ia-senior` | ADR/C4 ou skip |
 | 3 | `@senior-developer` | Código + teste do escopo tocado |
 | 4 | `@qa-engineer` | Relatório QA |
@@ -71,8 +71,11 @@ Default: **implement** se já houver DoR/tasks; senão **full**. Detalhes: `refe
 3. Handoff (`references/handoff-template.md`)
 4. Gate: sucesso → avança; bloqueio → para
 
+**Não** avance 1→2/3 com **DoR** da história aberto (algum item sem `[x]`/`N/A` justificado — DoR é do `@product-owner`, `references/story-template.md`).
 **Não** avance 3→4 com teste do escopo tocado falhando sem fix.
 **Não** avance 5→6 com **Bloquear** / **Solicitar mudanças** sem fix ou aceite humano explícito.
+**Não** feche a Fase 6 (Done) com **Critérios de aceite** ou **DoD** abertos — item sem `[x]`/`N/A` justificado trava em "Quase lá", nunca em "Done".
+**Não** avance Fase 4→5, 5→6 nem feche Fase 6 sem o agente da fase que terminou ter escrito seu veredito na tabela **Vereditos** da história — QA e Tech Lead escrevem a própria linha ao final da sua fase; PO escreve a sua ao aceitar. Veredito só narrado no chat, sem registro na história, não conta para o DoD.
 
 ### Fase 2 (arquiteto) — quando executar
 
@@ -116,6 +119,7 @@ Senão: skip documentado.
 4. Escopo mínimo — sem over-engineering em nenhuma fase
 5. Decisões de stack/arquitetura sempre com ADR, mesmo em projeto solo
 6. Aceite final (PO) atualiza `**Status:**` da história no backlog
+7. DoR fechado é pré-requisito de Fase 3 (Dev); Critérios de aceite + DoD fechados são pré-requisito de Fase 6 (Done) — gates não negociáveis, mesmo em projeto solo
 
 ---
 
@@ -123,7 +127,9 @@ Senão: skip documentado.
 
 - Pular QA/TL em `full`/`implement`
 - Done sem relatório das fases 4 e 5
-- Implementar sem DoR no modo `full`
+- Implementar sem DoR fechado (todo item `[x]`/`N/A` justificado), em qualquer modo
+- Marcar Done com critério de aceite ou item de DoD aberto
+- Veredito de QA, Tech Lead ou PO só narrado no chat/handoff, sem registro na tabela Vereditos da história
 - Arquiteto em toda mudança trivial (ex.: ajuste de texto no `resume.json`)
 - Introduzir processo/artefato de squad grande num projeto de uma pessoa só
 

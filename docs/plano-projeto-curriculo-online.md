@@ -229,6 +229,7 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 ## 8. Roadmap (To-Do por fases)
 
 **Fase 0 — Preparação: agentes + repositório (pré-requisito, antes de codar)**
+→ Backlog (retroativo): [`docs/product/backlog/fase-00/`](product/backlog/fase-00/)
 
 *Agentes:*
 
@@ -241,27 +242,30 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 
 - [x] Repo antigo excluído; repo novo criado no GitHub (`curriculo-ia`, público, com README e licença MIT)
 - [x] Clonar o repo localmente
-- [ ] Criar estrutura de pastas do monorepo (`frontend/`, `backend/`, `docs/`) com um README placeholder em cada
-- [ ] Criar `.gitignore` combinado (Node + Python) — não veio pronto do GitHub, precisa ser feito manualmente
-- [ ] Configurar **git flow**: criar branch `develop` a partir de `main`, convenção `feature/`*, `fix/`*
-- [ ] Configurar **branch protection**: `main` e `develop` protegidas (exigir PR, exigir CI passando antes de merge, bloquear push direto e force-push)
-- [ ] Arquivos base adicionais: `.editorconfig`, template de PR/issue
-- [ ] Esqueleto de CI (`frontend-ci.yml` e `backend-ci.yml`) mesmo que só com um step de lint por enquanto
-- [ ] Primeiro commit/PR: "chore: estrutura inicial do repositório"
+- [x] Criar estrutura de pastas do monorepo (`frontend/`, `backend/`, `docs/`) com um README placeholder em cada
+- [x] Criar `.gitignore` combinado (Node + Python) — não veio pronto do GitHub, precisa ser feito manualmente
+- [x] Configurar **git flow**: criar branch `develop` a partir de `main`, convenção `feature/`*,* `fix/`
+- [x] Configurar **branch protection**: `main` e `develop` protegidas (exigir PR, exigir CI passando antes de merge, bloquear push direto e force-push)
+- [x] Arquivos base adicionais: `.editorconfig`, template de PR/issue
+- [x] Esqueleto de CI (`frontend-ci.yml` e `backend-ci.yml`) mesmo que só com um step de lint por enquanto
+- [x] Primeiro commit/PR: "chore: estrutura inicial do repositório" (commits prontos na branch `chore/estrutura-inicial-repositorio`, PR a abrir)
 
 **Fase 1 — Descoberta e planejamento**
+→ Backlog (retroativo): [`docs/product/backlog/fase-01/`](product/backlog/fase-01/)
 
-- [ ] `product-owner`: PRD do site + backlog inicial (épicos: Conteúdo, Frontend, RAG, Deploy)
-- [ ] `scrum-master`: definir DoR/DoD e quadro de tarefas
-- [ ] `arquiteto-ia-senior`: ADR da stack (Next.js + Python/FastAPI) + diagrama C4 de contexto
+- [x] `product-owner`: PRD do site + backlog inicial (épicos: Conteúdo, Frontend, RAG, Deploy)
+- [x] `scrum-master`: definir DoR/DoD e quadro de tarefas
+- [x] `arquiteto-ia-senior`: ADR da stack (Next.js + Python/FastAPI) + diagrama C4 de contexto
 
 **Fase 2 — Setup do projeto**
+→ Backlog: [`docs/product/backlog/fase-02/`](product/backlog/fase-02/) (US-02-01 a US-02-04)
 
 - [ ] `senior-developer`: `npx create-next-app` (TS + Tailwind) em `frontend/` + esqueleto do serviço FastAPI em `backend/`
 - [ ] Configurar ESLint/Prettier e conectar os workflows de CI já criados na Fase 0
 - [ ] `git-auto-commits` + `open-merge-request`: PR do esqueleto das duas aplicações
 
 **Fase 3 — MVP estático**
+→ Backlog: [`docs/product/backlog/fase-03/`](product/backlog/fase-03/) (US-03-01 a US-03-17)
 
 - [ ] `product-owner`: histórias de usuário por seção (Hero, Experiência, Skills...)
 - [ ] `senior-developer`: `content/resume.json` + componentes da UI
@@ -271,12 +275,14 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 - [ ] Deploy inicial na Vercel (site no ar, mesmo incompleto)
 
 **Fase 4 — Polimento**
+→ Backlog: [`docs/product/backlog/fase-04/`](product/backlog/fase-04/) (US-04-01 a US-04-02)
 
 - [ ] Ajustar design (usar a skill de frontend-design se for trabalhar comigo em código depois)
 - [ ] Botão de download do PDF + SEO básico (meta tags, Open Graph)
 - [ ] `qa-engineer`: checar Lighthouse (performance/acessibilidade)
 
 **Fase 5 — Feature de IA (RAG)**
+→ Backlog: [`docs/product/backlog/fase-05/`](product/backlog/fase-05/) (US-05-01 a US-05-09)
 
 - [ ] `arquiteto-ia-senior`: ADR do fluxo de RAG (chunking, embeddings, custo)
 - [ ] `senior-developer`: endpoint `/chat` no FastAPI + geração de embeddings
@@ -285,6 +291,7 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 - [ ] `tech-lead-review`: segurança (chaves de API, CORS, rate limit)
 
 **Fase 6 — Divulgação**
+→ Sem backlog formal (checklist de lançamento, não histórias de dev)
 
 - [ ] README com a seção "Como este projeto foi construído com agentes de IA" (prints do pipeline, ADRs, PRD)
 - [ ] Colocar link do site no LinkedIn e no GitHub
@@ -302,14 +309,3 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 4. Cada projeto novo referencia os anteriores no seu site — o currículo vira o "hub" do portfólio.
 
 ---
-
-
-
-### Próximo passo imediato
-
-Se quiser, posso já te ajudar a:
-
-- (a) escrever o `content/resume.json` inicial com base no que você me passar do LinkedIn, ou
-- (b) gerar o esqueleto do projeto Next.js (arquivos reais) para você rodar localmente.
-
-Me diga qual prefere começar.

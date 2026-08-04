@@ -46,6 +46,32 @@ curriculo-online-ia/
 
 Frontend e backend evoluem no mesmo repositório e, quando a feature exigir, no mesmo PR — mas cada um com seu próprio pipeline de CI.
 
+## Convenção de nomenclatura de documentos
+
+Todo documento gerado por um agente (PO, Arquiteto, QA) segue `TIPO-NNN-slug.md`: `NNN` sequencial com 3 dígitos, **nunca reaproveitado** (mesmo se o documento for descontinuado, o número não volta a ser usado); `slug` em `kebab-case`, minúsculo.
+
+| Tipo | Local | Padrão | Exemplo |
+|---|---|---|---|
+| PRD (épico) | `docs/product/` | `PRD-NNN-<epico>.md` | `PRD-001-conteudo.md` |
+| Backlog (histórias/tasks) | `docs/product/backlog/fase-NN/` | `US-FF-NN-<slug>.md` — uma história por arquivo; `FF` é o número da fase de implementação (não do épico) e `NN` a sequência dentro dela, então o ID já é único no backlog inteiro (`US-03-01` ≠ `US-05-01`); `slug` descreve a história no nome do arquivo. A tabela "Histórias" do PRD de origem linka para o arquivo | `docs/product/backlog/fase-03/US-03-01-schema-resume-json.md` |
+| ADR | `docs/architecture/` | `ADR-NNN-<titulo>.md` | `ADR-001-stack-inicial-monorepo.md` |
+| Diagrama C4 | `docs/architecture/` | `C4-NNN-<titulo>.md` | `C4-001-contexto-containers.md` |
+| Imagem de diagrama C4 (renderizada, embutida no `.md` correspondente) | `docs/architecture/images/` | `C4-NNN-<slug-diagrama>.svg`, com `slug-diagrama` sempre prefixado pelo nível C4 (`n1`/`n2`/`n3`/`n4`/`seq`) | `C4-001-n1-contexto.svg` |
+| Diagrama de dados (ER) — DoR de história que introduz/altera entidades relacionadas | `docs/architecture/` | `DATA-NNN-<titulo>.md` | `DATA-001-schema-curriculo.md` |
+| Imagem de diagrama de dados (renderizada) | `docs/architecture/images/` | `DATA-NNN-<slug-diagrama>.svg` | `DATA-001-er.svg` |
+| Relatório QA (quando salvo em arquivo, não só handoff) | `docs/qa/` | `QA-NNN-<escopo>.md` | `QA-001-hero-sobre.md` |
+
+Numeração de épico (PRD/Backlog) é fixa pela ordem em que cada épico foi refinado — um épico novo recebe o próximo `NNN` livre; os já existentes não são renumerados:
+
+| NNN | Épico |
+|---|---|
+| 001 | Conteúdo |
+| 002 | Frontend |
+| 003 | RAG |
+| 004 | Deploy |
+
+`ADR-NNN`, `C4-NNN` e `DATA-NNN` têm sequência própria, independente da numeração de épico (ex.: `ADR-001` é sobre a stack, não sobre o épico 001).
+
 ## Branching e commits
 
 - `main` e `develop` protegidas: exigem PR + CI passando; bloqueiam push direto e force-push
@@ -111,4 +137,20 @@ O dono técnico final é o autor (humano). Sugestões dos agentes (arquitetura, 
 
 ## Fase atual
 
-Fase 0 (preparação): agentes sendo customizados para este projeto; estrutura de pastas do monorepo, `.gitignore`, branch protection e esqueleto de CI ainda não criados.
+Fase 0 (preparação) concluída — registrada retroativamente em `docs/product/backlog/fase-00/` ([US-00-01](../product/backlog/fase-00/US-00-01-customizacao-agentes-ia.md): agentes customizados; [US-00-02](../product/backlog/fase-00/US-00-02-estrutura-inicial-repositorio.md): monorepo, `.gitignore`, branch protection, CI esqueleto, PR inicial).
+
+Fase 1 (descoberta e planejamento) concluída — registrada retroativamente em `docs/product/backlog/fase-01/`: PRD criado pelo `product-owner` para os 4 épicos ([US-01-01](../product/backlog/fase-01/US-01-01-prd-backlog-inicial.md)), `ADR-001` + diagramas C4 de contexto/containers registrados pelo `arquiteto-ia-senior` ([US-01-02](../product/backlog/fase-01/US-01-02-adr-stack-c4-contexto.md)) e DoR/DoD padrão + cadência de acompanhamento revisados formalmente pelo `scrum-master` ([US-01-03](../product/backlog/fase-01/US-01-03-dor-dod-scrum-master.md) — Done). Pendência restante: dados de Projetos/Portfólio e parte do Contato aguardando o autor (ver `docs/product/README.md`), sem relação com esta fase do backlog. Próximo passo: Fase 2 — setup do projeto (`senior-developer`: `create-next-app` em `frontend/` + esqueleto FastAPI em `backend/`, [US-02-01](../product/backlog/fase-02/US-02-01-setup-nextjs.md) e [US-02-02](../product/backlog/fase-02/US-02-02-setup-fastapi.md) do backlog).
+
+## Fases do roadmap e backlog correspondente
+
+| Fase | Escopo | Backlog |
+|---|---|---|
+| Fase 0 — Preparação | Agentes + repositório | `docs/product/backlog/fase-00/` (US-00-01 a US-00-02) — Done |
+| Fase 1 — Descoberta e planejamento | PRD, ADR, C4 | `docs/product/backlog/fase-01/` (US-01-01 a US-01-03) — Done |
+| Fase 2 — Setup do projeto | Esqueleto Next.js + FastAPI, CI real | `docs/product/backlog/fase-02/` (US-02-01 a US-02-04) |
+| Fase 3 — MVP estático | Conteúdo real + componentes de UI + deploy inicial | `docs/product/backlog/fase-03/` (US-03-01 a US-03-17) |
+| Fase 4 — Polimento | SEO, acessibilidade | `docs/product/backlog/fase-04/` (US-04-01 a US-04-02) |
+| Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/fase-05/` (US-05-01 a US-05-09) |
+| Fase 6 — Divulgação | README, LinkedIn, feedback | Checklist no plano do projeto, sem histórias formais |
+
+Detalhe completo do roadmap: `docs/plano-projeto-curriculo-online.md` (seção 8).

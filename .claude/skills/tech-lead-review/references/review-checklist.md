@@ -6,6 +6,7 @@ Marque N/A quando irrelevante ao diff.
 
 - [ ] Componente renderiza o dado esperado a partir de `resume.json`
 - [ ] Endpoint responde o contrato esperado (status, shape do JSON)
+- [ ] Contrato implementado bate com o documentado no DoR da história (se aplicável — request/response, erros)
 - [ ] Fluxo de chat: contexto relevante retornado; fallback claro em erro
 - [ ] Erros HTTP sem vazar stack trace ao cliente
 
@@ -40,7 +41,7 @@ Aplicar com bom senso: citar SOLID só quando a violação for concreta e o diff
 ## 5. Testes
 
 - [ ] Componente/endpoint principal do diff tem teste, colocado ao lado do arquivo (frontend) ou em `backend/tests/` espelhando `backend/app/` (backend)
-- [ ] `rag.py`/`chat.py` e componentes centrais tocados mantêm cobertura ≥ 70%
+- [ ] Cobertura ≥ 70% no código tocado pelo diff (piso do DoD) — atenção redobrada se `rag.py`/`chat.py` ou componentes centrais estiverem no escopo
 - [ ] Caso de fallback do chat coberto quando `rag.py`/`chat.py` é tocado
 - [ ] Testes determinísticos (LLM mockado, não chamando API real)
 - [ ] Mudança em `resume.json` (schema) validada nas duas pontas (Zod no frontend, Pydantic no backend)

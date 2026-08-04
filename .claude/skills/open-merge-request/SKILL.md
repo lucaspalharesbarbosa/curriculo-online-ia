@@ -53,7 +53,7 @@ Verificar:
 Consultar quando relevante:
 
 - `docs/agents/CONTEXTO-PROJETO.md` — stack, branching, convenções
-- `docs/product/backlog/<feature>.md` — história/tasks da feature, para resumir entregas
+- `docs/product/backlog/fase-FF/US-FF-NN-<slug>.md` — história/tasks da feature, para resumir entregas
 - `docs/architecture/ADR-*.md` — se a mudança envolveu decisão de arquitetura
 
 ## Montar URL do MR
@@ -216,7 +216,7 @@ Checklist DoD (mencionar se faltar):
 
 - [ ] Testes verdes para o componente/endpoint alterado (`npm test` / `pytest`)
 - [ ] Sem chave de API exposta no diff (frontend nunca chama o LLM direto)
-- [ ] História do backlog (`docs/product/backlog/`) marcada como concluída
+- [ ] História do backlog (`docs/product/backlog/fase-FF/US-FF-NN-<slug>.md`) marcada como concluída
 
 ## Push (somente se pedido)
 
@@ -294,7 +294,7 @@ Copie a descrição abaixo e cole no campo **Description** do PR:
 
 ## Contexto
 - Branch: `feature/adiciona-footer` → `develop`
-- Backlog: `docs/product/backlog/frontend.md`
+- Backlog: `docs/product/backlog/fase-03/US-03-16-componente-contato-pdf.md`
 ```
 
 **Ação do usuário:** abrir a URL (link ou bloco), copiar cada bloco com o botão do fence, colar nos campos do formulário, revisar diff e submeter.
