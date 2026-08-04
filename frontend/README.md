@@ -2,15 +2,23 @@
 
 Next.js + TypeScript + Tailwind CSS.
 
-Esqueleto da aplicação ainda não criado (ver Fase 2 do [plano do projeto](../docs/plano-projeto-curriculo-online.md)).
-
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
-- Testes: Vitest/Jest + Testing Library (colocation com o componente)
+- Testes: Vitest + Testing Library (colocation com o componente)
 - Lint/format: ESLint + Prettier
 
-## Estrutura prevista
+## Comandos
+
+```bash
+npm run dev      # servidor local
+npm run lint     # ESLint
+npm run format   # Prettier (check)
+npm test         # Vitest
+npm run build    # build de produção
+```
+
+## Estrutura
 
 ```
 frontend/
