@@ -8,9 +8,9 @@
 **para** entender em segundos quem é e o que faz.
 
 ### Critérios de aceite
-- [ ] CA-001: `Hero.tsx` renderiza `resume.json.hero` (nome, título, resumo curto)
-- [ ] CA-002: seção "Sobre" renderiza `resume.json.about` (resumo longo)
-- [ ] CA-003: `Hero.test.tsx` cobre a renderização dos dados
+- [x] CA-001: `Hero.tsx` renderiza `resume.json.hero` (nome, título, resumo curto)
+- [x] CA-002: seção "Sobre" renderiza `resume.json.about` (resumo longo)
+- [x] CA-003: `Hero.test.tsx` cobre a renderização dos dados
 
 ### Fora de escopo
 - Dados do `resume.json` (US-03-02)
@@ -22,7 +22,15 @@
 Frontend — P2
 
 ### Tasks
-- [ ] T01 Criar `frontend/components/Hero.tsx`
-- [ ] T02 [P] Teste `Hero.test.tsx`
+- [x] T01 Criar `frontend/components/Hero.tsx`
+- [x] T02 [P] Teste `Hero.test.tsx`
 
-**Status:** Ready for Agent
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | @qa-engineer | Aprovado | 2026-08-04 | lint + testes + build passando no escopo |
+| Tech Lead | @tech-lead-review | Aprovar | 2026-08-04 | diff minimo, schema espelhado, componentes tipados |
+| PO | @product-owner | Done | 2026-08-04 | criterios de aceite fechados |
+
+**Status:** Done

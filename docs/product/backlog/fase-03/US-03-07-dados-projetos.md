@@ -8,20 +8,27 @@
 **para** avaliar código e trabalho concreto, não só descrição textual.
 
 ### Critérios de aceite
-- [ ] CA-001: `resume.json.projects` lista no mínimo 2 projetos reais com título, descrição curta, tecnologias e link do repositório (incluindo este projeto, `curriculo-online-ia`)
-- [ ] CA-002: validado contra o schema de US-03-01
+- [x] CA-001: `resume.json.projects` lista o projeto real `curriculo-online-ia` (título, descrição, tecnologias, link) — **N/A:** autor confirmou ter apenas 1 projeto de portfólio no momento; critério de "mínimo 2" relaxado com aceite explícito em 2026-08-04
+- [x] CA-002: validado contra o schema de US-03-01
 
 ### Fora de escopo
 - Renderização visual (US-03-14)
 
 ### Dependências
 - US-03-01
-- **Bloqueio:** autor precisa indicar quais repositórios (além deste) entram na lista
 
 ### Épico / Prioridade
 Conteúdo — P3
 
 ### Tasks
-- [ ] T01 Popular `projects` — **bloqueada até o autor indicar os repositórios**
+- [x] T01 Popular `projects` com `curriculo-online-ia`
 
-**Status:** Draft — aguardando input do autor (DoR incompleto)
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | `@qa-engineer` | Aprovado | 2026-08-04 | 1 projeto validado no schema; componente US-03-14 renderiza |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-04 | N/A de 2º repo documentado; sem mock inventado |
+| PO | `@product-owner` | Done | 2026-08-04 | Autor confirmou único projeto — aceite com ressalva documentada |
+
+**Status:** Done
