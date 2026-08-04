@@ -243,8 +243,8 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 - [x] Clonar o repo localmente
 - [x] Criar estrutura de pastas do monorepo (`frontend/`, `backend/`, `docs/`) com um README placeholder em cada
 - [x] Criar `.gitignore` combinado (Node + Python) — não veio pronto do GitHub, precisa ser feito manualmente
-- [ ] Configurar **git flow**: criar branch `develop` a partir de `main`, convenção `feature/`*, `fix/`*
-- [ ] Configurar **branch protection**: `main` e `develop` protegidas (exigir PR, exigir CI passando antes de merge, bloquear push direto e force-push)
+- [x] Configurar **git flow**: criar branch `develop` a partir de `main`, convenção `feature/`*, `fix/`*
+- [x] Configurar **branch protection**: `main` e `develop` protegidas (exigir PR, exigir CI passando antes de merge, bloquear push direto e force-push)
 - [x] Arquivos base adicionais: `.editorconfig`, template de PR/issue
 - [x] Esqueleto de CI (`frontend-ci.yml` e `backend-ci.yml`) mesmo que só com um step de lint por enquanto
 - [ ] Primeiro commit/PR: "chore: estrutura inicial do repositório" (commits prontos na branch `chore/estrutura-inicial-repositorio`, PR a abrir)
