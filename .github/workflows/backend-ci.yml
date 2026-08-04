@@ -21,11 +21,10 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install dependencies
-        if: hashFiles('backend/requirements.txt') != ''
         run: pip install -r requirements.txt
       - name: Lint
-        if: hashFiles('backend/requirements.txt') != ''
         run: ruff check .
+      - name: Format check
+        run: black --check .
       - name: Test
-        if: hashFiles('backend/requirements.txt') != ''
         run: pytest
