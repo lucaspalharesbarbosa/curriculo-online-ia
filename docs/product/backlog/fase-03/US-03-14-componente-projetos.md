@@ -8,8 +8,8 @@
 **para** avaliar código real do autor.
 
 ### Critérios de aceite
-- [ ] CA-001: `ProjectCard.tsx` renderiza `resume.json.projects` (título, descrição, tecnologias, link do repositório)
-- [ ] CA-002: `ProjectCard.test.tsx` cobre a renderização
+- [x] CA-001: `ProjectCard.tsx` renderiza `resume.json.projects` (título, descrição, tecnologias, link do repositório)
+- [x] CA-002: `ProjectCard.test.tsx` cobre a renderização
 
 ### Fora de escopo
 - Dados do `resume.json` (US-03-07 — bloqueada)
@@ -21,7 +21,15 @@
 Frontend — P3
 
 ### Tasks
-- [ ] T01 Criar `frontend/components/ProjectCard.tsx`
-- [ ] T02 [P] Teste `ProjectCard.test.tsx`
+- [x] T01 Criar `frontend/components/ProjectCard.tsx`
+- [x] T02 [P] Teste `ProjectCard.test.tsx`
 
-**Status:** Draft — componente pode ser implementado com dado mockado; conteúdo real aguarda US-03-07
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | @qa-engineer | Aprovado | 2026-08-04 | lint + testes + build passando no escopo |
+| Tech Lead | @tech-lead-review | Aprovar | 2026-08-04 | diff minimo, schema espelhado, componentes tipados |
+| PO | @product-owner | Done | 2026-08-04 | criterios de aceite fechados |
+
+**Status:** Done

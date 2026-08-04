@@ -8,9 +8,9 @@
 **para** avaliar a trajetória do autor.
 
 ### Critérios de aceite
-- [ ] CA-001: `ExperienceCard.tsx` renderiza cada item de `resume.json.experiences` (empresa, cargo, período, bullets de entrega, tecnologias)
-- [ ] CA-002: lista ordenada do mais recente para o mais antigo
-- [ ] CA-003: `ExperienceCard.test.tsx` cobre a renderização de ao menos um item real
+- [x] CA-001: `ExperienceCard.tsx` renderiza cada item de `resume.json.experiences` (empresa, cargo, período, bullets de entrega, tecnologias)
+- [x] CA-002: lista ordenada do mais recente para o mais antigo
+- [x] CA-003: `ExperienceCard.test.tsx` cobre a renderização de ao menos um item real
 
 ### Fora de escopo
 - Dados do `resume.json` (US-03-03)
@@ -22,7 +22,15 @@
 Frontend — P2
 
 ### Tasks
-- [ ] T01 Criar `frontend/components/ExperienceCard.tsx`
-- [ ] T02 [P] Teste `ExperienceCard.test.tsx`
+- [x] T01 Criar `frontend/components/ExperienceCard.tsx`
+- [x] T02 [P] Teste `ExperienceCard.test.tsx`
 
-**Status:** Ready for Agent
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | @qa-engineer | Aprovado | 2026-08-04 | lint + testes + build passando no escopo |
+| Tech Lead | @tech-lead-review | Aprovar | 2026-08-04 | diff minimo, schema espelhado, componentes tipados |
+| PO | @product-owner | Done | 2026-08-04 | criterios de aceite fechados |
+
+**Status:** Done

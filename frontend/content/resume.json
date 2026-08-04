@@ -1,4 +1,236 @@
 {
-  "name": "Curriculo Online",
-  "summary": "Esqueleto inicial — conteúdo real na Fase 03"
+  "hero": {
+    "name": "Lucas Palhares Barbosa",
+    "title": "Tech Lead | Engenheiro de Software Sênior — AI Engineering | Agentic AI | Java • Python | AWS Certified",
+    "location": "São José do Rio Preto, SP (remoto)",
+    "summary": "Tech Lead e Engenheiro de Software Sênior com mais de 10 anos de experiência em soluções escaláveis para bancos, telecomunicações e saúde. Lidero tecnicamente squads na Engineering Brasil no desenvolvimento de soluções de IA para a Claro, aplicando AI Engineering — Agentic AI, Context Engineering e Spec-Driven Development — para acelerar a entrega de software. Base sólida em arquitetura de microsserviços, Java, Python, Spring Boot, Kubernetes e Cloud, com histórico de entregas estratégicas em produtos de grande porte."
+  },
+  "about": "Tech Lead e Engenheiro de Software Sênior com mais de 10 anos de experiência desenvolvendo soluções escaláveis para grandes empresas dos setores bancário, telecomunicações e saúde. Atualmente lidera tecnicamente squads na Engineering Brasil responsáveis por soluções estratégicas de Inteligência Artificial para a Claro. Seu foco evoluiu da engenharia de software tradicional para soluções orientadas por IA, aplicando práticas de AI Engineering — Context Engineering, Prompt Engineering, Harness Engineering, Agentic AI e Spec-Driven Development (SDD) — na construção de AI Agents, AI Skills e fluxos agentic integrados ao ciclo de desenvolvimento. Como Tech Lead, responde por liderança técnica, arquitetura, mentoria, revisão de código, padrões de engenharia e condução da adoção de IA no processo de desenvolvimento, utilizando ferramentas como Claude Code e Cursor no dia a dia. Experiência sólida em Java, Python, microsserviços, Spring Boot, Kubernetes, Cloud (AWS e GCP), APIs REST e arquiteturas distribuídas.",
+  "experiences": [
+    {
+      "company": "Engineering Brasil",
+      "role": "Tech Lead | Engenheiro de Software Sênior",
+      "startDate": "2026-03",
+      "endDate": null,
+      "location": "São José do Rio Preto, SP",
+      "modality": "Remoto",
+      "highlights": [
+        "Tech Lead em projetos estratégicos da Claro voltados para IA aplicada à Engenharia de Software e automação de processos, liderando squad responsável por soluções de IA para otimização operacional, redução de custos e produtividade das equipes de desenvolvimento",
+        "Liderança técnica da squad, definição de arquitetura, mentoria, revisão técnica, padrões de engenharia, apoio a decisões arquiteturais e remoção de impedimentos técnicos",
+        "Condução da adoção de AI Engineering — Context Engineering, Prompt Engineering, Harness Engineering, Spec-Driven Development (SDD) e Agentic AI — na construção de AI Agents e AI Skills integrados ao ciclo de desenvolvimento",
+        "Uso de Claude Code e Cursor no dia a dia; atuação em projetos com Python, Java, React, Angular e Cloud acelerando entregas por meio de IA"
+      ],
+      "technologies": [
+        "Python",
+        "Java",
+        "React",
+        "Angular",
+        "Kubernetes",
+        "AWS",
+        "AI Engineering",
+        "Claude Code",
+        "Cursor"
+      ]
+    },
+    {
+      "company": "Banco BV",
+      "role": "Engenheiro de Software Sênior (Outsourcing)",
+      "startDate": "2025-10",
+      "endDate": "2026-01",
+      "location": "Remoto",
+      "modality": "Remoto",
+      "highlights": [
+        "Atuei como Engenheiro de Software Sênior em squad responsável pelo produto de Cashback, um dos pilares do programa de fidelidade do Banco BV, com impacto direto na experiência e retenção de clientes de cartões de crédito",
+        "Realizei correções de vulnerabilidades (CVE) em microsserviços desenvolvidos em Java 11 e Java 21 com Spring Boot, que impediam a execução das pipelines de CI/CD e bloqueavam novos deployments, restabelecendo o fluxo contínuo de entrega",
+        "Participei ativamente da reconstrução do produto de Cashback para suportar a nova processadora de cartões Pismo, utilizando a plataforma Bankly como camada de integração, contribuindo para a modernização da arquitetura e adequação aos novos fluxos de negócio"
+      ],
+      "technologies": [
+        "Java 11",
+        "Spring Boot",
+        "Microsserviços",
+        "Kubernetes",
+        "Google Cloud Platform (GKE)",
+        "CI/CD",
+        "Bankly",
+        "Pismo"
+      ]
+    },
+    {
+      "company": "Itaú Unibanco",
+      "role": "Engenheiro de Software Pleno",
+      "startDate": "2022-07",
+      "endDate": "2025-09",
+      "location": "São Paulo, SP",
+      "modality": "Remoto",
+      "highlights": [
+        "Atuei no desenvolvimento do MVP do produto de Crédito para Energia Solar, possibilitando a entrada do Itaú em novo segmento de negócios",
+        "Refatorei o sistema de Gestão de Carteira de Microcrédito, aumentando a manutenibilidade e reduzindo incidentes críticos",
+        "Contribuí para o projeto de Realocação de Carteiras Desassistidas no sistema de Gestão de Carteira de Microcrédito, com foco na redução dos índices de inadimplência dos contratos",
+        "Reconhecido por Alto Desempenho (2023 e 2024) e Mérito (2024): avaliado com classificação \"Destaca-se em relação ao grupo\", recebi PRAD pela qualidade das minhas entregas, colaboração e impacto nos resultados do time"
+      ],
+      "technologies": [
+        "Java (Spring Boot)",
+        "Python",
+        "AWS (ECS, EKS, Lambda, RDS, API Gateway)",
+        "Microsserviços",
+        "API Rest",
+        "BFF"
+      ]
+    },
+    {
+      "company": "Shift",
+      "role": "Analista de Desenvolvimento Web Pleno",
+      "startDate": "2020-09",
+      "endDate": "2022-07",
+      "location": "São José do Rio Preto, SP",
+      "modality": "Presencial",
+      "highlights": [
+        "Atuei na evolução e manutenção de sistema LIS (Laboratory Information System) para análises clínicas, imagem e imunização",
+        "Participei da modernização do sistema legado, migrando de COS para Java e de arquitetura monolítica para microsserviços, resultando em maior performance, flexibilidade e redução de custos operacionais",
+        "Realizava suporte técnico e mentoria de desenvolvedores juniores e estagiários, apoiando na qualidade das entregas"
+      ],
+      "technologies": [
+        "Java (Quarkus)",
+        "COS (Caché Object Script)",
+        "ZEN",
+        "JavaScript",
+        "Angular"
+      ]
+    },
+    {
+      "company": "WebPic",
+      "role": "Desenvolvedor Web Pleno",
+      "startDate": "2016-11",
+      "endDate": "2020-09",
+      "location": "São José do Rio Preto, SP",
+      "modality": "Presencial",
+      "highlights": [
+        "Atuei em ERP para indústria de confecção e moda, participando de todo o ciclo de desenvolvimento",
+        "Desenvolvi integração com TEF e emissão de cupom fiscal eletrônico (MF-e/CE), ampliando a base de clientes e receita da empresa",
+        "Apoiei o Scrum Master e o Product Owner no refinamento do backlog e melhoria de processos ágeis"
+      ],
+      "technologies": [
+        "C#",
+        "ASP.NET MVC",
+        "Windows Forms",
+        "Entity Framework",
+        "SQL Server",
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "KnockoutJS",
+        "Scrum/Kanban"
+      ]
+    },
+    {
+      "company": "Grupo WDG",
+      "role": "Desenvolvedor Web Junior",
+      "startDate": "2015-11",
+      "endDate": "2016-08",
+      "location": "São José do Rio Preto, SP",
+      "modality": "Presencial",
+      "highlights": [
+        "Desenvolvimento de funcionalidades em sistema de gestão de projetos e CRM",
+        "Automação de testes com Selenium e Test Stack White, garantindo qualidade em entregas críticas"
+      ],
+      "technologies": [
+        "C#",
+        "WPF (MVVM)",
+        "Entity Framework",
+        "SQL Server",
+        "Selenium WebDriver",
+        "Genexus",
+        "Scrum"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Centro Universitário Senac",
+      "degree": "Pós-graduação em Gerenciamento de Projetos – Práticas do PMI",
+      "startDate": "2016",
+      "endDate": "2017"
+    },
+    {
+      "institution": "FATEC São José do Rio Preto",
+      "degree": "Graduação em Análise e Desenvolvimento de Sistemas",
+      "startDate": "2013",
+      "endDate": "2015"
+    }
+  ],
+  "skills": [
+    {
+      "category": "Linguagens",
+      "items": ["Java (Spring Boot)", "Python", "C#"]
+    },
+    {
+      "category": "Cloud",
+      "items": ["AWS (ECS, EKS, Lambda, RDS, API Gateway, CloudWatch)"]
+    },
+    {
+      "category": "Devops",
+      "items": ["Docker", "Git", "GitLab", "CI/CD"]
+    },
+    {
+      "category": "Arquitetura",
+      "items": [
+        "Microsserviços",
+        "APIs REST",
+        "BFF",
+        "Clean Architecture",
+        "SOLID",
+        "Design Patterns"
+      ]
+    },
+    {
+      "category": "Observabilidade",
+      "items": ["Splunk", "Grafana", "DataDog"]
+    },
+    {
+      "category": "Frontend",
+      "items": ["Angular", "React", "JavaScript", "HTML5", "CSS3"]
+    },
+    {
+      "category": "Banco de Dados",
+      "items": ["SQL Server", "PostgreSQL"]
+    },
+    {
+      "category": "Metodologias",
+      "items": ["Scrum", "Kanban", "CI/CD"]
+    }
+  ],
+  "certifications": [
+    {
+      "name": "AWS Certified Cloud Practitioner",
+      "issuer": "AWS",
+      "issuedAt": "2024-07",
+      "expiresAt": "2027-07"
+    },
+    {
+      "name": "Scrum Fundamentals Certified (SFC)",
+      "issuer": "SCRUMStudy",
+      "issuedAt": "2018-01",
+      "expiresAt": null
+    }
+  ],
+  "projects": [
+    {
+      "title": "Currículo Online com IA",
+      "description": "Site pessoal de currículo com assistente RAG que responde perguntas sobre a trajetória profissional. Monorepo Next.js + FastAPI com pipeline de agentes de IA para desenvolvimento.",
+      "technologies": [
+        "Next.js",
+        "TypeScript",
+        "Tailwind CSS",
+        "FastAPI",
+        "Python"
+      ],
+      "repositoryUrl": "https://github.com/lucaspalharesbarbosa/curriculo-online-ia"
+    }
+  ],
+  "contact": {
+    "linkedin": "https://www.linkedin.com/in/lucas-palhares-barbosa/",
+    "email": "lucasp.b@hotmail.com",
+    "github": "https://github.com/lucaspalharesbarbosa",
+    "resumePdfUrl": "/Lucas_Palhares_Barbosa_Engenheiro_De_Software.pdf"
+  }
 }

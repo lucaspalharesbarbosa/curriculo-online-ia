@@ -24,4 +24,4 @@ Deploy — P2
 ### Tasks
 - [ ] T01 Criar projeto na Vercel apontando para `frontend/`
 
-**Status:** Ready for Agent (bloqueada até US-03-09)
+**Status:** Adiada pelo autor — deploy Vercel será feito posteriormente (US-03-09 Done; código pronto)

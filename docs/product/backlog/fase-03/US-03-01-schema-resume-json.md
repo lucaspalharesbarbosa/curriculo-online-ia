@@ -8,9 +8,9 @@
 **para** que dado inválido/malformado falhe em build/teste, não em runtime no site publicado.
 
 ### Critérios de aceite
-- [ ] CA-001: schema Zod cobre as 6 seções (hero, experiences, education, skills, certifications, contact) + projects (estrutura, mesmo sem dados ainda)
-- [ ] CA-002: schema Pydantic espelha o mesmo contrato no backend
-- [ ] CA-003: build/teste falha se `resume.json` não bater com o schema
+- [x] CA-001: schema Zod cobre as 6 seções (hero, experiences, education, skills, certifications, contact) + projects (estrutura, mesmo sem dados ainda)
+- [x] CA-002: schema Pydantic espelha o mesmo contrato no backend
+- [x] CA-003: build/teste falha se `resume.json` não bater com o schema
 
 ### Fora de escopo
 - Popular os dados (US-03-02 a US-03-08)
@@ -22,9 +22,17 @@
 Conteúdo — P1
 
 ### Tasks
-- [ ] T01 Criar schema Zod em `frontend/content/resume.schema.ts`
-- [ ] T02 [P] Criar schema Pydantic em `backend/app/models/resume.py`
-- [ ] T03 [P] Teste de validação `frontend/content/resume.schema.test.ts`
-- [ ] T04 [P] Teste de validação `backend/tests/test_resume_schema.py`
+- [x] T01 Criar schema Zod em `frontend/content/resume.schema.ts`
+- [x] T02 [P] Criar schema Pydantic em `backend/app/models/resume.py`
+- [x] T03 [P] Teste de validação `frontend/content/resume.schema.test.ts`
+- [x] T04 [P] Teste de validação `backend/tests/test_resume_schema.py`
 
-**Status:** Ready for Agent
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | @qa-engineer | Aprovado | 2026-08-04 | lint + testes + build passando no escopo |
+| Tech Lead | @tech-lead-review | Aprovar | 2026-08-04 | diff minimo, schema espelhado, componentes tipados |
+| PO | @product-owner | Done | 2026-08-04 | criterios de aceite fechados |
+
+**Status:** Done

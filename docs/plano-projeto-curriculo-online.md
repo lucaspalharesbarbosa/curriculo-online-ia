@@ -258,27 +258,27 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 - [x] `arquiteto-ia-senior`: ADR da stack (Next.js + Python/FastAPI) + diagrama C4 de contexto
 
 **Fase 2 — Setup do projeto**
-→ Backlog: [`docs/product/backlog/fase-02/`](product/backlog/fase-02/) (US-02-01 a US-02-04)
+→ Backlog: [`docs/product/backlog/fase-02/`](product/backlog/fase-02/) (US-02-01 a US-02-04) — **Done**
 
-- [ ] `senior-developer`: `npx create-next-app` (TS + Tailwind) em `frontend/` + esqueleto do serviço FastAPI em `backend/`
-- [ ] Configurar ESLint/Prettier e conectar os workflows de CI já criados na Fase 0
-- [ ] `git-auto-commits` + `open-merge-request`: PR do esqueleto das duas aplicações
+- [x] `senior-developer`: `npx create-next-app` (TS + Tailwind) em `frontend/` + esqueleto do serviço FastAPI em `backend/`
+- [x] Configurar ESLint/Prettier e conectar os workflows de CI já criados na Fase 0
+- [x] `git-auto-commits` + `open-merge-request`: PR do esqueleto das duas aplicações
 
 **Fase 3 — MVP estático**
-→ Backlog: [`docs/product/backlog/fase-03/`](product/backlog/fase-03/) (US-03-01 a US-03-17)
+→ Backlog: [`docs/product/backlog/fase-03/`](product/backlog/fase-03/) (US-03-01 a US-03-17) — **16/17 Done**
 
-- [ ] `product-owner`: histórias de usuário por seção (Hero, Experiência, Skills...)
-- [ ] `senior-developer`: `content/resume.json` + componentes da UI
-- [ ] `qa-engineer`: testes dos componentes principais
-- [ ] `tech-lead-review`: revisão antes do merge
-- [ ] `git-rebase-feature-develop` → `open-merge-request` para cada feature
-- [ ] Deploy inicial na Vercel (site no ar, mesmo incompleto)
+- [x] `product-owner`: histórias de usuário por seção (Hero, Experiência, Skills...)
+- [x] `senior-developer`: `content/resume.json` + componentes da UI
+- [x] `qa-engineer`: testes dos componentes principais
+- [x] `tech-lead-review`: revisão antes do merge
+- [ ] `git-rebase-feature-develop` → `open-merge-request` (branch ainda sem commits/PR)
+- [ ] Deploy inicial na Vercel (site no ar) — [US-03-17](product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) adiada pelo autor
 
 **Fase 4 — Polimento**
 → Backlog: [`docs/product/backlog/fase-04/`](product/backlog/fase-04/) (US-04-01 a US-04-02)
 
 - [ ] Ajustar design (usar a skill de frontend-design se for trabalhar comigo em código depois)
-- [ ] Botão de download do PDF + SEO básico (meta tags, Open Graph)
+- [ ] SEO básico (meta tags, Open Graph) — download de PDF já entregue na US-03-16
 - [ ] `qa-engineer`: checar Lighthouse (performance/acessibilidade)
 
 **Fase 5 — Feature de IA (RAG)**

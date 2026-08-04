@@ -8,8 +8,8 @@
 **para** completar o entendimento da trajetória.
 
 ### Critérios de aceite
-- [ ] CA-001: `Education.tsx` renderiza `resume.json.education` (instituição, curso, período)
-- [ ] CA-002: `Education.test.tsx` cobre a renderização
+- [x] CA-001: `Education.tsx` renderiza `resume.json.education` (instituição, curso, período)
+- [x] CA-002: `Education.test.tsx` cobre a renderização
 
 ### Fora de escopo
 - Dados do `resume.json` (US-03-04)
@@ -21,7 +21,15 @@
 Frontend — P2
 
 ### Tasks
-- [ ] T01 Criar `frontend/components/Education.tsx`
-- [ ] T02 [P] Teste `Education.test.tsx`
+- [x] T01 Criar `frontend/components/Education.tsx`
+- [x] T02 [P] Teste `Education.test.tsx`
 
-**Status:** Ready for Agent
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | @qa-engineer | Aprovado | 2026-08-04 | lint + testes + build passando no escopo |
+| Tech Lead | @tech-lead-review | Aprovar | 2026-08-04 | diff minimo, schema espelhado, componentes tipados |
+| PO | @product-owner | Done | 2026-08-04 | criterios de aceite fechados |
+
+**Status:** Done

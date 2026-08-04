@@ -27,9 +27,16 @@ env/
 # ---- Testes / cobertura ----
 coverage/
 .coverage
+htmlcov/
+coverage.xml
 .nyc_output/
 playwright-report/
 test-results/
+
+# ---- Debug / rascunho local ----
+scripts/_debug*
+_debug*.txt
+*.log
 
 # ---- Ambiente / segredos ----
 .env
@@ -41,6 +48,7 @@ test-results/
 .idea/
 .DS_Store
 Thumbs.db
+desktop.ini
 
 # ---- Deploy ----
 .vercel/

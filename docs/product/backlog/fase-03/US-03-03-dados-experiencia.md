@@ -8,10 +8,10 @@
 **para** avaliar a trajetória e o nível de senioridade do autor.
 
 ### Critérios de aceite
-- [ ] CA-001: `resume.json.experiences` lista as 6 empresas / 7 cargos reais (Engineering Brasil, banco BV, Itaú Unibanco, Shift ×2, Grupo WebPic, WDG Automation), com empresa, cargo, período, localização/modalidade e bullets de entrega (não só tarefa)
-- [ ] CA-002: cada entrada lista as tecnologias principais do vínculo
-- [ ] CA-003: ordenado do mais recente para o mais antigo
-- [ ] CA-004: validado contra o schema de US-03-01
+- [x] CA-001: `resume.json.experiences` lista as 6 empresas / 7 cargos reais (Engineering Brasil, banco BV, Itaú Unibanco, Shift ×2, Grupo WebPic, WDG Automation), com empresa, cargo, período, localização/modalidade e bullets de entrega (não só tarefa)
+- [x] CA-002: cada entrada lista as tecnologias principais do vínculo
+- [x] CA-003: ordenado do mais recente para o mais antigo
+- [x] CA-004: validado contra o schema de US-03-01
 
 ### Fora de escopo
 - Renderização visual (US-03-11)
@@ -23,6 +23,14 @@
 Conteúdo — P2
 
 ### Tasks
-- [ ] T01 Popular `experiences` (6 empresas / 7 cargos) em `frontend/content/resume.json`
+- [x] T01 Popular `experiences` (6 empresas / 7 cargos) em `frontend/content/resume.json`
 
-**Status:** Ready for Agent
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | @qa-engineer | Aprovado | 2026-08-04 | lint + testes + build passando no escopo |
+| Tech Lead | @tech-lead-review | Aprovar | 2026-08-04 | diff minimo, schema espelhado, componentes tipados |
+| PO | @product-owner | Done | 2026-08-04 | criterios de aceite fechados |
+
+**Status:** Done

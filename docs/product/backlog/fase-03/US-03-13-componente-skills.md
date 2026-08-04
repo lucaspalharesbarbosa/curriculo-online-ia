@@ -8,8 +8,8 @@
 **para** identificar rapidamente se o perfil casa com a vaga/necessidade.
 
 ### Critérios de aceite
-- [ ] CA-001: `SkillBadge.tsx` (ou `Skills.tsx`) renderiza `resume.json.skills` agrupado por categoria
-- [ ] CA-002: `Skills.test.tsx` cobre a renderização de ao menos um grupo
+- [x] CA-001: `SkillBadge.tsx` (ou `Skills.tsx`) renderiza `resume.json.skills` agrupado por categoria
+- [x] CA-002: `Skills.test.tsx` cobre a renderização de ao menos um grupo
 
 ### Fora de escopo
 - Dados do `resume.json` (US-03-05)
@@ -21,7 +21,15 @@
 Frontend — P2
 
 ### Tasks
-- [ ] T01 Criar `frontend/components/SkillBadge.tsx`
-- [ ] T02 [P] Teste `SkillBadge.test.tsx`
+- [x] T01 Criar `frontend/components/SkillBadge.tsx`
+- [x] T02 [P] Teste `SkillBadge.test.tsx`
 
-**Status:** Ready for Agent
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | @qa-engineer | Aprovado | 2026-08-04 | lint + testes + build passando no escopo |
+| Tech Lead | @tech-lead-review | Aprovar | 2026-08-04 | diff minimo, schema espelhado, componentes tipados |
+| PO | @product-owner | Done | 2026-08-04 | criterios de aceite fechados |
+
+**Status:** Done

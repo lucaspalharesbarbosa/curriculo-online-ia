@@ -16,7 +16,7 @@ O histórico profissional real do autor (mais de 10 anos, 6 empresas, liderança
 
 ### Incluído
 - Schema do `resume.json` (Zod + Pydantic)
-- População de Hero/Sobre, Experiência (6 empresas / 7 cargos), Formação (3 instituições), Skills (agrupadas), Certificações (1 certificado)
+- População de Hero/Sobre, Experiência (6 empresas), Formação (2 instituições), Skills (agrupadas), Certificações (2 certificados)
 - Estrutura da seção Contato, com campos que dependem de confirmação do autor (ver Riscos)
 
 ### Excluído
@@ -44,78 +44,74 @@ Visitante/recrutador navegando o site.
 ## Riscos
 
 - **Projetos/Portfólio sem dados**: o autor não listou repositórios específicos. Este próprio projeto (`curriculo-online-ia`) é candidato natural a primeiro card, mas faltam 1-3 outros para a seção não ficar vazia. US-03-07 fica com DoR incompleto até o autor indicar quais repositórios entram.
-- **Contato incompleto**: e-mail público e usuário do GitHub para exibição no site não foram confirmados (o e-mail de conta usado neste ambiente é pessoal e não deve ser assumido como o e-mail público do currículo sem confirmação). LinkedIn já está confirmado: `https://www.linkedin.com/in/lucas-palhares-barbosa/`.
-- **PDF do currículo**: não existe ainda; depende de exportação (ex.: gerar a partir do próprio site ou anexar um PDF já existente).
+- **Contato incompleto**: telefone não está no schema; e-mail e GitHub confirmados no PDF final.
+- **PDF do currículo**: fonte de verdade em `frontend/public/Lucas_Palhares_Barbosa_Engenheiro_De_Software.pdf` (atualizado em 2026-08-04).
 
 ## DoR
 - [x] Critérios de aceite claros
 - [x] ADR se envolve decisão de stack nova — não envolve (schema já decidido em `CONTEXTO-PROJETO.md`)
 - [x] Tasks decompostas (ver `docs/product/backlog/fase-03/`)
-- [ ] US-03-07 e parte de US-03-08 aguardam input do autor (não bloqueia as demais histórias do épico)
+- [ ] US-03-07 aguarda input do autor (não bloqueia as demais histórias do épico)
 
 ---
 
-## Conteúdo de referência (fonte: LinkedIn do autor, colado em 2026-08-04)
+## Conteúdo de referência (fonte: PDF final do autor, 2026-08-04)
 
 Uso interno do `@senior-developer` ao implementar US-03-02 a US-03-08 — evita reabrir a conversa com o autor para montar o `resume.json`.
 
 ### Hero / Sobre
 
 - **Nome:** Lucas Palhares Barbosa
-- **Título/cargo-alvo:** Tech Lead | Senior Software Engineer — AI Engineering | Agentic AI | Java • Python | AWS Certified
+- **Título/cargo-alvo:** Tech Lead | Engenheiro de Software Sênior — AI Engineering | Agentic AI | Java • Python | AWS Certified
 - **Localização:** São José do Rio Preto, SP (atuação remota)
-- **Resumo (versão longa, para "Sobre"):**
-  > Tech Lead e Engenheiro de Software Sênior com mais de 10 anos de experiência desenvolvendo soluções escaláveis para grandes empresas dos setores bancário, telecomunicações e saúde. Atualmente lidera tecnicamente squads na Engineering Brasil responsáveis por soluções estratégicas de Inteligência Artificial para a Claro. Atua na construção de soluções orientadas por IA aplicando práticas modernas de AI Engineering — Context Engineering, Prompt Engineering, Harness Engineering, Agentic AI e Spec-Driven Development (SDD) — para acelerar a engenharia de software e a entrega de valor ao negócio. Como Tech Lead, responde por liderança técnica da squad, definição de arquitetura, mentoria, revisão técnica, padrões de engenharia e condução da adoção de IA no processo de desenvolvimento. Experiência sólida em Java, Python, microsserviços, Spring Boot, Kubernetes, AWS, GCP, APIs REST, Apache Camel e arquiteturas distribuídas.
-- **Resumo curto (para Hero, 2-3 frases):** sugestão a validar com o autor — ex.: "Tech Lead e Engenheiro de Software Sênior com 10+ anos construindo soluções escaláveis para bancos, telecom e saúde. Hoje lidero squads de IA aplicada à engenharia de software na Engineering Brasil/Claro, unindo Java, Python e práticas modernas de AI Engineering (Agentic AI, Spec-Driven Development)."
+- **Resumo profissional (curriculo / Hero, 2-3 frases):**
+  > Tech Lead e Engenheiro de Software Sênior com mais de 10 anos de experiência em soluções escaláveis para bancos, telecomunicações e saúde. Lidero tecnicamente squads na Engineering Brasil no desenvolvimento de soluções de IA para a Claro, aplicando AI Engineering — Agentic AI, Context Engineering e Spec-Driven Development — para acelerar a entrega de software. Base sólida em arquitetura de microsserviços, Java, Python, Spring Boot, Kubernetes e Cloud, com histórico de entregas estratégicas em produtos de grande porte.
+- **Resumo (versão longa, para "Sobre"):** versão expandida em terceira pessoa no `resume.json`, alinhada ao PDF e ao LinkedIn.
 
 ### Experiência Profissional (mais recente → mais antiga)
 
-1. **Engineering Brasil** — Tech Lead | Senior Software Engineer — mar/2026–atual (6 meses) — Remoto, São José do Rio Preto/SP
-   Lidera tecnicamente squad de soluções de IA aplicada à engenharia de software para a Claro: arquitetura, mentoria, revisão técnica, padrões de engenharia, condução da adoção de Context Engineering, Prompt Engineering, Harness Engineering, SDD e Agentic AI. Constrói AI Agents e AI Skills. Usa Claude Code e Cursor no dia a dia. Stack: Python, Java, React, Angular, Kubernetes, AWS, GCP.
+1. **Engineering Brasil** — Tech Lead | Engenheiro de Software Sênior — mar/2026–atual — Remoto
+   Tech Lead em projetos de IA para a Claro. Stack: Python, Java, React, Angular, Kubernetes, AWS, AI Engineering, Claude Code, Cursor.
 
-2. **banco BV** — Senior Software Engineer (Outsourcing) — out/2025–jan/2026 (4 meses) — Remoto
-   Squad do BV Cashback. Microsserviços Java 11/17/21 + Spring Boot; correção de CVEs; operação em GKE (GCP); reconstrução da plataforma de Cashback para integrar com a processadora Pismo via Bankly e Apache Camel; uso de IA generativa (Google Gemini) para acelerar análises, refatorações e testes automatizados. Stack: Java 11/17/21, Spring Boot, Apache Camel, GCP/GKE, Kubernetes, Microsserviços, APIs REST, Datadog, GitLab CI, Google Gemini.
+2. **Banco BV** — Engenheiro de Software Sênior (Outsourcing) — out/2025–jan/2026 — Remoto
+   Squad do produto Cashback. Correção de CVEs em Java 11/21 + Spring Boot; reconstrução para integração com Pismo via Bankly. Stack: Java 11, Spring Boot, Microsserviços, Kubernetes, GCP (GKE), CI/CD, Bankly, Pismo.
 
-3. **Itaú Unibanco** — Software Engineer — jul/2022–set/2025 (3 anos 3 meses) — Remoto, São Paulo
-   MVP de Crédito para Energia Solar; evolução da plataforma de Gestão de Microcrédito; microsserviços Java/Spring Boot; APIs REST em nuvem AWS; Clean Architecture, SOLID, Design Patterns, Clean Code, TDD. Reconhecido no PRAD (Programa de Reconhecimento por Alto Desempenho) em 2 anos consecutivos ("Destaca-se em relação ao grupo"). Stack: Java, Spring Boot, Python, AWS (ECS, EKS, Lambda, API Gateway, RDS), Microsserviços, APIs REST, Docker, Kubernetes, Kafka, Jenkins, GitLab CI, JUnit, Mockito.
+3. **Itaú Unibanco** — Engenheiro de Software Pleno — jul/2022–set/2025 — Remoto
+   MVP Crédito Energia Solar; refatoração e realocação de carteiras no Microcrédito. PRAD 2023 e 2024. Stack: Java (Spring Boot), Python, AWS, Microsserviços, API Rest, BFF.
 
-4. **Shift** — Full Stack Web Developer Pleno — jul/2021–jul/2022 (1 ano 1 mês) — São José do Rio Preto/SP
-   Evolução do LIS (Laboratory Information System) para laboratórios de análises clínicas, diagnóstico por imagem, anatomia patológica e imunização — do pré-analítico ao faturamento. Mentoria de desenvolvedores juniores/trainees/estagiários. Stack: Java, Caché ObjectScript (COS), InterSystems IRIS/Caché, ZEN, JavaScript, Angular.
+4. **Shift** — Analista de Desenvolvimento Web Pleno — set/2020–jul/2022 — São José do Rio Preto/SP
+   LIS (saúde). Modernização COS → Java, monolito → microsserviços. Mentoria. Stack: Java (Quarkus), COS, ZEN, JavaScript, Angular.
 
-   **Shift** — Full Stack Web Developer Junior — set/2020–jul/2021 (11 meses) — mesmo produto (LIS), mesma stack.
+5. **WebPic** — Desenvolvedor Web Pleno — nov/2016–set/2020 — São José do Rio Preto/SP
+   ERP confecção/moda; TEF e MF-e/CE; apoio a Scrum/PO. Stack: C#, ASP.NET MVC, Windows Forms, Entity Framework, SQL Server, KnockoutJS.
 
-5. **Grupo WebPic** — Full Stack Web Developer — nov/2016–set/2020 (3 anos 11 meses) — São José do Rio Preto/SP
-   Sistemas ERP para confecção, varejo e indústria da moda. Integração com TEF e emissão de cupom fiscal (Ceará); módulos fiscais (NF-e, NFC-e, boletos); integrações ERP ↔ e-commerce; apoio ao Scrum Master em cerimônias ágeis. Stack: C#, ASP.NET MVC, SQL Server, JavaScript, Knockout.js, HTML5, CSS3.
-
-6. **WDG Automation (an IBM Company)** — Full Stack Web Developer (Autônomo) — nov/2015–ago/2016 (10 meses) — São José do Rio Preto/SP
-   Sistemas de gestão de projetos, CRM e telefonia; Web Services de integração; soluções em GeneXus; automação de testes com Selenium WebDriver e White Framework. Stack: GeneXus, Selenium WebDriver, White Framework, C#, Web Services.
+6. **Grupo WDG** — Desenvolvedor Web Junior — nov/2015–ago/2016 — São José do Rio Preto/SP
+   CRM e gestão de projetos; automação com Selenium e Test Stack White. Stack: C#, WPF, Entity Framework, Genexus, Selenium.
 
 ### Formação Acadêmica
 
 | Instituição | Curso | Período |
 |---|---|---|
-| Centro Universitário Senac | Especialização em Gerenciamento de Projetos | 2016–2017 |
-| Fatec Rio Preto | Tecnólogo em Análise e Desenvolvimento de Sistemas | 2013–2015 |
-| Etec Philadelpho Gouvêa Netto | Técnico em Informática | 2011–2012 |
+| Centro Universitário Senac | Pós-graduação em Gerenciamento de Projetos – Práticas do PMI | 2017 |
+| FATEC São José do Rio Preto | Graduação em Análise e Desenvolvimento de Sistemas | 2015 |
 
 ### Habilidades Técnicas (agrupadas)
 
-- **Linguagens:** Java, Python, C#, JavaScript
-- **Frameworks/Bibliotecas:** Spring Boot, React, Angular, ASP.NET MVC, Apache Camel, Knockout.js
-- **Cloud/Infra:** AWS (ECS, EKS, Lambda, API Gateway, RDS), GCP (GKE), Kubernetes, Docker
-- **Dados/Mensageria:** Kafka
-- **CI/CD & Observabilidade:** Jenkins, GitLab CI, Datadog
-- **Arquitetura/Práticas:** Microsserviços, APIs REST, Clean Architecture, SOLID, Design Patterns, Clean Code, TDD
-- **AI Engineering:** Context Engineering, Prompt Engineering, Harness Engineering, Spec-Driven Development (SDD), Agentic AI, AI Agents, AI Skills, LLM Engineering, Claude Code, Cursor, Google Gemini
-- **Testes:** JUnit, Mockito, Selenium WebDriver, White Framework
-- **Legado (saúde):** Caché ObjectScript (COS), InterSystems IRIS/Caché, ZEN
-- **Liderança:** liderança técnica, mentoria, arquitetura, revisão de código, definição de padrões
+- **Linguagens:** Java (Spring Boot), Python, C#
+- **Cloud:** AWS (ECS, EKS, Lambda, RDS, API Gateway, CloudWatch)
+- **Devops:** Docker, Git, GitLab, CI/CD
+- **Arquitetura:** Microsserviços, APIs REST, BFF, Clean Architecture, SOLID, Design Patterns
+- **Observabilidade:** Splunk, Grafana, DataDog
+- **Frontend:** Angular, React, JavaScript, HTML5, CSS3
+- **Banco de Dados:** SQL Server, PostgreSQL
+- **Metodologias:** Scrum, Kanban, CI/CD
 
 ### Certificações
 
-| Certificado | Emissor | Emitido | Expira |
-|---|---|---|---|
-| AWS Certified Cloud Practitioner | Amazon Web Services (AWS) | jul/2024 | jul/2027 |
+| Certificado | Emissor | Emitido |
+|---|---|---|
+| AWS Certified Cloud Practitioner | AWS | 2024 |
+| Scrum Fundamentals Certified (SFC) | SCRUMStudy | 2018 |
 
 ### Projetos/Portfólio
 
@@ -124,4 +120,6 @@ Pendente — ver Riscos.
 ### Contato
 
 - LinkedIn: `https://www.linkedin.com/in/lucas-palhares-barbosa/` (confirmado)
-- E-mail público, GitHub, link do PDF: pendentes — ver Riscos.
+- E-mail: `lucasp.b@hotmail.com` (confirmado no PDF)
+- GitHub: `https://github.com/lucaspalharesbarbosa` (confirmado)
+- PDF: `/Lucas_Palhares_Barbosa_Engenheiro_De_Software.pdf`
