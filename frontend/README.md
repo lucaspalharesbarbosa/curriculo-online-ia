@@ -2,6 +2,10 @@
 
 Next.js + TypeScript + Tailwind CSS.
 
+## Pré-requisitos
+
+- Node.js **22+** (exigido por Vitest, jsdom e Testing Library v7)
+
 ## Stack
 
 - Next.js (App Router) + TypeScript + Tailwind CSS
