@@ -60,6 +60,8 @@ Todo documento gerado por um agente (PO, Arquiteto, QA) segue `TIPO-NNN-slug.md`
 |---|---|---|---|
 | PRD (épico) | `docs/product/` | `PRD-NNN-<epico>.md` | `PRD-001-conteudo.md` |
 | Backlog (histórias/tasks) | `docs/product/backlog/fase-NN/` | `US-FF-NN-<slug>.md` — uma história por arquivo; `FF` é o número da fase de implementação (não do épico) e `NN` a sequência dentro dela, então o ID já é único no backlog inteiro (`US-03-01` ≠ `US-05-01`); `slug` descreve a história no nome do arquivo. A tabela "Histórias" do PRD de origem linka para o arquivo | `docs/product/backlog/fase-03/US-03-01-schema-resume-json.md` |
+
+Fase com **todas** as histórias `Done` é candidata a arquivamento em `docs/product/backlog/archive/fase-NN/` (mesmo nome de arquivo e ID, IDs nunca renumerados) — workflow completo em `.claude/skills/product-owner/references/archive-workflow.md`.
 | ADR | `docs/architecture/` | `ADR-NNN-<titulo>.md` | `ADR-001-stack-inicial-monorepo.md` |
 | Diagrama C4 | `docs/architecture/` | `C4-NNN-<titulo>.md` | `C4-001-contexto-containers.md` |
 | Imagem de diagrama C4 (renderizada, embutida no `.md` correspondente) | `docs/architecture/images/` | `C4-NNN-<slug-diagrama>.svg`, com `slug-diagrama` sempre prefixado pelo nível C4 (`n1`/`n2`/`n3`/`n4`/`seq`) | `C4-001-n1-contexto.svg` |
@@ -75,6 +77,12 @@ Numeração de épico (PRD/Backlog) é fixa pela ordem em que cada épico foi re
 | 002 | Frontend |
 | 003 | RAG |
 | 004 | Deploy |
+| 005 | Frontend & UX v2 |
+| 006 | Segurança & Performance |
+| 007 | Qualidade de Engenharia |
+| 008 | Observabilidade |
+| 009 | Chat v2 |
+| 010 | Área Administrativa |
 
 `ADR-NNN`, `C4-NNN` e `DATA-NNN` têm sequência própria, independente da numeração de épico (ex.: `ADR-001` é sobre a stack, não sobre o épico 001).
 
@@ -116,6 +124,8 @@ Numeração de épico (PRD/Backlog) é fixa pela ordem em que cada épico foi re
 |---|---|---|---|
 | Unitário frontend | Colocation com o componente | Vitest/Jest + Testing Library | `ExperienceCard.tsx` + `ExperienceCard.test.tsx` lado a lado — **não** usar pasta `__tests__` separada. Testar comportamento visível ao usuário, não detalhe de implementação |
 | Unitário backend | `backend/tests/`, espelhando `backend/app/` | pytest | `tests/test_rag.py`, `tests/test_chat.py`; padrão **AAA** (Arrange-Act-Assert); mocks de embeddings/LLM via fixtures — nunca bater na API real da IA em teste automatizado |
+
+**Nome de teste — código em inglês, display em PT-BR:** identificadores (nome de função, variável, `describe`) sempre em inglês; o **display** — o que aparece rodando o teste — em português brasileiro. No Vitest, o título do `it()`/`test()` já é o display. No pytest, o nome da função continua em inglês (precisa continuar sendo identificador válido e consistente para `-k`/node id) e o display vira uma docstring de uma linha em PT-BR logo abaixo da assinatura. Exemplos completos: `.claude/skills/qa-engineer/references/test-naming-convention.md`.
 | Integração backend | `backend/tests/` | `TestClient` (FastAPI) | Endpoint `/chat` completo, LLM mockado |
 | E2E | `e2e/` na raiz do repo (fora de `frontend/` e `backend/`) | Playwright | Ver justificativa abaixo |
 | Acessibilidade/Performance | Navegador/CI | Lighthouse | Antes de deploy relevante |
@@ -155,7 +165,9 @@ Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado 
 
 Fase 4 (polimento) **concluída** — 2/2 histórias Done: [US-04-01](../product/backlog/fase-04/US-04-01-seo-basico.md) (SEO básico — metadata/Open Graph derivados de `resume.hero`) e [US-04-02](../product/backlog/fase-04/US-04-02-acessibilidade-basica.md) (acessibilidade — contraste AA corrigido em modo escuro; `alt` e navegação por teclado já conformes), ambas em 2026-08-04 na branch `feature/fase-04-polimento`, aguardando PR para `develop`.
 
-Fase 5 (RAG) **quase concluída** — 8/9 histórias Done em 2026-08-04, na branch `feature/US-05-01-adr-fluxo-rag`: [US-05-01](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md) (ADR-003), [US-05-02](../product/backlog/fase-05/US-05-02-chunking-resume-json.md) (chunking), [US-05-03](../product/backlog/fase-05/US-05-03-geracao-embeddings.md) (embeddings), [US-05-04](../product/backlog/fase-05/US-05-04-endpoint-chat.md) (endpoint `/chat`), [US-05-05](../product/backlog/fase-05/US-05-05-chat-widget-frontend.md) (`ChatWidget`), [US-05-06](../product/backlog/fase-05/US-05-06-testes-fluxo-chat.md) (testes do fluxo — 20 testes, cobertura 97% no backend tocado), [US-05-07](../product/backlog/fase-05/US-05-07-seguranca-chat.md) (CORS + rate limit) e [US-05-09](../product/backlog/fase-05/US-05-09-env-vars-segredos.md) (`.env.example` + docs de segredos). Único item pendente: [US-05-08](../product/backlog/fase-05/US-05-08-deploy-backend.md) (deploy do backend no Render) — `render.yaml` e passo a passo já preparados e revisados, mas a criação do serviço em si depende de o dono do produto logar no painel do Render (sem credenciais compartilhadas com os agentes); ver "Status" da própria história para o passo a passo restante.
+Fase 5 (RAG) **concluída** — 9/9 histórias Done, na branch `feature/US-05-01-adr-fluxo-rag`: [US-05-01](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md) (ADR-003), [US-05-02](../product/backlog/fase-05/US-05-02-chunking-resume-json.md) (chunking), [US-05-03](../product/backlog/fase-05/US-05-03-geracao-embeddings.md) (embeddings), [US-05-04](../product/backlog/fase-05/US-05-04-endpoint-chat.md) (endpoint `/chat`), [US-05-05](../product/backlog/fase-05/US-05-05-chat-widget-frontend.md) (`ChatWidget`), [US-05-06](../product/backlog/fase-05/US-05-06-testes-fluxo-chat.md) (testes do fluxo — 20 testes, cobertura 97% no backend tocado), [US-05-07](../product/backlog/fase-05/US-05-07-seguranca-chat.md) (CORS + rate limit), [US-05-09](../product/backlog/fase-05/US-05-09-env-vars-segredos.md) (`.env.example` + docs de segredos) e [US-05-08](../product/backlog/fase-05/US-05-08-deploy-backend.md) (deploy do backend no Render, `curriculo-online-backend`, `/health` confirmado em produção — Done em 2026-08-05). Candidata a arquivamento (`references/archive-workflow.md`) — pendente de confirmação com o dono do produto.
+
+Fase 6 (divulgação) ainda não iniciada formalmente — checklist em `docs/plano-projeto-curriculo-online.md` (seção 8), sem histórias de backlog. Fases 7 a 12 (evolução pós-lançamento: UX v2, segurança/performance, qualidade de engenharia, observabilidade, chat v2, área administrativa) estão em `draft` — PRDs criados (`PRD-005` a `PRD-010`), histórias ainda não decompostas.
 
 ## Fases do roadmap e backlog correspondente
 
@@ -166,7 +178,13 @@ Fase 5 (RAG) **quase concluída** — 8/9 histórias Done em 2026-08-04, na bran
 | Fase 2 — Setup do projeto | Esqueleto Next.js + FastAPI, CI real | `docs/product/backlog/fase-02/` (US-02-01 a US-02-04) — Done |
 | Fase 3 — MVP estático | Conteúdo real + componentes de UI + deploy inicial | `docs/product/backlog/fase-03/` (US-03-01 a US-03-17) — 17/17 Done |
 | Fase 4 — Polimento | SEO, acessibilidade | `docs/product/backlog/fase-04/` (US-04-01 a US-04-02) — 2/2 Done |
-| Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/fase-05/` (US-05-01 a US-05-09) — 8/9 Done, US-05-08 bloqueada em ação humana |
+| Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/fase-05/` (US-05-01 a US-05-09) — 9/9 Done |
 | Fase 6 — Divulgação | README, LinkedIn, feedback | Checklist no plano do projeto, sem histórias formais |
+| Fase 7 — Frontend & UX v2 | Contato ampliado (WhatsApp), responsividade, redesign, uso mais completo do Next.js | `PRD-005` — draft, sem histórias ainda |
+| Fase 8 — Segurança & Performance | Auditoria de segurança e performance, cold start do Render free tier | `PRD-006` — draft, sem histórias ainda |
+| Fase 9 — Qualidade de Engenharia | SonarCloud, gate de cobertura no CI, boas práticas REST, refactor guiado por achados | `PRD-007` — draft, sem histórias ainda |
+| Fase 10 — Observabilidade | Dashboard Grafana + logs centralizados | `PRD-008` — draft, sem histórias ainda; depende de ADR de stack |
+| Fase 11 — Chat v2 | Redesign e novas funcionalidades do `ChatWidget` | `PRD-009` — draft, sem histórias ainda |
+| Fase 12 — Área Administrativa | Login, dashboard, lista de contatos recebidos | `PRD-010` — draft, sem histórias ainda; bloqueada até decidir captura de contato (PRD-005) e ADR de auth/persistência |
 
-Detalhe completo do roadmap: `docs/plano-projeto-curriculo-online.md` (seção 8).
+Fases 7-12 são a evolução pós-lançamento negociada em 2026-08-05 (ideias do autor) — ordem escolhida: valor visível ao visitante primeiro (UX), depois proteção do que já está no ar (segurança/performance), depois hardening de engenharia, antes de somar a maior feature nova (área administrativa). Detalhe completo do roadmap original: `docs/plano-projeto-curriculo-online.md` (seção 8).

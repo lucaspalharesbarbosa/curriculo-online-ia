@@ -7,6 +7,7 @@ Marque N/A quando irrelevante ao diff.
 - [ ] Componente renderiza o dado esperado a partir de `resume.json`
 - [ ] Endpoint responde o contrato esperado (status, shape do JSON)
 - [ ] Contrato implementado bate com o documentado no DoR da história (se aplicável — request/response, erros)
+- [ ] Mapeamento de erros implementado bate com o do DoR — exceção, código HTTP, body e mensagem (se aplicável)
 - [ ] Fluxo de chat: contexto relevante retornado; fallback claro em erro
 - [ ] Erros HTTP sem vazar stack trace ao cliente
 
@@ -45,6 +46,7 @@ Aplicar com bom senso: citar SOLID só quando a violação for concreta e o diff
 - [ ] Caso de fallback do chat coberto quando `rag.py`/`chat.py` é tocado
 - [ ] Testes determinísticos (LLM mockado, não chamando API real)
 - [ ] Mudança em `resume.json` (schema) validada nas duas pontas (Zod no frontend, Pydantic no backend)
+- [ ] Identificador de teste em inglês, display (`it()`/docstring pytest) em PT-BR — `../../qa-engineer/references/test-naming-convention.md`
 
 ## 6. Acessibilidade e performance (se UI)
 

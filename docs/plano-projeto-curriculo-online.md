@@ -298,6 +298,55 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 - [ ] Colocar link do site no LinkedIn e no GitHub
 - [ ] Pedir feedback de 2-3 pessoas antes de divulgar amplamente
 
+**Fase 7 — Frontend & UX v2**
+→ PRD: [`docs/product/PRD-005-frontend-ux-v2.md`](product/PRD-005-frontend-ux-v2.md) — **draft, sem histórias criadas**
+
+- [ ] Seção de Contato: adicionar WhatsApp
+- [ ] Auditoria e correção de responsividade (mobile/tablet/desktop)
+- [ ] Redesign visual (paleta, tipografia, hero)
+- [ ] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components)
+
+**Fase 8 — Segurança & Performance**
+→ PRD: [`docs/product/PRD-006-seguranca-performance.md`](product/PRD-006-seguranca-performance.md) — **draft, sem histórias criadas**
+
+- [ ] Auditoria de segurança (headers, CORS em todos os endpoints, dependências)
+- [ ] Auditoria de performance (Lighthouse, bundle, cache)
+- [ ] Mitigação de cold start do backend no Render free tier
+
+**Fase 9 — Qualidade de Engenharia**
+→ PRD: [`docs/product/PRD-007-qualidade-engenharia.md`](product/PRD-007-qualidade-engenharia.md) — **draft, sem histórias criadas**
+
+- [ ] SonarCloud no CI (frontend e backend)
+- [ ] Gate de cobertura mínima automatizado no CI
+- [ ] Boas práticas REST no backend (status codes, shape de erro padronizado)
+- [ ] Refactor/modularização guiado pelos achados do SonarCloud
+
+**Fase 10 — Observabilidade**
+→ PRD: [`docs/product/PRD-008-observabilidade.md`](product/PRD-008-observabilidade.md) — **draft, sem histórias criadas**
+
+- [ ] ADR de stack de observabilidade (métricas + logs, tier gratuito)
+- [ ] Instrumentar backend com métricas básicas
+- [ ] Dashboard Grafana
+- [ ] Logs estruturados + integração com ferramenta gratuita
+
+**Fase 11 — Chat v2**
+→ PRD: [`docs/product/PRD-009-chat-v2.md`](product/PRD-009-chat-v2.md) — **draft, sem histórias criadas**
+
+- [ ] Redesign visual do `ChatWidget`
+- [ ] Perguntas sugeridas (quick replies)
+- [ ] Indicador de digitando / streaming de resposta
+- [ ] Feedback do usuário na resposta
+
+**Fase 12 — Área Administrativa**
+→ PRD: [`docs/product/PRD-010-area-administrativa.md`](product/PRD-010-area-administrativa.md) — **draft, bloqueada até resolver pré-requisito de captura de contato + ADRs de auth/persistência**
+
+- [ ] ADR: estratégia de autenticação single-user
+- [ ] ADR: onde persistir dados (contatos/métricas)
+- [ ] Formulário de contato com persistência (depende da Fase 7)
+- [ ] Login da área administrativa
+- [ ] Dashboard: lista de contatos recebidos
+- [ ] Dashboard: métricas de acesso e de uso do chat
+
 ---
 
 

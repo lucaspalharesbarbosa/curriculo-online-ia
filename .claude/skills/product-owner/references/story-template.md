@@ -8,7 +8,7 @@
 # PRD-NNN — [Nome do épico]
 
 **Status:** draft | review | approved | ready-for-agent
-**Épico:** Conteúdo | Frontend | RAG | Deploy
+**Épico:** [ver tabela "Épicos do roadmap" em `SKILL.md`]
 **Prioridade:** P0 | P1 | P2 | P3
 
 ## Problema
@@ -60,7 +60,7 @@ Cada história carrega seu próprio **DoR** (bloqueia início), **Critérios de 
 # US-FF-NN — [Título]
 
 **Fase:** Fase FF — [nome da fase, ver roadmap]
-**Épico de origem:** Conteúdo | Frontend | RAG | Deploy (`PRD-NNN-<epico>.md`)
+**Épico de origem:** [ver tabela "Épicos do roadmap" em `SKILL.md`] (`PRD-NNN-<epico>.md`)
 
 **Como** visitante/recrutador,
 **quero** [ação],
@@ -70,6 +70,7 @@ Cada história carrega seu próprio **DoR** (bloqueia início), **Critérios de 
 
 - [ ] Critérios de aceite (abaixo) escritos e testáveis
 - [ ] Contrato de API documentado — se a história cria/altera endpoint (ver subseção "Contrato de API")
+- [ ] Mapeamento de erros documentado — se a história cria/altera endpoint e há erro esperado de fato (ver subseção "Contrato de API")
 - [ ] Modelagem de dados documentada — se a história introduz/altera entidades relacionadas entre si (ver subseção "Modelagem de dados"); diagrama ER só quando fizer sentido (`@arquiteto-ia-senior`, `references/data-model-patterns.md`)
 - [ ] Plano de testes definido — camadas a cobrir, incluindo unitários, integração e mocks necessários (ver subseção "Plano de testes")
 - [ ] Épico e dependências identificados (US-FF-NN, ADR-XXX)
@@ -84,7 +85,12 @@ Cada história carrega seu próprio **DoR** (bloqueia início), **Critérios de 
 
 - Request: `{ campo: tipo, ... }`
 - Response 200: `{ campo: tipo, ... }`
-- Erros: `4xx/5xx` esperados e shape do erro
+- Mapeamento de erros — todo erro esperado de fato (não é checklist genérico: só o que o endpoint realmente pode lançar):
+
+| Exceção/causa | Código HTTP | Body do erro | Mensagem |
+|---|---|---|---|
+| `ValidationError` (Pydantic) | 422 | `{ "detail": [...] }` | erro padrão do FastAPI |
+| ex.: `OpenAIError` / falha do LLM | ex.: 503 | `{ "detail": "..." }` | ex.: mensagem de fallback exibida no `ChatWidget` |
 
 #### Modelagem de dados (se aplica — remover a subseção se não houver entidade relacionada)
 
@@ -109,7 +115,7 @@ Cada história carrega seu próprio **DoR** (bloqueia início), **Critérios de 
 - US-FF-NN, ADR-XXX (se houver)
 
 ### Épico / Prioridade
-[Conteúdo | Frontend | RAG | Deploy] — P0 | P1 | P2 | P3
+[ver tabela "Épicos do roadmap" em `SKILL.md`] — P0 | P1 | P2 | P3
 
 ### Tasks
 - [ ] T01 [descrição, path real]
