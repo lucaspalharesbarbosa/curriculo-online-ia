@@ -43,10 +43,10 @@ Visitante/recrutador conversando com o assistente.
 
 ## Riscos
 
-- **US-05-01 é pré-requisito de US-05-02 a US-05-07**: o roadmap (Fase 5 do plano) define que o fluxo de RAG só é implementado depois de um ADR específico (estratégia de chunking, provider de embeddings, custo). Este PRD **não** substitui esse ADR — só organiza o backlog. Chamar `@arquiteto-ia-senior` antes de iniciar US-05-02.
+- ~~US-05-01 é pré-requisito de US-05-02 a US-05-07~~ — **Resolvido em 2026-08-04**: [ADR-003](../architecture/ADR-003-fluxo-rag.md) registra chunking por seção, embeddings/geração via OpenAI (`text-embedding-3-small` + `gpt-4o-mini`) e local da chave (`LLM_API_KEY` só no backend). US-05-02 a US-05-07 desbloqueadas.
 - US-02-02 (esqueleto do FastAPI) é independente do ADR de RAG — pode ser feito já na Fase 2 (setup do projeto), sem decisão de RAG tomada ainda.
 
 ## DoR
 - [x] Critérios de aceite claros para US-02-02
-- [ ] US-05-02 a US-05-07: **ADR do fluxo de RAG ainda não existe** — DoR incompleto até `@arquiteto-ia-senior` produzir US-05-01
+- [x] US-05-02 a US-05-07: ADR do fluxo de RAG registrada — [ADR-003](../architecture/ADR-003-fluxo-rag.md) ([US-05-01](backlog/fase-05/US-05-01-adr-fluxo-rag.md), Done em 2026-08-04)
 - [x] Tasks decompostas (ver `docs/product/backlog/fase-05/` e `docs/product/backlog/fase-02/US-02-02-setup-fastapi.md`)
