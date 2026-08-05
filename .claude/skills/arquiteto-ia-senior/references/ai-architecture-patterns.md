@@ -40,9 +40,14 @@ Não usar fixed-size/overlap de documentos longos — não se aplica a um JSON e
 
 ## 5. Integração com APIs de IA (Python/FastAPI)
 
-- Chamadas ao provider via HTTP client assíncrono (`httpx`) com timeout curto
-- Tratar erro 429/5xx do provider com uma mensagem de fallback amigável ("não consegui responder agora, tente de novo") — sem retry agressivo, é um site pessoal com baixo tráfego
+Padrões de resiliência avaliados e decididos em `ADR-004` — resumo aplicado ao client OpenAI (`rag.get_client()`):
+
+- **Timeout**: explícito e curto (ordem de segundos) no client — o SDK OpenAI sem override usa default na casa de minutos, o que trava o único worker do Render free tier numa chamada lenta
+- **Retry**: no máximo 1 tentativa extra, só para erro transitório do provider (429/503), sem backoff exponencial — o timeout curto já limita o custo de esperar. Isso é o "sem retry agressivo": uma tentativa extra bem escopada, não múltiplas com backoff
+- Erro 429/5xx que sobrar após o retry único vira mensagem de fallback amigável ("não consegui responder agora, tente de novo"), não propagação de stack trace
 - Credenciais via variável de ambiente (`LLM_API_KEY`) — nunca hardcoded, nunca no client
+- **Rate limiter** (por IP, em memória, US-05-07) e **cache-aside** do índice de embeddings (calculado uma vez, cacheado em JSON, US-05-03) já cobrem seus respectivos padrões — nada novo a fazer aqui
+- **Circuit breaker** e **bulkhead** avaliados e descartados por ora (`ADR-004`): uma única dependência externa, um único endpoint, uma única instância de baixo tráfego não justificam a complexidade desses padrões — reavaliar só diante de evidência real de necessidade, não por completude teórica
 
 ## 6. Custo e latência
 
