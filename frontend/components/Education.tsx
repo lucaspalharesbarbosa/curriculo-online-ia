@@ -22,7 +22,7 @@ export function EducationSection({ items }: EducationProps) {
             <p className="text-base text-zinc-700 dark:text-zinc-300">
               {item.institution}
             </p>
-            <p className="mt-1 text-sm text-zinc-500">
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               {item.startDate} — {item.endDate}
             </p>
           </li>
