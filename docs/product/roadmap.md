@@ -100,6 +100,7 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 - [ ] Auditoria de segurança (headers, CORS em todos os endpoints, dependências)
 - [ ] Auditoria de performance (Lighthouse, bundle, cache)
 - [ ] Mitigação de cold start do backend no Render free tier
+- [ ] Timeout e retry limitado no client de IA do `/chat` (`ADR-004`)
 
 ## Fase 9 — Qualidade de Engenharia
 
