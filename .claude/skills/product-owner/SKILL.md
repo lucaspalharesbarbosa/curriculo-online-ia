@@ -50,6 +50,12 @@ Você atua como **Product Owner + Gestor** de um **produto pessoal** (não corpo
 | Frontend | Componentes de UI, layout, acessibilidade |
 | RAG | Endpoint `/chat`, embeddings, `ChatWidget` |
 | Deploy | Vercel + Render/Cloud Run, CI |
+| Frontend & UX v2 | Contato ampliado (e-mail/WhatsApp), responsividade, redesign visual, uso mais completo de recursos do Next.js (`PRD-005`) |
+| Segurança & Performance | Hardening do site e do backend já em produção (`PRD-006`) |
+| Qualidade de Engenharia | Arquitetura/modularização, CI (lint, Sonar, piso de cobertura), boas práticas REST (`PRD-007`) |
+| Observabilidade | Dashboard Grafana + logs centralizados (`PRD-008`) |
+| Chat v2 | Layout e funcionalidades novas do `ChatWidget` (`PRD-009`) |
+| Área Administrativa | Login, dashboard, CRM de contatos (`PRD-010`) |
 
 ---
 
@@ -101,7 +107,7 @@ Toda história leva **DoR**, **Critérios de aceite** e **DoD** — template com
 - US-XX, ADR-XXX (se houver)
 
 ### Épico / Prioridade
-[Conteúdo | Frontend | RAG | Deploy] — P0 | P1 | P2 | P3
+[ver tabela "Épicos do roadmap" acima] — P0 | P1 | P2 | P3
 
 ### DoD (antes de concluir)
 [checklist — ver references/story-template.md]
@@ -113,6 +119,7 @@ Nenhuma história é dada como "pronta para iniciar" (`ready-for-agent`) com alg
 
 - [ ] Critérios de aceite claros e testáveis
 - [ ] Contrato de API documentado (request/response, erros) — histórias com endpoint novo/alterado
+- [ ] Mapeamento de erros documentado (exceção, código HTTP, body do erro, mensagem) — histórias com endpoint novo/alterado, quando houver erro esperado de fato (não é checklist genérico de todo `4xx/5xx` possível)
 - [ ] Modelagem de dados documentada, com diagrama ER (`@arquiteto-ia-senior`) quando houver entidades relacionadas entre si
 - [ ] Plano de testes criado — unitários, integração e mocks necessários (ex.: mock do LLM)
 - [ ] Épico e dependências identificados
@@ -172,6 +179,18 @@ Contar de verdade nos arquivos de `docs/product/backlog/`. Comandos e template: 
 
 ---
 
+## Arquivamento de fases concluídas
+
+Backlog limpo é responsabilidade do PO. Quando **todas** as histórias de uma fase estão `Done` (100%), a fase é candidata a arquivamento — não fica misturada com fases ativas em `docs/product/backlog/fase-FF/`.
+
+**Gatilho:** ao fechar o Done da última história de uma fase (Fase 6 do `@orquestrador`), oferecer o arquivamento ao usuário — não executar sem confirmação, pois move arquivos referenciados por PRDs, README e `CONTEXTO-PROJETO.md`.
+
+**Regra que não muda:** IDs (`US-FF-NN`) nunca são renumerados ao arquivar — a numeração é de criação, não de localização física (mesma regra de "nunca reaproveitar número" de `CONTEXTO-PROJETO.md`).
+
+Passo a passo completo: `references/archive-workflow.md`.
+
+---
+
 ## Priorização (roadmap do plano)
 
 | P | Fase do roadmap |
@@ -180,6 +199,14 @@ Contar de verdade nos arquivos de `docs/product/backlog/`. Comandos e template: 
 | P1 | Fase 1-2 (descoberta, setup do projeto) |
 | P2 | Fase 3-4 (MVP estático, polimento) |
 | P3 | Fase 5-6 (RAG, divulgação) |
+
+Fases 0-6 (roadmap original) estão concluídas ou em checklist de lançamento. A partir da Fase 7 (evolução pós-lançamento), a escala reinicia por onda de trabalho:
+
+| P | Fase do roadmap |
+|---|---|
+| P1 | Fase 7-8 (Frontend & UX v2, Segurança & Performance) |
+| P2 | Fase 9-10 (Qualidade de Engenharia, Observabilidade) |
+| P3 | Fase 11-12 (Chat v2, Área Administrativa) |
 
 ---
 
@@ -199,6 +226,8 @@ PO (o quê) → arquiteto? → dev → QA → tech lead → PO (aceite). Orquest
 - Fechar Done sem rodar o teste do que foi tocado
 - 100% sem contar checkboxes de verdade
 - Processo pesado demais para um produto de uma pessoa só
+- Deixar fases 100% Done acumulando em `docs/product/backlog/` junto com fases ativas em vez de arquivar (`references/archive-workflow.md`)
+- Renumerar `US-FF-NN` ao arquivar uma fase
 
 ---
 
@@ -210,4 +239,5 @@ PO (o quê) → arquiteto? → dev → QA → tech lead → PO (aceite). Orquest
 | `references/task-breakdown-guide.md` | Tasks |
 | `references/delivery-evaluation-template.md` | Aceite |
 | `references/progress-dashboard.md` | % |
+| `references/archive-workflow.md` | Arquivamento de fases concluídas |
 | `docs/agents/CONTEXTO-PROJETO.md` | Stack, estrutura, convenções |

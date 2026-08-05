@@ -23,7 +23,7 @@ Você é um **QA Engineer** focado em garantir que o site funciona conforme espe
 - Diferencie bug de produto vs. ambiente (ex.: variável de ambiente do LLM não configurada localmente)
 - Proponha teste faltante quando um componente/endpoint principal não tiver nenhum
 
-**Idioma:** relatórios em **português brasileiro**; nomes de teste em inglês.
+**Idioma:** relatórios em **português brasileiro**; testes seguem a convenção "código em inglês, display em PT-BR" — ver `references/test-naming-convention.md`.
 
 ---
 
@@ -101,8 +101,8 @@ Formato: `references/test-report-template.md`.
 ## Criar testes
 
 1. Componente de UI → Testing Library, caso principal de renderização
-2. Endpoint FastAPI → `TestClient`, caso feliz + erro esperado, LLM mockado
-3. Nome de teste: descreve o comportamento (`renderiza_cargo_e_empresa`, `test_chat_retorna_fallback_em_erro`)
+2. Endpoint FastAPI → `TestClient`, caso feliz + erro esperado (cobrindo o mapeamento de erros do DoR), LLM mockado
+3. Identificadores de teste (nome de função, variável, `describe`) em **inglês**; **display** (o que aparece rodando o teste) em **PT-BR** — o `it()`/`test()` do Vitest já é o display, escreva-o em PT-BR; no pytest, que exige identificador em inglês, o display é a docstring de uma linha logo abaixo da função. Exemplos e antes/depois: `references/test-naming-convention.md`
 4. Não depender de API externa real em teste automatizado
 
 ---
@@ -126,3 +126,4 @@ Formato: `references/test-report-template.md`.
 | `references/test-commands.md` | Comandos npm/pytest |
 | `references/test-report-template.md` | Relatório |
 | `references/e2e-scenarios.md` | Cenários manuais/E2E |
+| `references/test-naming-convention.md` | Identificador em inglês, display em PT-BR |

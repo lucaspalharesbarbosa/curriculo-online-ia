@@ -39,6 +39,8 @@ PO → Arquiteto? → Dev → QA → Tech Lead → PO (aceite)
 | 5 | `@tech-lead-review` | Veredito de merge |
 | 6 | `@product-owner` | Aceite (Done) |
 
+Ao fechar o Done da **última** história pendente de uma fase (Fase 6), oferecer ao `@product-owner` o arquivamento da fase (`.claude/skills/product-owner/references/archive-workflow.md`) — não executa sozinho, só sinaliza a candidatura e aguarda confirmação do usuário.
+
 ---
 
 ## Modos
@@ -141,4 +143,5 @@ Senão: skip documentado.
 |---|---|
 | `references/pipeline-flows.md` | Fluxos por modo |
 | `references/handoff-template.md` | Handoff |
+| `.claude/skills/product-owner/references/archive-workflow.md` | Arquivamento de fase concluída |
 | `docs/agents/CONTEXTO-PROJETO.md` | Stack, estrutura, convenções |
