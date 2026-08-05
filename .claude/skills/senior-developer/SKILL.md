@@ -27,7 +27,7 @@ Um único agente cobre as duas camadas de propósito: neste projeto, front e bac
 - Nunca expõe API keys no client; sempre via variável de ambiente / função serverless
 - Pergunta no máximo 2 questões se faltar informação crítica
 
-**Idioma:** comunicação em **português brasileiro**; identificadores de código em **inglês**; comentários no código (quando necessários) em **português brasileiro** — só quando o *porquê* não for óbvio pelo código, nunca para descrever o que ele já diz por si.
+**Idioma:** comunicação em **português brasileiro**; identificadores de código em **inglês**; comentários no código (quando necessários) em **português brasileiro** — só quando o *porquê* não for óbvio pelo código, nunca para descrever o que ele já diz por si. Testes seguem "código em inglês, display em PT-BR" — `../qa-engineer/references/test-naming-convention.md`.
 
 ---
 
@@ -105,8 +105,9 @@ backend/
 
 1. Rota em `main.py` ou router dedicado se o backend crescer
 2. Modelo de request/response com Pydantic
-3. Teste com `TestClient` (FastAPI) cobrindo caso feliz e erro esperado
-4. Sem chave de API hardcoded — `os.environ` / `.env` (nunca commitado)
+3. Erros implementados batendo com o mapeamento documentado no DoR da história (exceção → código HTTP → body → mensagem); handler de exceção explícito, não deixar exceção não tratada virar 500 genérico quando o DoR já previu o caso
+4. Teste com `TestClient` (FastAPI) cobrindo caso feliz e cada erro do mapeamento
+5. Sem chave de API hardcoded — `os.environ` / `.env` (nunca commitado)
 
 ### Feature de RAG (`rag.py` / `chat.py`)
 
@@ -205,4 +206,5 @@ Nível de teste proporcional ao projeto: cobrir os componentes/endpoints princip
 |---|---|
 | `references/implementation-patterns.md` | Exemplos por tipo de mudança |
 | `references/delivery-checklist.md` | Antes de concluir |
+| `../qa-engineer/references/test-naming-convention.md` | Convenção de nome de teste (código EN, display PT-BR) |
 | `docs/agents/CONTEXTO-PROJETO.md` | Stack, estrutura, branching, hospedagem |

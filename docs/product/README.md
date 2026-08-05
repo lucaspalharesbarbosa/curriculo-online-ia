@@ -3,10 +3,20 @@
 Saída do `product-owner`: PRD, épicos, histórias de usuário e backlog.
 
 ## PRDs por épico
+
+### Roadmap original (MVP + RAG)
 - [PRD-001 — Conteúdo](PRD-001-conteudo.md)
 - [PRD-002 — Frontend](PRD-002-frontend.md)
 - [PRD-003 — RAG](PRD-003-rag.md)
 - [PRD-004 — Deploy](PRD-004-deploy.md)
+
+### Evolução pós-lançamento (draft — sem histórias criadas ainda)
+- [PRD-005 — Frontend & UX v2](PRD-005-frontend-ux-v2.md)
+- [PRD-006 — Segurança & Performance](PRD-006-seguranca-performance.md)
+- [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md)
+- [PRD-008 — Observabilidade](PRD-008-observabilidade.md)
+- [PRD-009 — Chat v2](PRD-009-chat-v2.md)
+- [PRD-010 — Área Administrativa](PRD-010-area-administrativa.md)
 
 ## Backlog — organizado por fase de implementação (não por épico)
 
@@ -17,9 +27,20 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 - [Fase 02 — Setup do projeto](backlog/fase-02/) (4 histórias — Done)
 - [Fase 03 — MVP estático](backlog/fase-03/) (17 histórias — 17/17 Done)
 - [Fase 04 — Polimento](backlog/fase-04/) (2 histórias — 2/2 Done)
-- [Fase 05 — Feature de IA (RAG)](backlog/fase-05/) (9 histórias — 8/9 Done, US-05-08 bloqueada em ação humana no Render)
+- [Fase 05 — Feature de IA (RAG)](backlog/fase-05/) (9 histórias — 9/9 Done)
 
 Fase 06 (divulgação) é checklist de lançamento, sem histórias formais de backlog — ver [`docs/plano-projeto-curriculo-online.md`](../plano-projeto-curriculo-online.md#8-roadmap-to-do-por-fases).
+
+### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
+
+- Fase 07 — Frontend & UX v2 (`PRD-005`)
+- Fase 08 — Segurança & Performance (`PRD-006`)
+- Fase 09 — Qualidade de Engenharia (`PRD-007`)
+- Fase 10 — Observabilidade (`PRD-008`)
+- Fase 11 — Chat v2 (`PRD-009`)
+- Fase 12 — Área Administrativa (`PRD-010`)
+
+Histórias dessas fases são criadas pelo `@product-owner` quando cada fase entrar em execução (DoR completo, contrato de API + mapeamento de erros quando aplicável) — os PRDs acima têm só a lista de frentes e riscos conhecidos até aqui.
 
 ## Convenção de nomenclatura
 - PRD (por épico): `PRD-NNN-<epico>.md`

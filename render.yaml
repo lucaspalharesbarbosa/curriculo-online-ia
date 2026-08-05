@@ -29,5 +29,9 @@ services:
       # arquivo; o valor precisa ser definido manualmente no painel do serviço.
       - key: LLM_API_KEY
         sync: false
+      # Origem única — CORS aceita só o valor exato aqui (app/main.py,
+      # allow_origins=[ALLOWED_ORIGIN], sem lista). Produção: URL da Vercel.
+      # Smoke manual com frontend local: trocar temporariamente para
+      # http://localhost:3000 neste painel e reverter depois do teste.
       - key: ALLOWED_ORIGIN
         sync: false

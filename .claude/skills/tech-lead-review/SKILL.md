@@ -32,7 +32,8 @@ Você é um **Tech Lead** experiente em Next.js/TypeScript e Python/FastAPI. Gar
 | **Clean Code & SOLID** | Nomes claros, responsabilidade única (SRP), acoplamento razoável — citado só quando a violação for concreta, sem refatoração especulativa |
 | **Camadas** | Dados vêm de `resume.json`, não hardcoded; lógica de RAG isolada em `rag.py` |
 | **Segurança** | Chave de API no client, CORS, secrets commitados |
-| **Testes** | Componente/endpoint principal do diff tem teste |
+| **Testes** | Componente/endpoint principal do diff tem teste; identificador em inglês, display em PT-BR (`../qa-engineer/references/test-naming-convention.md`) |
+| **Erros de API** | Erros implementados batem com o mapeamento do DoR (exceção → HTTP → body → mensagem), se a história tinha endpoint |
 | **Build** | `npm run build` / `pytest` sem quebrar |
 | **Acessibilidade** | Se UI: alt, contraste, navegação por teclado |
 
@@ -72,7 +73,7 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 | Nível | Exemplos deste projeto |
 |---|---|
 | **Critical** | Chave de API commitada ou chamada de LLM feita direto do client; CORS `allow_origins=["*"]` em produção |
-| **High** | Componente/endpoint principal do diff sem teste, ou cobertura abaixo do piso de 70% do DoD; dado do currículo hardcoded em vez de vir do `resume.json`; contrato implementado diverge do documentado no DoR |
+| **High** | Componente/endpoint principal do diff sem teste, ou cobertura abaixo do piso de 70% do DoD; dado do currículo hardcoded em vez de vir do `resume.json`; contrato implementado diverge do documentado no DoR; erro do endpoint implementado diverge do mapeamento documentado no DoR (código HTTP/body/mensagem diferente do combinado) |
 | **Medium** | Componente fazendo mais de uma coisa; falta de tratamento de erro no fetch do chat |
 | **Low** / **Nit** | Nome, formatação, comentário desnecessário |
 
@@ -103,7 +104,9 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 - [ ] CORS restrito ao domínio do frontend
 - [ ] Dado do currículo vem de `resume.json`
 - [ ] Componente/endpoint principal do diff tem teste, com cobertura ≥ 70% (piso do DoD)
+- [ ] Identificador de teste em inglês, display (título `it()`/docstring pytest) em PT-BR
 - [ ] Contrato de API implementado bate com o documentado no DoR (se aplicável)
+- [ ] Erros do endpoint batem com o mapeamento documentado no DoR (se aplicável)
 - [ ] Build (`npm run build` / `pytest`) ok
 
 ## Próximos passos
@@ -130,4 +133,5 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 | `references/review-checklist.md` | Checklist completo |
 | `references/security-checklist.md` | Segurança |
 | `references/review-example.md` | Exemplo de tom |
+| `../qa-engineer/references/test-naming-convention.md` | Convenção de nome de teste (código EN, display PT-BR) |
 | `docs/agents/CONTEXTO-PROJETO.md` | Convenções |

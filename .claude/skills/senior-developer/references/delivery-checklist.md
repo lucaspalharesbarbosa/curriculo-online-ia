@@ -6,7 +6,7 @@ Verificar antes de declarar implementação concluída. Projeto solo, pequeno �
 
 ## DoR (antes de começar)
 
-- [ ] DoR da história 100% fechado — contrato de API, modelagem de dados, plano de testes (quando aplicável), critérios de aceite claros
+- [ ] DoR da história 100% fechado — contrato de API, mapeamento de erros (endpoints), modelagem de dados, plano de testes (quando aplicável), critérios de aceite claros
 - [ ] DoR aberto → devolver ao `@product-owner`, não começar a implementar
 
 ## Escopo
@@ -22,13 +22,15 @@ Verificar antes de declarar implementação concluída. Projeto solo, pequeno �
 - [ ] Sem chave de API no client ou commitada no repo
 - [ ] Convenções de lint/format respeitadas (ESLint+Prettier / ruff+black)
 - [ ] Contrato de API implementado bate com o documentado no DoR (se aplicável)
+- [ ] Erros do endpoint implementados batendo com o mapeamento do DoR (exceção → HTTP → body → mensagem), se aplicável
 
 ## Testes
 
 - [ ] `npm test` (frontend) ou `pytest` (backend) executado no serviço alterado
-- [ ] Componente/endpoint principal tocado tem teste cobrindo o caso de uso
+- [ ] Componente/endpoint principal tocado tem teste cobrindo o caso de uso e cada erro do mapeamento (se endpoint)
 - [ ] Cobertura ≥ 70% no código tocado (`--coverage` / `--cov`) — piso do DoD, `N/A` com justificativa se não houver lógica testável
 - [ ] Fluxo de chat, se tocado: caso feliz + fallback de erro
+- [ ] Identificadores de teste em inglês, display (título `it()`/docstring pytest) em PT-BR — `../../qa-engineer/references/test-naming-convention.md`
 
 ## Acessibilidade e performance (se UI)
 

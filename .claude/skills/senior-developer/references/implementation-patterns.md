@@ -50,11 +50,13 @@ export function ExperienceCard({ experience }: { experience: Experience }) {
 
 ## 3. Teste de componente
 
+Identificador em inglês, display (título do `it()`/`test()`) em PT-BR — `../../qa-engineer/references/test-naming-convention.md`:
+
 ```tsx
 import { render, screen } from "@testing-library/react";
 import { ExperienceCard } from "./ExperienceCard";
 
-test("renderiza cargo e empresa", () => {
+test("exibe cargo e empresa", () => {
   render(<ExperienceCard experience={{ role: "Dev", company: "X", period: "2020-2023", highlights: [] }} />);
   expect(screen.getByText(/Dev — X/)).toBeInTheDocument();
 });
@@ -78,7 +80,11 @@ class ChatResponse(BaseModel):
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest) -> ChatResponse:
-    answer = generate_answer(request.question)
+    try:
+        answer = generate_answer(request.question)
+    except OpenAIError:
+        # mapeamento de erro do DoR: falha do LLM -> 503 com mensagem de fallback
+        raise HTTPException(status_code=503, detail="Não foi possível gerar a resposta agora.")
     return ChatResponse(answer=answer)
 ```
 
@@ -87,7 +93,8 @@ def chat(request: ChatRequest) -> ChatResponse:
 - [ ] Request/response tipados com Pydantic
 - [ ] CORS restrito ao domínio do frontend
 - [ ] Sem chave de API hardcoded (`os.environ`)
-- [ ] Teste com `TestClient`
+- [ ] Erros implementados batem com o mapeamento do DoR (exceção → HTTP → body → mensagem)
+- [ ] Teste com `TestClient` cobrindo caso feliz e cada erro do mapeamento
 
 ---
 
@@ -118,16 +125,24 @@ Cuidados:
 
 ## 6. Teste de endpoint
 
+Identificador em inglês, docstring de uma linha em PT-BR como display — `../../qa-engineer/references/test-naming-convention.md`:
+
 ```python
 from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
 
-def test_chat_retorna_resposta():
+def test_chat_returns_answer():
+    """Retorna a resposta gerada quando a pergunta é válida."""
     response = client.post("/chat", json={"question": "Quais projetos em React?"})
     assert response.status_code == 200
     assert "answer" in response.json()
+
+
+def test_chat_returns_fallback_on_llm_error():
+    """Retorna 503 com mensagem de fallback quando o LLM falha."""
+    ...
 ```
 
 ```bash
