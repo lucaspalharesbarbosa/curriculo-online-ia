@@ -5,7 +5,7 @@ Aceita
 
 ## Contexto
 
-O Currículo Online é um produto pessoal solo: site de currículo com um assistente de chat (RAG) sobre a trajetória do autor. A decisão de stack foi tomada durante o planejamento inicial (`docs/plano-projeto-curriculo-online.md`, seção 2) e documentada em `docs/agents/CONTEXTO-PROJETO.md`, mas nunca tinha sido registrada como ADR formal. Este documento formaliza retroativamente essa decisão, que já está em vigor desde a Fase 0 (estrutura de pastas, `.gitignore`, CI esqueleto já criados sobre ela).
+O Currículo Online é um produto pessoal solo: site de currículo com um assistente de chat (RAG) sobre a trajetória do autor. A decisão de stack foi tomada durante o planejamento inicial e documentada em `docs/agents/CONTEXTO-PROJETO.md`, mas nunca tinha sido registrada como ADR formal. Este documento formaliza retroativamente essa decisão, que já está em vigor desde a Fase 0 (estrutura de pastas, `.gitignore`, CI esqueleto já criados sobre ela).
 
 O autor atua profissionalmente com Java e Python; o ecossistema de RAG/embeddings/LLM (LangChain, LlamaIndex, SDKs de IA) é majoritariamente Python, mais maduro para esse fim do que o equivalente em Java.
 
@@ -35,5 +35,4 @@ O autor atua profissionalmente com Java e Python; o ecossistema de RAG/embedding
 
 ## Referências
 - `docs/agents/CONTEXTO-PROJETO.md`
-- `docs/plano-projeto-curriculo-online.md` (seções 2 e 6)
 - `docs/product/PRD-003-rag.md` e [`docs/product/backlog/fase-05/US-05-01-adr-fluxo-rag.md`](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md) (ADR do fluxo de RAG, decisão futura e específica)
