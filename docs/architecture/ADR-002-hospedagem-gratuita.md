@@ -5,7 +5,7 @@ Aceita
 
 ## Contexto
 
-O Currículo Online é um produto pessoal solo: site Next.js + backend FastAPI (RAG na Fase 05), com meta explícita de **hospedagem gratuita** (`docs/plano-projeto-curriculo-online.md`, seção 7). O plano e o `ADR-001` já citavam Vercel (frontend) e Render/Cloud Run (backend), mas sem trade-off formal das alternativas free-tier.
+O Currículo Online é um produto pessoal solo: site Next.js + backend FastAPI (RAG na Fase 05), com meta explícita de **hospedagem gratuita**. O `ADR-001` já citava Vercel (frontend) e Render/Cloud Run (backend), mas sem trade-off formal das alternativas free-tier.
 
 Antes do deploy inicial ([US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md)) e do deploy do backend ([US-05-08](../product/backlog/fase-05/US-05-08-deploy-backend.md)), a decisão precisa estar registrada: existem opções “melhores” que a Vercel no free tier? Em quais critérios?
 
@@ -19,7 +19,7 @@ Antes do deploy inicial ([US-03-17](../product/backlog/fase-03/US-03-17-deploy-i
 
 ## Decisão
 
-Manter a combinação já esboçada no plano, agora formalizada:
+Manter a combinação já esboçada no planejamento inicial, agora formalizada:
 
 | Camada | Plataforma | Plano |
 |---|---|---|
@@ -77,7 +77,6 @@ Não é “a melhor hospedagem gratuita do mundo em abstrato” — é a melhor 
 ## Referências
 
 - `docs/agents/CONTEXTO-PROJETO.md` (seção Hospedagem)
-- `docs/plano-projeto-curriculo-online.md` (seções 2, 6 e 7)
 - [ADR-001](ADR-001-stack-inicial-monorepo.md) (stack; hospedagem citada sem trade-off)
 - `docs/product/PRD-004-deploy.md`
 - [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md), [US-05-08](../product/backlog/fase-05/US-05-08-deploy-backend.md)

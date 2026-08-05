@@ -2,7 +2,7 @@
 
 ## PRD (`docs/product/PRD-NNN-<epico>.md`)
 
-`NNN` = próximo número livre da sequência de PRD (3 dígitos, nunca reaproveitado — ver `docs/agents/CONTEXTO-PROJETO.md`). O backlog **não** segue o `NNN` do PRD: cada história do PRD vira um arquivo próprio em `docs/product/backlog/fase-FF/US-FF-NN-<slug>.md`, organizado pela **fase de implementação** em que será executada (ver roadmap em `docs/plano-projeto-curriculo-online.md`, seção 8), não pelo épico. A tabela "Histórias" abaixo linka cada uma para o arquivo correspondente depois de criado.
+`NNN` = próximo número livre da sequência de PRD (3 dígitos, nunca reaproveitado — ver `docs/agents/CONTEXTO-PROJETO.md`). O backlog **não** segue o `NNN` do PRD: cada história do PRD vira um arquivo próprio em `docs/product/backlog/fase-FF/US-FF-NN-<slug>.md`, organizado pela **fase de implementação** em que será executada (ver roadmap em `docs/product/roadmap.md`), não pelo épico. A tabela "Histórias" abaixo linka cada uma para o arquivo correspondente depois de criado.
 
 ```markdown
 # PRD-NNN — [Nome do épico]
