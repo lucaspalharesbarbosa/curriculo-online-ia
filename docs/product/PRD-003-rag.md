@@ -1,6 +1,6 @@
 # PRD-003 — RAG
 
-**Status:** draft
+**Status:** ready-for-agent
 **Épico:** RAG
 **Prioridade:** P1 (setup do serviço) / P3 (fluxo de RAG completo)
 
@@ -50,3 +50,4 @@ Visitante/recrutador conversando com o assistente.
 - [x] Critérios de aceite claros para US-02-02
 - [x] US-05-02 a US-05-07: ADR do fluxo de RAG registrada — [ADR-003](../architecture/ADR-003-fluxo-rag.md) ([US-05-01](backlog/fase-05/US-05-01-adr-fluxo-rag.md), Done em 2026-08-04)
 - [x] Tasks decompostas (ver `docs/product/backlog/fase-05/` e `docs/product/backlog/fase-02/US-02-02-setup-fastapi.md`)
+- [x] DoR próprio de cada história de US-05-02 a US-05-09 fechado em 2026-08-04 — [US-05-02](backlog/fase-05/US-05-02-chunking-resume-json.md) e [US-05-08](backlog/fase-05/US-05-08-deploy-backend.md) já em "Ready for Agent" (sem dependência pendente); as demais (US-05-03 a US-05-07, US-05-09) têm DoR fechado e ficam "Blocked" só pela ordem de implementação dentro da própria fase, não por falta de definição

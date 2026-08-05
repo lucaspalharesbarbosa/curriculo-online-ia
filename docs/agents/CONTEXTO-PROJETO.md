@@ -155,6 +155,8 @@ Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado 
 
 Fase 4 (polimento) **concluída** — 2/2 histórias Done: [US-04-01](../product/backlog/fase-04/US-04-01-seo-basico.md) (SEO básico — metadata/Open Graph derivados de `resume.hero`) e [US-04-02](../product/backlog/fase-04/US-04-02-acessibilidade-basica.md) (acessibilidade — contraste AA corrigido em modo escuro; `alt` e navegação por teclado já conformes), ambas em 2026-08-04 na branch `feature/fase-04-polimento`, aguardando PR para `develop`.
 
+Fase 5 (RAG) **iniciada** — [US-05-01](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md) (ADR-003 do fluxo de RAG) Done em 2026-08-04. DoR das demais 8 histórias (US-05-02 a US-05-09) fechado nessa mesma data pelo `@product-owner`, removendo o único bloqueio de início da fase: [US-05-02](../product/backlog/fase-05/US-05-02-chunking-resume-json.md) (chunking) e [US-05-08](../product/backlog/fase-05/US-05-08-deploy-backend.md) (deploy do backend) já estão **Ready for Agent** e podem começar em paralelo; as demais (US-05-03 a US-05-07, US-05-09) ficam `Blocked` só pela ordem de dependência dentro da própria fase, não por falta de definição.
+
 ## Fases do roadmap e backlog correspondente
 
 | Fase | Escopo | Backlog |
