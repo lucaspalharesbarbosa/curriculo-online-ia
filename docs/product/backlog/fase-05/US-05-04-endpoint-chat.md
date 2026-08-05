@@ -34,42 +34,42 @@
 - Mocks necessários: client OpenAI mockado (geração de resposta); busca por similaridade determinística com fixture pequena de chunks/embeddings
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
-- [ ] CA-001: `POST /chat` recebe `{question}` e retorna `{answer}` (`ChatRequest`/`ChatResponse` em Pydantic)
-- [ ] CA-002: busca os chunks mais relevantes (US-05-03) e gera resposta com esse contexto
-- [ ] CA-003: fallback definido para pergunta fora do escopo do currículo (não alucina resposta)
+- [x] CA-001: `POST /chat` recebe `{question}` e retorna `{answer}` (`ChatRequest`/`ChatResponse` em Pydantic) — [`backend/app/chat.py`](../../../../backend/app/chat.py)
+- [x] CA-002: busca os chunks mais relevantes (US-05-03) e gera resposta com esse contexto — `rag.search()` + `_generate_answer()` (contexto injetado no prompt, `gpt-4o-mini`)
+- [x] CA-003: fallback definido para pergunta fora do escopo do currículo (não alucina resposta) — `SIMILARITY_THRESHOLD`: abaixo do limiar retorna `FALLBACK_ANSWER` sem chamar o LLM
 
 ### Fora de escopo
 - `ChatWidget` no frontend (US-05-05)
 
 ### Dependências
-- US-05-01 (Done), US-05-02, US-05-03
+- US-05-01 (Done), US-05-02 (Done), US-05-03 (Done)
 
 ### Épico / Prioridade
 RAG — P3
 
 ### Tasks
-- [ ] T01 Criar endpoint `/chat` em `backend/app/chat.py`
-- [ ] T02 [P] Modelos `ChatRequest`/`ChatResponse`
+- [x] T01 Criar endpoint `/chat` em `backend/app/chat.py`
+- [x] T02 [P] Modelos `ChatRequest`/`ChatResponse`
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado (`pytest --cov`)
-- [ ] Build/lint limpo (`ruff check`, type checking estrito)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto (atenção especial: chave de API não vaza em log/erro)
-- [ ] Contrato de API implementado bate com o documentado no DoR
-- [ ] Sem chave de API/secret exposto (client bundle ou repo)
-- [ ] Documentação atualizada — se o contrato do endpoint divergir do DoR durante a implementação
-- [ ] Deploy/preview verificado — N/A (sem UI; deploy do backend é US-05-08)
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado (`pytest --cov`) — `chat.py` 100%
+- [x] Build/lint limpo (`ruff check`, type checking estrito) — `ruff check .` e `black --check .` sem erros
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto (atenção especial: chave de API não vaza em log/erro) — ver Vereditos; erro 500 usa mensagem genérica (`GENERIC_ERROR_MESSAGE`), sem repassar exceção/stack trace ao cliente
+- [x] Contrato de API implementado bate com o documentado no DoR — request/response e códigos de erro (422/500/200 com fallback) conforme especificado
+- [x] Sem chave de API/secret exposto (client bundle ou repo) — `LLM_API_KEY` só via `os.environ`, chamada só do backend
+- [x] Documentação atualizada — contrato implementado sem divergência do DoR; `backend/README.md` documenta a tabela de endpoints
+- [x] Deploy/preview verificado — N/A (sem UI; deploy do backend é US-05-08)
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
-| Tech Lead | `@tech-lead-review` | — | — | — |
-| PO | `@product-owner` | — | — | — |
+| QA | `@qa-engineer` | Aprovado — `pytest backend/tests/test_chat.py`: caso feliz, fallback (CA-003), 422 (vazio/ausente) e 500 genérico, LLM/embeddings mockados via `TestClient` | 2026-08-04 | `backend/tests/test_chat.py` |
+| Tech Lead | `@tech-lead-review` | Aprovar — mensagem de erro 500 genérica não vaza detalhe interno; contrato bate com o DoR; sem chave hardcoded | 2026-08-04 | `backend/app/chat.py` |
+| PO | `@product-owner` | Done — CA-001/002/003 fechados, DoD 100% fechado | 2026-08-04 | — |
 
-**Status:** Blocked — aguarda US-05-03 (implementação). DoR fechado em 2026-08-04; pronta para "Ready for Agent" assim que US-05-02/US-05-03 concluírem.
+**Status:** Done — endpoint `/chat` implementado e testado em 2026-08-04, na branch `feature/US-05-01-adr-fluxo-rag`.
