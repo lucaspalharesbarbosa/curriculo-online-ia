@@ -51,11 +51,11 @@ export function ExperienceCard({ experience }: ExperienceCardProps) {
             {experience.company}
           </p>
         </div>
-        <p className="text-sm text-zinc-500">
+        <p className="text-sm text-zinc-500 dark:text-zinc-400">
           {formatPeriod(experience.startDate, experience.endDate)}
         </p>
       </div>
-      <p className="mt-2 text-sm text-zinc-500">
+      <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
         {experience.location} · {experience.modality}
       </p>
       <ul className="mt-4 list-disc space-y-2 pl-5 text-sm leading-6 text-zinc-600 dark:text-zinc-400">
