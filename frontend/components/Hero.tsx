@@ -9,7 +9,7 @@ export function Hero({ hero, about }: HeroProps) {
   return (
     <section id="about" className="scroll-mt-20 space-y-8">
       <div className="space-y-3">
-        <p className="text-sm font-medium uppercase tracking-wide text-zinc-500">
+        <p className="text-sm font-medium uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
           {hero.location}
         </p>
         <h1 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-4xl dark:text-zinc-50">
