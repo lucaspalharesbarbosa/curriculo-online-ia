@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 
 import { SiteHeader } from "@/components/SiteHeader";
+import { resume } from "@/content/resume";
 
 import "./globals.css";
 
@@ -15,10 +16,24 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const siteUrl = "https://curriculo-online-ia.vercel.app";
+const title = `${resume.hero.name} — ${resume.hero.title}`;
+const description = resume.hero.summary;
+
 export const metadata: Metadata = {
-  title: "Lucas Palhares Barbosa — Tech Lead & Senior Software Engineer",
-  description:
-    "Currículo online de Lucas Palhares Barbosa — Tech Lead, AI Engineering, Java e Python.",
+  metadataBase: new URL(siteUrl),
+  title,
+  description,
+  openGraph: {
+    title,
+    description,
+    url: siteUrl,
+    siteName: resume.hero.name,
+    locale: "pt_BR",
+    type: "profile",
+    // placeholder até uma imagem de OG dedicada existir — ver US-04-01, fora de escopo
+    images: ["/globe.svg"],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
