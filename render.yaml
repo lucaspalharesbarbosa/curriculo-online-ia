@@ -1,0 +1,33 @@
+# Render Blueprint (Infrastructure as Code) — backend FastAPI do Currículo Online.
+# Referência: https://render.com/docs/blueprint-spec
+#
+# Este arquivo é lido automaticamente pelo Render quando o serviço é criado via
+# "New Blueprint Instance" apontando para este repositório. Ele NÃO substitui o
+# passo manual de conectar a conta/repositório no painel do Render — ver
+# backend/README.md (seção "Deploy") para o passo a passo completo.
+#
+# Decisão de hospedagem: ADR-002 (docs/architecture/ADR-002-hospedagem-gratuita.md)
+# — Render free tier, Root Directory = backend/, Cloud Run como fallback.
+
+services:
+  - type: web
+    name: curriculo-online-backend
+    runtime: python
+    rootDir: backend
+    plan: free
+    branch: main
+    autoDeployTrigger: commit
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      # Mesma versão usada no CI (.github/workflows/backend-ci.yml) — não é segredo.
+      - key: PYTHON_VERSION
+        value: 3.12.4
+      # Chaves que vão existir em histórias futuras (US-05-07/US-05-09).
+      # sync: false = Render NÃO versiona nem preenche o valor a partir deste
+      # arquivo; o valor precisa ser definido manualmente no painel do serviço.
+      - key: LLM_API_KEY
+        sync: false
+      - key: ALLOWED_ORIGIN
+        sync: false

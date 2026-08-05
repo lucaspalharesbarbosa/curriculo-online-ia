@@ -2,6 +2,7 @@ fastapi==0.115.6
 uvicorn[standard]==0.34.0
 httpx==0.28.1
 pydantic[email]==2.10.4
+openai==1.59.6
 pytest==8.3.4
 ruff==0.8.6
 black==24.10.0

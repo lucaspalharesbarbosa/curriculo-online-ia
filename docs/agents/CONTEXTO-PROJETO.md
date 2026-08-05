@@ -155,6 +155,8 @@ Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado 
 
 Fase 4 (polimento) **concluída** — 2/2 histórias Done: [US-04-01](../product/backlog/fase-04/US-04-01-seo-basico.md) (SEO básico — metadata/Open Graph derivados de `resume.hero`) e [US-04-02](../product/backlog/fase-04/US-04-02-acessibilidade-basica.md) (acessibilidade — contraste AA corrigido em modo escuro; `alt` e navegação por teclado já conformes), ambas em 2026-08-04 na branch `feature/fase-04-polimento`, aguardando PR para `develop`.
 
+Fase 5 (RAG) **quase concluída** — 8/9 histórias Done em 2026-08-04, na branch `feature/US-05-01-adr-fluxo-rag`: [US-05-01](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md) (ADR-003), [US-05-02](../product/backlog/fase-05/US-05-02-chunking-resume-json.md) (chunking), [US-05-03](../product/backlog/fase-05/US-05-03-geracao-embeddings.md) (embeddings), [US-05-04](../product/backlog/fase-05/US-05-04-endpoint-chat.md) (endpoint `/chat`), [US-05-05](../product/backlog/fase-05/US-05-05-chat-widget-frontend.md) (`ChatWidget`), [US-05-06](../product/backlog/fase-05/US-05-06-testes-fluxo-chat.md) (testes do fluxo — 20 testes, cobertura 97% no backend tocado), [US-05-07](../product/backlog/fase-05/US-05-07-seguranca-chat.md) (CORS + rate limit) e [US-05-09](../product/backlog/fase-05/US-05-09-env-vars-segredos.md) (`.env.example` + docs de segredos). Único item pendente: [US-05-08](../product/backlog/fase-05/US-05-08-deploy-backend.md) (deploy do backend no Render) — `render.yaml` e passo a passo já preparados e revisados, mas a criação do serviço em si depende de o dono do produto logar no painel do Render (sem credenciais compartilhadas com os agentes); ver "Status" da própria história para o passo a passo restante.
+
 ## Fases do roadmap e backlog correspondente
 
 | Fase | Escopo | Backlog |
@@ -164,7 +166,7 @@ Fase 4 (polimento) **concluída** — 2/2 histórias Done: [US-04-01](../product
 | Fase 2 — Setup do projeto | Esqueleto Next.js + FastAPI, CI real | `docs/product/backlog/fase-02/` (US-02-01 a US-02-04) — Done |
 | Fase 3 — MVP estático | Conteúdo real + componentes de UI + deploy inicial | `docs/product/backlog/fase-03/` (US-03-01 a US-03-17) — 17/17 Done |
 | Fase 4 — Polimento | SEO, acessibilidade | `docs/product/backlog/fase-04/` (US-04-01 a US-04-02) — 2/2 Done |
-| Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/fase-05/` (US-05-01 a US-05-09) |
+| Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/fase-05/` (US-05-01 a US-05-09) — 8/9 Done, US-05-08 bloqueada em ação humana |
 | Fase 6 — Divulgação | README, LinkedIn, feedback | Checklist no plano do projeto, sem histórias formais |
 
 Detalhe completo do roadmap: `docs/plano-projeto-curriculo-online.md` (seção 8).
