@@ -16,8 +16,8 @@ CI e hospedagem são esqueleto (Fase 0): workflows existem mas só com lint plac
 
 ### Incluído
 - Conectar os workflows de CI já existentes ao lint/build/teste reais de cada serviço
-- Deploy do frontend na Vercel (Root Directory = `frontend/`)
-- Deploy do backend no Render/Cloud Run (Root Directory = `backend/`), quando o épico RAG tiver o esqueleto do FastAPI
+- Deploy do frontend na Vercel (Root Directory = `frontend/`) — decisão formalizada em [ADR-002](../architecture/ADR-002-hospedagem-gratuita.md)
+- Deploy do backend no Render free (preferência) ou Cloud Run (fallback), Root Directory = `backend/`, quando o épico RAG tiver o esqueleto do FastAPI — ver ADR-002
 - Variáveis de ambiente / segredos documentados (nunca no client)
 
 ### Excluído
@@ -45,5 +45,5 @@ Visitante/recrutador acessando o site publicado; o próprio autor validando PRs 
 
 ## DoR
 - [x] Critérios de aceite claros
-- [x] ADR se envolve decisão de stack nova — não envolve (Vercel/Render já decididos em `CONTEXTO-PROJETO.md`)
+- [x] ADR se envolve decisão de stack nova — [ADR-002](../architecture/ADR-002-hospedagem-gratuita.md) (hospedagem gratuita; Aceita)
 - [x] Tasks decompostas (ver `docs/product/backlog/fase-02/`, `fase-03/US-03-17-deploy-inicial-vercel.md` e `fase-05/`)
