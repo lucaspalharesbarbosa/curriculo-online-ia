@@ -2,12 +2,8 @@ name: frontend-ci
 
 on:
   pull_request:
-    paths:
-      - "frontend/**"
   push:
     branches: [main, develop]
-    paths:
-      - "frontend/**"
 
 jobs:
   lint-and-build:
@@ -17,18 +13,30 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            frontend:
+              - "frontend/**"
       - uses: actions/setup-node@v4
+        if: steps.filter.outputs.frontend == 'true'
         with:
           node-version: "22"
           cache: ${{ hashFiles('frontend/package-lock.json') != '' && 'npm' || '' }}
           cache-dependency-path: frontend/package-lock.json
       - name: Install dependencies
+        if: steps.filter.outputs.frontend == 'true'
         run: npm ci
       - name: Lint
+        if: steps.filter.outputs.frontend == 'true'
         run: npm run lint
       - name: Format check
+        if: steps.filter.outputs.frontend == 'true'
         run: npm run format
       - name: Test
+        if: steps.filter.outputs.frontend == 'true'
         run: npm test -- --run
       - name: Build
+        if: steps.filter.outputs.frontend == 'true'
         run: npm run build

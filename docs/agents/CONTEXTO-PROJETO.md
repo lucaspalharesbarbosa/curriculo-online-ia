@@ -133,8 +133,10 @@ Numeração de épico (PRD/Backlog) é fixa pela ordem em que cada épico foi re
 
 ## Hospedagem
 
-- Frontend → Vercel (deploy automático a cada push, Root Directory = `frontend/`)
-- Backend → Render (free tier) ou Google Cloud Run, build a partir de `backend/`
+Decisão formal: [`ADR-002`](../architecture/ADR-002-hospedagem-gratuita.md) (**Aceita**).
+
+- Frontend → **Vercel** Hobby (deploy automático a cada push, Root Directory = `frontend/`)
+- Backend → **Render** free (preferência); Google Cloud Run como fallback — build a partir de `backend/`
 - API keys de IA nunca expostas no client; sempre via variável de ambiente / serverless function
 
 ## Governança sobre os agentes
@@ -149,7 +151,7 @@ Fase 1 (descoberta e planejamento) concluída — registrada retroativamente em 
 
 Fase 2 (setup do projeto) concluída — [US-02-01](../product/backlog/fase-02/US-02-01-setup-nextjs.md) (Next.js + TS + Tailwind), [US-02-02](../product/backlog/fase-02/US-02-02-setup-fastapi.md) (FastAPI + health check), [US-02-03](../product/backlog/fase-02/US-02-03-ci-frontend-real.md) e [US-02-04](../product/backlog/fase-02/US-02-04-ci-backend-real.md) (CI real) — Done.
 
-Fase 3 (MVP estático) **quase fechada** — 16/17 histórias Done na branch `feature/fase-03-mvp-estatico`. Adiada pelo autor: [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) (deploy Vercel). Pendente de processo: commits + PR para `develop`.
+Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado em `develop`; [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) — deploy Vercel — Done em 2026-08-04 na branch `feature/US-03-17-deploy-inicial-vercel`, aguardando PR para `develop`). URL de produção: https://curriculo-online-ia.vercel.app.
 
 ## Fases do roadmap e backlog correspondente
 
@@ -158,7 +160,7 @@ Fase 3 (MVP estático) **quase fechada** — 16/17 histórias Done na branch `fe
 | Fase 0 — Preparação | Agentes + repositório | `docs/product/backlog/fase-00/` (US-00-01 a US-00-02) — Done |
 | Fase 1 — Descoberta e planejamento | PRD, ADR, C4 | `docs/product/backlog/fase-01/` (US-01-01 a US-01-03) — Done |
 | Fase 2 — Setup do projeto | Esqueleto Next.js + FastAPI, CI real | `docs/product/backlog/fase-02/` (US-02-01 a US-02-04) — Done |
-| Fase 3 — MVP estático | Conteúdo real + componentes de UI + deploy inicial | `docs/product/backlog/fase-03/` (US-03-01 a US-03-17) — 16/17 Done |
+| Fase 3 — MVP estático | Conteúdo real + componentes de UI + deploy inicial | `docs/product/backlog/fase-03/` (US-03-01 a US-03-17) — 17/17 Done |
 | Fase 4 — Polimento | SEO, acessibilidade | `docs/product/backlog/fase-04/` (US-04-01 a US-04-02) |
 | Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/fase-05/` (US-05-01 a US-05-09) |
 | Fase 6 — Divulgação | README, LinkedIn, feedback | Checklist no plano do projeto, sem histórias formais |

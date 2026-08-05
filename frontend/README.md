@@ -29,12 +29,19 @@ Após `npm install`, o Husky configura o hook `pre-commit` (Prettier + ESLint no
 
 ## Deploy (Vercel)
 
-1. Criar projeto na [Vercel](https://vercel.com) apontando para este repositório
-2. **Root Directory:** `frontend/`
-3. Framework preset: Next.js (detectado automaticamente)
-4. Deploy automático a cada push em `main`
+**URL de produção:** https://curriculo-online-ia.vercel.app
 
-História de backlog: [US-03-17](../docs/product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) — adiada pelo autor.
+> ℹ️ **Nota (2026-08-04):** o domínio `lucas-palhares-dev.vercel.app`, documentado anteriormente, é um alias órfão de um nome de projeto antigo (residual dos deploys via CLI feitos antes de conectar o GitHub) e continua atrás do Vercel Deployment Protection (SSO) — **não usar/divulgar essa URL**. A URL de produção acima é a atual (confirmada via `vercel project ls`), sem proteção, smoke revalidado. Ver [US-03-17](../docs/product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) (CA-003).
+
+Configuração do projeto (`curriculo-online-ia` na conta Vercel do autor):
+
+1. Framework preset: Next.js
+2. **Root Directory:** `frontend/` — confirmado (`vercel project inspect`)
+3. Production Branch: `main` — conectado ao GitHub (`lucaspalharesbarbosa/curriculo-online-ia`), deploy automático a cada push habilitado
+
+Deploy inicial feito via CLI (`vercel deploy --prod`) a partir de `frontend/`; GitHub conectado posteriormente pelo painel da Vercel. Decisão de hospedagem: [ADR-002](../docs/architecture/ADR-002-hospedagem-gratuita.md).
+
+História de backlog: [US-03-17](../docs/product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md).
 
 ## Estrutura
 
