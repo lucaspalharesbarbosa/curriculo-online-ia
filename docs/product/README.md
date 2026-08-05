@@ -35,4 +35,4 @@ Nenhuma pendência ativa de conteúdo. Resolvidas na Fase 03:
 - ~~E-mail público e GitHub~~ — [US-03-08](backlog/fase-03/US-03-08-dados-contato.md)
 - ~~PDF do currículo~~ — [US-03-16](backlog/fase-03/US-03-16-componente-contato-pdf.md)
 
-Deploy Vercel ([US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md)) — Done em 2026-08-04, branch `feature/US-03-17-deploy-inicial-vercel` aguardando PR para `main`. PR da Fase 03 para `develop` já mergeado.
+Deploy Vercel ([US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md)) — Done em 2026-08-04, branch `feature/US-03-17-deploy-inicial-vercel` aguardando PR para `develop`.

@@ -33,7 +33,7 @@ Após `npm install`, o Husky configura o hook `pre-commit` (Prettier + ESLint no
 
 > ℹ️ **Nota (2026-08-04):** o domínio `lucas-palhares-dev.vercel.app`, documentado anteriormente, é um alias órfão de um nome de projeto antigo (residual dos deploys via CLI feitos antes de conectar o GitHub) e continua atrás do Vercel Deployment Protection (SSO) — **não usar/divulgar essa URL**. A URL de produção acima é a atual (confirmada via `vercel project ls`), sem proteção, smoke revalidado. Ver [US-03-17](../docs/product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) (CA-003).
 
-Configuração do projeto (`lucas-palhares-dev` na conta Vercel do autor):
+Configuração do projeto (`curriculo-online-ia` na conta Vercel do autor):
 
 1. Framework preset: Next.js
 2. **Root Directory:** `frontend/` — confirmado (`vercel project inspect`)

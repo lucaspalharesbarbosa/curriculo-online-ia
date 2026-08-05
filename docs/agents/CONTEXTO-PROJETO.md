@@ -151,7 +151,7 @@ Fase 1 (descoberta e planejamento) concluída — registrada retroativamente em 
 
 Fase 2 (setup do projeto) concluída — [US-02-01](../product/backlog/fase-02/US-02-01-setup-nextjs.md) (Next.js + TS + Tailwind), [US-02-02](../product/backlog/fase-02/US-02-02-setup-fastapi.md) (FastAPI + health check), [US-02-03](../product/backlog/fase-02/US-02-03-ci-frontend-real.md) e [US-02-04](../product/backlog/fase-02/US-02-04-ci-backend-real.md) (CI real) — Done.
 
-Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado em `develop`; [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) — deploy Vercel — Done em 2026-08-04 na branch `feature/US-03-17-deploy-inicial-vercel`, aguardando PR para `main`). URL de produção: https://curriculo-online-ia.vercel.app.
+Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado em `develop`; [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) — deploy Vercel — Done em 2026-08-04 na branch `feature/US-03-17-deploy-inicial-vercel`, aguardando PR para `develop`). URL de produção: https://curriculo-online-ia.vercel.app.
 
 ## Fases do roadmap e backlog correspondente
 
