@@ -16,8 +16,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const siteUrl = "https://curriculo-online-ia.vercel.app";
-const title = `${resume.hero.name} — ${resume.hero.title}`;
+// mesma URL documentada em frontend/README.md (seção Deploy) — ajustar as
+// duas juntas se o domínio mudar; override possível via env var, sem precisar editar código
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://curriculo-online-ia.vercel.app";
+// primeiro cargo de hero.title (antes do "|") mantém o <title> dentro do
+// limite recomendado (~60 chars) sem truncar nos resultados de busca
+const shortRole = resume.hero.title.split("|")[0].trim();
+const title = `${resume.hero.name} — ${shortRole}`;
 const description = resume.hero.summary;
 
 export const metadata: Metadata = {
