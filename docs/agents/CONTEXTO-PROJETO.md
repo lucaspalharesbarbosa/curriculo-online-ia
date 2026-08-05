@@ -133,8 +133,10 @@ Numeração de épico (PRD/Backlog) é fixa pela ordem em que cada épico foi re
 
 ## Hospedagem
 
-- Frontend → Vercel (deploy automático a cada push, Root Directory = `frontend/`)
-- Backend → Render (free tier) ou Google Cloud Run, build a partir de `backend/`
+Decisão formal: [`ADR-002`](../architecture/ADR-002-hospedagem-gratuita.md) (**Aceita**).
+
+- Frontend → **Vercel** Hobby (deploy automático a cada push, Root Directory = `frontend/`)
+- Backend → **Render** free (preferência); Google Cloud Run como fallback — build a partir de `backend/`
 - API keys de IA nunca expostas no client; sempre via variável de ambiente / serverless function
 
 ## Governança sobre os agentes

@@ -4,6 +4,7 @@ Saída do `arquiteto-ia-senior`: ADRs (Architecture Decision Records) e diagrama
 
 ## ADRs
 - [ADR-001 — Stack inicial e monorepo](ADR-001-stack-inicial-monorepo.md)
+- [ADR-002 — Hospedagem gratuita (Vercel + Render)](ADR-002-hospedagem-gratuita.md) — Aceita
 
 ## Diagramas
 - [C4-001 — Contexto e Containers](C4-001-contexto-containers.md)
