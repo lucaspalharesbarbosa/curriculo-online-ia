@@ -151,7 +151,9 @@ Fase 1 (descoberta e planejamento) concluída — registrada retroativamente em 
 
 Fase 2 (setup do projeto) concluída — [US-02-01](../product/backlog/fase-02/US-02-01-setup-nextjs.md) (Next.js + TS + Tailwind), [US-02-02](../product/backlog/fase-02/US-02-02-setup-fastapi.md) (FastAPI + health check), [US-02-03](../product/backlog/fase-02/US-02-03-ci-frontend-real.md) e [US-02-04](../product/backlog/fase-02/US-02-04-ci-backend-real.md) (CI real) — Done.
 
-Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado em `develop`; [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) — deploy Vercel — Done em 2026-08-04 na branch `feature/US-03-17-deploy-inicial-vercel`, aguardando PR para `develop`). URL de produção: https://curriculo-online-ia.vercel.app.
+Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado em `develop`; [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) — deploy Vercel — Done em 2026-08-04, já mergeado em `develop`). URL de produção: https://curriculo-online-ia.vercel.app.
+
+Fase 4 (polimento) **concluída** — 2/2 histórias Done: [US-04-01](../product/backlog/fase-04/US-04-01-seo-basico.md) (SEO básico — metadata/Open Graph derivados de `resume.hero`) e [US-04-02](../product/backlog/fase-04/US-04-02-acessibilidade-basica.md) (acessibilidade — contraste AA corrigido em modo escuro; `alt` e navegação por teclado já conformes), ambas em 2026-08-04 na branch `feature/fase-04-polimento`, aguardando PR para `develop`.
 
 ## Fases do roadmap e backlog correspondente
 
@@ -161,7 +163,7 @@ Fase 3 (MVP estático) **concluída** — 17/17 histórias Done (PR #4 mergeado 
 | Fase 1 — Descoberta e planejamento | PRD, ADR, C4 | `docs/product/backlog/fase-01/` (US-01-01 a US-01-03) — Done |
 | Fase 2 — Setup do projeto | Esqueleto Next.js + FastAPI, CI real | `docs/product/backlog/fase-02/` (US-02-01 a US-02-04) — Done |
 | Fase 3 — MVP estático | Conteúdo real + componentes de UI + deploy inicial | `docs/product/backlog/fase-03/` (US-03-01 a US-03-17) — 17/17 Done |
-| Fase 4 — Polimento | SEO, acessibilidade | `docs/product/backlog/fase-04/` (US-04-01 a US-04-02) |
+| Fase 4 — Polimento | SEO, acessibilidade | `docs/product/backlog/fase-04/` (US-04-01 a US-04-02) — 2/2 Done |
 | Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/fase-05/` (US-05-01 a US-05-09) |
 | Fase 6 — Divulgação | README, LinkedIn, feedback | Checklist no plano do projeto, sem histórias formais |
 

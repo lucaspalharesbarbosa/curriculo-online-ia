@@ -51,7 +51,7 @@ export function Certifications({ items }: CertificationsProps) {
             <p className="text-base text-zinc-700 dark:text-zinc-300">
               {item.issuer}
             </p>
-            <p className="mt-1 text-sm text-zinc-500">
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
               Emitido em {formatMonthYear(item.issuedAt)}
               {item.expiresAt
                 ? ` · Expira em ${formatMonthYear(item.expiresAt)}`

@@ -57,7 +57,7 @@ export function ContactSection({ contact }: ContactProps) {
             Baixar currículo em PDF
           </a>
         ) : (
-          <p className="mt-5 text-sm text-zinc-500">
+          <p className="mt-5 text-sm text-zinc-500 dark:text-zinc-400">
             PDF do currículo em breve.
           </p>
         )}
