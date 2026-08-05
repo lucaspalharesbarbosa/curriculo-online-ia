@@ -2,12 +2,8 @@ name: backend-ci
 
 on:
   pull_request:
-    paths:
-      - "backend/**"
   push:
     branches: [main, develop]
-    paths:
-      - "backend/**"
 
 jobs:
   lint-and-test:
@@ -17,14 +13,25 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - "backend/**"
       - uses: actions/setup-python@v5
+        if: steps.filter.outputs.backend == 'true'
         with:
           python-version: "3.12"
       - name: Install dependencies
+        if: steps.filter.outputs.backend == 'true'
         run: pip install -r requirements.txt
       - name: Lint
+        if: steps.filter.outputs.backend == 'true'
         run: ruff check .
       - name: Format check
+        if: steps.filter.outputs.backend == 'true'
         run: black --check .
       - name: Test
+        if: steps.filter.outputs.backend == 'true'
         run: pytest
