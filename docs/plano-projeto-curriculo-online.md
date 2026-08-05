@@ -265,14 +265,14 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 - [x] `git-auto-commits` + `open-merge-request`: PR do esqueleto das duas aplicações
 
 **Fase 3 — MVP estático**
-→ Backlog: [`docs/product/backlog/fase-03/`](product/backlog/fase-03/) (US-03-01 a US-03-17) — **16/17 Done**
+→ Backlog: [`docs/product/backlog/fase-03/`](product/backlog/fase-03/) (US-03-01 a US-03-17) — **17/17 Done**
 
 - [x] `product-owner`: histórias de usuário por seção (Hero, Experiência, Skills...)
 - [x] `senior-developer`: `content/resume.json` + componentes da UI
 - [x] `qa-engineer`: testes dos componentes principais
 - [x] `tech-lead-review`: revisão antes do merge
 - [ ] `git-rebase-feature-develop` → `open-merge-request` (branch ainda sem commits/PR)
-- [ ] Deploy inicial na Vercel (site no ar) — [US-03-17](product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) adiada pelo autor
+- [x] Deploy inicial na Vercel (site no ar) — [US-03-17](product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) Done
 
 **Fase 4 — Polimento**
 → Backlog: [`docs/product/backlog/fase-04/`](product/backlog/fase-04/) (US-04-01 a US-04-02)
