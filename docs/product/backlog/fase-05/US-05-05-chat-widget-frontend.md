@@ -74,4 +74,4 @@ RAG — P3
 | Tech Lead | `@tech-lead-review` | Aprovar — client nunca chama LLM diretamente (só o backend via `NEXT_PUBLIC_API_URL`); acessibilidade cuidada (`aria-label`, `aria-live`, `role="dialog"`, navegação por teclado); reaproveita tokens Tailwind já usados no projeto, sem paleta nova | 2026-08-04 | `frontend/components/ChatWidget.tsx` |
 | PO | `@product-owner` | Done — CA-001/002/003 fechados, DoD 100% fechado | 2026-08-04 | — |
 
-**Status:** Done — `ChatWidget` implementado e testado em 2026-08-04, na branch `feature/US-05-01-adr-fluxo-rag`. Nota: `NEXT_PUBLIC_API_URL` ainda precisa ser configurada no painel da Vercel quando o backend estiver publicado (US-05-08), senão o widget cai em estado de erro em produção.
+**Status:** Done — `ChatWidget` implementado e testado em 2026-08-04, na branch `feature/US-05-01-adr-fluxo-rag`. `NEXT_PUBLIC_API_URL` configurada no painel da Vercel e redeploy confirmado em 2026-08-05 (bundle publicado com `https://curriculo-online-backend.onrender.com` embutido); smoke real de produção: `POST /chat` com `Origin: https://curriculo-online-ia.vercel.app` → `200`, CORS e resposta coerentes.

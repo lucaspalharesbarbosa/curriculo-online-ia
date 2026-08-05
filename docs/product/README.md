@@ -17,7 +17,7 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 - [Fase 02 — Setup do projeto](backlog/fase-02/) (4 histórias — Done)
 - [Fase 03 — MVP estático](backlog/fase-03/) (17 histórias — 17/17 Done)
 - [Fase 04 — Polimento](backlog/fase-04/) (2 histórias — 2/2 Done)
-- [Fase 05 — Feature de IA (RAG)](backlog/fase-05/) (9 histórias — 8/9 Done, US-05-08 bloqueada em ação humana no Render)
+- [Fase 05 — Feature de IA (RAG)](backlog/fase-05/) (9 histórias — 9/9 Done)
 
 Fase 06 (divulgação) é checklist de lançamento, sem histórias formais de backlog — ver [`docs/plano-projeto-curriculo-online.md`](../plano-projeto-curriculo-online.md#8-roadmap-to-do-por-fases).
 

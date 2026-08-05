@@ -282,13 +282,14 @@ curriculo-ia/                   # nome do repo (ajuste se tiver escolhido outro)
 - [ ] `qa-engineer`: checar Lighthouse (performance/acessibilidade)
 
 **Fase 5 — Feature de IA (RAG)**
-→ Backlog: [`docs/product/backlog/fase-05/`](product/backlog/fase-05/) (US-05-01 a US-05-09)
+→ Backlog: [`docs/product/backlog/fase-05/`](product/backlog/fase-05/) (US-05-01 a US-05-09) — **9/9 Done**
 
-- [ ] `arquiteto-ia-senior`: ADR do fluxo de RAG (chunking, embeddings, custo)
-- [ ] `senior-developer`: endpoint `/chat` no FastAPI + geração de embeddings
-- [ ] Widget de chat no frontend
-- [ ] `qa-engineer`: testes do fluxo de chat (respostas, fallback, custo/latência)
-- [ ] `tech-lead-review`: segurança (chaves de API, CORS, rate limit)
+- [x] `arquiteto-ia-senior`: ADR do fluxo de RAG (chunking, embeddings, custo)
+- [x] `senior-developer`: endpoint `/chat` no FastAPI + geração de embeddings
+- [x] Widget de chat no frontend
+- [x] `qa-engineer`: testes do fluxo de chat (respostas, fallback, custo/latência)
+- [x] `tech-lead-review`: segurança (chaves de API, CORS, rate limit)
+- [x] Deploy do backend no Render (US-05-08, 2026-08-05)
 
 **Fase 6 — Divulgação**
 → Sem backlog formal (checklist de lançamento, não histórias de dev)
