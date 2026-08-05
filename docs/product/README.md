@@ -15,7 +15,7 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 - [Fase 00 — Preparação](backlog/fase-00/) (2 histórias — Done)
 - [Fase 01 — Descoberta e planejamento](backlog/fase-01/) (3 histórias — Done)
 - [Fase 02 — Setup do projeto](backlog/fase-02/) (4 histórias — Done)
-- [Fase 03 — MVP estático](backlog/fase-03/) (17 histórias — 16/17 Done; [US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md) adiada)
+- [Fase 03 — MVP estático](backlog/fase-03/) (17 histórias — 17/17 Done)
 - [Fase 04 — Polimento](backlog/fase-04/) (2 histórias)
 - [Fase 05 — Feature de IA (RAG)](backlog/fase-05/) (9 histórias)
 
@@ -35,4 +35,4 @@ Nenhuma pendência ativa de conteúdo. Resolvidas na Fase 03:
 - ~~E-mail público e GitHub~~ — [US-03-08](backlog/fase-03/US-03-08-dados-contato.md)
 - ~~PDF do currículo~~ — [US-03-16](backlog/fase-03/US-03-16-componente-contato-pdf.md)
 
-Pendente de processo (não bloqueia conteúdo): commit/push da branch e PR para `develop`; deploy Vercel ([US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md)).
+Deploy Vercel ([US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md)) — Done em 2026-08-04, branch `feature/US-03-17-deploy-inicial-vercel` aguardando PR para `main`. PR da Fase 03 para `develop` já mergeado.
