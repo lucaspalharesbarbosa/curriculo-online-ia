@@ -26,9 +26,9 @@
 - Mocks necessários: N/A
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
-- [ ] CA-001: serviço criado no **Render (free tier)** — preferência do [ADR-002](../../../architecture/ADR-002-hospedagem-gratuita.md) — com Root Directory = `backend/`; Cloud Run só como fallback documentado no ADR
-- [ ] CA-002: deploy automático a cada push em `main`
-- [ ] CA-003: `/health` acessível publicamente
+- [ ] CA-001: serviço criado no **Render (free tier)** — preferência do [ADR-002](../../../architecture/ADR-002-hospedagem-gratuita.md) — com Root Directory = `backend/`; Cloud Run só como fallback documentado no ADR — **requer ação humana no painel do Render (sem credenciais/token disponíveis para o agente)**
+- [ ] CA-002: deploy automático a cada push em `main` — configuração preparada (`autoDeployTrigger: commit` no `render.yaml`), verificação final requer o serviço já criado
+- [ ] CA-003: `/health` acessível publicamente — só existe depois do deploy real
 
 ### Fora de escopo
 - Configuração de domínio customizado
@@ -41,27 +41,28 @@
 Deploy — P3
 
 ### Tasks
-- [ ] T01 Criar serviço no Render/Cloud Run apontando para `backend/`
+- [x] T01a Preparar config de deploy: [`render.yaml`](../../../../render.yaml) (Blueprint) + passo a passo em [`backend/README.md`](../../../../backend/README.md#deploy)
+- [ ] T01b Criar de fato o serviço no painel do Render e confirmar CA-001/002/003 — **ação humana pendente**, ver passo a passo no README
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado — N/A (história de infraestrutura, sem código novo)
-- [ ] Build/lint limpo — N/A (build do Render, não código do repo)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto (atenção: nenhuma chave commitada na config do serviço)
-- [ ] Contrato de API implementado bate com o documentado no DoR — N/A
-- [ ] Sem chave de API/secret exposto (painel do Render, nunca no repo)
-- [ ] Documentação atualizada — passo a passo de configuração do serviço documentado (pode reaproveitar/alimentar US-05-09)
-- [ ] Deploy/preview verificado (UI) — URL pública de `/health` conferida manualmente
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
-- [ ] Status da história atualizado no próprio arquivo
+- [ ] Todos os critérios de aceite acima `[x]` — bloqueado em CA-001/002/003 (ação humana)
+- [x] Cobertura de testes ≥ 70% no código tocado — N/A (história de infraestrutura, sem código novo)
+- [x] Build/lint limpo — N/A (build do Render, não código do repo)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto (atenção: nenhuma chave commitada na config do serviço) — ver Vereditos (revisão do `render.yaml`/README preparados)
+- [x] Contrato de API implementado bate com o documentado no DoR — N/A
+- [x] Sem chave de API/secret exposto (painel do Render, nunca no repo) — `render.yaml` só declara as chaves das env vars (`LLM_API_KEY`, `ALLOWED_ORIGIN`) com `sync: false`, sem nenhum valor
+- [x] Documentação atualizada — passo a passo completo em `backend/README.md` (seção "Deploy")
+- [ ] Deploy/preview verificado (UI) — URL pública de `/health` conferida manualmente — **pendente ação humana**
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
-| Tech Lead | `@tech-lead-review` | — | — | — |
-| PO | `@product-owner` | — | — | — |
+| QA | `@qa-engineer` | Bloqueado — não há como validar CA-001/002/003 sem o serviço real criado no Render; config estática (`render.yaml`) inspecionada manualmente, sintaxe conferida contra a doc oficial do Render (`render.com/docs/blueprint-spec`) | 2026-08-04 | `render.yaml` |
+| Tech Lead | `@tech-lead-review` | Aprovar com ressalvas — config e documentação preparadas corretamente, nenhuma chave exposta; ressalva: nome do serviço (`curriculo-online-backend`) é sugestão, e a sintaxe do Blueprint deve ser reconferida no momento real da criação (spec do Render pode evoluir) | 2026-08-04 | `render.yaml`, `backend/README.md` |
+| PO | `@product-owner` | Bloqueado — trabalho de configuração/documentação concluído e revisado, mas os 3 CAs exigem criar a conta/serviço no painel do Render, ação exclusiva do dono do produto (sem credenciais compartilhadas com os agentes); DoD não pode fechar 100% até essa ação acontecer | 2026-08-04 | — |
 
-**Status:** Ready for Agent — DoR fechado em 2026-08-04; dependências (US-02-02, ADR-002) já Done. Pode ser feita em paralelo às demais histórias da Fase 05, já que só depende do esqueleto do FastAPI, não do RAG completo.
+**Status:** Bloqueado (ação humana) — `render.yaml` e passo a passo de deploy prontos e revisados em 2026-08-04, na branch `feature/US-05-01-adr-fluxo-rag`. Falta: dono do produto logar no Render, criar o Blueprint/serviço apontando para este repositório (passo a passo em `backend/README.md`) e confirmar manualmente `GET /health` na URL pública gerada. Assim que isso acontecer, atualizar CA-001/002/003 e DoD para `[x]` e o Status para Done.

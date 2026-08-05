@@ -26,8 +26,8 @@
 - Mocks necessários: N/A (só lê `resume.json`, sem I/O externo)
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
-- [ ] CA-001: `rag.py` gera chunks a partir de cada seção do `resume.json`
-- [ ] CA-002: estratégia de chunking segue o ADR de US-05-01
+- [x] CA-001: `rag.py` gera chunks a partir de cada seção do `resume.json` — `build_chunks()` em [`backend/app/rag.py`](../../../../backend/app/rag.py)
+- [x] CA-002: estratégia de chunking segue o ADR de US-05-01 — um chunk por experiência/skill group/projeto, sem overlap, conforme ADR-003 seção 1
 
 ### Fora de escopo
 - Geração de embeddings (US-05-03)
@@ -39,27 +39,27 @@
 RAG — P3
 
 ### Tasks
-- [ ] T01 Implementar chunking em `backend/app/rag.py`
+- [x] T01 Implementar chunking em `backend/app/rag.py`
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado (`pytest --cov`)
-- [ ] Build/lint limpo (`ruff check`, type checking estrito)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API implementado bate com o documentado no DoR — N/A
-- [ ] Sem chave de API/secret exposto — N/A (sem chave nesta história)
-- [ ] Documentação atualizada — só se a estratégia de chunking divergir da ADR-003 durante a implementação
-- [ ] Deploy/preview verificado — N/A (sem UI)
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado (`pytest --cov`) — `rag.py` 94% (funções de chunking 100%)
+- [x] Build/lint limpo (`ruff check`, type checking estrito) — `ruff check .` e `black --check .` sem erros
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto — ver Vereditos
+- [x] Contrato de API implementado bate com o documentado no DoR — N/A
+- [x] Sem chave de API/secret exposto — N/A (sem chave nesta história)
+- [x] Documentação atualizada — não houve divergência da ADR-003 durante a implementação
+- [x] Deploy/preview verificado — N/A (sem UI)
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
-| Tech Lead | `@tech-lead-review` | — | — | — |
-| PO | `@product-owner` | — | — | — |
+| QA | `@qa-engineer` | Aprovado — `pytest backend/tests/test_rag.py` 4 testes de chunking verdes; cobertura de `build_chunks` e helpers 100% | 2026-08-04 | `backend/tests/test_rag.py` |
+| Tech Lead | `@tech-lead-review` | Aprovar — chunking isolado em função pura, sem I/O externo; dados vêm de `resume.json` (via `Resume` Pydantic), nada hardcoded; sem chave envolvida | 2026-08-04 | `backend/app/rag.py` |
+| PO | `@product-owner` | Done — CA-001/002 fechados, DoD 100% fechado | 2026-08-04 | — |
 
-**Status:** Ready for Agent — DoR fechado em 2026-08-04; dependências (US-05-01, US-02-02) já Done, sem bloqueio para iniciar.
+**Status:** Done — chunking implementado e testado em 2026-08-04, na branch `feature/US-05-01-adr-fluxo-rag`.
