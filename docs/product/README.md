@@ -33,9 +33,10 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 
 Fase 06 (divulgação) é checklist de lançamento, sem histórias formais de backlog — ver [`roadmap.md`](roadmap.md#fase-6--divulgação).
 
+- [Fase 07 — Frontend & UX v2](backlog/fase-07/) (2 histórias P1 — DoR fechado; P2/P3 ainda não decompostas)
+
 ### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
 
-- Fase 07 — Frontend & UX v2 (`PRD-005`)
 - Fase 08 — Segurança & Performance (`PRD-006`)
 - Fase 09 — Qualidade de Engenharia (`PRD-007`)
 - Fase 10 — Observabilidade (`PRD-008`)

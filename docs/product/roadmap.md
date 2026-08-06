@@ -84,13 +84,14 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 7 — Frontend & UX v2
 
-**Status:** Draft, sem histórias criadas
+**Status:** Em andamento (2/4 histórias com DoR fechado, leva P1)
+**Backlog:** [`docs/product/backlog/fase-07/`](backlog/fase-07/) (US-07-01, US-07-02)
 **PRD:** [`PRD-005-frontend-ux-v2.md`](PRD-005-frontend-ux-v2.md)
 
-- [ ] Seção de Contato: adicionar WhatsApp
-- [ ] Auditoria e correção de responsividade (mobile/tablet/desktop)
-- [ ] Redesign visual (paleta, tipografia, hero)
-- [ ] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components)
+- [ ] Seção de Contato: adicionar WhatsApp — [US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md)
+- [ ] Auditoria e correção de responsividade (mobile/tablet/desktop) — [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md)
+- [ ] Redesign visual (paleta, tipografia, hero) — P2, história ainda não criada
+- [ ] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) — P3, história ainda não criada
 
 ## Fase 8 — Segurança & Performance
 

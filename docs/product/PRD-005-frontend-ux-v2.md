@@ -1,6 +1,6 @@
 # PRD-005 — Frontend & UX v2
 
-**Status:** draft
+**Status:** ready-for-agent (histórias P1 decompostas)
 **Épico:** Frontend & UX v2
 **Prioridade:** P1
 
@@ -36,18 +36,18 @@ O frontend já é Next.js (App Router) desde o `ADR-001`. Não é uma decisão e
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Ampliar seção de Contato com link direto para WhatsApp | P1 | — (a criar quando a fase entrar em execução) |
-| Auditoria e correção de responsividade (mobile/tablet/desktop) | P1 | — |
-| Redesign visual do site (paleta, tipografia, hero, microinterações) | P2 | — |
+| Ampliar seção de Contato com link direto para WhatsApp | P1 | [US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md) |
+| Auditoria e correção de responsividade (mobile/tablet/desktop) | P1 | [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md) |
+| Redesign visual do site (paleta, tipografia, hero, microinterações) | P2 | — (a criar quando entrar nesta leva) |
 | Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) | P3 | — |
 
 ## Riscos
 
 - Redesign pode regredir contraste/acessibilidade já corrigidos na Fase 4 — re-rodar Lighthouse é obrigatório no DoD dessas histórias
-- WhatsApp expõe um número pessoal publicamente — confirmar com o autor antes de implementar (mesma natureza da pendência de e-mail/GitHub resolvida na Fase 3)
-- Decisão "link direto vs. formulário" no Contato afeta diretamente o que a Fase 12 (Área Administrativa) consegue listar — alinhar as duas fases antes de fechar o DoR da história de Contato
+- ~~WhatsApp expõe um número pessoal publicamente~~ — autor confirmou publicação do número via `@orquestrador` em 2026-08-06 ([US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md))
+- ~~Decisão "link direto vs. formulário" no Contato~~ — resolvida em 2026-08-06: mantém link direto (mailto/wa.me), sem formulário com persistência; Fase 12 fica sem lista de contatos recebidos, só métricas de acesso/uso do chat
 
 ## DoR do épico
-- [ ] Toda história do épico tem seu próprio DoR fechado (checklist por história abaixo — este item é só o guarda-chuva)
-- [ ] Tasks decompostas (`references/task-breakdown-guide.md`)
-- [ ] Decisão "link direto (mailto/wa.me) vs. formulário com persistência" tomada antes de abrir a história de Contato — impacta o PRD-010
+- [ ] Toda história do épico tem seu próprio DoR fechado — P1 (US-07-01, US-07-02) fechado; P2/P3 (redesign, revisão Next.js) ainda não decompostas, ficam para a próxima leva
+- [x] Tasks decompostas (`references/task-breakdown-guide.md`) — para as histórias P1 já criadas
+- [x] Decisão "link direto (mailto/wa.me) vs. formulário com persistência" tomada antes de abrir a história de Contato — impacta o PRD-010 — resolvida em 2026-08-06: link direto
