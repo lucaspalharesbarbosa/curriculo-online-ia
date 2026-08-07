@@ -39,7 +39,7 @@ export function Certifications({ items }: CertificationsProps) {
       <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
         Certificações
       </h2>
-      <ul className="space-y-4">
+      <ul className="grid gap-4 md:grid-cols-2">
         {items.map((item) => (
           <li
             key={item.name}

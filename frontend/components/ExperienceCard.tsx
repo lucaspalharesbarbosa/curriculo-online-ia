@@ -87,7 +87,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
       <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
         Experiência Profissional
       </h2>
-      <div className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-2">
         {experiences.map((experience) => (
           <ExperienceCard
             key={`${experience.company}-${experience.role}-${experience.startDate}`}

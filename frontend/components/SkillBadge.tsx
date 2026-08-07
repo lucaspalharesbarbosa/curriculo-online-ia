@@ -22,7 +22,7 @@ export function Skills({ groups }: SkillsProps) {
       <h2 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
         Habilidades Técnicas
       </h2>
-      <div className="space-y-5">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {groups.map((group) => (
           <div key={group.category}>
             <h3 className="mb-2 text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
