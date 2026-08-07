@@ -84,14 +84,14 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 7 — Frontend & UX v2
 
-**Status:** Em andamento (2/4 histórias com DoR fechado, leva P1)
-**Backlog:** [`docs/product/backlog/fase-07/`](backlog/fase-07/) (US-07-01, US-07-02)
+**Status:** Em andamento (4/4 histórias decompostas; 4/4 com DoR fechado, `Ready for Agent`)
+**Backlog:** [`docs/product/backlog/fase-07/`](backlog/fase-07/) (US-07-01 a US-07-04)
 **PRD:** [`PRD-005-frontend-ux-v2.md`](PRD-005-frontend-ux-v2.md)
 
 - [ ] Seção de Contato: adicionar WhatsApp — [US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md)
 - [ ] Auditoria e correção de responsividade (mobile/tablet/desktop) — [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md)
-- [ ] Redesign visual (paleta, tipografia, hero) — P2, história ainda não criada
-- [ ] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) — P3, história ainda não criada
+- [ ] Redesign visual (paleta, tipografia, hero) — [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md), P2, `Ready for Agent` (referência: template Omnira/Framer)
+- [ ] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) — [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md), P3
 
 ## Fase 8 — Segurança & Performance
 
