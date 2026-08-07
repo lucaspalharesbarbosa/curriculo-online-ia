@@ -52,6 +52,7 @@ export const contactSchema = z.object({
   linkedin: z.string().url(),
   email: z.string().email().nullable(),
   github: z.string().url().nullable(),
+  whatsapp: z.string().url().nullable(),
   resumePdfUrl: z.union([z.string().url(), publicAssetPathSchema]).nullable(),
 });
 

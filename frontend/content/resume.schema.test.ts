@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import resumeData from "./resume.json";
-import { parseResume, resumeSchema } from "./resume.schema";
+import { contactSchema, parseResume, resumeSchema } from "./resume.schema";
 
 describe("resume.schema", () => {
   it("validates the committed resume.json", () => {
@@ -19,9 +19,40 @@ describe("resume.schema", () => {
     expect(Array.isArray(resume.certifications)).toBe(true);
     expect(Array.isArray(resume.projects)).toBe(true);
     expect(resume.contact.linkedin).toMatch(/^https:\/\//);
+    expect(resume.contact.whatsapp).toMatch(/^https:\/\/wa\.me\//);
   });
 
   it("rejects invalid resume data", () => {
     expect(() => resumeSchema.parse({ hero: {} })).toThrow();
+  });
+});
+
+describe("contactSchema", () => {
+  const baseContact = {
+    linkedin: "https://www.linkedin.com/in/lucas-palhares-barbosa/",
+    email: null,
+    github: null,
+    resumePdfUrl: null,
+  };
+
+  it("accepts a whatsapp wa.me URL", () => {
+    expect(() =>
+      contactSchema.parse({
+        ...baseContact,
+        whatsapp: "https://wa.me/5517991123547",
+      }),
+    ).not.toThrow();
+  });
+
+  it("accepts whatsapp as null", () => {
+    expect(() =>
+      contactSchema.parse({ ...baseContact, whatsapp: null }),
+    ).not.toThrow();
+  });
+
+  it("rejects a non-URL whatsapp value", () => {
+    expect(() =>
+      contactSchema.parse({ ...baseContact, whatsapp: "not-a-url" }),
+    ).toThrow();
   });
 });

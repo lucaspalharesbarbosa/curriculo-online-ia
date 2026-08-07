@@ -47,6 +47,19 @@ export function ContactSection({ contact }: ContactProps) {
               </a>
             </li>
           ) : null}
+          {contact.whatsapp ? (
+            <li>
+              <span className="font-medium">WhatsApp:</span>{" "}
+              <a
+                href={contact.whatsapp}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline dark:text-blue-400"
+              >
+                {contact.whatsapp}
+              </a>
+            </li>
+          ) : null}
         </ul>
         {contact.resumePdfUrl ? (
           <a
