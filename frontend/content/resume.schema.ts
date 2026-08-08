@@ -1,10 +1,17 @@
 import { z } from "zod";
 
+const publicAssetPathSchema = z
+  .string()
+  .regex(/^\/.+/, "Must be a root-relative public path");
+
 export const heroSchema = z.object({
   name: z.string().min(1),
   title: z.string().min(1),
   location: z.string().min(1),
   summary: z.string().min(1),
+  // null até o autor enviar a foto (US-07-03/T04b) — Hero.tsx usa um bloco
+  // decorativo no lugar enquanto o campo estiver null
+  photoUrl: z.union([z.string().url(), publicAssetPathSchema]).nullable(),
 });
 
 export const experienceSchema = z.object({
@@ -16,6 +23,9 @@ export const experienceSchema = z.object({
   modality: z.string().min(1),
   highlights: z.array(z.string().min(1)).min(1),
   technologies: z.array(z.string().min(1)).min(1),
+  // null quando a empresa não tem logo disponível — ExperienceSection usa
+  // um ícone decorativo no lugar (mesmo padrão do hero.photoUrl)
+  logoUrl: z.union([z.string().url(), publicAssetPathSchema]).nullable(),
 });
 
 export const educationSchema = z.object({
@@ -23,6 +33,11 @@ export const educationSchema = z.object({
   degree: z.string().min(1),
   startDate: z.string().min(1),
   endDate: z.string().min(1),
+  // null quando a instituição não tem logo — EducationSection usa ícone decorativo
+  logoUrl: z
+    .union([z.string().url(), publicAssetPathSchema])
+    .nullable()
+    .default(null),
 });
 
 export const skillGroupSchema = z.object({
@@ -35,6 +50,11 @@ export const certificationSchema = z.object({
   issuer: z.string().min(1),
   issuedAt: z.string().min(1),
   expiresAt: z.string().nullable(),
+  // null quando o certificado não tem badge/logo — Certifications usa ícone decorativo
+  logoUrl: z
+    .union([z.string().url(), publicAssetPathSchema])
+    .nullable()
+    .default(null),
 });
 
 export const projectSchema = z.object({
@@ -43,10 +63,6 @@ export const projectSchema = z.object({
   technologies: z.array(z.string().min(1)).min(1),
   repositoryUrl: z.string().url(),
 });
-
-const publicAssetPathSchema = z
-  .string()
-  .regex(/^\/.+/, "Must be a root-relative public path");
 
 export const contactSchema = z.object({
   linkedin: z.string().url(),
