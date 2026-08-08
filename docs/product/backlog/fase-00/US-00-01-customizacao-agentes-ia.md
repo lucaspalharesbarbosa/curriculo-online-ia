@@ -9,7 +9,7 @@
 
 ### Critérios de aceite
 - [x] CA-001: `docs/agents/CONTEXTO-PROJETO.md` criado com stack, branching, hospedagem e convenções
-- [x] CA-002: cada agente ajustado conforme checklist da seção 5.1 do plano do projeto
+- [x] CA-002: cada agente ajustado conforme checklist de customização definido no planejamento inicial do projeto
 - [x] CA-003: dry-run do pipeline completo executado numa tarefa fake e pequena
 - [x] CA-004: desvios encontrados no dry-run corrigidos antes de seguir para features reais
 

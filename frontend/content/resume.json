@@ -1,18 +1,20 @@
 {
   "hero": {
     "name": "Lucas Palhares Barbosa",
-    "title": "Tech Lead | Engenheiro de Software Sênior — AI Engineering | Agentic AI | Java • Python | AWS Certified",
+    "title": "Tech Lead | Senior Software Engineer — AI Engineering | Agentic AI | Java • Python | AWS Certified",
     "location": "São José do Rio Preto, SP (remoto)",
-    "summary": "Tech Lead e Engenheiro de Software Sênior com mais de 10 anos de experiência em soluções escaláveis para bancos, telecomunicações e saúde. Lidero tecnicamente squads na Engineering Brasil no desenvolvimento de soluções de IA para a Claro, aplicando AI Engineering — Agentic AI, Context Engineering e Spec-Driven Development — para acelerar a entrega de software. Base sólida em arquitetura de microsserviços, Java, Python, Spring Boot, Kubernetes e Cloud, com histórico de entregas estratégicas em produtos de grande porte."
+    "summary": "Tech Lead e Senior Software Engineer com mais de 10 anos de experiência em soluções escaláveis para bancos, telecomunicações e saúde. Lidero tecnicamente squads na Engineering Brasil no desenvolvimento de soluções de IA para a Claro, aplicando AI Engineering — Agentic AI, Context Engineering e Spec-Driven Development — para acelerar a entrega de software. Base sólida em arquitetura de microsserviços, Java, Python, Spring Boot, Kubernetes e Cloud, com histórico de entregas estratégicas em produtos de grande porte.",
+    "photoUrl": "/foto-lucas-palhares.png"
   },
-  "about": "Tech Lead e Engenheiro de Software Sênior com mais de 10 anos de experiência desenvolvendo soluções escaláveis para grandes empresas dos setores bancário, telecomunicações e saúde. Atualmente lidera tecnicamente squads na Engineering Brasil responsáveis por soluções estratégicas de Inteligência Artificial para a Claro. Seu foco evoluiu da engenharia de software tradicional para soluções orientadas por IA, aplicando práticas de AI Engineering — Context Engineering, Prompt Engineering, Harness Engineering, Agentic AI e Spec-Driven Development (SDD) — na construção de AI Agents, AI Skills e fluxos agentic integrados ao ciclo de desenvolvimento. Como Tech Lead, responde por liderança técnica, arquitetura, mentoria, revisão de código, padrões de engenharia e condução da adoção de IA no processo de desenvolvimento, utilizando ferramentas como Claude Code e Cursor no dia a dia. Experiência sólida em Java, Python, microsserviços, Spring Boot, Kubernetes, Cloud (AWS e GCP), APIs REST e arquiteturas distribuídas.",
+  "about": "Tech Lead e Senior Software Engineer com mais de 10 anos de experiência desenvolvendo soluções escaláveis para grandes empresas dos setores bancário, telecomunicações e saúde. Atualmente lidera tecnicamente squads na Engineering Brasil responsáveis por soluções estratégicas de Inteligência Artificial para a Claro. Seu foco evoluiu da engenharia de software tradicional para soluções orientadas por IA, aplicando práticas de AI Engineering — Context Engineering, Prompt Engineering, Harness Engineering, Agentic AI e Spec-Driven Development (SDD) — na construção de AI Agents, AI Skills e fluxos agentic integrados ao ciclo de desenvolvimento. Como Tech Lead, responde por liderança técnica, arquitetura, mentoria, revisão de código, padrões de engenharia e condução da adoção de IA no processo de desenvolvimento, utilizando ferramentas como Claude Code e Cursor no dia a dia. Experiência sólida em Java, Python, microsserviços, Spring Boot, Kubernetes, Cloud (AWS e GCP), APIs REST e arquiteturas distribuídas.",
   "experiences": [
     {
       "company": "Engineering Brasil",
-      "role": "Tech Lead | Engenheiro de Software Sênior",
+      "role": "Tech Lead | Senior Software Engineer",
+      "logoUrl": "/engineeringbr_logo.jpg",
       "startDate": "2026-03",
       "endDate": null,
-      "location": "São José do Rio Preto, SP",
+      "location": "São Paulo, SP",
       "modality": "Remoto",
       "highlights": [
         "Tech Lead em projetos estratégicos da Claro voltados para IA aplicada à Engenharia de Software e automação de processos, liderando squad responsável por soluções de IA para otimização operacional, redução de custos e produtividade das equipes de desenvolvimento",
@@ -34,13 +36,14 @@
     },
     {
       "company": "Banco BV",
-      "role": "Engenheiro de Software Sênior (Outsourcing)",
+      "role": "Senior Software Engineer (Outsourcing)",
+      "logoUrl": "/bancobv_logo.jpg",
       "startDate": "2025-10",
       "endDate": "2026-01",
-      "location": "Remoto",
+      "location": "São Paulo, SP",
       "modality": "Remoto",
       "highlights": [
-        "Atuei como Engenheiro de Software Sênior em squad responsável pelo produto de Cashback, um dos pilares do programa de fidelidade do Banco BV, com impacto direto na experiência e retenção de clientes de cartões de crédito",
+        "Atuei como Senior Software Engineer em squad responsável pelo produto de Cashback, um dos pilares do programa de fidelidade do Banco BV, com impacto direto na experiência e retenção de clientes de cartões de crédito",
         "Realizei correções de vulnerabilidades (CVE) em microsserviços desenvolvidos em Java 11 e Java 21 com Spring Boot, que impediam a execução das pipelines de CI/CD e bloqueavam novos deployments, restabelecendo o fluxo contínuo de entrega",
         "Participei ativamente da reconstrução do produto de Cashback para suportar a nova processadora de cartões Pismo, utilizando a plataforma Bankly como camada de integração, contribuindo para a modernização da arquitetura e adequação aos novos fluxos de negócio"
       ],
@@ -57,7 +60,8 @@
     },
     {
       "company": "Itaú Unibanco",
-      "role": "Engenheiro de Software Pleno",
+      "role": "Software Engineer",
+      "logoUrl": "/itau_logo.jpg",
       "startDate": "2022-07",
       "endDate": "2025-09",
       "location": "São Paulo, SP",
@@ -79,7 +83,8 @@
     },
     {
       "company": "Shift",
-      "role": "Analista de Desenvolvimento Web Pleno",
+      "role": "Web Developer",
+      "logoUrl": "/shift_logo.jpg",
       "startDate": "2020-09",
       "endDate": "2022-07",
       "location": "São José do Rio Preto, SP",
@@ -99,7 +104,8 @@
     },
     {
       "company": "WebPic",
-      "role": "Desenvolvedor Web Pleno",
+      "role": "Junior Web Developer",
+      "logoUrl": "/grupowebpic_logo.jpg",
       "startDate": "2016-11",
       "endDate": "2020-09",
       "location": "São José do Rio Preto, SP",
@@ -124,7 +130,8 @@
     },
     {
       "company": "Grupo WDG",
-      "role": "Desenvolvedor Web Junior",
+      "role": "Junior Web Developer",
+      "logoUrl": "/wdgautomation_logo.jpg",
       "startDate": "2015-11",
       "endDate": "2016-08",
       "location": "São José do Rio Preto, SP",
@@ -148,12 +155,14 @@
     {
       "institution": "Centro Universitário Senac",
       "degree": "Pós-graduação em Gerenciamento de Projetos – Práticas do PMI",
+      "logoUrl": "/centrouniversitariosenac_logo.jpg",
       "startDate": "2016",
       "endDate": "2017"
     },
     {
       "institution": "FATEC São José do Rio Preto",
       "degree": "Graduação em Análise e Desenvolvimento de Sistemas",
+      "logoUrl": "/fatec_rio_preto_logo.jpg",
       "startDate": "2013",
       "endDate": "2015"
     }
@@ -161,11 +170,15 @@
   "skills": [
     {
       "category": "Linguagens",
-      "items": ["Java (Spring Boot)", "Python", "C#"]
+      "items": ["Java", "Spring Boot", "Python", "C#"]
     },
     {
       "category": "Cloud",
-      "items": ["AWS (ECS, EKS, Lambda, RDS, API Gateway, CloudWatch)"]
+      "items": ["AWS", "GCP"]
+    },
+    {
+      "category": "Mensageria",
+      "items": ["Apache Kafka", "RabbitMQ", "AWS SQS", "AWS SNS"]
     },
     {
       "category": "Devops",
@@ -203,12 +216,14 @@
     {
       "name": "AWS Certified Cloud Practitioner",
       "issuer": "AWS",
+      "logoUrl": "/aws-certified-cloud-pratctitioner-logo.png",
       "issuedAt": "2024-07",
       "expiresAt": "2027-07"
     },
     {
       "name": "Scrum Fundamentals Certified (SFC)",
       "issuer": "SCRUMStudy",
+      "logoUrl": "/scrum-fundamentals-certified-logo.png",
       "issuedAt": "2018-01",
       "expiresAt": null
     }
@@ -231,6 +246,7 @@
     "linkedin": "https://www.linkedin.com/in/lucas-palhares-barbosa/",
     "email": "lucasp.b@hotmail.com",
     "github": "https://github.com/lucaspalharesbarbosa",
+    "whatsapp": "https://wa.me/5517991123547",
     "resumePdfUrl": "/Lucas_Palhares_Barbosa_Engenheiro_De_Software.pdf"
   }
 }

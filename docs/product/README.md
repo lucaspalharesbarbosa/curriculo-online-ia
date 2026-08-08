@@ -2,6 +2,8 @@
 
 Saída do `product-owner`: PRD, épicos, histórias de usuário e backlog.
 
+Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
+
 ## PRDs por épico
 
 ### Roadmap original (MVP + RAG)
@@ -29,11 +31,12 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 - [Fase 04 — Polimento](backlog/fase-04/) (2 histórias — 2/2 Done)
 - [Fase 05 — Feature de IA (RAG)](backlog/fase-05/) (9 histórias — 9/9 Done)
 
-Fase 06 (divulgação) é checklist de lançamento, sem histórias formais de backlog — ver [`docs/plano-projeto-curriculo-online.md`](../plano-projeto-curriculo-online.md#8-roadmap-to-do-por-fases).
+Fase 06 (divulgação) é checklist de lançamento, sem histórias formais de backlog — ver [`roadmap.md`](roadmap.md#fase-6--divulgação).
+
+- [Fase 07 — Frontend & UX v2](backlog/fase-07/) (US-07-01 a US-07-04 — DoR fechado; US-07-03 = clonagem do template [personal-resume](https://github.com/giasinguyen/personal-resume))
 
 ### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
 
-- Fase 07 — Frontend & UX v2 (`PRD-005`)
 - Fase 08 — Segurança & Performance (`PRD-006`)
 - Fase 09 — Qualidade de Engenharia (`PRD-007`)
 - Fase 10 — Observabilidade (`PRD-008`)

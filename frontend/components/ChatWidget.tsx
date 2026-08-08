@@ -2,6 +2,7 @@
 
 import { useId, useState } from "react";
 import type { FormEvent } from "react";
+import { MessageCircle, X } from "lucide-react";
 
 type ChatMessage = {
   id: string;
@@ -14,7 +15,6 @@ type ChatResponse = {
   answer: string;
 };
 
-// mesmo padrão de fallback de NEXT_PUBLIC_SITE_URL em frontend/app/layout.tsx
 const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 const ERROR_MESSAGE = "Não consegui responder agora, tente de novo.";
@@ -79,24 +79,24 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-3 sm:bottom-6 sm:right-6">
+    <div className="fixed right-4 bottom-4 z-50 flex flex-col items-end gap-3 sm:right-6 sm:bottom-6">
       {isOpen ? (
         <section
           role="dialog"
           aria-label="Chat com o assistente"
-          className="flex h-96 w-80 flex-col overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg sm:w-96 dark:border-zinc-800 dark:bg-zinc-950"
+          className="glass flex h-96 w-80 flex-col overflow-hidden rounded-2xl border border-neutral-700/60 shadow-lg shadow-black/40 sm:w-96"
         >
-          <header className="flex items-center justify-between border-b border-zinc-200 px-4 py-3 dark:border-zinc-800">
-            <h2 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">
+          <header className="flex items-center justify-between border-b border-neutral-700/50 px-4 py-3">
+            <h2 className="text-sm font-semibold text-neutral-100">
               Fale comigo
             </h2>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
               aria-label="Fechar chat"
-              className="rounded-md px-2 py-1 text-xs font-medium text-zinc-600 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-300 dark:hover:bg-zinc-900 dark:hover:text-zinc-50"
+              className="rounded-lg px-2 py-1 text-xs font-medium text-neutral-400 transition-colors duration-200 hover:bg-accent-500/10 hover:text-accent-400"
             >
-              Fechar
+              <X className="h-4 w-4" />
             </button>
           </header>
 
@@ -105,27 +105,27 @@ export function ChatWidget() {
             aria-live="polite"
           >
             {messages.length === 0 ? (
-              <li className="text-sm text-zinc-500 dark:text-zinc-400">
+              <li className="text-sm text-neutral-400">
                 Pergunte algo sobre a minha trajetória profissional.
               </li>
             ) : null}
             {messages.map((message) => (
               <li key={message.id} className="space-y-1">
-                <p className="rounded-md bg-zinc-100 px-3 py-2 text-sm text-zinc-900 dark:bg-zinc-900 dark:text-zinc-50">
+                <p className="rounded-lg bg-accent-500/15 px-3 py-2 text-sm text-neutral-100">
                   {message.question}
                 </p>
                 {message.status === "loading" ? (
-                  <p className="rounded-md px-3 py-2 text-sm italic text-zinc-500 dark:text-zinc-400">
+                  <p className="rounded-lg px-3 py-2 text-sm text-neutral-500 italic">
                     Digitando...
                   </p>
                 ) : null}
                 {message.status === "done" ? (
-                  <p className="rounded-md border border-zinc-200 px-3 py-2 text-sm text-zinc-700 dark:border-zinc-800 dark:text-zinc-300">
+                  <p className="rounded-lg border border-neutral-700/50 px-3 py-2 text-sm text-neutral-300">
                     {message.answer}
                   </p>
                 ) : null}
                 {message.status === "error" ? (
-                  <p className="rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+                  <p className="rounded-lg border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-300">
                     {ERROR_MESSAGE}
                   </p>
                 ) : null}
@@ -135,7 +135,7 @@ export function ChatWidget() {
 
           <form
             onSubmit={handleSubmit}
-            className="flex items-center gap-2 border-t border-zinc-200 p-3 dark:border-zinc-800"
+            className="flex items-center gap-2 border-t border-neutral-700/50 p-3"
           >
             <label htmlFor={inputId} className="sr-only">
               Sua pergunta
@@ -147,12 +147,12 @@ export function ChatWidget() {
               onChange={(event) => setQuestion(event.target.value)}
               placeholder="Digite sua pergunta..."
               disabled={isSubmitting}
-              className="flex-1 rounded-md border border-zinc-200 bg-transparent px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-400 disabled:opacity-60 dark:border-zinc-800 dark:text-zinc-50 dark:focus:border-zinc-600"
+              className="flex-1 rounded-lg border border-neutral-700/50 bg-neutral-900/60 px-3 py-2 text-sm text-neutral-100 outline-none transition-colors duration-200 focus:border-accent-500/50 disabled:opacity-60"
             />
             <button
               type="submit"
               disabled={isSubmitting || question.trim().length === 0}
-              className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+              className="rounded-lg bg-gradient-to-r from-accent-400 to-accent-500 px-3 py-2 text-sm font-semibold text-neutral-900 transition-opacity duration-200 hover:opacity-90 disabled:opacity-50"
             >
               Enviar
             </button>
@@ -165,9 +165,9 @@ export function ChatWidget() {
         onClick={() => setIsOpen((current) => !current)}
         aria-label={isOpen ? "Fechar chat" : "Abrir chat"}
         aria-expanded={isOpen}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-900 text-xl text-white shadow-lg transition-colors hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-300"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-accent-400 to-accent-500 text-neutral-900 shadow-lg shadow-accent-500/25 transition-all duration-200 motion-safe:hover:-translate-y-0.5"
       >
-        💬
+        <MessageCircle className="h-5 w-5" />
       </button>
     </div>
   );
