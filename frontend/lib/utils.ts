@@ -133,3 +133,54 @@ export function groupCertificationsByIssuer(
 
   return Array.from(groups.values());
 }
+
+export type AboutNarrative = {
+  lead: string;
+  body: string | null;
+  /** Frases entre travessões no texto (práticas / ênfases), se existirem */
+  accents: string[];
+};
+
+/**
+ * Quebra o `about` em lead (1ª frase), corpo e ênfases entre "— ... —"
+ * para tipografia do Perfil — sem inventar conteúdo.
+ */
+export function splitAboutNarrative(about: string): AboutNarrative {
+  const accents: string[] = [];
+  const accentMatch = about.match(/—\s*([^—]+?)\s*—/);
+  let narrative = about;
+  if (accentMatch?.[1]) {
+    accents.push(
+      ...accentMatch[1]
+        .split(/,| e /)
+        .map((part) => part.trim())
+        .filter(Boolean),
+    );
+    // Remove o trecho entre travessões do corpo — as ênfases vão para chips
+    narrative = about.replace(/\s*—\s*[^—]+?\s*—/, "");
+  }
+
+  const sentenceMatch = narrative.match(/^(.+?[.!?])(?:\s+|$)([\s\S]*)$/);
+  if (!sentenceMatch) {
+    return { lead: narrative.trim(), body: null, accents };
+  }
+
+  const lead = sentenceMatch[1].trim();
+  const body = sentenceMatch[2].trim() || null;
+  return { lead, body, accents };
+}
+
+export type ExperienceHighlightKind = "prad" | "merit" | "default";
+
+/** Classifica highlights de experiência para destaque visual sutil. */
+export function getExperienceHighlightKind(
+  highlight: string,
+): ExperienceHighlightKind {
+  if (/alto desempenho|\bprad\b/i.test(highlight)) {
+    return "prad";
+  }
+  if (/m[eé]rito/i.test(highlight)) {
+    return "merit";
+  }
+  return "default";
+}

@@ -2,13 +2,14 @@
 
 import { motion } from "framer-motion";
 import {
+  AtSign,
+  Cpu,
   Download,
   Github,
   Linkedin,
   Mail,
   MapPin,
   MessageCircle,
-  Sparkles,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -29,9 +30,6 @@ import {
 
 const SKILL_LEVEL_SEGMENTS = [1, 2, 3, 4, 5] as const;
 
-// US-07-10 — as duas categorias de banco de dados são combinadas num único
-// bloco de "colunas leves" (opção 6 aprovada) em vez de duas categorias
-// genéricas separadas; nomes batem com `resume.json`.
 const SQL_CATEGORY = "Banco de Dados (SQL)";
 const NOSQL_CATEGORY = "Banco de Dados (NoSQL)";
 
@@ -45,33 +43,25 @@ type SkillChipProps = {
   skill: SkillItem;
   delay: number;
   icon: ReactNode;
+  compact?: boolean;
 };
 
-/** Chip de habilidade — ícone, nome e medidor de proficiência (barra segmentada).
-    `icon` já vem resolvido do chamador (`getSkillIcon` roda no `.map()`, não
-    aqui) — instanciar o componente de ícone dentro de um componente nomeado
-    aciona o lint `react-hooks/static-components` ("componente criado durante
-    o render"). */
-function SkillChip({ skill, delay, icon }: SkillChipProps) {
+function SkillChip({ skill, delay, icon, compact = false }: SkillChipProps) {
   return (
     <motion.div
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay }}
-      className="skill-tag flex cursor-default items-center gap-2 rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1.5 text-xs text-neutral-200 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300"
+      className={`skill-tag flex cursor-default items-center gap-2 rounded-lg border border-neutral-700/50 bg-neutral-800/50 text-xs text-neutral-200 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 ${
+        compact ? "px-2 py-1.5" : "px-2.5 py-2"
+      }`}
     >
-      {/* Chip com fundo próprio atrás do ícone — garante contraste
-          consistente mesmo para logos de marca com traços finos/
-          monocromáticos que ficavam quase invisíveis direto sobre o fundo
-          escuro do tag */}
       <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-accent-500/15 text-accent-300">
         {icon}
       </span>
-      <span className="min-w-0 flex-1 truncate" title={skill.name}>
+      <span className="min-w-0 flex-1 leading-tight" title={skill.name}>
         {skill.name}
       </span>
-      {/* Medidor de proficiência — barra segmentada (opção aprovada pelo
-          autor entre 4 alternativas visuais) */}
       <span
         className="flex shrink-0 items-center gap-[3px]"
         role="img"
@@ -93,18 +83,108 @@ function SkillChip({ skill, delay, icon }: SkillChipProps) {
   );
 }
 
+type SkillBlock = {
+  key: string;
+  title: string;
+  body: ReactNode;
+};
+
+function buildSkillBlocks(skills: SkillGroup[]): SkillBlock[] {
+  const blocks: SkillBlock[] = [];
+
+  skills.forEach((category, catIndex) => {
+    if (category.category === NOSQL_CATEGORY) {
+      return;
+    }
+
+    if (category.category === SQL_CATEGORY) {
+      const nosqlCategory = skills.find((c) => c.category === NOSQL_CATEGORY);
+      blocks.push({
+        key: "banco-de-dados",
+        title: "Banco de Dados",
+        body: (
+          <div className="space-y-2">
+            <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2.5 pt-3">
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-400 to-transparent" />
+              <h4 className="mb-2 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
+                Relacional (SQL)
+              </h4>
+              <div className="space-y-1.5">
+                {category.items.map((skill, skillIndex) => {
+                  const SkillIcon = getSkillIcon(skill.name);
+                  return (
+                    <SkillChip
+                      key={skill.name}
+                      skill={skill}
+                      delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
+                      icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+            <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2.5 pt-3">
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-600 to-transparent" />
+              <h4 className="mb-2 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
+                Não-relacional (NoSQL)
+              </h4>
+              <div className="space-y-1.5">
+                {(nosqlCategory?.items ?? []).map((skill, skillIndex) => {
+                  const SkillIcon = getSkillIcon(skill.name);
+                  return (
+                    <SkillChip
+                      key={skill.name}
+                      skill={skill}
+                      delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
+                      icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ),
+      });
+      return;
+    }
+
+    blocks.push({
+      key: category.category,
+      title: category.category,
+      body: (
+        <div className="space-y-1.5">
+          {category.items.map((skill, skillIndex) => {
+            const SkillIcon = getSkillIcon(skill.name);
+            return (
+              <SkillChip
+                key={skill.name}
+                skill={skill}
+                delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
+                icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
+              />
+            );
+          })}
+        </div>
+      ),
+    });
+  });
+
+  return blocks;
+}
+
 export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
   const { primary: primaryRoles, secondary: secondaryInfo } = parseHeroTitle(
     hero.title,
   );
+  const skillBlocks = buildSkillBlocks(skills);
 
   return (
-    <aside className="w-full shrink-0 p-4 lg:w-[340px] lg:min-h-screen lg:p-6 xl:w-[380px]">
+    <aside className="w-full shrink-0 p-3 sm:p-4 lg:w-[340px] lg:min-h-screen lg:p-6 xl:w-[380px]">
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="glass space-y-6 rounded-3xl p-6 lg:sticky lg:top-6"
+        className="glass space-y-5 rounded-3xl p-5 sm:space-y-6 sm:p-6 lg:sticky lg:top-6"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -151,11 +231,6 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             {hero.name}
           </h1>
 
-          {/* Cargos em destaque, um por linha, digitados simultaneamente
-              (US-07-07 — opção B3 aprovada: as duas linhas "escrevem" ao
-              mesmo tempo, sem alternar/esconder um cargo pelo outro).
-              Informações complementares discretas seguem abaixo, divididas
-              a partir de hero.title. */}
           {primaryRoles.length > 0 ? (
             <div className="mb-1.5 flex flex-col items-center gap-1">
               {primaryRoles.map((role, index) => (
@@ -194,7 +269,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           className="space-y-3"
         >
           <h2 className="flex items-center gap-2 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
-            <Sparkles className="h-3 w-3 text-accent-400" />
+            <AtSign className="h-3.5 w-3.5 text-accent-400" aria-hidden />
             Contato
           </h2>
 
@@ -275,115 +350,29 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="space-y-4"
+          className="space-y-3"
         >
           <h2 className="flex items-center gap-2 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
-            <Sparkles className="h-3 w-3 text-accent-400" />
+            <Cpu className="h-3.5 w-3.5 text-accent-400" aria-hidden />
             Habilidades Técnicas
           </h2>
 
-          <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1">
-            {skills.map((category, catIndex) => {
-              // NoSQL é renderizado junto com SQL (abaixo) — nada aqui.
-              if (category.category === NOSQL_CATEGORY) {
-                return null;
-              }
-
-              if (category.category === SQL_CATEGORY) {
-                const nosqlCategory = skills.find(
-                  (c) => c.category === NOSQL_CATEGORY,
-                );
-                return (
-                  <div key="banco-de-dados" className="space-y-1.5">
-                    <h3 className="text-xs font-medium text-accent-400">
-                      Banco de Dados
-                    </h3>
-                    {/* US-07-10 (revisão) — seções empilhadas em vez de
-                        colunas lado a lado: em duas colunas a largura por
-                        item ficava curta demais e cortava nomes como "SQL
-                        Server"/"DynamoDB" (opção 1 aprovada pelo autor entre
-                        3 alternativas mostradas em artifact comparativo) */}
-                    <div className="space-y-2">
-                      <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2 pt-2.5">
-                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-400 to-transparent" />
-                        <h4 className="mb-1.5 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
-                          Relacional (SQL)
-                        </h4>
-                        <div className="space-y-1">
-                          {category.items.map((skill, skillIndex) => {
-                            const SkillIcon = getSkillIcon(skill.name);
-                            return (
-                              <SkillChip
-                                key={skill.name}
-                                skill={skill}
-                                delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
-                                icon={
-                                  <SkillIcon
-                                    className="h-3.5 w-3.5"
-                                    aria-hidden
-                                  />
-                                }
-                              />
-                            );
-                          })}
-                        </div>
-                      </div>
-                      <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2 pt-2.5">
-                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-600 to-transparent" />
-                        <h4 className="mb-1.5 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
-                          Não-relacional (NoSQL)
-                        </h4>
-                        <div className="space-y-1">
-                          {(nosqlCategory?.items ?? []).map(
-                            (skill, skillIndex) => {
-                              const SkillIcon = getSkillIcon(skill.name);
-                              return (
-                                <SkillChip
-                                  key={skill.name}
-                                  skill={skill}
-                                  delay={
-                                    0.5 + catIndex * 0.1 + skillIndex * 0.02
-                                  }
-                                  icon={
-                                    <SkillIcon
-                                      className="h-3.5 w-3.5"
-                                      aria-hidden
-                                    />
-                                  }
-                                />
-                              );
-                            },
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              }
-
-              return (
-                <div key={category.category} className="space-y-1.5">
-                  <h3 className="text-xs font-medium text-accent-400">
-                    {category.category}
-                  </h3>
-                  <div className="space-y-1">
-                    {category.items.map((skill, skillIndex) => {
-                      const SkillIcon = getSkillIcon(skill.name);
-                      return (
-                        <SkillChip
-                          key={skill.name}
-                          skill={skill}
-                          delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
-                          icon={
-                            <SkillIcon className="h-3.5 w-3.5" aria-hidden />
-                          }
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
+          {/* Mobile/tablet: trilho horizontal; desktop: pilha vertical — mesmo DOM */}
+          <div
+            className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 lg:mx-0 lg:snap-none lg:flex-col lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0"
+            data-testid="skills-layout"
+          >
+            {skillBlocks.map((block) => (
+              <div
+                key={block.key}
+                className="w-[min(78vw,280px)] shrink-0 snap-center rounded-2xl border border-neutral-700/40 bg-neutral-900/40 p-3 lg:w-full lg:shrink lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0"
+              >
+                <h3 className="mb-2.5 text-xs font-semibold text-accent-400 lg:mb-1.5 lg:font-medium">
+                  {block.title}
+                </h3>
+                {block.body}
+              </div>
+            ))}
           </div>
         </motion.div>
 

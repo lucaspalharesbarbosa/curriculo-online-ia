@@ -1,81 +1,29 @@
 "use client";
 
-import { useId, useState } from "react";
-import type { FormEvent } from "react";
 import { MessageCircle, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { useId, useState, type FormEvent } from "react";
 
-type ChatMessage = {
-  id: string;
-  question: string;
-  answer: string | null;
-  status: "loading" | "done" | "error";
-};
-
-type ChatResponse = {
-  answer: string;
-};
-
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-
-const ERROR_MESSAGE = "Não consegui responder agora, tente de novo.";
+import {
+  RESUME_CHAT_ERROR_MESSAGE,
+  useResumeChat,
+} from "@/hooks/useResumeChat";
 
 export function ChatWidget() {
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
-  const [question, setQuestion] = useState("");
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const inputId = useId();
+  const { messages, question, setQuestion, isSubmitting, sendQuestion } =
+    useResumeChat();
+
+  // Protótipos em /prototipo/* têm chat próprio — evita dois widgets
+  if (pathname?.startsWith("/prototipo")) {
+    return null;
+  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-
-    const trimmedQuestion = question.trim();
-    if (!trimmedQuestion || isSubmitting) {
-      return;
-    }
-
-    const messageId = crypto.randomUUID();
-    setMessages((current) => [
-      ...current,
-      {
-        id: messageId,
-        question: trimmedQuestion,
-        answer: null,
-        status: "loading",
-      },
-    ]);
-    setQuestion("");
-    setIsSubmitting(true);
-
-    try {
-      const response = await fetch(`${apiUrl}/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: trimmedQuestion }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Resposta inesperada da API: ${response.status}`);
-      }
-
-      const data = (await response.json()) as ChatResponse;
-
-      setMessages((current) =>
-        current.map((message) =>
-          message.id === messageId
-            ? { ...message, answer: data.answer, status: "done" }
-            : message,
-        ),
-      );
-    } catch {
-      setMessages((current) =>
-        current.map((message) =>
-          message.id === messageId ? { ...message, status: "error" } : message,
-        ),
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
+    await sendQuestion();
   }
 
   return (
@@ -126,7 +74,7 @@ export function ChatWidget() {
                 ) : null}
                 {message.status === "error" ? (
                   <p className="rounded-lg border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-300">
-                    {ERROR_MESSAGE}
+                    {RESUME_CHAT_ERROR_MESSAGE}
                   </p>
                 ) : null}
               </li>

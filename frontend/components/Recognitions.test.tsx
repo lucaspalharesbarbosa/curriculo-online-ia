@@ -8,7 +8,7 @@ describe("Recognitions", () => {
     cleanup();
   });
 
-  it("renderiza reconhecimento com título, emissor, ano e descrição", () => {
+  it("renderiza reconhecimento com título, emissor, ano e descrição visível", () => {
     render(
       <Recognitions
         items={[
@@ -33,36 +33,12 @@ describe("Recognitions", () => {
     expect(
       screen.getByText("Avaliação com classificação de destaque."),
     ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /o que é/i }),
+    ).not.toBeInTheDocument();
   });
 
-  it("expõe a descrição via botão de informação com tooltip associado (aria-describedby)", () => {
-    render(
-      <Recognitions
-        items={[
-          {
-            title: "Reconhecimento PRAD — Alto Desempenho",
-            issuer: "Itaú Unibanco",
-            year: "2024",
-            description: "PRAD — Programa de Remuneração de Alto Desempenho.",
-          },
-        ]}
-      />,
-    );
-
-    const trigger = screen.getByRole("button", {
-      name: /o que é reconhecimento prad/i,
-    });
-    const describedById = trigger.getAttribute("aria-describedby");
-    expect(describedById).toBeTruthy();
-
-    const tooltip = document.getElementById(describedById as string);
-    expect(tooltip).toHaveAttribute("role", "tooltip");
-    expect(tooltip).toHaveTextContent(
-      "PRAD — Programa de Remuneração de Alto Desempenho.",
-    );
-  });
-
-  it("não renderiza foto — só o ícone decorativo de medalha", () => {
+  it("não renderiza foto — só o ícone decorativo", () => {
     render(
       <Recognitions
         items={[
@@ -83,5 +59,23 @@ describe("Recognitions", () => {
     const { container } = render(<Recognitions items={[]} />);
 
     expect(container).toBeEmptyDOMElement();
+  });
+
+  it("permite colapsar a seção", () => {
+    render(
+      <Recognitions
+        items={[
+          {
+            title: "Reconhecimento de Mérito",
+            issuer: "Itaú Unibanco",
+            year: "2024",
+            description: "Texto.",
+          },
+        ]}
+      />,
+    );
+
+    const toggle = screen.getByRole("button", { name: /reconhecimentos/i });
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
   });
 });

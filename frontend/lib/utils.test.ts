@@ -3,9 +3,11 @@ import { describe, expect, it } from "vitest";
 import {
   formatResumePeriod,
   formatYear,
+  getExperienceHighlightKind,
   groupCertificationsByIssuer,
   groupExperiencesByCompany,
   parseHeroTitle,
+  splitAboutNarrative,
 } from "./utils";
 
 describe("parseHeroTitle", () => {
@@ -194,5 +196,31 @@ describe("groupCertificationsByIssuer", () => {
       "SOLID com Java",
       "Formação Angular",
     ]);
+  });
+});
+
+describe("splitAboutNarrative", () => {
+  it("separa lead, corpo e ênfases entre travessões", () => {
+    expect(
+      splitAboutNarrative(
+        "Lead aqui. Corpo com AI Engineering — Context Engineering, Agentic AI — no ciclo.",
+      ),
+    ).toEqual({
+      lead: "Lead aqui.",
+      body: "Corpo com AI Engineering no ciclo.",
+      accents: ["Context Engineering", "Agentic AI"],
+    });
+  });
+});
+
+describe("getExperienceHighlightKind", () => {
+  it("classifica PRAD, mérito e padrão", () => {
+    expect(
+      getExperienceHighlightKind("Reconhecido por Alto Desempenho (2023)"),
+    ).toBe("prad");
+    expect(getExperienceHighlightKind("Reconhecimento de Mérito (2024)")).toBe(
+      "merit",
+    );
+    expect(getExperienceHighlightKind("Entreguei o MVP")).toBe("default");
   });
 });
