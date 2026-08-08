@@ -55,20 +55,18 @@ export function Recognitions({ items }: RecognitionsProps) {
                   </div>
                 </motion.div>
 
-                <span className="rounded-lg border border-accent-500/35 bg-accent-500/15 px-2.5 py-1 font-mono text-[11px] font-semibold text-accent-300">
+                <span className="type-caption rounded-lg border border-accent-500/35 bg-accent-500/15 px-2.5 py-1 font-mono font-semibold text-accent-300">
                   {recognition.year}
                 </span>
               </div>
 
-              <h3 className="mb-1 text-sm leading-snug font-semibold text-neutral-50 sm:text-base">
-                {recognition.title}
-              </h3>
-              <p className="mb-3 text-xs font-medium tracking-wide text-accent-400/90 uppercase">
+              <h3 className="type-item-title mb-1">{recognition.title}</h3>
+              <p className="type-label mb-3 text-accent-400/90">
                 {recognition.issuer}
               </p>
 
               {recognition.description ? (
-                <p className="rounded-xl border border-neutral-800/80 bg-neutral-950/45 px-3 py-2.5 text-[12px] leading-relaxed text-neutral-300">
+                <p className="type-body rounded-xl border border-neutral-800/80 bg-neutral-950/45 px-3 py-2.5 text-neutral-300">
                   {recognition.description}
                 </p>
               ) : null}

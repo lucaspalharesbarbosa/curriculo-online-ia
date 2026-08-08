@@ -60,11 +60,11 @@ export function Certifications({ items }: CertificationsProps) {
                 )}
               </div>
               <div className="min-w-0">
-                <h3 className="truncate text-sm font-semibold text-neutral-100">
+                <h3 className="type-item-title truncate text-base sm:text-lg">
                   {group.issuer}
                 </h3>
                 {group.items.length > 1 ? (
-                  <p className="text-[11px] text-neutral-500">
+                  <p className="type-meta mt-0.5">
                     {group.items.length} certificados
                   </p>
                 ) : null}
@@ -82,11 +82,11 @@ export function Certifications({ items }: CertificationsProps) {
                   }
                 >
                   <div className="min-w-0">
-                    <p className="text-xs leading-snug font-medium text-neutral-200">
+                    <p className="type-body leading-snug font-medium text-neutral-200">
                       {cert.name}
                     </p>
                     {cert.expiresAt ? (
-                      <p className="mt-0.5 text-[11px] text-neutral-500">
+                      <p className="type-meta mt-0.5">
                         Válido até {formatYear(cert.expiresAt)}
                       </p>
                     ) : null}
@@ -95,14 +95,14 @@ export function Certifications({ items }: CertificationsProps) {
                         href={cert.credentialUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-accent-400 transition-colors hover:text-accent-300"
+                        className="type-caption mt-1 inline-flex items-center gap-1 font-medium text-accent-400 transition-colors hover:text-accent-300"
                       >
                         Ver certificado
-                        <ExternalLink className="h-3 w-3" />
+                        <ExternalLink className="h-3.5 w-3.5" />
                       </Link>
                     ) : null}
                   </div>
-                  <span className="shrink-0 text-[11px] font-medium tracking-wide text-neutral-500">
+                  <span className="type-meta shrink-0 font-medium tracking-wide">
                     {formatYear(cert.issuedAt)}
                   </span>
                 </li>

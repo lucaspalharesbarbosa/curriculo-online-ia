@@ -41,7 +41,7 @@ export function SummarySection({ title, about }: SummarySectionProps) {
           </div>
 
           <div className="space-y-4">
-            <p className="text-lg leading-snug font-medium text-balance text-neutral-100 sm:text-xl">
+            <p className="type-item-title text-balance font-medium md:text-xl">
               {lead}
             </p>
 
@@ -53,7 +53,7 @@ export function SummarySection({ title, about }: SummarySectionProps) {
                 {accents.map((accent) => (
                   <li
                     key={accent}
-                    className="rounded-lg border border-accent-500/25 bg-accent-500/10 px-2.5 py-1 text-[11px] font-medium tracking-wide text-accent-300"
+                    className="type-caption rounded-lg border border-accent-500/25 bg-accent-500/10 px-2.5 py-1 font-medium tracking-wide text-accent-300"
                   >
                     {accent}
                   </li>
@@ -63,9 +63,7 @@ export function SummarySection({ title, about }: SummarySectionProps) {
 
             {body ? (
               <div className="relative border-l-2 border-accent-500/30 pl-4">
-                <p className="text-sm leading-relaxed text-neutral-400 sm:text-[15px] sm:leading-relaxed">
-                  {body}
-                </p>
+                <p className="type-body">{body}</p>
               </div>
             ) : null}
           </div>

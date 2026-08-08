@@ -47,11 +47,11 @@ export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
             whileHover={cardHover}
             className="project-card glass-card group rounded-2xl p-4 sm:p-5"
           >
-            <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-accent-500/30 bg-accent-500/15 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-accent-400 uppercase">
+            <span className="type-label mb-3 inline-flex items-center gap-1.5 rounded-full border border-accent-500/30 bg-accent-500/15 px-2.5 py-1 text-accent-400">
               Projeto
             </span>
             <div className="mb-4 flex items-start justify-between gap-3">
-              <h3 className="text-base font-bold text-neutral-100 transition-colors group-hover:text-accent-400 sm:text-lg">
+              <h3 className="type-item-title transition-colors group-hover:text-accent-400">
                 {project.title}
               </h3>
               <MotionLink
@@ -67,15 +67,13 @@ export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
               </MotionLink>
             </div>
 
-            <p className="mb-4 text-sm text-neutral-400">
-              {project.description}
-            </p>
+            <p className="type-body mb-4">{project.description}</p>
 
             <div className="flex flex-wrap gap-2">
               {project.technologies.map((tech) => (
                 <span
                   key={tech}
-                  className="rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1 text-xs text-neutral-300 transition-colors hover:border-accent-500/30 hover:text-accent-300"
+                  className="type-chip rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1 transition-colors hover:border-accent-500/30 hover:text-accent-300"
                 >
                   {tech}
                 </span>
@@ -94,11 +92,11 @@ export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
             whileHover={cardHover}
             className="project-card glass-card group rounded-2xl border border-dashed border-accent-500/30 p-4 sm:p-5"
           >
-            <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-accent-500/40 bg-transparent px-2.5 py-1 text-[10px] font-semibold tracking-wide text-accent-400 uppercase">
+            <span className="type-label mb-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-accent-500/40 bg-transparent px-2.5 py-1 text-accent-400">
               Artigo
             </span>
             <div className="mb-4 flex items-start justify-between gap-3">
-              <h3 className="text-base font-bold text-neutral-100 transition-colors group-hover:text-accent-400 sm:text-lg">
+              <h3 className="type-item-title transition-colors group-hover:text-accent-400">
                 {article.title}
               </h3>
               <MotionLink
@@ -114,11 +112,9 @@ export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
               </MotionLink>
             </div>
 
-            <p className="mb-4 text-sm text-neutral-400">
-              {article.description}
-            </p>
+            <p className="type-body mb-4">{article.description}</p>
 
-            <span className="inline-block rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1 text-xs text-neutral-300">
+            <span className="type-chip inline-block rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1">
               {article.source}
             </span>
           </motion.div>

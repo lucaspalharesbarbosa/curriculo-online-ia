@@ -59,9 +59,7 @@ export function EducationSection({ items }: EducationSectionProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex items-center gap-1.5">
-                  <h3 className="text-base font-bold text-neutral-100 sm:text-lg">
-                    {edu.institution}
-                  </h3>
+                  <h3 className="type-item-title">{edu.institution}</h3>
                   {edu.websiteUrl ? (
                     <Link
                       href={edu.websiteUrl}
@@ -75,9 +73,9 @@ export function EducationSection({ items }: EducationSectionProps) {
                     </Link>
                   ) : null}
                 </div>
-                <p className="mb-3 font-medium text-accent-400">{edu.degree}</p>
-                <span className="flex items-center gap-1.5 text-sm text-neutral-400">
-                  <Calendar className="h-4 w-4" />
+                <p className="type-item-accent mb-3">{edu.degree}</p>
+                <span className="type-meta flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4 shrink-0" />
                   {edu.startDate} – {edu.endDate}
                 </span>
               </div>

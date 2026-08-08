@@ -27,13 +27,10 @@ export function SectionHeading({
         <div className="relative text-accent-400">{icon}</div>
       </div>
       <div className="min-w-0 flex-1">
-        <h2
-          id={id}
-          className="text-xl font-bold tracking-tight text-neutral-100"
-        >
+        <h2 id={id} className="type-section-title">
           {title}
         </h2>
-        <p className="text-xs text-neutral-400">{subtitle}</p>
+        <p className="type-section-subtitle">{subtitle}</p>
       </div>
       {trailing}
     </div>

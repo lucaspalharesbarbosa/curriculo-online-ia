@@ -36,7 +36,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
       icon={<BriefcaseBusiness className="h-5 w-5" aria-hidden />}
       orbClassName="top-0 left-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl"
     >
-      <div className="mb-4 flex items-center gap-1.5 text-[11px] font-semibold tracking-wide text-accent-400 uppercase">
+      <div className="type-label mb-4 flex items-center gap-1.5 text-accent-400">
         Mais recente no topo
         <ChevronDown className="h-3.5 w-3.5 animate-bounce" aria-hidden />
       </div>
@@ -73,7 +73,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
               >
                 <span
                   className={cn(
-                    "mb-2 inline-block font-mono text-xs font-bold sm:absolute sm:top-5 sm:left-0 sm:mb-0 sm:w-11 sm:text-right",
+                    "type-meta mb-2 inline-block font-mono font-bold sm:absolute sm:top-5 sm:left-0 sm:mb-0 sm:w-12 sm:text-right",
                     isGroupCurrent ? "text-accent-400" : "text-neutral-500",
                   )}
                 >
@@ -105,11 +105,9 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
 
                 <div className="pl-14 sm:pl-28">
                   <div className="mb-3 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
-                    <h3 className="text-base font-bold text-neutral-100">
-                      {group.company}
-                    </h3>
-                    <span className="flex items-center gap-1.5 text-xs text-neutral-500">
-                      <MapPin className="h-3.5 w-3.5" />
+                    <h3 className="type-item-title">{group.company}</h3>
+                    <span className="type-meta flex items-center gap-1.5">
+                      <MapPin className="h-3.5 w-3.5 shrink-0" />
                       {primaryRole.location} · {primaryRole.modality}
                     </span>
                   </div>
@@ -118,28 +116,28 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                     {group.roles.map((role, roleIndex) => (
                       <div key={`${role.role}-${role.startDate}`}>
                         {roleIndex > 0 ? (
-                          <div className="mb-3 flex items-center gap-1.5 border-t border-dashed border-neutral-800/60 pt-3 text-[11px] font-semibold tracking-wide text-accent-400 uppercase">
+                          <div className="type-label mb-3 flex items-center gap-1.5 border-t border-dashed border-neutral-800/60 pt-3 text-accent-400">
                             <TrendingUp className="h-3.5 w-3.5" />
                             Promovido
                           </div>
                         ) : null}
 
                         <div className="mb-2 flex flex-wrap items-start justify-between gap-3">
-                          <p className="flex flex-wrap items-center gap-2 font-medium text-accent-300">
+                          <p className="type-item-accent flex flex-wrap items-center gap-2 text-accent-300">
                             {role.role}
                             {role.endDate === null ? (
-                              <span className="rounded-full border border-accent-500/40 bg-accent-500/15 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-accent-400 uppercase">
+                              <span className="type-label rounded-full border border-accent-500/40 bg-accent-500/15 px-2 py-0.5 text-accent-400">
                                 Atual
                               </span>
                             ) : null}
                           </p>
-                          <span className="flex items-center gap-1.5 text-xs text-neutral-500">
-                            <Calendar className="h-3.5 w-3.5" />
+                          <span className="type-meta flex items-center gap-1.5">
+                            <Calendar className="h-3.5 w-3.5 shrink-0" />
                             {formatResumePeriod(role.startDate, role.endDate)}
                           </span>
                         </div>
 
-                        <ul className="mb-3 space-y-2 text-sm text-neutral-400">
+                        <ul className="type-body mb-3 space-y-2">
                           {role.highlights.map((highlight) => {
                             const kind = getExperienceHighlightKind(highlight);
                             const isFeatured = kind !== "default";
@@ -155,13 +153,13 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                               >
                                 <span
                                   className={cn(
-                                    "mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500",
-                                    isFeatured && "mt-1 bg-accent-400",
+                                    "mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500",
+                                    isFeatured && "mt-1.5 bg-accent-400",
                                   )}
                                 />
                                 <span>
                                   {isFeatured ? (
-                                    <span className="mb-0.5 block text-[10px] font-semibold tracking-wider text-accent-400 uppercase">
+                                    <span className="type-label mb-0.5 block tracking-wider text-accent-400">
                                       {kind === "prad"
                                         ? "Alto desempenho"
                                         : "Mérito"}
@@ -178,7 +176,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                           {role.technologies.map((tech) => (
                             <span
                               key={tech}
-                              className="rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1 text-xs text-neutral-300 transition-colors hover:border-accent-500/30 hover:text-accent-300"
+                              className="type-chip rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1 transition-colors hover:border-accent-500/30 hover:text-accent-300"
                             >
                               {tech}
                             </span>

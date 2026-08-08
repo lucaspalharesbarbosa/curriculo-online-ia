@@ -52,7 +52,7 @@ function SkillChip({ skill, delay, icon, compact = false }: SkillChipProps) {
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay }}
-      className={`skill-tag flex cursor-default items-center gap-2 rounded-lg border border-neutral-700/50 bg-neutral-800/50 text-xs text-neutral-200 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 ${
+      className={`skill-tag type-chip flex cursor-default items-center gap-2 rounded-lg border border-neutral-700/50 bg-neutral-800/50 text-neutral-200 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 ${
         compact ? "px-2 py-1.5" : "px-2.5 py-2"
       }`}
     >
@@ -106,7 +106,7 @@ function buildSkillBlocks(skills: SkillGroup[]): SkillBlock[] {
           <div className="space-y-2">
             <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2.5 pt-3">
               <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-400 to-transparent" />
-              <h4 className="mb-2 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
+              <h4 className="type-label mb-2 text-neutral-400">
                 Relacional (SQL)
               </h4>
               <div className="space-y-1.5">
@@ -125,7 +125,7 @@ function buildSkillBlocks(skills: SkillGroup[]): SkillBlock[] {
             </div>
             <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2.5 pt-3">
               <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-600 to-transparent" />
-              <h4 className="mb-2 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
+              <h4 className="type-label mb-2 text-neutral-400">
                 Não-relacional (NoSQL)
               </h4>
               <div className="space-y-1.5">
@@ -227,7 +227,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             </div>
           </div>
 
-          <h1 className="gradient-text glow-text mb-2 text-xl font-bold lg:text-2xl">
+          <h1 className="type-section-title gradient-text glow-text mb-2">
             {hero.name}
           </h1>
 
@@ -238,8 +238,8 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
                   key={role}
                   className={`role-typewriter font-mono ${
                     index === 0
-                      ? "gradient-text text-sm font-semibold lg:text-base"
-                      : "text-xs text-accent-300 lg:text-sm"
+                      ? "type-item-accent gradient-text font-semibold"
+                      : "type-meta text-accent-300"
                   }`}
                   style={
                     {
@@ -256,7 +256,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           ) : null}
 
           {secondaryInfo.length > 0 ? (
-            <p className="mb-3 text-[11px] tracking-wide text-neutral-500 uppercase">
+            <p className="type-label mb-3 text-neutral-500">
               {secondaryInfo.join(" · ")}
             </p>
           ) : null}
@@ -268,7 +268,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="space-y-3"
         >
-          <h2 className="flex items-center gap-2 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+          <h2 className="type-sidebar-heading flex items-center gap-2">
             <AtSign className="h-3.5 w-3.5 text-accent-400" aria-hidden />
             Contato
           </h2>
@@ -281,7 +281,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
               <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
                 <Mail className="h-4 w-4" />
               </div>
-              <span className="truncate text-xs text-neutral-300 transition-colors group-hover:text-white">
+              <span className="type-sidebar-link truncate transition-colors group-hover:text-white">
                 {contact.email}
               </span>
             </Link>
@@ -297,7 +297,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
               <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
                 <MessageCircle className="h-4 w-4" />
               </div>
-              <span className="text-xs text-neutral-300 transition-colors group-hover:text-white">
+              <span className="type-sidebar-link transition-colors group-hover:text-white">
                 WhatsApp
               </span>
             </Link>
@@ -312,7 +312,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
               <MapPin className="h-4 w-4" />
             </div>
-            <span className="text-xs text-neutral-300 transition-colors group-hover:text-white">
+            <span className="type-sidebar-link transition-colors group-hover:text-white">
               {hero.location}
             </span>
           </Link>
@@ -352,7 +352,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           transition={{ duration: 0.5, delay: 0.4 }}
           className="space-y-3"
         >
-          <h2 className="flex items-center gap-2 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+          <h2 className="type-sidebar-heading flex items-center gap-2">
             <Cpu className="h-3.5 w-3.5 text-accent-400" aria-hidden />
             Habilidades Técnicas
           </h2>
@@ -367,7 +367,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
                 key={block.key}
                 className="w-[min(78vw,280px)] shrink-0 snap-center rounded-2xl border border-neutral-700/40 bg-neutral-900/40 p-3 lg:w-full lg:shrink lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0"
               >
-                <h3 className="mb-2.5 text-xs font-semibold text-accent-400 lg:mb-1.5 lg:font-medium">
+                <h3 className="type-caption mb-2.5 font-semibold text-accent-400 lg:mb-1.5">
                   {block.title}
                 </h3>
                 {block.body}
@@ -385,7 +385,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             <Link
               href={contact.resumePdfUrl}
               download
-              className="neon-glow flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-400 via-accent-500 to-accent-400 bg-[length:200%_100%] py-3.5 text-sm font-medium text-neutral-900 transition-all duration-500 hover:bg-[position:100%_0] hover:shadow-lg hover:shadow-accent-500/25"
+              className="type-body neon-glow flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-400 via-accent-500 to-accent-400 bg-[length:200%_100%] py-3.5 font-medium text-neutral-900 transition-all duration-500 hover:bg-[position:100%_0] hover:shadow-lg hover:shadow-accent-500/25"
             >
               <Download className="h-4 w-4" />
               Download CV
