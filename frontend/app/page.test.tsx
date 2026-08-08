@@ -23,6 +23,9 @@ describe("Home page", () => {
       screen.getByRole("heading", { name: /certificações/i }),
     ).toBeInTheDocument();
     expect(
+      screen.getByRole("heading", { name: /reconhecimentos/i }),
+    ).toBeInTheDocument();
+    expect(
       screen.getByRole("heading", { name: /^destaques$/i }),
     ).toBeInTheDocument();
     expect(
