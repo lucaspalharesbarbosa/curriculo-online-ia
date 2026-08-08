@@ -33,7 +33,7 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 
 Fase 06 (divulgação) é checklist de lançamento, sem histórias formais de backlog — ver [`roadmap.md`](roadmap.md#fase-6--divulgação).
 
-- [Fase 07 — Frontend & UX v2](backlog/fase-07/) (2 histórias P1 — DoR fechado; P2/P3 ainda não decompostas)
+- [Fase 07 — Frontend & UX v2](backlog/fase-07/) (US-07-01 a US-07-04 — DoR fechado; US-07-03 = clonagem do template [personal-resume](https://github.com/giasinguyen/personal-resume))
 
 ### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
 
