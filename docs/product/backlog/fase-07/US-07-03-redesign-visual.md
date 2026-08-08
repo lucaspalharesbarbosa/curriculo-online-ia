@@ -1,64 +1,100 @@
-# US-07-03 — Redesign visual do site (paleta, tipografia, hero, microinterações)
+# US-07-03 — Redesign visual do site (clonagem estrutural do template personal-resume)
 
 **Fase:** Fase 07 — Frontend & UX v2
 **Épico de origem:** Frontend & UX v2 (`PRD-005-frontend-ux-v2.md`)
 
 **Como** visitante/recrutador,
-**quero** uma experiência visual mais moderna e coesa (paleta, tipografia, hero e microinterações),
-**para** perceber o site como algo cuidado e atual, não só funcional.
+**quero** que o site replique a estrutura, layout, paleta, efeitos e usabilidade do template de referência (não só a paleta/tipografia), preenchido com as informações reais do autor,
+**para** perceber o site como um currículo visualmente equivalente ao template profissional de mercado, não uma adaptação parcial.
+
+### Pivô de escopo (2026-08-07 — 2ª troca de referência)
+
+A rodada anterior desta história (mesma branch `feature/fase-07-execucao`) entregou clonagem estrutural do template **PortfolioHub** (Framer). O autor escolheu nova referência: template open-source **personal-resume** ([GitHub](https://github.com/giasinguyen/personal-resume), [demo](https://cv.nguyentrangiasi.id.vn/)). Como o trabalho PortfolioHub ainda não chegou a PR aceito como referência final, o escopo foi **reescrito do zero** dentro da mesma história: Critérios de Aceite, Tasks, DoD e Vereditos abaixo substituem a rodada anterior.
+
+**Estratégia de implementação (custo):** descartar o layout PortfolioHub (ticker/stats/tools/Clash Grotesk/nav pills) e **portar o layout do template** para `frontend/` (sidebar sticky + coluna principal com cards glass), alimentado por `resume.json`.
+
+Decisões fechadas pelo `@product-owner` em 2026-08-07 (regra do projeto: nunca inventar conteúdo; só `resume.json`):
+
+1. **Languages e Soft Skills** do template: **omitidas** — `resume.json` não tem esses campos.
+2. **Awards & Scholarships** do template → seção **Certificações** com o mesmo layout de cards (dados de `certifications[]`).
+3. **Experience:** incluída na coluna principal (entre About e Education), idioma visual glass/amber do template.
+4. **Badges do perfil:** até 2 pills derivados de `hero.title` (split por `|`), sem emoji inventado.
+5. **Bloco "developer.ts":** só `name` e `role` — sem `passion` fictício.
+6. **Education:** só campos reais (`institution`, `degree`, `startDate`, `endDate`).
+7. **Tema:** dark amber/gold do template como identidade principal.
+8. **ChatWidget:** mantido e restilizado para amber/glass.
+9. **WhatsApp / PDF / LinkedIn / GitHub / e-mail:** no bloco de contato da sidebar.
+10. **Deps:** `framer-motion`, `lucide-react@0.562.0`, `clsx`, `tailwind-merge` — `ADR-005`.
 
 ### DoR (antes de iniciar) — precisa estar 100% fechado
 
 - [x] Critérios de aceite (abaixo) escritos e testáveis
 - [x] Contrato de API documentado — N/A (sem endpoint novo/alterado; só UI/CSS)
 - [x] Mapeamento de erros documentado — N/A
-- [x] Modelagem de dados documentada — N/A (sem entidade nova)
-- [x] Plano de testes definido (ver subseção)
-- [x] Épico e dependências identificados — Frontend & UX v2 (`PRD-005`); depende de US-07-02 (auditoria de responsividade) estar Done antes de redesenhar, para não corrigir responsividade em cima de um layout que ainda vai mudar; componentes de seção (US-03-09 a US-03-16) já Done
-- [x] ADR registrado se envolve decisão de stack nova — N/A (permanece dentro do Tailwind já adotado; `next/font` já é recurso nativo do Next.js atual, não é lib nova)
-- [x] Variáveis de ambiente/segredos necessários identificados — N/A
-- [x] Referência visual definida — template **Omnira** (Framer), https://omnira.framer.website/, print enviado pelo autor em 2026-08-06 (ver subseção "Referência visual" abaixo)
+- [x] Modelagem de dados documentada — N/A (adapter por props; `resume.json` inalterado)
+- [x] Plano de testes definido
+- [x] Épico e dependências identificados — Frontend & UX v2 (`PRD-005`); US-07-01/02; US-04-02
+- [x] ADR registrado — **ADR-005**
+- [x] Variáveis de ambiente/segredos — N/A
+- [x] Referência visual definida — [personal-resume](https://github.com/giasinguyen/personal-resume) · [demo](https://cv.nguyentrangiasi.id.vn/)
 - [x] Sem dúvida bloqueante
 
-#### Referência visual
+#### Mapeamento seção-a-seção (template → site)
 
-Template **Omnira · Futuristic portfolio template** (Framer) — https://omnira.framer.website/. Análise a partir de print de página inteira enviado pelo autor (WebFetch não trouxe cor/fonte exatas por ser site Framer renderizado via JS).
-
-- **Paleta:** fundo quase preto (`#0A0A0A`–`#0D0D0D`, muito próximo do `--background: #0a0a0a` já usado no dark mode atual em `frontend/app/globals.css:17`); superfícies de card num cinza-escuro levemente mais claro (`#141414`–`#1C1C1C`); acento único em laranja vibrante (`#FF7A1A`–`#FF8A2E`, aprox.) usado com moderação — CTA, badges/tags, ícones, linhas de destaque; texto principal branco/quase-branco, texto secundário cinza médio (`#9CA3AF` aprox.). Tokens exatos (hex final) ficam a critério do Dev dentro dessa direção, **sempre validados por CA-006 (WCAG AA)** antes de fechar CA-001.
-- **Tipografia:** sans-serif grotesk/geométrica, bold, uppercase nos títulos, tracking apertado (ex.: "DESIGN BEYOND THE SYSTEM"); pequenos rótulos "eyebrow" em uppercase com letter-spacing acima de cada headline de seção; contraste forte entre peso do título (bold/black) e peso do corpo (regular). Não precisa ser a fonte litearal do Omnira — manter `next/font` (Geist já carregado) é aceitável desde que a hierarquia bold/uppercase seja seguida (CA-002 já cobre isso).
-- **Hero (CA-003):** layout assimétrico — bloco de texto à esquerda (badge pequeno acima do título, headline grande em 2-3 linhas, subtítulo curto, botão CTA laranja preenchido) e imagem/elemento visual à direita; fundo escuro sólido, sem gradiente pesado.
-- **Padrões de seção reutilizáveis:** badge/tag "eyebrow" uppercase antes de cada título de seção; grid de cards com cantos arredondados e imagens/gráficos coloridos de destaque; um elemento gráfico "tech" (linha isométrica/wireframe 3D) como assinatura visual futurista — opcional, não é critério de aceite, é inspiração de tom.
-- **Microinterações (CA-004):** hover/transições sutis em cards, nav e CTA — sem especificação de curva/duração exata na referência; Dev usa bom senso (ease padrão do Tailwind, ~150-250ms), respeitando `prefers-reduced-motion`.
-- **Fora do escopo desta referência:** cores exatas em hex, fonte exata usada pelo Omnira e comportamento pixel-a-pixel das animações — não foram extraídos (sem screenshot em alta fidelidade nem inspeção de CSS). Interpretação é guiada pela direção estética acima, não replicação literal.
+| UI do template | Seção do site | Fonte de dado (`resume.json`) | CA |
+|---|---|---|---|
+| Sidebar — avatar, nome, título, badges | `ResumeSidebar` | `hero` | CA-003 |
+| Sidebar — Contact + social | Contato na sidebar | `contact` (+ WhatsApp) | CA-004 |
+| Sidebar — Technical Skills | Skills tags | `skills[]` | CA-005 |
+| Sidebar — Languages / Soft Skills | **omitidas** | — | Fora de escopo |
+| Sidebar — Download CV | Botão PDF | `contact.resumePdfUrl` | CA-004 |
+| Main — About Me | `SummarySection` | `about` + `hero` | CA-006 |
+| Main — Experience | `ExperienceSection` | `experiences[]` | CA-007 |
+| Main — Education | `EducationSection` | `education[]` | CA-008 |
+| Main — Awards | `Certifications` | `certifications[]` | CA-009 |
+| Main — Featured Projects | `ProjectsSection` | `projects[]` | CA-010 |
+| Orbs/grid/glass/glow/amber | `globals.css` + page | tokens | CA-001, CA-002 |
+| Chat (só nosso produto) | `ChatWidget` | `/chat` | CA-011 |
 
 #### Plano de testes
 
-- Unitário/integração: suíte existente de cada componente (`*.test.tsx`) — não deve regredir após troca de paleta/tipografia/hero
-- Manual (obrigatório para aceite): revisão visual da referência aprovada aplicada em todas as seções, em light e dark mode
-- Lighthouse mobile (Acessibilidade/Best Practices) — sem regressão face à baseline mais recente (Fase 4 / US-07-02)
-- Checagem de contraste da paleta nova em WCAG AA (mesmo padrão corrigido em US-04-02)
-- Mocks necessários: N/A
+- Unitário: componentes novos + `lib/utils` + page
+- Manual: comparação com demo do template
+- Lighthouse mobile em build de produção
+- Contraste WCAG AA
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
 
-- [ ] CA-001: nova paleta de cores (tokens em `frontend/app/globals.css`, bloco `@theme`) aplicada de forma consistente em todas as seções, com suporte a dark mode mantido
-- [ ] CA-002: tipografia aplicada via `next/font` de fato usada no `body`/componentes, substituindo o fallback atual (`font-family: Arial, Helvetica` em `frontend/app/globals.css:25`, que hoje ignora a variável `--font-geist-sans` já carregada)
-- [ ] CA-003: `Hero` (`frontend/components/Hero.tsx`) redesenhado conforme a referência aprovada pelo autor
-- [ ] CA-004: pelo menos uma microinteração (hover/transition) adicionada em elementos interativos-chave (nav, cards, CTA de contato), respeitando `prefers-reduced-motion`
-- [ ] CA-005: Lighthouse mobile não piora nota de Acessibilidade/Best Practices em relação à baseline mais recente (Fase 4 / US-07-02)
-- [ ] CA-006: paleta nova passa em contraste WCAG AA (mesmo padrão corrigido em US-04-02)
+- [x] CA-001: paleta amber/dark do template em `globals.css`; identidade PortfolioHub (ciano/Clash) removida do fluxo ativo
+- [x] CA-002: glass, orbs, glow, skill-tag/project-card; `prefers-reduced-motion` em `globals.css`
+- [x] CA-003: layout sidebar sticky + main; empilha em mobile
+- [x] CA-004: contato na sidebar (e-mail, WhatsApp, LinkedIn, GitHub, PDF)
+- [x] CA-005: skills como tags por categoria a partir de `skills[]`
+- [x] CA-006: About no padrão Summary (sem passion inventada)
+- [x] CA-007: Experience com as 6 experiências reais
+- [x] CA-008: Education com `education[]`
+- [x] CA-009: Certificações no layout Awards
+- [x] CA-010: Projects no padrão featured cards
+- [x] CA-011: ChatWidget funcional na paleta amber
+- [x] CA-012: tipografia `Inter` via `next/font/google`; Clash fora do layout
+- [x] CA-013: sem dados do autor do template (teste em `page.test.tsx`)
+- [x] CA-014: Lighthouse mobile (build prod, porta 3456): A11y **100**, Best Practices **100**, Performance **81** (baseline anterior Perf 64 — sem regressão)
+- [x] CA-015: contraste WCAG AA — 8 pares texto/fundo calculados, todos ≥ 4.5:1 (menor 7.84:1 muted/dark)
 
 ### Fora de escopo
 
-- Auditoria/correção de responsividade — US-07-02, história separada, deve estar concluída antes desta
-- Revisão de recursos do Next.js (`next/image`, Server Components) — US-07-04, história separada
-- Troca de framework ou de biblioteca de UI
+- Languages e Soft Skills
+- Conteúdo inventado
+- Pixel-perfect de toda animação Framer Motion
+- Identidade PortfolioHub
+- Troca de framework
+- Chat v2 / formulário com persistência
 
 ### Dependências
 
-- US-07-02 (auditoria de responsividade) — recomendado concluir antes, para não redesenhar em cima de layout que ainda vai mudar
-- US-04-02 (baseline de acessibilidade/contraste)
-- US-03-09 a US-03-16 (componentes de seção) — todas Done
+- US-07-01, US-07-02, US-04-02
+- ADR-005
+- Template MIT: https://github.com/giasinguyen/personal-resume
 
 ### Épico / Prioridade
 
@@ -66,31 +102,74 @@ Frontend & UX v2 — P2
 
 ### Tasks
 
-- [ ] T01 Definir tokens de paleta em `frontend/app/globals.css` (`@theme`) a partir da referência aprovada
-- [ ] T02 [P] Configurar tipografia via `next/font` em `frontend/app/layout.tsx`, removendo o fallback `Arial, Helvetica`
-- [ ] T03 Redesenhar `frontend/components/Hero.tsx` conforme referência
-- [ ] T04 Adicionar microinterações (hover/transition) em componentes interativos-chave, respeitando `prefers-reduced-motion`
-- [ ] T05 [P] Rodar suíte de testes existente e Lighthouse mobile, registrar resultado nesta história
+- [x] T01 ADR-005 + deps instaladas (`framer-motion`, `lucide-react@0.562.0`, `clsx`, `tailwind-merge`)
+- [x] T02 Tokens/efeitos em `globals.css`; `layout.tsx` só com Inter
+- [x] T03 [P] `ResumeSidebar`
+- [x] T04 [P] `SummarySection`
+- [x] T05 `ExperienceSection`
+- [x] T06 [P] Education + Certifications + Projects
+- [x] T07 `page.tsx` no grid do template; seções PortfolioHub removidas
+- [x] T08 `ChatWidget` restilizado
+- [x] T09 Componentes órfãos PortfolioHub removidos
+- [x] T10 Testes novos (CA-013 coberto)
+- [x] T11 test/lint/build/Lighthouse/contraste
+- [x] T12 Docs de produto + CONTEXTO + ADR atualizados
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado — `N/A` esperado para trechos só de `className`/estilo sem lógica nova; justificar caso a caso se algum trecho tocado tiver lógica
-- [ ] Build/lint limpo (`npm run build`, type checking estrito)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API implementado bate com o documentado no DoR — N/A
-- [ ] Sem chave de API/secret exposto
-- [ ] Documentação atualizada — N/A esperado (sem ADR/contrato envolvido)
-- [ ] Deploy/preview verificado (UI)
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura ≥ 70% no código tocado — statements **93,33%** / branches **79,16%** / funções **91,42%**
+- [x] Build/lint limpo — `npm run build` OK; eslint só warning pré-existente em `coverage/`
+- [x] Review do `@tech-lead-review` sem Critical/High
+- [x] Contrato de API — N/A
+- [x] Sem chave de API/secret exposto
+- [x] Documentação atualizada
+- [ ] Deploy/preview verificado (UI) — pendente preview Vercel após PR
+- [x] Vereditos QA, Tech Lead e PO na tabela abaixo
+- [x] Status da história atualizado
+
+### Ajustes pós-entrega (2026-08-07 — mesmo dia, pedido direto do autor via `@orquestrador`)
+
+Refinamentos de conteúdo/copy sobre a entrega já revisada acima, sem reabrir DoR (mudança de texto/dado, não de escopo/arquitetura):
+
+- Labels de seção traduzidos EN→PT-BR: Perfil (antes "About Me"; ajustado de "Sobre Mim" a pedido do autor para não redundar com o subtítulo), Resumo Profissional, Experiência, Trajetória Profissional, Contato, Habilidades Técnicas, Educação, Formação Acadêmica, Certificações, Reconhecimentos e Conquistas, Projetos em Destaque, Trabalhos Recentes e Contribuições
+- `skills` (Cloud): simplificado para `["AWS", "GCP"]`; nova categoria `Mensageria` (`Apache Kafka`, `RabbitMQ`, `AWS SQS`, `AWS SNS`) — tecnologias confirmadas pelo autor (não estavam em `resume.json`, então não podiam ser inferidas)
+- `skills` (Linguagens): `"Java (Spring Boot)"` separado em `"Java"` + `"Spring Boot"`
+- Cargos em inglês (decisão do autor, aplicada a todas as ocorrências, inclusive dentro de frases em PT-BR): "Engenheiro de Software Sênior" → "Senior Software Engineer"; "Engenheiro de Software Pleno" → "Software Engineer"; "Desenvolvedor Web Pleno" → "Web Developer"; "Desenvolvedor Web Junior" → "Junior Web Developer"
+- Logo das empresas nos cards de `ExperienceSection`: novo campo opcional `logoUrl` em `experienceSchema` (frontend) e `Experience.logo_url` (backend, mesmo padrão de `hero.photoUrl`/`photo_url`); arquivos fornecidos pelo autor em `frontend/public/` (`engineeringbr_logo.jpg`, `bancobv_logo.jpg`, `itau_logo.jpg`, `shift_logo.jpg`, `grupowebpic_logo.jpg`, `wdgautomation_logo.jpg`); fallback com ícone `Building2` quando `logoUrl` é `null`
+- Removida fonte `ClashGrotesk` órfã de `frontend/app/fonts/` (4 `.woff2` + `LICENSE.txt`) — não referenciada em nenhum componente/CSS desde que CA-012 trocou a tipografia para Inter
+
+### Ajustes pós-entrega (2026-08-07 — paleta D1 Deep Ice, pedido via `@orquestrador`)
+
+Troca de identidade de cor (layout/estrutura inalterados). Autor pediu sugestões, previewou A–E e variações D1–D8; escolha final **D1 — Deep Ice**.
+
+- Tokens semânticos `accent-300…600` em `globals.css`; classes Tailwind `amber-*` substituídas por `accent-*` nos componentes
+- Paleta: fundo `#04080e`, surface `#0a101a`, accent `#38bdf8`, muted `#8494a8`
+- Decisão nº 7 do pivô (tema amber/gold do template) **superseded** pela escolha do autor — estrutura personal-resume mantida; só a cor muda
+- Contraste WCAG AA: 8 pares recalculados, todos ≥ 4.5:1 (menor muted/surface 6.16:1)
+
+### Ajustes pós-entrega (2026-08-08 — grid responsivo de Habilidades Técnicas, pedido via `@orquestrador`)
+
+CA-005/CA-003 tinham regredido no mobile/tablet: a migração para `ResumeSidebar` (pivô de escopo acima) trouxe de volta o empilhamento em coluna única das 9 categorias de skills, o mesmo problema que já havia sido corrigido no componente antigo (`SkillBadge.tsx`, removido nesta história) pela auditoria de responsividade (`US-07-02`, achado #3). Sem grid, a lista de skills sozinha ocupava um trecho muito longo da tela em mobile/iPad antes do visitante chegar ao conteúdo principal (Perfil/Experiência).
+
+- Diagnóstico visual via `next build` + `next start`/`next dev` e Chrome headless (`--headless=new --virtual-time-budget --window-size=<W>,<H> --screenshot`) nos breakpoints `375px`, `768px` e `1024px` — mesma limitação de emulação mobile via CLI já registrada em US-07-02 (usada aqui só para largura/layout, não para user-agent mobile)
+- Correção em `frontend/components/ResumeSidebar.tsx`: bloco de categorias de skills envolvido em `grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1` — 1 coluna abaixo de `sm` (640px, telefones em retrato — mantido para não reabrir o overflow horizontal de tags longas como "Clean Architecture" já resolvido em US-07-02/CA-001), 2 colunas de `sm` a `md`, 3 colunas em `md`/iPad retrato (768px+), volta a 1 coluna em `lg` (1024px+, quando a sidebar vira coluna fixa estreita de 340–380px — comportamento desktop inalterado)
+- Sem mudança de dados/props/lógica — só classes Tailwind no wrapper; `ResumeSidebar.test.tsx` cobre o componente sem alteração necessária
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
-| Tech Lead | `@tech-lead-review` | — | — | — |
-| PO | `@product-owner` | — | — | — |
+| QA | `@qa-engineer` | Aprovado — `npm test -- --run`: 10 arquivos, 20/20 verdes; cobertura 93,33% statements no tocado; contraste 8 pares ≥ 4.5:1; Lighthouse mobile vs build prod: A11y 100, BP 100, Perf 81; sem dados do template no page test; ChatWidget suite intacta | 2026-08-07 | CA-001–015; `vitest --coverage` |
+| Tech Lead | `@tech-lead-review` | Aprovar — layout portado com props/`resume.json` (sem hardcode do autor do template); deps alinhadas ao ADR-005 (`lucide-react` pinado em 0.562.0 por ícones de marca); build/test OK; ChatWidget sem mudança de contrato; ressalva: preview Vercel pendente (não bloqueia merge de código) | 2026-08-07 | ADR-005, `frontend/components/*`, `app/page.tsx` |
+| PO | `@product-owner` | Quase lá — CAs e DoD de código fechados; referência personal-resume entregue; falta só verificar preview de deploy após PR | 2026-08-07 | pivô de escopo + mapeamento acima |
+| QA (ajustes pós-entrega) | `@qa-engineer` | Aprovado — `vitest run`: 10 arquivos, 21/21 verdes (novo teste de fallback de logo em `ExperienceSection`); `npm run build` OK (schema válido, TS sem erro); labels/cargos/skills conferidos ao vivo no dev server; 6 logos servidos com HTTP 200 | 2026-08-07 | `frontend/content/resume.json`, `frontend/components/ExperienceSection.tsx` |
+| Tech Lead (ajustes pós-entrega) | `@tech-lead-review` | Aprovar — `logoUrl` opcional/nullable espelhado corretamente entre Zod e Pydantic (mesmo padrão de `photoUrl`); sem regressão em `rag.py` (não referencia `logo_url`); remoção de `ClashGrotesk` confirmada sem referência residual antes da exclusão | 2026-08-07 | `resume.schema.ts`, `backend/app/models/resume.py` |
+| QA (paleta D1) | `@qa-engineer` | Aprovado — `vitest --run`: 10 arquivos, 21/21 verdes; contraste D1 8 pares ≥ 4.5:1 (menor 6.16:1); sem `amber-*` residual no frontend ativo; layout/comportamento inalterados (só tokens/CSS) | 2026-08-07 | `frontend/app/globals.css`, componentes `accent-*` |
+| Tech Lead (paleta D1) | `@tech-lead-review` | Aprovar — tokens semânticos (`--accent-*`) evitam hardcode de cor nos componentes; diff mínimo (CSS + classes Tailwind); sem impacto em schema/API/RAG; contraste AA ok | 2026-08-07 | `globals.css`, `ResumeSidebar`, `ChatWidget`, seções |
+| PO (paleta D1) | `@product-owner` | Aceito — autor escolheu D1 Deep Ice após preview A–E e D1–D8; supersede tema amber do template; status da história permanece Quase lá (preview Vercel ainda pendente) | 2026-08-07 | escolha do autor no chat |
+| QA (grid skills mobile/iPad) | `@qa-engineer` | Aprovado — `vitest run`: 10 arquivos, 21/21 verdes; `npm run build` OK; validação visual via Chrome headless em `375px`/`768px`/`1024px`: sem overflow horizontal (1 coluna preservada abaixo de `sm`), 3 colunas confirmadas em `768px`, sidebar desktop em `1024px` inalterada | 2026-08-08 | `frontend/components/ResumeSidebar.tsx` |
+| Tech Lead (grid skills mobile/iPad) | `@tech-lead-review` | Aprovar — diff restrito a um wrapper `grid` (classes Tailwind) em torno do `.map` existente, sem mudança de props/dados/lógica; breakpoints escolhidos preservam o comportamento anti-overflow de `375px` já validado em US-07-02 (CA-001); sem impacto em schema/API/contraste | 2026-08-08 | `frontend/components/ResumeSidebar.tsx` |
+| PO (grid skills mobile/iPad) | `@product-owner` | Aceito — layout de Habilidades Técnicas compactado em tablet/iPad (9 categorias em coluna única → 3 colunas a partir de 768px) sem regredir mobile estreito nem desktop; status da história permanece Quase lá (mesma pendência de preview Vercel, não relacionada a este ajuste) | 2026-08-08 | screenshots 375/768/1024px |
 
-**Status:** Ready for Agent
+**Status:** Quase lá — implementação e aceite locais fechados (incl. paleta D1 Deep Ice e grid responsivo de skills); falta preview de deploy (Vercel) após abertura do PR

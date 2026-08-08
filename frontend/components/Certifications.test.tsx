@@ -13,6 +13,7 @@ describe("Certifications", () => {
             issuer: "Amazon Web Services (AWS)",
             issuedAt: "2024-07",
             expiresAt: "2027-07",
+            logoUrl: "/aws-certified-cloud-pratctitioner-logo.png",
           },
         ]}
       />,
@@ -22,5 +23,10 @@ describe("Certifications", () => {
       screen.getByText("AWS Certified Cloud Practitioner"),
     ).toBeInTheDocument();
     expect(screen.getByText("Amazon Web Services (AWS)")).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", {
+        name: /logo aws certified cloud practitioner/i,
+      }),
+    ).toBeInTheDocument();
   });
 });

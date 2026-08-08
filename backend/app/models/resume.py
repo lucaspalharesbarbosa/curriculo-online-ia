@@ -2,10 +2,13 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, HttpUrl
 
 
 class Hero(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
     name: str
     title: str
     location: str
     summary: str
+    photo_url: str | None = Field(default=None, alias="photoUrl")
 
 
 class Experience(BaseModel):
@@ -19,6 +22,7 @@ class Experience(BaseModel):
     modality: str
     highlights: list[str]
     technologies: list[str]
+    logo_url: str | None = Field(default=None, alias="logoUrl")
 
 
 class Education(BaseModel):
@@ -28,6 +32,7 @@ class Education(BaseModel):
     degree: str
     start_date: str = Field(alias="startDate")
     end_date: str = Field(alias="endDate")
+    logo_url: str | None = Field(default=None, alias="logoUrl")
 
 
 class SkillGroup(BaseModel):
@@ -42,6 +47,7 @@ class Certification(BaseModel):
     issuer: str
     issued_at: str = Field(alias="issuedAt")
     expires_at: str | None = Field(alias="expiresAt")
+    logo_url: str | None = Field(default=None, alias="logoUrl")
 
 
 class Project(BaseModel):

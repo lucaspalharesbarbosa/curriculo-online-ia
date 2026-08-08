@@ -28,11 +28,11 @@
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
 
-- [ ] CA-001: `contactSchema` (`frontend/content/resume.schema.ts`) tem campo `whatsapp: z.string().url().nullable()`, e o tipo `Contact` reflete o novo campo
-- [ ] CA-002: `frontend/content/resume.json` populado com `"whatsapp": "https://wa.me/5517991123547"`
-- [ ] CA-003: `ContactSection` (`frontend/components/Contact.tsx`) renderiza um item "WhatsApp" com link para `contact.whatsapp`, abrindo em nova aba (`target="_blank"`, `rel="noopener noreferrer"`), seguindo o mesmo padrão visual/acessível dos demais itens da lista
-- [ ] CA-004: item de WhatsApp só renderiza quando `contact.whatsapp` não é `null` (mesmo padrão condicional de `email`/`github`)
-- [ ] CA-005: teste de componente cobre a renderização condicional do link de WhatsApp (presente e ausente)
+- [x] CA-001: `contactSchema` (`frontend/content/resume.schema.ts`) tem campo `whatsapp: z.string().url().nullable()`, e o tipo `Contact` reflete o novo campo
+- [x] CA-002: `frontend/content/resume.json` populado com `"whatsapp": "https://wa.me/5517991123547"`
+- [x] CA-003: `ContactSection` (`frontend/components/Contact.tsx`) renderiza um item "WhatsApp" com link para `contact.whatsapp`, abrindo em nova aba (`target="_blank"`, `rel="noopener noreferrer"`), seguindo o mesmo padrão visual/acessível dos demais itens da lista
+- [x] CA-004: item de WhatsApp só renderiza quando `contact.whatsapp` não é `null` (mesmo padrão condicional de `email`/`github`)
+- [x] CA-005: teste de componente cobre a renderização condicional do link de WhatsApp (presente e ausente)
 
 ### Fora de escopo
 
@@ -49,30 +49,30 @@ Frontend & UX v2 — P1
 
 ### Tasks
 
-- [ ] T01 Adicionar campo `whatsapp` em `contactSchema`/tipo `Contact` (`frontend/content/resume.schema.ts`)
-- [ ] T02 [P] Popular `whatsapp` em `frontend/content/resume.json` com `https://wa.me/5517991123547`
-- [ ] T03 Renderizar item de WhatsApp em `frontend/components/Contact.tsx` (condicional, mesmo padrão de `email`/`github`)
-- [ ] T04 [P] Atualizar `frontend/components/Contact.test.tsx` e `frontend/content/resume.schema.test.ts` com os casos de WhatsApp
+- [x] T01 Adicionar campo `whatsapp` em `contactSchema`/tipo `Contact` (`frontend/content/resume.schema.ts`)
+- [x] T02 [P] Popular `whatsapp` em `frontend/content/resume.json` com `https://wa.me/5517991123547`
+- [x] T03 Renderizar item de WhatsApp em `frontend/components/Contact.tsx` (condicional, mesmo padrão de `email`/`github`)
+- [x] T04 [P] Atualizar `frontend/components/Contact.test.tsx` e `frontend/content/resume.schema.test.ts` com os casos de WhatsApp
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado (`npm test -- --coverage`)
-- [ ] Build/lint limpo (`npm run build`, type checking estrito)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado (`npm test -- --coverage`) — `Contact.tsx` e `resume.schema.ts` em 100% (sem linhas descobertas no relatório)
+- [x] Build/lint limpo (`npm run build`, type checking estrito) — `next build` e `eslint .` sem erros (1 warning pré-existente em `coverage/block-navigation.js`, gerado, fora do escopo)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto — ver Vereditos
 - [ ] Contrato de API implementado bate com o documentado no DoR — N/A
-- [ ] Sem chave de API/secret exposto (número de WhatsApp é dado público, não é segredo)
+- [x] Sem chave de API/secret exposto (número de WhatsApp é dado público, não é segredo)
 - [ ] Documentação atualizada (ADR/contrato/diagrama ER) se algo mudou de fato durante a implementação — N/A esperado
-- [ ] Deploy/preview verificado (UI)
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
-- [ ] Status da história atualizado no próprio arquivo
+- [ ] Deploy/preview verificado (UI) — pendente: verificar preview do Vercel após abertura do PR
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
-| Tech Lead | `@tech-lead-review` | — | — | — |
-| PO | `@product-owner` | — | — | — |
+| QA | `@qa-engineer` | Aprovado — `npm test -- --run --coverage`: 11 arquivos, 21 testes, 100% em `Contact.tsx`/`resume.schema.ts` | 2026-08-06 | 21/21 testes verdes |
+| Tech Lead | `@tech-lead-review` | Aprovar — dado vem de `resume.json` (sem hardcode), mesmo padrão visual/acessível dos demais itens, `npm run build`/`eslint .` limpos, sem secret exposto | 2026-08-06 | build + lint OK |
+| PO | `@product-owner` | Aprovado — CAs e DoR/DoD fechados; pendente apenas verificação de preview de deploy (fora do controle local) | 2026-08-06 | — |
 
-**Status:** Ready for Agent
+**Status:** Quase lá — falta verificar preview de deploy (Vercel) após abertura do PR
