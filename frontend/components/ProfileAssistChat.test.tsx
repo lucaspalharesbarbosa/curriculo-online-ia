@@ -94,7 +94,7 @@ describe("ProfileAssistChat", () => {
     });
 
     expect(
-      screen.getByText((content) => content.includes("Assistente ativo")),
+      screen.getByText((content) => content.includes("Sinal ativo")),
     ).toBeInTheDocument();
     expect(
       screen.getAllByRole("dialog", { name: /assistente do currículo/i })

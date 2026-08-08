@@ -1,6 +1,14 @@
 "use client";
 
-import { Bot, MessageCircle, Minimize2, Send, Sparkles } from "lucide-react";
+import {
+  ArrowUpRight,
+  Bot,
+  MessageCircle,
+  Minimize2,
+  Send,
+  Sparkles,
+  Terminal,
+} from "lucide-react";
 import {
   useEffect,
   useId,
@@ -33,6 +41,8 @@ type RagChatPanelProps = {
   placeholder?: string;
   suggestions?: string[];
   onSuggestion?: (text: string) => void;
+  /** Inline no Perfil — region em vez de dialog */
+  embedded?: boolean;
 };
 
 const DEFAULT_SUGGESTIONS = [
@@ -49,62 +59,57 @@ const SKIN_DEFAULTS: Record<
     emptyHint: string;
     placeholder: string;
     icon: ReactNode;
-    headerClass: string;
-    shellClass: string;
-    titleClass: string;
   }
 > = {
   assistant: {
     title: "Pergunte ao currículo",
-    subtitle: "Assistente com busca no perfil",
-    emptyHint:
-      "Pergunte sobre experiência, stack ou trajetória — a resposta vem do RAG.",
+    subtitle: "Canal RAG · respostas do perfil",
+    emptyHint: "Dispare um probe — eu consulto o currículo e respondo.",
     placeholder: "Ex.: Quais projetos você liderou?",
-    icon: <Sparkles className="h-4 w-4 shrink-0 text-accent-400" aria-hidden />,
-    headerClass: "border-b border-accent-500/20 bg-accent-500/10",
-    shellClass:
-      "border-accent-500/35 bg-neutral-950/95 shadow-xl shadow-accent-500/10",
-    titleClass: "text-sm font-semibold text-neutral-100",
+    icon: <Sparkles className="h-4 w-4" aria-hidden />,
   },
   soft: {
     title: "Assistente",
-    subtitle: "Conversando sobre o currículo",
-    emptyHint: "Pode perguntar em linguagem natural — eu busco no currículo.",
-    placeholder: "O que você quer saber?",
-    icon: <Bot className="h-4 w-4 shrink-0 text-accent-300" aria-hidden />,
-    headerClass: "border-b border-neutral-800/50 bg-surface/80",
-    shellClass:
-      "border-neutral-700/60 bg-surface/95 shadow-2xl shadow-black/40",
-    titleClass: "text-sm font-semibold tracking-tight text-accent-300",
+    subtitle: "Sinal ao vivo · currículo",
+    emptyHint:
+      "Pergunte em linguagem natural. Eu busco no currículo e devolvo o trecho certo.",
+    placeholder: "Digite sua pergunta…",
+    icon: <Bot className="h-4 w-4" aria-hidden />,
   },
   dock: {
     title: "Fale comigo",
     subtitle: "Chat do site · respostas do perfil",
-    emptyHint: "Estou aqui no rodapé — pergunte algo sobre minha trajetória.",
+    emptyHint: "Estou no painel — pergunte algo sobre minha trajetória.",
     placeholder: "Escreva sua pergunta…",
-    icon: (
-      <MessageCircle className="h-4 w-4 shrink-0 text-accent-400" aria-hidden />
-    ),
-    headerClass: "border-b border-neutral-800/60",
-    shellClass:
-      "rounded-t-3xl rounded-b-2xl border-accent-500/25 bg-neutral-950/98 shadow-[0_-8px_40px_rgba(0,0,0,0.45)]",
-    titleClass: "text-sm font-semibold text-neutral-50",
+    icon: <MessageCircle className="h-4 w-4" aria-hidden />,
   },
   chips: {
     title: "Explore o perfil",
-    subtitle: "Sugestões + chat RAG",
+    subtitle: "Sugestões + busca RAG",
     emptyHint: "Toque numa sugestão ou digite a sua própria pergunta.",
     placeholder: "Ou digite sua pergunta…",
-    icon: <Sparkles className="h-4 w-4 shrink-0 text-accent-400" aria-hidden />,
-    headerClass:
-      "border-b border-accent-500/15 bg-gradient-to-r from-accent-500/15 to-transparent",
-    shellClass:
-      "border-accent-500/30 bg-neutral-950/95 shadow-xl shadow-accent-500/15",
-    titleClass: "text-sm font-semibold text-neutral-100",
+    icon: <Sparkles className="h-4 w-4" aria-hidden />,
   },
 };
 
-/** Painel de chat ligado ao RAG real — skins de assistente/currículo. */
+function TypingDots() {
+  return (
+    <span className="inline-flex items-center gap-1" aria-hidden>
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className="h-1.5 w-1.5 rounded-full bg-accent-400"
+          style={{
+            animation: "assist-signal-ping 1.2s ease-out infinite",
+            animationDelay: `${i * 0.18}s`,
+          }}
+        />
+      ))}
+    </span>
+  );
+}
+
+/** Painel de chat ligado ao RAG — console de sinal opaco (Deep Ice). */
 export function RagChatPanel({
   messages,
   question,
@@ -121,12 +126,16 @@ export function RagChatPanel({
   placeholder,
   suggestions,
   onSuggestion,
+  embedded = false,
 }: RagChatPanelProps) {
   const inputId = useId();
   const listRef = useRef<HTMLUListElement>(null);
   const defaults = SKIN_DEFAULTS[skin];
   const chipSuggestions =
-    suggestions ?? (skin === "chips" ? DEFAULT_SUGGESTIONS : []);
+    suggestions ??
+    (skin === "chips" || skin === "soft" || onSuggestion
+      ? DEFAULT_SUGGESTIONS
+      : []);
 
   useEffect(() => {
     const list = listRef.current;
@@ -139,29 +148,53 @@ export function RagChatPanel({
     void onSend();
   }
 
+  const resolvedTitle = title ?? defaults.title;
+  const resolvedSubtitle = subtitle ?? defaults.subtitle;
+  const shellProps = embedded
+    ? ({
+        role: "region" as const,
+        "aria-label": "Assistente do currículo",
+      } as const)
+    : ({
+        role: "dialog" as const,
+        "aria-label": "Chat com o assistente do currículo",
+      } as const);
+
   return (
     <section
-      role="dialog"
-      aria-label="Chat com o assistente do currículo"
-      className={`flex flex-col overflow-hidden rounded-2xl border backdrop-blur-xl ${defaults.shellClass} ${className}`}
+      {...shellProps}
+      className={`assist-console flex flex-col ${className}`}
     >
-      <header
-        className={`flex items-center gap-2.5 px-3 py-2.5 ${defaults.headerClass}`}
-      >
-        {defaults.icon}
+      <div className="assist-console-rail" aria-hidden />
+      <div className="assist-scanline" aria-hidden />
+
+      <header className="relative z-[2] flex items-center gap-3 border-b border-[var(--assist-line)] bg-[var(--assist-panel)] px-4 py-3.5 pl-5">
+        <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0c2233] text-accent-300 shadow-[inset_0_0_0_1px_rgba(56,189,248,0.35)]">
+          <div className="absolute -inset-px rounded-2xl bg-gradient-to-br from-accent-400/30 to-transparent opacity-70" />
+          <span className="relative">{defaults.icon}</span>
+          <span className="assist-signal-dot absolute -right-0.5 -bottom-0.5" />
+        </div>
+
         <div className="min-w-0 flex-1">
-          <p className={`truncate ${defaults.titleClass}`}>
-            {title ?? defaults.title}
-          </p>
-          <p className="text-[10px] text-neutral-500">
-            {subtitle ?? defaults.subtitle}
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="truncate text-sm font-semibold tracking-tight text-neutral-50">
+              {resolvedTitle}
+            </p>
+            <span className="inline-flex items-center gap-1 rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-wider text-accent-300 uppercase">
+              <Terminal className="h-3 w-3" aria-hidden />
+              Live
+            </span>
+          </div>
+          <p className="mt-0.5 truncate font-mono text-[11px] text-neutral-400">
+            {resolvedSubtitle}
           </p>
         </div>
+
         {onMinimize ? (
           <button
             type="button"
             onClick={onMinimize}
-            className="rounded-lg p-1.5 text-neutral-400 transition-colors hover:bg-neutral-800 hover:text-accent-300"
+            className="rounded-lg border border-transparent p-1.5 text-neutral-400 transition-colors hover:border-[var(--assist-line)] hover:bg-[#0c2233] hover:text-accent-300"
             aria-label="Minimizar chat"
           >
             <Minimize2 className="h-4 w-4" />
@@ -171,48 +204,75 @@ export function RagChatPanel({
 
       <ul
         ref={listRef}
-        className={`flex-1 space-y-3 overflow-y-auto px-3 py-3 ${listClassName}`}
+        className={`relative z-[2] flex-1 space-y-3 overflow-y-auto bg-[var(--assist-ink)] px-4 py-4 pl-5 ${listClassName}`}
         aria-live="polite"
       >
         {messages.length === 0 ? (
-          <li className="space-y-3">
-            <p className="text-xs leading-relaxed text-neutral-500">
-              {emptyHint ?? defaults.emptyHint}
-            </p>
-            {chipSuggestions.length > 0 && onSuggestion ? (
+          <li className="space-y-4">
+            <div className="rounded-2xl border border-dashed border-[var(--assist-line)] bg-[var(--assist-panel)] px-3.5 py-3">
+              <p className="font-mono text-[10px] tracking-wider text-accent-400/80 uppercase">
+                canal · rag
+              </p>
+              <p className="mt-1.5 text-sm leading-relaxed text-neutral-300">
+                {emptyHint ?? defaults.emptyHint}
+              </p>
+            </div>
+            {chipSuggestions.length > 0 ? (
               <div className="flex flex-wrap gap-2">
                 {chipSuggestions.map((item) => (
                   <button
                     key={item}
                     type="button"
-                    onClick={() => onSuggestion(item)}
                     disabled={isSubmitting}
-                    className="rounded-xl border border-neutral-700/60 bg-neutral-900/60 px-2.5 py-1.5 text-[11px] text-neutral-300 transition-colors hover:border-accent-500/40 hover:text-accent-200 disabled:opacity-50"
+                    onClick={() => {
+                      if (onSuggestion) {
+                        onSuggestion(item);
+                        return;
+                      }
+                      setQuestion(item);
+                    }}
+                    className="assist-probe inline-flex items-center gap-1.5 rounded-xl border border-[var(--assist-line)] bg-[var(--assist-rail)] px-2.5 py-1.5 text-[11px] text-neutral-200 hover:border-accent-500/45 hover:bg-[#0c2233] hover:text-accent-200 disabled:opacity-50"
                   >
+                    <span className="font-mono text-accent-400">/</span>
                     {item}
+                    <ArrowUpRight className="h-3 w-3 text-accent-400/80" />
                   </button>
                 ))}
               </div>
             ) : null}
           </li>
         ) : null}
+
         {messages.map((message) => (
-          <li key={message.id} className="space-y-1.5">
-            <p className="ml-6 rounded-2xl rounded-tr-md bg-accent-500/15 px-3 py-2 text-xs text-neutral-100 sm:text-sm">
-              {message.question}
-            </p>
+          <li key={message.id} className="space-y-2">
+            <div className="flex justify-end">
+              <p className="max-w-[92%] rounded-2xl rounded-br-md bg-gradient-to-br from-accent-500 to-accent-600 px-3.5 py-2.5 text-xs leading-relaxed font-medium text-neutral-950 shadow-[0_8px_24px_rgba(2,132,199,0.35)] sm:text-sm">
+                {message.question}
+              </p>
+            </div>
+
             {message.status === "loading" ? (
-              <p className="mr-6 rounded-2xl rounded-tl-md px-3 py-2 text-xs text-neutral-500 italic sm:text-sm">
-                Buscando no currículo…
-              </p>
+              <div className="mr-6 flex max-w-[94%] items-start gap-2 rounded-2xl rounded-bl-md border border-[var(--assist-line)] bg-[var(--assist-panel)] px-3.5 py-2.5">
+                <TypingDots />
+                <p className="text-xs text-neutral-400 italic sm:text-sm">
+                  Consultando o currículo…
+                </p>
+              </div>
             ) : null}
+
             {message.status === "done" ? (
-              <p className="mr-6 rounded-2xl rounded-tl-md border border-neutral-700/50 bg-neutral-900/50 px-3 py-2 text-xs text-neutral-300 sm:text-sm">
-                {message.answer}
-              </p>
+              <div className="mr-4 max-w-[94%] rounded-2xl rounded-bl-md border border-[var(--assist-line)] border-l-[3px] border-l-accent-400 bg-[var(--assist-panel)] px-3.5 py-2.5 shadow-[inset_0_1px_0_rgba(125,211,252,0.06)]">
+                <p className="mb-1 font-mono text-[10px] tracking-wider text-accent-400/70 uppercase">
+                  reply
+                </p>
+                <p className="text-xs leading-relaxed text-neutral-100 sm:text-sm">
+                  {message.answer}
+                </p>
+              </div>
             ) : null}
+
             {message.status === "error" ? (
-              <p className="mr-6 rounded-2xl rounded-tl-md border border-red-900 bg-red-950 px-3 py-2 text-xs text-red-300 sm:text-sm">
+              <p className="mr-4 max-w-[94%] rounded-2xl rounded-bl-md border border-red-900 bg-red-950 px-3.5 py-2.5 text-xs text-red-300 sm:text-sm">
                 {RESUME_CHAT_ERROR_MESSAGE}
               </p>
             ) : null}
@@ -222,8 +282,14 @@ export function RagChatPanel({
 
       <form
         onSubmit={handleSubmit}
-        className="flex items-center gap-2 border-t border-neutral-800/70 p-2.5"
+        className="relative z-[2] flex items-center gap-2 border-t border-[var(--assist-line)] bg-[var(--assist-panel)] p-3 pl-5"
       >
+        <span
+          className="hidden font-mono text-sm text-accent-400 sm:inline"
+          aria-hidden
+        >
+          ›
+        </span>
         <label htmlFor={inputId} className="sr-only">
           Sua pergunta
         </label>
@@ -234,12 +300,12 @@ export function RagChatPanel({
           onChange={(event) => setQuestion(event.target.value)}
           placeholder={placeholder ?? defaults.placeholder}
           disabled={isSubmitting}
-          className="min-w-0 flex-1 rounded-xl border border-neutral-700/50 bg-neutral-900/60 px-3 py-2 text-xs text-neutral-100 outline-none transition-colors focus:border-accent-500/50 disabled:opacity-60 sm:text-sm"
+          className="min-w-0 flex-1 rounded-xl border border-[var(--assist-line)] bg-[var(--assist-ink)] px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors placeholder:text-neutral-500 focus:border-accent-500/50 focus:shadow-[0_0_0_3px_rgba(56,189,248,0.12)] disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={isSubmitting || question.trim().length === 0}
-          className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-r from-accent-400 to-accent-500 text-neutral-900 transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 text-neutral-950 shadow-[0_10px_28px_rgba(56,189,248,0.35)] transition-[transform,opacity] hover:scale-[1.03] hover:opacity-95 disabled:scale-100 disabled:opacity-35"
           aria-label="Enviar"
         >
           <Send className="h-4 w-4" />
