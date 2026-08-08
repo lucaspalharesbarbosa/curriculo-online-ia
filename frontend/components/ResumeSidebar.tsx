@@ -179,28 +179,30 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             Habilidades Técnicas
           </h2>
 
-          {skills.map((category, catIndex) => (
-            <div key={category.category} className="space-y-2">
-              <h3 className="text-xs font-medium text-accent-400">
-                {category.category}
-              </h3>
-              <div className="flex flex-wrap gap-1.5">
-                {category.items.map((skill, skillIndex) => (
-                  <motion.span
-                    key={skill}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      delay: 0.5 + catIndex * 0.1 + skillIndex * 0.02,
-                    }}
-                    className="skill-tag cursor-default rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2.5 py-1 text-xs text-neutral-300 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300"
-                  >
-                    {skill}
-                  </motion.span>
-                ))}
+          <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1">
+            {skills.map((category, catIndex) => (
+              <div key={category.category} className="space-y-2">
+                <h3 className="text-xs font-medium text-accent-400">
+                  {category.category}
+                </h3>
+                <div className="flex flex-wrap gap-1.5">
+                  {category.items.map((skill, skillIndex) => (
+                    <motion.span
+                      key={skill}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{
+                        delay: 0.5 + catIndex * 0.1 + skillIndex * 0.02,
+                      }}
+                      className="skill-tag cursor-default rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2.5 py-1 text-xs text-neutral-300 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300"
+                    >
+                      {skill}
+                    </motion.span>
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </motion.div>
 
         {contact.resumePdfUrl ? (

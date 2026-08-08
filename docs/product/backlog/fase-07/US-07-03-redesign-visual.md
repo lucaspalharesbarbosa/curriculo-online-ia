@@ -148,6 +148,14 @@ Troca de identidade de cor (layout/estrutura inalterados). Autor pediu sugestõe
 - Decisão nº 7 do pivô (tema amber/gold do template) **superseded** pela escolha do autor — estrutura personal-resume mantida; só a cor muda
 - Contraste WCAG AA: 8 pares recalculados, todos ≥ 4.5:1 (menor muted/surface 6.16:1)
 
+### Ajustes pós-entrega (2026-08-08 — grid responsivo de Habilidades Técnicas, pedido via `@orquestrador`)
+
+CA-005/CA-003 tinham regredido no mobile/tablet: a migração para `ResumeSidebar` (pivô de escopo acima) trouxe de volta o empilhamento em coluna única das 9 categorias de skills, o mesmo problema que já havia sido corrigido no componente antigo (`SkillBadge.tsx`, removido nesta história) pela auditoria de responsividade (`US-07-02`, achado #3). Sem grid, a lista de skills sozinha ocupava um trecho muito longo da tela em mobile/iPad antes do visitante chegar ao conteúdo principal (Perfil/Experiência).
+
+- Diagnóstico visual via `next build` + `next start`/`next dev` e Chrome headless (`--headless=new --virtual-time-budget --window-size=<W>,<H> --screenshot`) nos breakpoints `375px`, `768px` e `1024px` — mesma limitação de emulação mobile via CLI já registrada em US-07-02 (usada aqui só para largura/layout, não para user-agent mobile)
+- Correção em `frontend/components/ResumeSidebar.tsx`: bloco de categorias de skills envolvido em `grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1` — 1 coluna abaixo de `sm` (640px, telefones em retrato — mantido para não reabrir o overflow horizontal de tags longas como "Clean Architecture" já resolvido em US-07-02/CA-001), 2 colunas de `sm` a `md`, 3 colunas em `md`/iPad retrato (768px+), volta a 1 coluna em `lg` (1024px+, quando a sidebar vira coluna fixa estreita de 340–380px — comportamento desktop inalterado)
+- Sem mudança de dados/props/lógica — só classes Tailwind no wrapper; `ResumeSidebar.test.tsx` cobre o componente sem alteração necessária
+
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
@@ -160,5 +168,8 @@ Troca de identidade de cor (layout/estrutura inalterados). Autor pediu sugestõe
 | QA (paleta D1) | `@qa-engineer` | Aprovado — `vitest --run`: 10 arquivos, 21/21 verdes; contraste D1 8 pares ≥ 4.5:1 (menor 6.16:1); sem `amber-*` residual no frontend ativo; layout/comportamento inalterados (só tokens/CSS) | 2026-08-07 | `frontend/app/globals.css`, componentes `accent-*` |
 | Tech Lead (paleta D1) | `@tech-lead-review` | Aprovar — tokens semânticos (`--accent-*`) evitam hardcode de cor nos componentes; diff mínimo (CSS + classes Tailwind); sem impacto em schema/API/RAG; contraste AA ok | 2026-08-07 | `globals.css`, `ResumeSidebar`, `ChatWidget`, seções |
 | PO (paleta D1) | `@product-owner` | Aceito — autor escolheu D1 Deep Ice após preview A–E e D1–D8; supersede tema amber do template; status da história permanece Quase lá (preview Vercel ainda pendente) | 2026-08-07 | escolha do autor no chat |
+| QA (grid skills mobile/iPad) | `@qa-engineer` | Aprovado — `vitest run`: 10 arquivos, 21/21 verdes; `npm run build` OK; validação visual via Chrome headless em `375px`/`768px`/`1024px`: sem overflow horizontal (1 coluna preservada abaixo de `sm`), 3 colunas confirmadas em `768px`, sidebar desktop em `1024px` inalterada | 2026-08-08 | `frontend/components/ResumeSidebar.tsx` |
+| Tech Lead (grid skills mobile/iPad) | `@tech-lead-review` | Aprovar — diff restrito a um wrapper `grid` (classes Tailwind) em torno do `.map` existente, sem mudança de props/dados/lógica; breakpoints escolhidos preservam o comportamento anti-overflow de `375px` já validado em US-07-02 (CA-001); sem impacto em schema/API/contraste | 2026-08-08 | `frontend/components/ResumeSidebar.tsx` |
+| PO (grid skills mobile/iPad) | `@product-owner` | Aceito — layout de Habilidades Técnicas compactado em tablet/iPad (9 categorias em coluna única → 3 colunas a partir de 768px) sem regredir mobile estreito nem desktop; status da história permanece Quase lá (mesma pendência de preview Vercel, não relacionada a este ajuste) | 2026-08-08 | screenshots 375/768/1024px |
 
-**Status:** Quase lá — implementação e aceite locais fechados (incl. paleta D1 Deep Ice); falta preview de deploy (Vercel) após abertura do PR
+**Status:** Quase lá — implementação e aceite locais fechados (incl. paleta D1 Deep Ice e grid responsivo de skills); falta preview de deploy (Vercel) após abertura do PR
