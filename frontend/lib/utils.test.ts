@@ -1,12 +1,37 @@
 import { describe, expect, it } from "vitest";
 
-import { deriveProfileBadges, formatResumePeriod } from "./utils";
+import {
+  formatResumePeriod,
+  formatYear,
+  groupCertificationsByIssuer,
+  groupExperiencesByCompany,
+  parseHeroTitle,
+} from "./utils";
 
-describe("deriveProfileBadges", () => {
-  it("extrai até dois trechos do título separados por |", () => {
+describe("parseHeroTitle", () => {
+  it("divide cargos (antes do —) e informações complementares (depois do —), cada lado por |", () => {
     expect(
-      deriveProfileBadges("Tech Lead | Engenheiro de Software Sênior — AI"),
-    ).toEqual(["Tech Lead", "Engenheiro de Software Sênior — AI"]);
+      parseHeroTitle(
+        "Tech Lead | Senior Software Engineer — AI Engineering | Agentic AI | Java • Python | AWS Certified",
+      ),
+    ).toEqual({
+      primary: ["Tech Lead", "Senior Software Engineer"],
+      secondary: [
+        "AI Engineering",
+        "Agentic AI",
+        "Java • Python",
+        "AWS Certified",
+      ],
+    });
+  });
+
+  it("usa só o lado dos cargos quando não há —", () => {
+    expect(parseHeroTitle("Tech Lead | Engenheiro de Software Sênior")).toEqual(
+      {
+        primary: ["Tech Lead", "Engenheiro de Software Sênior"],
+        secondary: [],
+      },
+    );
   });
 });
 
@@ -17,5 +42,157 @@ describe("formatResumePeriod", () => {
 
   it("formata intervalo completo", () => {
     expect(formatResumePeriod("2022-07", "2025-09")).toBe("2022-07 – 2025-09");
+  });
+});
+
+describe("formatYear", () => {
+  it("extrai só o ano de uma data AAAA-MM", () => {
+    expect(formatYear("2024-07")).toBe("2024");
+  });
+});
+
+describe("groupExperiencesByCompany", () => {
+  it("mantém empresas diferentes em grupos separados", () => {
+    const groups = groupExperiencesByCompany([
+      {
+        company: "Engineering Brasil",
+        role: "Tech Lead",
+        startDate: "2026-03",
+        endDate: null,
+        location: "São Paulo, SP",
+        modality: "Remoto",
+        highlights: ["h1"],
+        technologies: ["Python"],
+        logoUrl: "/engineeringbr_logo.jpg",
+      },
+      {
+        company: "Banco BV",
+        role: "Senior Software Engineer",
+        startDate: "2025-10",
+        endDate: "2026-01",
+        location: "São Paulo, SP",
+        modality: "Remoto",
+        highlights: ["h2"],
+        technologies: ["Java"],
+        logoUrl: null,
+      },
+    ]);
+
+    expect(groups).toHaveLength(2);
+    expect(groups[0].roles).toHaveLength(1);
+    expect(groups[1].roles).toHaveLength(1);
+  });
+
+  it("agrupa cargos consecutivos na mesma empresa (promoção) num único grupo/logo", () => {
+    const groups = groupExperiencesByCompany([
+      {
+        company: "WebPic",
+        role: "Web Developer",
+        startDate: "2018-05",
+        endDate: "2020-09",
+        location: "São José do Rio Preto, SP",
+        modality: "Presencial",
+        highlights: ["h1"],
+        technologies: ["C#"],
+        logoUrl: "/grupowebpic_logo.jpg",
+      },
+      {
+        company: "WebPic",
+        role: "Junior Web Developer",
+        startDate: "2016-11",
+        endDate: "2018-05",
+        location: "São José do Rio Preto, SP",
+        modality: "Presencial",
+        highlights: ["h2"],
+        technologies: ["C#"],
+        logoUrl: "/grupowebpic_logo.jpg",
+      },
+    ]);
+
+    expect(groups).toHaveLength(1);
+    expect(groups[0].logoUrl).toBe("/grupowebpic_logo.jpg");
+    expect(groups[0].roles.map((role) => role.role)).toEqual([
+      "Web Developer",
+      "Junior Web Developer",
+    ]);
+  });
+
+  it("não agrupa a mesma empresa quando as passagens não são consecutivas", () => {
+    const groups = groupExperiencesByCompany([
+      {
+        company: "Shift",
+        role: "Web Developer",
+        startDate: "2021-07",
+        endDate: "2022-07",
+        location: "São José do Rio Preto, SP",
+        modality: "Presencial",
+        highlights: ["h1"],
+        technologies: ["Java"],
+        logoUrl: "/shift_logo.jpg",
+      },
+      {
+        company: "Itaú Unibanco",
+        role: "Software Engineer",
+        startDate: "2022-07",
+        endDate: "2025-09",
+        location: "São Paulo, SP",
+        modality: "Remoto",
+        highlights: ["h2"],
+        technologies: ["Java"],
+        logoUrl: "/itau_logo.jpg",
+      },
+      {
+        company: "Shift",
+        role: "Junior Web Developer",
+        startDate: "2020-09",
+        endDate: "2021-07",
+        location: "São José do Rio Preto, SP",
+        modality: "Presencial",
+        highlights: ["h3"],
+        technologies: ["Java"],
+        logoUrl: "/shift_logo.jpg",
+      },
+    ]);
+
+    expect(groups).toHaveLength(3);
+  });
+});
+
+describe("groupCertificationsByIssuer", () => {
+  it("agrupa certificações do mesmo emissor, mais recente primeiro", () => {
+    const groups = groupCertificationsByIssuer([
+      {
+        name: "Formação Angular",
+        issuer: "Alura",
+        issuedAt: "2021-03",
+        expiresAt: null,
+        logoUrl: "/alura-logo.png",
+        credentialUrl: null,
+      },
+      {
+        name: "SOLID com Java",
+        issuer: "Alura",
+        issuedAt: "2022-03",
+        expiresAt: null,
+        logoUrl: null,
+        credentialUrl: null,
+      },
+      {
+        name: "AWS Certified Cloud Practitioner",
+        issuer: "AWS",
+        issuedAt: "2024-07",
+        expiresAt: "2027-07",
+        logoUrl: "/aws-logo.png",
+        credentialUrl: null,
+      },
+    ]);
+
+    expect(groups).toHaveLength(2);
+    const alura = groups.find((group) => group.issuer === "Alura");
+    expect(alura?.logoUrl).toBe("/alura-logo.png");
+    expect(alura?.items.map((item) => item.name)).toEqual([
+      "SOLID com Java",
+      "Formação Angular",
+    ]);
   });
 });
