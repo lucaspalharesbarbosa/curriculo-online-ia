@@ -33,11 +33,17 @@ class Education(BaseModel):
     start_date: str = Field(alias="startDate")
     end_date: str = Field(alias="endDate")
     logo_url: str | None = Field(default=None, alias="logoUrl")
+    website_url: str | None = Field(default=None, alias="websiteUrl")
+
+
+class SkillItem(BaseModel):
+    name: str
+    level: int
 
 
 class SkillGroup(BaseModel):
     category: str
-    items: list[str]
+    items: list[SkillItem]
 
 
 class Certification(BaseModel):
@@ -48,6 +54,16 @@ class Certification(BaseModel):
     issued_at: str = Field(alias="issuedAt")
     expires_at: str | None = Field(alias="expiresAt")
     logo_url: str | None = Field(default=None, alias="logoUrl")
+    credential_url: str | None = Field(default=None, alias="credentialUrl")
+
+
+class Recognition(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    title: str
+    issuer: str
+    year: str
+    description: str | None = None
 
 
 class Project(BaseModel):
@@ -57,6 +73,16 @@ class Project(BaseModel):
     description: str
     technologies: list[str]
     repository_url: str = Field(alias="repositoryUrl")
+
+
+class Article(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+
+    title: str
+    description: str
+    url: str
+    source: str
+    published_at: str | None = Field(default=None, alias="publishedAt")
 
 
 class Contact(BaseModel):
@@ -75,5 +101,7 @@ class Resume(BaseModel):
     education: list[Education]
     skills: list[SkillGroup]
     certifications: list[Certification]
+    recognitions: list[Recognition]
     projects: list[Project]
+    articles: list[Article]
     contact: Contact

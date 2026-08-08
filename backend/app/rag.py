@@ -11,7 +11,16 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from app.models.resume import Experience, Project, Resume, SkillGroup
+from app.models.resume import (
+    Article,
+    Certification,
+    Education,
+    Experience,
+    Project,
+    Recognition,
+    Resume,
+    SkillGroup,
+)
 
 RESUME_JSON_PATH = (
     Path(__file__).resolve().parents[2] / "frontend" / "content" / "resume.json"
@@ -51,8 +60,20 @@ def _chunk_experience(index: int, experience: Experience) -> Chunk:
     return Chunk(id=f"experience-{index}", section="experience", text=text)
 
 
+SKILL_LEVEL_LABELS = {
+    1: "iniciante",
+    2: "básico",
+    3: "intermediário",
+    4: "avançado",
+    5: "especialista",
+}
+
+
 def _chunk_skill_group(index: int, group: SkillGroup) -> Chunk:
-    items = ", ".join(group.items)
+    items = ", ".join(
+        f"{item.name} ({SKILL_LEVEL_LABELS.get(item.level, 'intermediário')})"
+        for item in group.items
+    )
     text = f"Skills de {group.category}: {items}."
     return Chunk(id=f"skill-{index}", section="skill", text=text)
 
@@ -66,14 +87,66 @@ def _chunk_project(index: int, project: Project) -> Chunk:
     return Chunk(id=f"project-{index}", section="project", text=text)
 
 
+def _chunk_certification(index: int, certification: Certification) -> Chunk:
+    validity = (
+        f", válido até {certification.expires_at}"
+        if certification.expires_at is not None
+        else ""
+    )
+    text = (
+        f"Certificação/reconhecimento: {certification.name}, "
+        f"emitido por {certification.issuer} em {certification.issued_at}"
+        f"{validity}."
+    )
+    return Chunk(id=f"certification-{index}", section="certification", text=text)
+
+
+def _chunk_recognition(index: int, recognition: Recognition) -> Chunk:
+    description = f" {recognition.description}" if recognition.description else ""
+    text = (
+        f"Reconhecimento interno: {recognition.title}, "
+        f"concedido por {recognition.issuer} em {recognition.year}.{description}"
+    )
+    return Chunk(id=f"recognition-{index}", section="recognition", text=text)
+
+
+def _chunk_education(index: int, education: Education) -> Chunk:
+    text = (
+        f"Formação: {education.degree} em {education.institution}, "
+        f"{education.start_date} a {education.end_date}."
+    )
+    return Chunk(id=f"education-{index}", section="education", text=text)
+
+
+def _chunk_article(index: int, article: Article) -> Chunk:
+    text = (
+        f"Artigo escrito: {article.title}. {article.description} "
+        f"Publicado em {article.source}."
+    )
+    return Chunk(id=f"article-{index}", section="article", text=text)
+
+
 def build_chunks(resume: Resume) -> list[Chunk]:
-    """Um chunk por experiência, por grupo de skills e por projeto (ADR-003 seção 1)."""
+    """Um chunk por experiência, grupo de skills, projeto, certificação, reconhecimento,
+    formação e artigo (ADR-003 seção 1, ampliado pela ADR-006 e seu addendum)."""
     chunks = [
         _chunk_experience(i, experience)
         for i, experience in enumerate(resume.experiences)
     ]
     chunks += [_chunk_skill_group(i, group) for i, group in enumerate(resume.skills)]
     chunks += [_chunk_project(i, project) for i, project in enumerate(resume.projects)]
+    chunks += [
+        _chunk_certification(i, certification)
+        for i, certification in enumerate(resume.certifications)
+    ]
+    chunks += [
+        _chunk_recognition(i, recognition)
+        for i, recognition in enumerate(resume.recognitions)
+    ]
+    chunks += [
+        _chunk_education(i, education) for i, education in enumerate(resume.education)
+    ]
+    chunks += [_chunk_article(i, article) for i, article in enumerate(resume.articles)]
     return chunks
 
 
