@@ -43,6 +43,7 @@ O frontend já é Next.js (App Router) desde o `ADR-001`. Não é uma decisão e
 | Redesign visual do site (clonagem do template personal-resume) | P2 | [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md) |
 | Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) | P3 | [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md) |
 | Polimento de layout e UX (collapse, perfil, mobile, reconhecimentos) | P1 | [US-07-11](backlog/fase-07/US-07-11-polimento-layout-ux.md) |
+| Refino visual: destaques PRAD/Mérito, Educação e Certificações | P1 | [US-07-12](backlog/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) |
 
 ## Riscos
 
