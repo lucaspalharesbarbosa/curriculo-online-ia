@@ -518,6 +518,80 @@ body {
   animation: fadeIn 0.5s ease-out forwards;
 }
 
+/* Orb drift — US-07-06: profundidade sutil no background da página */
+@keyframes orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(3%, -4%) scale(1.08);
+  }
+}
+
+.orb-drift {
+  animation: orb-drift 14s ease-in-out infinite;
+}
+
+.orb-drift-delayed {
+  animation: orb-drift 18s ease-in-out infinite;
+  animation-delay: -6s;
+}
+
+/* Typewriter simultâneo dos cargos — US-07-07, bloco abaixo do nome.
+   `--role-chars` (nº de caracteres do cargo) e `--role-type-duration`
+   (velocidade fixa de digitação) são injetados inline por ResumeSidebar
+   para a largura final e a contagem de steps baterem exatamente com o
+   texto (fonte mono = 1ch por caractere). Cursor pisca em loop depois de
+   terminar de digitar, simulando um prompt de terminal. */
+@keyframes role-typewriter {
+  from {
+    width: 0;
+  }
+  to {
+    width: calc(var(--role-chars) * 1ch);
+  }
+}
+
+@keyframes role-cursor-blink {
+  0%,
+  100% {
+    border-right-color: var(--accent-500);
+  }
+  50% {
+    border-right-color: transparent;
+  }
+}
+
+.role-typewriter {
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  vertical-align: bottom;
+  border-right: 2px solid var(--accent-500);
+  width: 0;
+  animation:
+    role-typewriter var(--role-type-duration, 0.4s)
+      steps(var(--role-chars, 1), end) var(--role-delay, 0.2s) forwards,
+    role-cursor-blink 0.9s step-end
+      calc(var(--role-delay, 0.2s) + var(--role-type-duration, 0.4s)) infinite;
+}
+
+/* Spin slow — halo giratório atrás do avatar (ajustes pós-validação, item 9) */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spin-slow {
+  animation: spin-slow 6s linear infinite;
+}
+
 /* US-07-03 / ADR-005 — respeitar prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -534,7 +608,17 @@ body {
   .animate-pulse-slow,
   .animate-bounce-slow,
   .shimmer,
-  .cursor {
+  .cursor,
+  .orb-drift,
+  .orb-drift-delayed,
+  .spin-slow,
+  .role-typewriter {
+    animation: none !important;
+  }
+
+  .role-typewriter {
+    width: calc(var(--role-chars) * 1ch) !important;
+    border-right-color: transparent !important;
     animation: none !important;
   }
 }

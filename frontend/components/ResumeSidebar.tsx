@@ -12,9 +12,28 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
-import type { Contact, Hero, SkillGroup } from "@/content/resume.schema";
-import { deriveProfileBadges } from "@/lib/utils";
+import type {
+  Contact,
+  Hero,
+  SkillGroup,
+  SkillItem,
+} from "@/content/resume.schema";
+import { getSkillIcon } from "@/lib/skill-icons";
+import {
+  buildGoogleMapsUrl,
+  formatSkillLevel,
+  parseHeroTitle,
+} from "@/lib/utils";
+
+const SKILL_LEVEL_SEGMENTS = [1, 2, 3, 4, 5] as const;
+
+// US-07-10 — as duas categorias de banco de dados são combinadas num único
+// bloco de "colunas leves" (opção 6 aprovada) em vez de duas categorias
+// genéricas separadas; nomes batem com `resume.json`.
+const SQL_CATEGORY = "Banco de Dados (SQL)";
+const NOSQL_CATEGORY = "Banco de Dados (NoSQL)";
 
 type ResumeSidebarProps = {
   hero: Hero;
@@ -22,8 +41,62 @@ type ResumeSidebarProps = {
   skills: SkillGroup[];
 };
 
+type SkillChipProps = {
+  skill: SkillItem;
+  delay: number;
+  icon: ReactNode;
+};
+
+/** Chip de habilidade — ícone, nome e medidor de proficiência (barra segmentada).
+    `icon` já vem resolvido do chamador (`getSkillIcon` roda no `.map()`, não
+    aqui) — instanciar o componente de ícone dentro de um componente nomeado
+    aciona o lint `react-hooks/static-components` ("componente criado durante
+    o render"). */
+function SkillChip({ skill, delay, icon }: SkillChipProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay }}
+      className="skill-tag flex cursor-default items-center gap-2 rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1.5 text-xs text-neutral-200 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300"
+    >
+      {/* Chip com fundo próprio atrás do ícone — garante contraste
+          consistente mesmo para logos de marca com traços finos/
+          monocromáticos que ficavam quase invisíveis direto sobre o fundo
+          escuro do tag */}
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-accent-500/15 text-accent-300">
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1 truncate" title={skill.name}>
+        {skill.name}
+      </span>
+      {/* Medidor de proficiência — barra segmentada (opção aprovada pelo
+          autor entre 4 alternativas visuais) */}
+      <span
+        className="flex shrink-0 items-center gap-[3px]"
+        role="img"
+        aria-label={`Nível: ${formatSkillLevel(skill.level)}`}
+        title={formatSkillLevel(skill.level)}
+      >
+        {SKILL_LEVEL_SEGMENTS.map((segment) => (
+          <span
+            key={segment}
+            className={`h-[5px] w-2 rounded-full ${
+              segment <= skill.level
+                ? "bg-gradient-to-r from-accent-400 to-accent-500"
+                : "bg-neutral-700/60"
+            }`}
+          />
+        ))}
+      </span>
+    </motion.div>
+  );
+}
+
 export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
-  const badges = deriveProfileBadges(hero.title);
+  const { primary: primaryRoles, secondary: secondaryInfo } = parseHeroTitle(
+    hero.title,
+  );
 
   return (
     <aside className="w-full shrink-0 p-4 lg:w-[340px] lg:min-h-screen lg:p-6 xl:w-[380px]">
@@ -41,7 +114,15 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
         >
           <div className="relative mb-4 inline-block">
             <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-accent-400 via-accent-500 to-accent-400 opacity-40 blur-xl" />
-            <div className="relative h-28 w-28 rounded-full bg-gradient-to-r from-accent-400 via-accent-500 to-accent-600 p-[3px] lg:h-36 lg:w-36">
+            <div
+              className="spin-slow absolute -inset-1.5 rounded-full opacity-70"
+              style={{
+                background:
+                  "conic-gradient(from 0deg, transparent 0deg, var(--accent-500) 90deg, transparent 180deg, var(--accent-400) 270deg, transparent 360deg)",
+              }}
+              aria-hidden
+            />
+            <div className="pulse-glow relative h-28 w-28 rounded-full bg-gradient-to-r from-accent-400 via-accent-500 to-accent-600 p-[3px] transition-transform duration-300 hover:scale-105 lg:h-36 lg:w-36">
               {hero.photoUrl ? (
                 <Image
                   src={hero.photoUrl}
@@ -66,28 +147,43 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             </div>
           </div>
 
-          <h1 className="gradient-text mb-1 text-xl font-bold lg:text-2xl">
+          <h1 className="gradient-text glow-text mb-2 text-xl font-bold lg:text-2xl">
             {hero.name}
           </h1>
-          <p className="mb-3 text-sm font-medium text-accent-400">
-            {hero.title}
-          </p>
 
-          {badges.length > 0 ? (
-            <div className="flex flex-wrap justify-center gap-2">
-              {badges.map((badge, index) => (
+          {/* Cargos em destaque, um por linha, digitados simultaneamente
+              (US-07-07 — opção B3 aprovada: as duas linhas "escrevem" ao
+              mesmo tempo, sem alternar/esconder um cargo pelo outro).
+              Informações complementares discretas seguem abaixo, divididas
+              a partir de hero.title. */}
+          {primaryRoles.length > 0 ? (
+            <div className="mb-1.5 flex flex-col items-center gap-1">
+              {primaryRoles.map((role, index) => (
                 <span
-                  key={badge}
-                  className={
+                  key={role}
+                  className={`role-typewriter font-mono ${
                     index === 0
-                      ? "rounded-full border border-accent-500/30 bg-accent-500/20 px-3 py-1 text-xs text-accent-300"
-                      : "rounded-full border border-neutral-600/50 bg-neutral-700/50 px-3 py-1 text-xs text-neutral-300"
+                      ? "gradient-text text-sm font-semibold lg:text-base"
+                      : "text-xs text-accent-300 lg:text-sm"
+                  }`}
+                  style={
+                    {
+                      "--role-chars": role.length,
+                      "--role-type-duration": `${(role.length * 0.045).toFixed(2)}s`,
+                      "--role-delay": "0.2s",
+                    } as React.CSSProperties
                   }
                 >
-                  {badge}
+                  {role}
                 </span>
               ))}
             </div>
+          ) : null}
+
+          {secondaryInfo.length > 0 ? (
+            <p className="mb-3 text-[11px] tracking-wide text-neutral-500 uppercase">
+              {secondaryInfo.join(" · ")}
+            </p>
           ) : null}
         </motion.div>
 
@@ -132,12 +228,19 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             </Link>
           ) : null}
 
-          <div className="glass-card flex items-center gap-3 rounded-xl p-3">
-            <div className="rounded-lg bg-neutral-700/50 p-2 text-neutral-300">
+          <Link
+            href={buildGoogleMapsUrl(hero.location)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="glass-card group flex items-center gap-3 rounded-xl p-3"
+          >
+            <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
               <MapPin className="h-4 w-4" />
             </div>
-            <span className="text-xs text-neutral-300">{hero.location}</span>
-          </div>
+            <span className="text-xs text-neutral-300 transition-colors group-hover:text-white">
+              {hero.location}
+            </span>
+          </Link>
         </motion.div>
 
         <motion.div
@@ -179,29 +282,108 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             Habilidades Técnicas
           </h2>
 
-          <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1">
-            {skills.map((category, catIndex) => (
-              <div key={category.category} className="space-y-2">
-                <h3 className="text-xs font-medium text-accent-400">
-                  {category.category}
-                </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {category.items.map((skill, skillIndex) => (
-                    <motion.span
-                      key={skill}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        delay: 0.5 + catIndex * 0.1 + skillIndex * 0.02,
-                      }}
-                      className="skill-tag cursor-default rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2.5 py-1 text-xs text-neutral-300 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300"
-                    >
-                      {skill}
-                    </motion.span>
-                  ))}
+          <div className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1">
+            {skills.map((category, catIndex) => {
+              // NoSQL é renderizado junto com SQL (abaixo) — nada aqui.
+              if (category.category === NOSQL_CATEGORY) {
+                return null;
+              }
+
+              if (category.category === SQL_CATEGORY) {
+                const nosqlCategory = skills.find(
+                  (c) => c.category === NOSQL_CATEGORY,
+                );
+                return (
+                  <div key="banco-de-dados" className="space-y-1.5">
+                    <h3 className="text-xs font-medium text-accent-400">
+                      Banco de Dados
+                    </h3>
+                    {/* US-07-10 (revisão) — seções empilhadas em vez de
+                        colunas lado a lado: em duas colunas a largura por
+                        item ficava curta demais e cortava nomes como "SQL
+                        Server"/"DynamoDB" (opção 1 aprovada pelo autor entre
+                        3 alternativas mostradas em artifact comparativo) */}
+                    <div className="space-y-2">
+                      <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2 pt-2.5">
+                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-400 to-transparent" />
+                        <h4 className="mb-1.5 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
+                          Relacional (SQL)
+                        </h4>
+                        <div className="space-y-1">
+                          {category.items.map((skill, skillIndex) => {
+                            const SkillIcon = getSkillIcon(skill.name);
+                            return (
+                              <SkillChip
+                                key={skill.name}
+                                skill={skill}
+                                delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
+                                icon={
+                                  <SkillIcon
+                                    className="h-3.5 w-3.5"
+                                    aria-hidden
+                                  />
+                                }
+                              />
+                            );
+                          })}
+                        </div>
+                      </div>
+                      <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2 pt-2.5">
+                        <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-600 to-transparent" />
+                        <h4 className="mb-1.5 text-[10px] font-semibold tracking-wide text-neutral-400 uppercase">
+                          Não-relacional (NoSQL)
+                        </h4>
+                        <div className="space-y-1">
+                          {(nosqlCategory?.items ?? []).map(
+                            (skill, skillIndex) => {
+                              const SkillIcon = getSkillIcon(skill.name);
+                              return (
+                                <SkillChip
+                                  key={skill.name}
+                                  skill={skill}
+                                  delay={
+                                    0.5 + catIndex * 0.1 + skillIndex * 0.02
+                                  }
+                                  icon={
+                                    <SkillIcon
+                                      className="h-3.5 w-3.5"
+                                      aria-hidden
+                                    />
+                                  }
+                                />
+                              );
+                            },
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={category.category} className="space-y-1.5">
+                  <h3 className="text-xs font-medium text-accent-400">
+                    {category.category}
+                  </h3>
+                  <div className="space-y-1">
+                    {category.items.map((skill, skillIndex) => {
+                      const SkillIcon = getSkillIcon(skill.name);
+                      return (
+                        <SkillChip
+                          key={skill.name}
+                          skill={skill}
+                          delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
+                          icon={
+                            <SkillIcon className="h-3.5 w-3.5" aria-hidden />
+                          }
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </motion.div>
 

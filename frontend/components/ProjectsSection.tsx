@@ -1,17 +1,31 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Folder, Github, Sparkles } from "lucide-react";
+import { Folder, Github, Newspaper, Sparkles } from "lucide-react";
 import Link from "next/link";
 
-import type { Project } from "@/content/resume.schema";
+import type { Article, Project } from "@/content/resume.schema";
+
+// Wrapper motion do `next/link` — definido fora do componente para não ser
+// recriado a cada render (evita remount/perda de estado de animação).
+const MotionLink = motion.create(Link);
 
 type ProjectsSectionProps = {
   projects: Project[];
+  articles: Article[];
 };
 
-export function ProjectsSection({ projects }: ProjectsSectionProps) {
-  if (projects.length === 0) {
+const cardEntranceTransition = (delay: number) => ({
+  duration: 0.45,
+  delay,
+  ease: [0.16, 1, 0.3, 1] as const,
+});
+
+const cardHover = { y: -4, scale: 1.015 };
+const cardHoverTransition = { duration: 0.2, ease: "easeOut" as const };
+
+export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
+  if (projects.length === 0 && articles.length === 0) {
     return null;
   }
 
@@ -40,7 +54,7 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                 <Sparkles className="h-4 w-4 text-accent-400" />
               </h2>
               <p className="text-xs text-neutral-400">
-                Trabalhos Recentes e Contribuições
+                Projetos e Artigos Publicados
               </p>
             </div>
           </div>
@@ -49,25 +63,32 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
             {projects.map((project, index) => (
               <motion.div
                 key={project.title}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 26 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={cardEntranceTransition(index * 0.1)}
+                whileHover={cardHover}
                 className="project-card glass-card group rounded-2xl p-5"
               >
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-accent-500/30 bg-accent-500/15 px-2.5 py-1 text-[10px] font-semibold tracking-wide text-accent-400 uppercase">
+                  <Folder className="h-3 w-3" />
+                  Projeto
+                </span>
                 <div className="mb-4 flex items-start justify-between">
                   <h3 className="text-lg font-bold text-neutral-100 transition-colors group-hover:text-accent-400">
                     {project.title}
                   </h3>
-                  <Link
+                  <MotionLink
                     href={project.repositoryUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Repositório de ${project.title}`}
+                    whileHover={{ scale: 1.1 }}
+                    transition={cardHoverTransition}
                     className="rounded-xl border border-neutral-700/50 bg-neutral-800/50 p-2 transition-all hover:border-accent-500/30 hover:bg-accent-500/20"
                   >
                     <Github className="h-4 w-4 text-neutral-400 transition-colors hover:text-accent-400" />
-                  </Link>
+                  </MotionLink>
                 </div>
 
                 <p className="mb-4 text-sm text-neutral-400">
@@ -84,6 +105,49 @@ export function ProjectsSection({ projects }: ProjectsSectionProps) {
                     </span>
                   ))}
                 </div>
+              </motion.div>
+            ))}
+
+            {articles.map((article, index) => (
+              <motion.div
+                key={article.title}
+                initial={{ opacity: 0, y: 26 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={cardEntranceTransition(
+                  (projects.length + index) * 0.1,
+                )}
+                whileHover={cardHover}
+                className="project-card glass-card group rounded-2xl border border-dashed border-accent-500/30 p-5"
+              >
+                <span className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-dashed border-accent-500/40 bg-transparent px-2.5 py-1 text-[10px] font-semibold tracking-wide text-accent-400 uppercase">
+                  <Newspaper className="h-3 w-3" />
+                  Artigo
+                </span>
+                <div className="mb-4 flex items-start justify-between">
+                  <h3 className="text-lg font-bold text-neutral-100 transition-colors group-hover:text-accent-400">
+                    {article.title}
+                  </h3>
+                  <MotionLink
+                    href={article.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label={`Ler artigo ${article.title}`}
+                    whileHover={{ scale: 1.1 }}
+                    transition={cardHoverTransition}
+                    className="rounded-xl border border-neutral-700/50 bg-neutral-800/50 p-2 transition-all hover:border-accent-500/30 hover:bg-accent-500/20"
+                  >
+                    <Newspaper className="h-4 w-4 text-neutral-400 transition-colors hover:text-accent-400" />
+                  </MotionLink>
+                </div>
+
+                <p className="mb-4 text-sm text-neutral-400">
+                  {article.description}
+                </p>
+
+                <span className="inline-block rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1 text-xs text-neutral-300">
+                  {article.source}
+                </span>
               </motion.div>
             ))}
           </div>

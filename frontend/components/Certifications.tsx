@@ -1,10 +1,18 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Award, Sparkles, Trophy } from "lucide-react";
+import {
+  Award,
+  BadgeCheck,
+  ExternalLink,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 import type { Certification } from "@/content/resume.schema";
+import { formatYear, groupCertificationsByIssuer } from "@/lib/utils";
 
 type CertificationsProps = {
   items: Certification[];
@@ -14,6 +22,8 @@ export function Certifications({ items }: CertificationsProps) {
   if (items.length === 0) {
     return null;
   }
+
+  const groups = groupCertificationsByIssuer(items);
 
   return (
     <section aria-labelledby="certifications-heading">
@@ -29,7 +39,7 @@ export function Certifications({ items }: CertificationsProps) {
         <div className="relative z-10">
           <div className="mb-6 flex items-center gap-3">
             <div className="rounded-xl bg-accent-500/20 p-3 text-accent-400">
-              <Trophy className="h-5 w-5" />
+              <BadgeCheck className="h-5 w-5" />
             </div>
             <div>
               <h2
@@ -40,52 +50,104 @@ export function Certifications({ items }: CertificationsProps) {
                 <Sparkles className="h-4 w-4 text-accent-400" />
               </h2>
               <p className="text-xs text-neutral-400">
-                Reconhecimentos e Conquistas
+                Cursos e Credenciais Técnicas
               </p>
             </div>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((cert, index) => (
+          {/* Agrupadas por emissor (um logo por emissor, não por certificado)
+              e com só o ano de emissão, discreto — layout mais organizado
+              que os cards individuais anteriores (ajuste de layout) */}
+          <div className="grid gap-4 sm:grid-cols-2">
+            {groups.map((group, groupIndex) => (
               <motion.div
-                key={`${cert.name}-${cert.issuedAt}`}
-                initial={{ opacity: 0, y: 20 }}
+                key={group.issuer}
+                initial={{ opacity: 0, y: 24 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="glass-card group relative overflow-hidden rounded-2xl p-5 text-center"
+                transition={{
+                  type: "spring",
+                  stiffness: 130,
+                  damping: 18,
+                  delay: groupIndex * 0.08,
+                }}
+                className="glass-card rounded-2xl p-5"
               >
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-accent-500/5 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
-
-                <div className="relative z-10">
-                  <div className="mx-auto mb-5 flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border border-neutral-700/40 bg-neutral-950/60 p-1.5 sm:h-32 sm:w-32">
-                    {cert.logoUrl ? (
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-700/40 bg-neutral-950/60 p-1.5">
+                    {group.logoUrl ? (
                       <Image
-                        src={cert.logoUrl}
-                        alt={`Logo ${cert.name}`}
-                        width={128}
-                        height={128}
+                        src={group.logoUrl}
+                        alt={`Logo ${group.issuer}`}
+                        width={44}
+                        height={44}
                         className="h-full w-full object-contain"
                       />
                     ) : (
-                      <div className="flex h-full w-full items-center justify-center rounded-xl bg-gradient-to-br from-accent-500/20 to-accent-600/20">
-                        <Award className="h-10 w-10 text-accent-400" />
+                      <div className="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-accent-500/20 to-accent-600/20">
+                        <Award className="h-5 w-5 text-accent-400" />
                       </div>
                     )}
                   </div>
-                  <span className="mb-3 inline-block rounded-full border border-accent-500/30 bg-accent-500/20 px-3 py-1 text-xs font-semibold text-accent-400">
-                    {cert.issuedAt}
-                  </span>
-                  <h3 className="mb-2 text-sm leading-tight font-semibold text-neutral-100">
-                    {cert.name}
-                  </h3>
-                  <p className="text-xs text-neutral-400">{cert.issuer}</p>
-                  {cert.expiresAt ? (
-                    <p className="mt-2 text-xs font-medium text-accent-400">
-                      Válido até {cert.expiresAt}
-                    </p>
-                  ) : null}
+                  <div className="min-w-0">
+                    <h3 className="truncate text-sm font-semibold text-neutral-100">
+                      {group.issuer}
+                    </h3>
+                    {/* Legenda de contagem só faz sentido com 2+ certificados —
+                        com 1 só, o item logo abaixo já fala por si (ajuste de
+                        layout: evita a legenda redundante "1 certificado") */}
+                    {group.items.length > 1 ? (
+                      <p className="text-[11px] text-neutral-500">
+                        {group.items.length} certificados
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
+
+                <ul className="space-y-3">
+                  {group.items.map((cert, certIndex) => (
+                    <li
+                      key={`${cert.name}-${cert.issuedAt}`}
+                      className={
+                        certIndex > 0
+                          ? "flex items-start justify-between gap-3 border-t border-neutral-800/60 pt-3"
+                          : "flex items-start justify-between gap-3"
+                      }
+                    >
+                      <div className="min-w-0">
+                        {/* Ícone por certificado — identidade visual própria
+                            de cada item dentro do grupo, além do logo
+                            compartilhado do emissor no cabeçalho */}
+                        <p className="flex items-start gap-1.5 text-xs leading-snug font-medium text-neutral-200">
+                          <ShieldCheck
+                            className="mt-0.5 h-3 w-3 shrink-0 text-accent-400"
+                            aria-hidden
+                          />
+                          <span>{cert.name}</span>
+                        </p>
+                        {cert.expiresAt ? (
+                          <p className="mt-0.5 pl-[18px] text-[11px] text-neutral-500">
+                            Válido até {formatYear(cert.expiresAt)}
+                          </p>
+                        ) : null}
+                        {cert.credentialUrl ? (
+                          <Link
+                            href={cert.credentialUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-1 inline-flex items-center gap-1 pl-[18px] text-[11px] font-medium text-accent-400 transition-colors hover:text-accent-300"
+                          >
+                            Ver certificado
+                            <ExternalLink className="h-3 w-3" />
+                          </Link>
+                        ) : null}
+                      </div>
+                      <span className="shrink-0 text-[11px] font-medium tracking-wide text-neutral-500">
+                        {formatYear(cert.issuedAt)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
               </motion.div>
             ))}
           </div>
