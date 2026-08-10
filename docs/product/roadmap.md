@@ -75,12 +75,12 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 6 — Divulgação
 
-**Status:** Não iniciada
-**Backlog:** sem backlog formal (checklist de lançamento, não histórias de dev)
+**Status:** Em andamento
+**Backlog:** [`docs/product/backlog/fase-06/`](backlog/fase-06/) (US-06-01 a US-06-03) — branch `feature/fase-06-divulgacao`
 
-- [ ] README com a seção "Como este projeto foi construído com agentes de IA" (prints do pipeline, ADRs, PRD)
-- [ ] Link do site no LinkedIn e no GitHub
-- [ ] Feedback de 2-3 pessoas antes de divulgar amplamente
+- [x] README com a seção "Como este projeto foi construído com agentes de IA" — [US-06-01](backlog/fase-06/US-06-01-readme-agentes-ia.md)
+- [ ] Link do site no LinkedIn e no GitHub — [US-06-02](backlog/fase-06/US-06-02-links-github-linkedin.md) (Quase lá — falta confirmação do autor)
+- [ ] Feedback de 2-3 pessoas antes de divulgar amplamente — [US-06-03](backlog/fase-06/US-06-03-feedback-pre-divulgacao.md) (Quase lá — falta registro)
 
 ## Fase 7 — Frontend & UX v2
 

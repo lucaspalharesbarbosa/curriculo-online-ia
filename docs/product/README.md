@@ -31,7 +31,7 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 - [Fase 04 — Polimento](backlog/fase-04/) (2 histórias — 2/2 Done)
 - [Fase 05 — Feature de IA (RAG)](backlog/fase-05/) (9 histórias — 9/9 Done)
 
-Fase 06 (divulgação) é checklist de lançamento, sem histórias formais de backlog — ver [`roadmap.md`](roadmap.md#fase-6--divulgação).
+- [Fase 06 — Divulgação](backlog/fase-06/) (US-06-01 a US-06-03 — Ready for Agent; branch `feature/fase-06-divulgacao`)
 
 - [Fase 07 — Frontend & UX v2](backlog/fase-07/) (US-07-01 a US-07-04 — DoR fechado; US-07-03 = clonagem do template [personal-resume](https://github.com/giasinguyen/personal-resume))
 
