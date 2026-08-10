@@ -63,8 +63,10 @@ describe("Certifications", () => {
     expect(screen.getAllByText("Alura")).toHaveLength(1);
     expect(screen.getByText("SOLID com Java")).toBeInTheDocument();
     expect(screen.getByText("Formação Angular")).toBeInTheDocument();
-    expect(screen.getByText("2022")).toBeInTheDocument();
-    expect(screen.getByText("2021")).toBeInTheDocument();
+    expect(screen.getAllByText("2022").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("2021").length).toBeGreaterThan(0);
+    expect(screen.queryByText(/emitido 2022/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/emitido 2021/i)).not.toBeInTheDocument();
     expect(screen.queryByText("2022-03")).not.toBeInTheDocument();
   });
 
@@ -84,8 +86,11 @@ describe("Certifications", () => {
       />,
     );
 
-    const link = screen.getByRole("link", { name: /ver certificado/i });
+    const link = screen.getByRole("link", {
+      name: /ver certificado formação react/i,
+    });
     expect(link).toBeInTheDocument();
+    expect(link).toHaveTextContent(/ver certificado/i);
     expect(link).toHaveAttribute(
       "href",
       "https://cursos.alura.com.br/certificate/abc123",
@@ -113,5 +118,41 @@ describe("Certifications", () => {
     expect(
       screen.queryByRole("link", { name: /ver certificado/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("lista várias credenciais do mesmo emissor em bloco único", () => {
+    render(
+      <Certifications
+        items={[
+          {
+            name: "SOLID com Java",
+            issuer: "Alura",
+            issuedAt: "2022-03",
+            expiresAt: null,
+            logoUrl: "/alura-logo.png",
+            credentialUrl: null,
+          },
+          {
+            name: "Formação Angular",
+            issuer: "Alura",
+            issuedAt: "2021-03",
+            expiresAt: null,
+            logoUrl: "/alura-logo.png",
+            credentialUrl: null,
+          },
+          {
+            name: "Formação React",
+            issuer: "Alura",
+            issuedAt: "2024-03",
+            expiresAt: null,
+            logoUrl: "/alura-logo.png",
+            credentialUrl: null,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText("3 credenciais")).toBeInTheDocument();
+    expect(screen.getByText("Formação React")).toBeInTheDocument();
   });
 });

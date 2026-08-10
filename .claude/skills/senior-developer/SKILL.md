@@ -7,7 +7,8 @@ description: >
   correção de bug, componente de UI, endpoint, integração com o conteúdo do
   currículo (resume.json) ou fluxo de chat/RAG. Acione com @senior-developer ou
   pedidos como "implementa", "desenvolve", "cria o componente", "cria o endpoint".
-  Complementa @arquiteto-ia-senior (decisões), @tech-lead-review (revisão) e @qa-engineer.
+  Complementa @arquiteto-ia-senior (decisões), @ux-designer (protótipos sob
+  pedido), @tech-lead-review (revisão) e @qa-engineer.
 disable-model-invocation: true
 ---
 
@@ -52,10 +53,12 @@ Detalhes completos (estrutura de pastas, hospedagem, branching) em `docs/agents/
 ### Modo A — Feature com história de usuário (preferencial)
 
 1. Ler a história e conferir que o **DoR está fechado** (contrato de API, modelagem de dados, plano de testes, critérios de aceite — `docs/product/`); ADR relevante em `docs/architecture/` se existir. DoR aberto → devolver ao `@product-owner`, não implementar
-2. Confirmar se a feature é frontend, backend ou ambos
-3. Implementar; manter `resume.json` como única fonte dos dados do currículo; contrato de API implementado deve bater com o documentado no DoR
-4. Escrever/atualizar teste do componente ou endpoint tocado, cobrindo o plano de testes do DoR (unitário, integração, mocks) — piso de 70% de cobertura no código tocado
-5. Marcar a história como concluída no backlog (Done fica a cargo do `@product-owner`, após DoD fechado)
+2. Se a história registrou **protótipo solicitado** ainda sem escolha → devolver ao `@ux-designer` / gate humano; **não** implementar UI ambígua. Sem pedido de protótipo → seguir direto
+3. Confirmar se a feature é frontend, backend ou ambos
+4. Implementar; manter `resume.json` como única fonte dos dados do currículo; contrato de API implementado deve bater com o documentado no DoR
+5. Se promoveu a partir de protótipo: no **mesmo PR**, remover rota `/prototipo/<slug>` e componentes em `components/prototypes/` (`docs/agents/PROCESSO-PROTOTIPO.md`)
+6. Escrever/atualizar teste do componente ou endpoint tocado, cobrindo o plano de testes do DoR (unitário, integração, mocks) — piso de 70% de cobertura no código tocado
+7. Marcar a história como concluída no backlog (Done fica a cargo do `@product-owner`, após DoD fechado)
 
 ### Modo B — Ad-hoc (bug / ajuste pontual)
 
@@ -74,7 +77,9 @@ Consulte `references/implementation-patterns.md` e `references/delivery-checklis
 ```
 frontend/
   app/            → rotas Next.js (Server/Client Components)
+  app/prototipo/  → rotas temporárias de exploração visual (`@ux-designer`) — limpar após decisão
   components/     → Hero, ExperienceCard, SkillBadge, ChatWidget...
+  components/prototypes/ → UI descartável de protótipo — não deixa órfã após promover/descartar
   content/        → resume.json (dados) — nunca hardcode conteúdo em componente
 
 backend/
@@ -89,6 +94,7 @@ backend/
 - `ChatWidget` chama o backend via fetch; nunca chama provider de LLM diretamente do client
 - `rag.py` isolado de `chat.py` (indexação/busca separada de orquestração do endpoint) para poder testar cada um isoladamente
 - CORS no FastAPI restrito ao domínio do frontend (Vercel + localhost em dev)
+- Protótipo visual: **só** se o autor pedir (`@ux-designer`); após decisão, limpeza no **mesmo PR** da promoção/descarte — ver `docs/agents/PROCESSO-PROTOTIPO.md`
 
 ---
 
@@ -185,6 +191,8 @@ Nível de teste proporcional ao projeto: cobrir os componentes/endpoints princip
 - Introduzir banco vetorial de verdade ou framework pesado (LangChain etc.) sem necessidade — o plano pede RAG simples, "do zero"
 - Reabrir a escolha de stack (Next.js/FastAPI/monorepo) sem ADR do `@arquiteto-ia-senior`
 - Over-engineering: abstrações, camadas ou configs que o tamanho do projeto não justifica
+- Deixar código em `app/prototipo` / `components/prototypes` após a decisão (aprovado ou descartado)
+- Prototipar por conta própria sem pedido do autor — isso é papel do `@ux-designer` sob demanda
 
 ---
 
@@ -193,6 +201,7 @@ Nível de teste proporcional ao projeto: cobrir os componentes/endpoints princip
 | Skill | Quando |
 |---|---|
 | `@arquiteto-ia-senior` | Decisão de stack, ADR do fluxo de RAG |
+| `@ux-designer` | Autor pediu protótipo / exploração visual antes de decidir |
 | `@product-owner` | História de usuário / critério de aceite pouco claro |
 | `@tech-lead-review` | Antes do merge |
 | `@qa-engineer` | Testes do fluxo de chat e regressão |
@@ -207,4 +216,5 @@ Nível de teste proporcional ao projeto: cobrir os componentes/endpoints princip
 | `references/implementation-patterns.md` | Exemplos por tipo de mudança |
 | `references/delivery-checklist.md` | Antes de concluir |
 | `../qa-engineer/references/test-naming-convention.md` | Convenção de nome de teste (código EN, display PT-BR) |
+| `docs/agents/PROCESSO-PROTOTIPO.md` | Protótipos visuais (sob pedido) e limpeza no mesmo PR |
 | `docs/agents/CONTEXTO-PROJETO.md` | Stack, estrutura, branching, hospedagem |

@@ -42,6 +42,10 @@ O frontend já é Next.js (App Router) desde o `ADR-001`. Não é uma decisão e
 | Auditoria e correção de responsividade (mobile/tablet/desktop) | P1 | [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md) |
 | Redesign visual do site (clonagem do template personal-resume) | P2 | [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md) |
 | Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) | P3 | [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md) |
+| Polimento de layout e UX (collapse, perfil, mobile, reconhecimentos) | P1 | [US-07-11](backlog/fase-07/US-07-11-polimento-layout-ux.md) |
+| Refino visual: destaques PRAD/Mérito, Educação e Certificações | P1 | [US-07-12](backlog/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) |
+| Polimento UX: hero typewriter, seções e Assistente RAG | P1 | [US-07-13](backlog/fase-07/US-07-13-polimento-ux-chat-hero-secoes.md) |
+| Ajuste fino: hero em linhas, probes 3ª pessoa, certs e label Artigo | P1 | [US-07-14](backlog/fase-07/US-07-14-ajuste-hero-probes-certs-destaques.md) |
 
 ## Riscos
 

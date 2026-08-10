@@ -9,6 +9,28 @@ Python + FastAPI (serviço de API; RAG na Fase 05).
 - Testes: pytest (AAA), `TestClient` para endpoints
 - Lint/format: ruff + black
 
+## Setup local (obrigatório para o chat)
+
+Na primeira subida, o backend cria `backend/.env` a partir de `.env.example` se ele ainda não existir. **Substitua o placeholder de `LLM_API_KEY` pela chave real** — sem isso o `/chat` responde erro genérico ao client e registra o motivo só no log do servidor.
+
+### Onde obter `LLM_API_KEY`
+
+1. Abra o [Dashboard do Render](https://dashboard.render.com).
+2. Web Service **`curriculo-online-backend`**.
+3. Aba **Environment**.
+4. Variável **`LLM_API_KEY`** — revele/copie o valor no painel e cole em `backend/.env`.
+
+Alternativa: gerar uma chave nova em [platform.openai.com/api-keys](https://platform.openai.com/api-keys) (a mesma usada em produção no Render).
+
+```bash
+cd backend
+pip install -r requirements.txt
+# Edite backend/.env → LLM_API_KEY=<valor do Render Environment>
+uvicorn app.main:app --reload
+```
+
+`python-dotenv` carrega `backend/.env` automaticamente no startup (`app/env_bootstrap.py`). Em produção as variáveis vêm do painel do Render (`override=False`) — mesmo caminho: **`curriculo-online-backend` → Environment → `LLM_API_KEY`**.
+
 ## Comandos
 
 ```bash
@@ -30,7 +52,7 @@ Com o servidor no ar (`uvicorn app.main:app --reload`):
 | JSON OpenAPI | http://127.0.0.1:8000/openapi.json |
 
 | `GET /health` | `{"status": "ok"}` |
-| `POST /chat` | Request `{"question": string}` → Response `{"answer": string}`. Erros: `422` (pergunta ausente/vazia), `429` (rate limit excedido), `500` (falha ao chamar o provider de IA, mensagem genérica). Pergunta fora do escopo do currículo não é erro — retorna `200` com fallback textual. |
+| `POST /chat` | Request `{"question": string}` → Response `{"answer": string}`. Erros: `422` (pergunta ausente/vazia), `429` (rate limit excedido), `500` (falha ao gerar — mensagem genérica, sem detalhe interno). Pergunta fora do escopo do currículo não é erro — retorna `200` com fallback textual. |
 
 O model `Resume` (Pydantic) valida o `resume.json` nos testes e ainda não aparece no OpenAPI (não há endpoint que o use como request/response).
 

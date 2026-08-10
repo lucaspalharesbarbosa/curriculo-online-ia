@@ -4,7 +4,7 @@
     "title": "Tech Lead | Senior Software Engineer — AI Engineering | Agentic AI | Java • Python | AWS Certified",
     "location": "São José do Rio Preto, SP",
     "summary": "Tech Lead e Senior Software Engineer com mais de 10 anos de experiência em soluções escaláveis para bancos, telecomunicações e saúde. Lidero tecnicamente squads na Engineering Brasil no desenvolvimento de soluções de IA para a Claro, aplicando AI Engineering — Agentic AI, Context Engineering e Spec-Driven Development — para acelerar a entrega de software. Base sólida em arquitetura de microsserviços, Java, Python, Spring Boot, Kubernetes e Cloud, com histórico de entregas estratégicas em produtos de grande porte.",
-    "photoUrl": "/foto-lucas-palhares.png"
+    "photoUrl": "/foto-lucas-palhares-2026.png"
   },
   "about": "Tech Lead e Senior Software Engineer com mais de 10 anos de experiência desenvolvendo soluções escaláveis para grandes empresas dos setores bancário, telecomunicações e saúde. Atualmente lidera tecnicamente squads na Engineering Brasil responsáveis por soluções estratégicas de Inteligência Artificial para a Claro. Seu foco evoluiu da engenharia de software tradicional para soluções orientadas por IA, aplicando práticas de AI Engineering — Context Engineering, Prompt Engineering, Harness Engineering, Agentic AI e Spec-Driven Development (SDD) — na construção de AI Agents, AI Skills e fluxos agentic integrados ao ciclo de desenvolvimento. Como Tech Lead, responde por liderança técnica, arquitetura, mentoria, revisão de código, padrões de engenharia e condução da adoção de IA no processo de desenvolvimento, utilizando ferramentas como Claude Code e Cursor no dia a dia. Experiência sólida em Java, Python, microsserviços, Spring Boot, Kubernetes, Cloud (AWS e GCP), APIs REST e arquiteturas distribuídas.",
   "experiences": [
@@ -70,7 +70,8 @@
         "Atuei no desenvolvimento do MVP do produto de Crédito para Energia Solar, possibilitando a entrada do Itaú em novo segmento de negócios",
         "Refatorei o sistema de Gestão de Carteira de Microcrédito, aumentando a manutenibilidade e reduzindo incidentes críticos",
         "Contribuí para o projeto de Realocação de Carteiras Desassistidas no sistema de Gestão de Carteira de Microcrédito, com foco na redução dos índices de inadimplência dos contratos",
-        "Reconhecido por Alto Desempenho (2023 e 2024) e Mérito (2024): avaliado com classificação \"Destaca-se em relação ao grupo\", recebi PRAD pela qualidade das minhas entregas, colaboração e impacto nos resultados do time"
+        "Reconhecido por Alto Desempenho (2023 e 2024): avaliado com classificação \"Destaca-se em relação ao grupo\", recebi PRAD pela qualidade das minhas entregas, colaboração e impacto nos resultados do time",
+        "Reconhecimento de Mérito (2024): concedido individualmente pela liderança pela qualidade das entregas, colaboração e impacto nos resultados do time"
       ],
       "technologies": [
         "Java (Spring Boot)",
@@ -441,7 +442,7 @@
       "logoUrl": "/aws-certified-cloud-pratctitioner-logo.png",
       "issuedAt": "2024-07",
       "expiresAt": "2027-07",
-      "credentialUrl": null
+      "credentialUrl": "https://www.credly.com/badges/b200cc1c-b062-4c15-8037-32031a581900/linked_in_profile"
     },
     {
       "name": "Scrum Fundamentals Certified (SFC)",

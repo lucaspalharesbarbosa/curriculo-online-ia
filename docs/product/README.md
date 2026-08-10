@@ -51,6 +51,8 @@ Histórias dessas fases são criadas pelo `@product-owner` quando cada fase entr
 
 Detalhes: [`docs/agents/CONTEXTO-PROJETO.md`](../agents/CONTEXTO-PROJETO.md#convenção-de-nomenclatura-de-documentos).
 
+Protótipos visuais (sob pedido, `@ux-designer`): [`docs/agents/PROCESSO-PROTOTIPO.md`](../agents/PROCESSO-PROTOTIPO.md). Índice dos agentes: [`docs/agents/README.md`](../agents/README.md).
+
 ## Pendências para o autor
 
 Nenhuma pendência ativa de conteúdo. Resolvidas na Fase 03:

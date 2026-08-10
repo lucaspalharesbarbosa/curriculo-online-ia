@@ -66,7 +66,7 @@ export const certificationSchema = z.object({
     .nullable()
     .default(null),
   // null quando não há link de validação do certificado — Certifications
-  // renderiza sem o link "Ver certificado" nesse caso (ADR-006)
+  // renderiza sem o botão "Ver certificado" nesse caso (ADR-006)
   credentialUrl: z.string().url().nullable().default(null),
 });
 

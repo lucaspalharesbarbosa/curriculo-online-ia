@@ -35,7 +35,7 @@ describe("ProjectsSection", () => {
     expect(screen.getByText("Currículo Online com IA")).toBeInTheDocument();
     expect(
       screen.getByRole("link", {
-        name: /repositório de currículo online com ia/i,
+        name: /ver repositório de currículo online com ia/i,
       }),
     ).toHaveAttribute(
       "href",
@@ -60,9 +60,27 @@ describe("ProjectsSection", () => {
     );
     expect(articleLink).toHaveAttribute("target", "_blank");
     expect(articleLink).toHaveAttribute("rel", "noopener noreferrer");
+    expect(articleLink).toHaveClass("highlight-cta");
+    expect(screen.getByText("Artigo")).toHaveClass("project-kind-badge");
     expect(
-      screen.queryByRole("link", { name: /^repositório de/i }),
+      screen.queryByRole("link", { name: /ver repositório/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("padroniza labels e CTAs de Projeto e Artigo", () => {
+    render(<ProjectsSection projects={[project]} articles={[article]} />);
+
+    const projectBadge = screen.getByText("Projeto");
+    const articleBadge = screen.getByText("Artigo");
+    expect(projectBadge).toHaveClass("project-kind-badge");
+    expect(articleBadge).toHaveClass("project-kind-badge");
+
+    expect(screen.getByRole("link", { name: /ver repositório/i })).toHaveClass(
+      "highlight-cta",
+    );
+    expect(screen.getByRole("link", { name: /ler artigo/i })).toHaveClass(
+      "highlight-cta",
+    );
   });
 
   it("renderiza a seção quando só há artigos e nenhum projeto", () => {

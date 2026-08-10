@@ -127,4 +127,36 @@ describe("ExperienceSection", () => {
     expect(screen.getByText("Web Developer")).toBeInTheDocument();
     expect(screen.getByText("Junior Web Developer")).toBeInTheDocument();
   });
+
+  it("destaca Alto Desempenho e Mérito como itens separados", () => {
+    render(
+      <ExperienceSection
+        experiences={[
+          {
+            company: "Itaú Unibanco",
+            role: "Software Engineer",
+            startDate: "2022-07",
+            endDate: "2025-09",
+            location: "São Paulo, SP",
+            modality: "Remoto",
+            highlights: [
+              "Reconhecido por Alto Desempenho (2023 e 2024): recebi PRAD",
+              "Reconhecimento de Mérito (2024): concedido pela liderança",
+            ],
+            technologies: ["Java"],
+            logoUrl: null,
+          },
+        ]}
+      />,
+    );
+
+    expect(screen.getByText(/^alto desempenho$/i)).toBeInTheDocument();
+    expect(screen.getByText(/^mérito$/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/reconhecido por alto desempenho/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/reconhecimento de mérito \(2024\)/i),
+    ).toBeInTheDocument();
+  });
 });

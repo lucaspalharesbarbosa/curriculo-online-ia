@@ -12,8 +12,14 @@ Fase 2 Arquiteto (se preciso)
   ├─ ADR / C4 / trade-offs
   └─ handoff
 
+Fase 2b UX Designer (somente se o autor pediu protótipo)
+  ├─ /prototipo/<slug> + variantes
+  ├─ Gate humano (letra ou descarte)
+  └─ handoff (não avança Dev de prod sem escolha)
+
 Fase 3 Dev
   ├─ Implementar em frontend/ ou backend/
+  ├─ Se houve protótipo: promover variante (se aprovada) + limpar protótipo no mesmo PR
   ├─ npm test / pytest do escopo tocado
   ├─ Marcar [X] no backlog
   └─ handoff
@@ -37,7 +43,11 @@ Fase 6 PO
 
 ## Modo `implement`
 
-Pula PO de criação se história/tasks `ready-for-agent` já existem. Mantém 2?→3→4→5→6.
+Pula PO de criação se história/tasks `ready-for-agent` já existem. Mantém 2?→2b?→3→4→5→6.
+
+## Modo `prototype`
+
+Só Fase 2b (`@ux-designer`). Para no gate humano. Não implementa produção nem limpa até o autor decidir; o PR seguinte (ou a continuação pedida) faz promover/descartar + limpar juntos.
 
 ## Modo `validate` / `review`
 
@@ -49,14 +59,15 @@ PO + Arquiteto; **não** implementa até o usuário aprovar.
 
 ## Modo `fix`
 
-Dev→QA→TL. Arquiteto só se decisão de stack/estrutura for afetada.
+Dev→QA→TL. Arquiteto só se decisão de stack/estrutura for afetada. UX Designer só se o autor pedir protótipo no meio do fix (raro).
 
 ## Gates
 
 | Gate | Critério |
 |---|---|
 | Pré-dev (Fase 1→2/3) | DoR 100% fechado (todo item `[x]`/`N/A` justificado) |
-| Pós-dev | Teste do escopo tocado passando ou lacuna documentada aceita |
+| Pré-dev após protótipo (2b→3) | Escolha do autor registrada; sem escolha não avança |
+| Pós-dev | Teste do escopo tocado passando ou lacuna documentada aceita; se houve protótipo decidido, código `/prototipo` removido no mesmo PR |
 | Pós-QA | Sem reprovação em fluxo crítico (chat/RAG, dados do currículo) e linha "QA" da tabela Vereditos preenchida na história |
 | Pós-TL | Sem Critical/High abertos (especialmente chave de API / CORS) e linha "Tech Lead" da tabela Vereditos preenchida na história |
 | Pré-Done (Fase 6) | Critérios de aceite + DoD 100% fechados (todo item `[x]`/`N/A` justificado), incluindo as 3 linhas da tabela Vereditos (QA, Tech Lead, PO) preenchidas |

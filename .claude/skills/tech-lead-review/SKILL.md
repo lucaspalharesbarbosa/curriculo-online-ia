@@ -73,7 +73,7 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 | Nível | Exemplos deste projeto |
 |---|---|
 | **Critical** | Chave de API commitada ou chamada de LLM feita direto do client; CORS `allow_origins=["*"]` em produção |
-| **High** | Componente/endpoint principal do diff sem teste, ou cobertura abaixo do piso de 70% do DoD; dado do currículo hardcoded em vez de vir do `resume.json`; contrato implementado diverge do documentado no DoR; erro do endpoint implementado diverge do mapeamento documentado no DoR (código HTTP/body/mensagem diferente do combinado) |
+| **High** | Componente/endpoint principal do diff sem teste, ou cobertura abaixo do piso de 70% do DoD; dado do currículo hardcoded em vez de vir do `resume.json`; contrato implementado diverge do documentado no DoR; erro do endpoint implementado diverge do mapeamento documentado no DoR (código HTTP/body/mensagem diferente do combinado); **protótipo órfão** — decisão já registrada (aprovado/descartado) e ainda resta código em `app/prototipo/` ou `components/prototypes/` no PR (`docs/agents/PROCESSO-PROTOTIPO.md`) |
 | **Medium** | Componente fazendo mais de uma coisa; falta de tratamento de erro no fetch do chat |
 | **Low** / **Nit** | Nome, formatação, comentário desnecessário |
 
@@ -108,6 +108,7 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 - [ ] Contrato de API implementado bate com o documentado no DoR (se aplicável)
 - [ ] Erros do endpoint batem com o mapeamento documentado no DoR (se aplicável)
 - [ ] Build (`npm run build` / `pytest`) ok
+- [ ] Sem protótipo órfão pós-decisão (`app/prototipo/`, `components/prototypes/`)
 
 ## Próximos passos
 1. ...
@@ -123,6 +124,7 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 2. CORS do backend restrito ao domínio do frontend (Vercel + localhost)
 3. Sem PII de terceiros logada (não aplicável a dados do próprio currículo, mas vale para input de visitantes no chat)
 4. Mudança de stack/arquitetura → ADR em `docs/architecture/`
+5. Protótipo com decisão fechada não permanece no código — limpeza no mesmo PR da promoção/descarte (`docs/agents/PROCESSO-PROTOTIPO.md`, `@ux-designer`)
 
 ---
 
