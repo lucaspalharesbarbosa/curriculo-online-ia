@@ -17,8 +17,8 @@
 - [x] Épico e dependências identificados — Frontend & UX v2; depende de US-07-03 / US-07-11 (base visual + highlights)
 - [x] ADR registrado — N/A: sem stack/lib nova; reusa `framer-motion` / `lucide-react` (`ADR-005`)
 - [x] Variáveis de ambiente/segredos — N/A
-- [x] Referência visual definida — **protótipos em** `/prototipo/secoes-layout` (variantes A–D destaques, E–G educação, H–J certificações). **Implementação só após escolha explícita do autor** (letras escolhidas registradas nos CAs / tasks)
-- [x] Sem dúvida bloqueante — **exceto escolha das variantes**, gate de descoberta; Dev não aplica na home até o autor decidir
+- [x] Referência visual definida — protótipos em `/prototipo/secoes-layout`; escolha do autor (2026-08-08): **Destaque=B** (anel respirando, pulse perceptível sem exagero), **Educação=F refinada** (nome como link + badge elegante `ExternalLink`), **Certificações=I** (card por emissor + selo grande)
+- [x] Sem dúvida bloqueante — escolha das variantes registrada; implementação liberada
 
 #### Plano de testes
 
@@ -28,13 +28,13 @@
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
 
-- [ ] CA-001: Destaques PRAD / Mérito (Itaú) na Experiência usam a **variante escolhida no protótipo** (marcador com pulse sutil/elegante); **sem** o bloco atual com borda+fundo que compete demais com o restante da lista
-- [ ] CA-002: Pulse (se houver na variante) respeita `prefers-reduced-motion`
-- [ ] CA-003: Educação — link do site da instituição com ícone **diferente de `Globe` minúsculo**, mais visível e fácil de identificar como link externo/site (rótulo ou hit-area generosa)
-- [ ] CA-004: Certificações — layout reorganizado com **selos**/identidade por emissor, informações divididas de forma apresentável (nome, ano, validade, link de credencial quando existir)
-- [ ] CA-005: Conteúdo 100% de `resume.json` (sem inventar cursos/prêmios)
-- [ ] CA-006: Suíte de testes do frontend verde no escopo tocado (`npm test`)
-- [ ] CA-007: Variantes escolhidas pelo autor documentadas na história (ex.: Destaque=B, Educação=F, Cert=I)
+- [x] CA-001: Destaques PRAD / Mérito (Itaú) na Experiência usam **variante B** (anel respirando); **sem** caixa com borda+fundo
+- [x] CA-002: Pulse respeita `prefers-reduced-motion` (`.highlight-ring-dot`)
+- [x] CA-003: Educação — variante **F refinada**: nome da instituição como link + badge `ExternalLink` elegante (não `Globe` minúsculo)
+- [x] CA-004: Certificações — variante **I**: card por emissor com selo grande no header; lista com emitido/validade/ano/credencial
+- [x] CA-005: Conteúdo 100% de `resume.json` (sem inventar cursos/prêmios)
+- [x] CA-006: Suíte de testes do frontend verde no escopo tocado — `ExperienceSection` / `EducationSection` / `Certifications` (12 testes OK)
+- [x] CA-007: Variantes: **Destaque=B**, **Educação=F (refinada)**, **Certificações=I**
 - [x] CA-008: Tipografia das seções padronizada via escala `type-*` em `globals.css` (título de seção, item, corpo, meta, label) — legível em mobile / tablet / desktop; sem tamanhos arbitrários inconsistentes (`text-[10px]`/`[11px]`/`[12px]` soltos nas seções principais)
 
 ### Fora de escopo
@@ -56,11 +56,11 @@ Frontend & UX v2 — P1
 
 - [x] T01 Página de protótipos `frontend/app/prototipo/secoes-layout/` + componente de variantes — descoberta visual
 - [x] T01b Escala tipográfica `type-*` em `globals.css` + aplicação em seções/sidebar (`SectionHeading`, Perfil, Experiência, Educação, Certificações, Reconhecimentos, Destaques, `ResumeSidebar`)
-- [ ] T02 Registrar escolha do autor (CA-007) e aplicar em `ExperienceSection.tsx` (+ teste)
-- [ ] T03 [P] Aplicar variante de link em `EducationSection.tsx` (+ teste se necessário)
-- [ ] T04 [P] Redesign `Certifications.tsx` (+ teste) conforme variante escolhida
-- [ ] T05 CSS/`globals.css` — animação de pulse do marcador se ainda não existir (respeitando reduced-motion)
-- [ ] T06 `npm test` + `npm run build` — evidência DoD
+- [x] T02 Escolha B aplicada em `ExperienceSection.tsx` (`.highlight-ring-dot`, sem caixa)
+- [x] T03 [P] Educação F refinada em `EducationSection.tsx` (nome-link + badge `ExternalLink`)
+- [x] T04 [P] Certificações I em `Certifications.tsx` (selo grande + lista por emissor)
+- [x] T05 CSS — `highlight-ring-dot` + `edu-site-*` (respeitando reduced-motion)
+- [x] T06 `npm test` no escopo tocado (12 testes OK); build/DoD completo na passagem QA/TL
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
@@ -83,4 +83,4 @@ Frontend & UX v2 — P1
 | Tech Lead | `@tech-lead-review` | | | |
 | PO | `@product-owner` | | | |
 
-**Status:** Ready for Agent (discover — aguardando escolha das variantes)
+**Status:** In Progress
