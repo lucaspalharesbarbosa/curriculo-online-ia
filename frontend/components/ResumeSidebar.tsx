@@ -371,10 +371,23 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             <Link
               href={contact.resumePdfUrl}
               download
-              className="type-body neon-glow flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-400 via-accent-500 to-accent-400 bg-[length:200%_100%] py-3.5 font-medium text-neutral-900 transition-all duration-500 hover:bg-[position:100%_0] hover:shadow-lg hover:shadow-accent-500/25"
+              className="group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 p-1.5 shadow-[0_12px_32px_rgba(56,189,248,0.28)] transition-[transform,box-shadow] duration-300 hover:scale-[1.015] hover:shadow-[0_16px_40px_rgba(56,189,248,0.4)] focus-visible:outline-offset-4"
             >
-              <Download className="h-4 w-4" />
-              Download CV
+              <span
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_35%,rgba(255,255,255,0.28)_50%,transparent_65%)] bg-[length:220%_100%] bg-[-80%_0] transition-[background-position] duration-700 group-hover:bg-[120%_0]"
+                aria-hidden
+              />
+              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-950/18 text-neutral-950 ring-1 ring-neutral-950/10">
+                <Download className="h-5 w-5" strokeWidth={2.25} />
+              </span>
+              <span className="relative flex min-w-0 flex-1 flex-col items-start py-1.5 pr-2">
+                <span className="text-sm font-semibold tracking-tight text-neutral-950 sm:text-[15px]">
+                  Baixar CV
+                </span>
+                <span className="text-[11px] font-medium text-neutral-950/75">
+                  PDF · currículo completo
+                </span>
+              </span>
             </Link>
           </motion.div>
         ) : null}

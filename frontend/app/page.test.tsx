@@ -46,7 +46,7 @@ describe("Home page", () => {
       screen.getByRole("heading", { name: /^destaques$/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /download cv/i }),
+      screen.getByRole("link", { name: /baixar cv/i }),
     ).toBeInTheDocument();
     expect(screen.queryByText(/nguyen tran gia si/i)).not.toBeInTheDocument();
   }, 15_000);

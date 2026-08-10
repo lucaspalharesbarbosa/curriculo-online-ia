@@ -19,7 +19,7 @@ describe("ResumeSidebar", () => {
           title: "Tech Lead | Engenheiro de Software Sênior",
           location: "São José do Rio Preto, SP",
           summary: "Resumo",
-          photoUrl: "/foto-lucas-palhares.png",
+          photoUrl: "/foto-lucas-palhares-2026.png",
         }}
         contact={{
           linkedin: "https://www.linkedin.com/in/lucas-palhares-barbosa/",
@@ -66,6 +66,11 @@ describe("ResumeSidebar", () => {
       "https://www.google.com/maps/search/?api=1&query=S%C3%A3o%20Jos%C3%A9%20do%20Rio%20Preto%2C%20SP",
     );
     expect(mapsLink).toHaveAttribute("target", "_blank");
+    expect(screen.getByRole("link", { name: /baixar cv/i })).toHaveAttribute(
+      "href",
+      "/curriculo.pdf",
+    );
+    expect(screen.getByText(/pdf · currículo completo/i)).toBeInTheDocument();
   });
 
   it("divide hero.title em cargos (destaque) e informações complementares (discreto)", () => {
