@@ -34,10 +34,9 @@ export function EducationSection({ items }: EducationSectionProps) {
               damping: 16,
               delay: index * 0.12,
             }}
-            whileHover={{ scale: 1.02, y: -4 }}
-            className="glass-card group relative rounded-2xl p-4 sm:p-5"
+            className="edu-card glass-card group relative rounded-2xl p-4 sm:p-5"
           >
-            <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-accent-500/0 via-accent-500/5 to-accent-600/0 opacity-0 transition-opacity group-hover:opacity-100" />
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-accent-500/0 via-accent-500/8 to-accent-600/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
             <div className="relative z-10 flex gap-3 sm:gap-4">
               <div className="icon-glow h-12 w-12 shrink-0 rounded-xl bg-accent-500/20 sm:h-14 sm:w-14">

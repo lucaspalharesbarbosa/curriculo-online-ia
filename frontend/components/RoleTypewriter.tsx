@@ -146,15 +146,8 @@ export function RoleTypewriter({ lines, className = "" }: RoleTypewriterProps) {
             key={`${index}-${line}`}
             className="role-type-line inline-flex max-w-full items-baseline gap-1.5 font-mono"
           >
-            <span
-              className={
-                index === 0
-                  ? "shrink-0 text-accent-400"
-                  : "shrink-0 text-accent-400/40"
-              }
-              aria-hidden
-            >
-              {index === 0 ? ">_" : "·"}
+            <span className="shrink-0 text-accent-400" aria-hidden>
+              &gt;_
             </span>
             <span className="role-type-loop min-w-0 truncate text-left">
               {shown}

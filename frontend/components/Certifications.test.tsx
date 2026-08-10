@@ -119,7 +119,7 @@ describe("Certifications", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("emissor com várias credenciais ocupa largura ampla no grid", () => {
+  it("lista várias credenciais do mesmo emissor em bloco único", () => {
     render(
       <Certifications
         items={[

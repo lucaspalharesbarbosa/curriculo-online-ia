@@ -33,7 +33,7 @@ describe("RoleTypewriter", () => {
     expect(
       screen.getByLabelText("Tech Lead e Senior Software Engineer"),
     ).toBeInTheDocument();
-    expect(screen.getByText(">_")).toBeInTheDocument();
+    expect(screen.getAllByText(">_")).toHaveLength(2);
     expect(screen.getByText("Tech Lead")).toBeInTheDocument();
     expect(screen.getByText("Senior Software Engineer")).toBeInTheDocument();
   });
