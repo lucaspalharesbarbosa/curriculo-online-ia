@@ -12,4 +12,4 @@ Nenhum valor real é commitado no repositório — cada serviço tem seu `.env.e
 | `NEXT_PUBLIC_API_URL` | Frontend | `frontend/.env.local` local (dev) / painel da **Vercel** → Project Settings → Environment Variables (produção) | Não — URL pública do backend, embutida no bundle do client |
 | `NEXT_PUBLIC_SITE_URL` | Frontend | `frontend/.env.local` local (dev) / painel da **Vercel** → Project Settings → Environment Variables (produção) | Não — URL pública do site, usada em metadata/Open Graph |
 
-Setup local: copiar `backend/.env.example` → `backend/.env` e `frontend/.env.example` → `frontend/.env.local`, preenchendo com valores reais (a chave da OpenAI é a única de fato sensível). Detalhes de deploy do backend: [`backend/README.md`](backend/README.md#deploy).
+Setup local: o backend cria `backend/.env` a partir de `.env.example` na primeira subida (ainda é preciso preencher `LLM_API_KEY` com uma chave real). No frontend, copie `frontend/.env.example` → `frontend/.env.local` se existir. A chave da OpenAI é a única de fato sensível. Detalhes: [`backend/README.md`](backend/README.md#setup-local-obrigatório-para-o-chat).

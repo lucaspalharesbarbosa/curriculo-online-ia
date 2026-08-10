@@ -9,6 +9,19 @@ Python + FastAPI (serviço de API; RAG na Fase 05).
 - Testes: pytest (AAA), `TestClient` para endpoints
 - Lint/format: ruff + black
 
+## Setup local (obrigatório para o chat)
+
+Na primeira subida, o backend cria `backend/.env` a partir de `.env.example` se ele ainda não existir. **Substitua o placeholder de `LLM_API_KEY` pela sua chave real da OpenAI** — sem isso o `/chat` responde erro genérico ao client e registra o motivo só no log do servidor.
+
+```bash
+cd backend
+pip install -r requirements.txt
+# Edite backend/.env → LLM_API_KEY=sk-...
+uvicorn app.main:app --reload
+```
+
+`python-dotenv` carrega `backend/.env` automaticamente no startup (`app/env_bootstrap.py`). Em produção as variáveis vêm do painel do Render (`override=False`).
+
 ## Comandos
 
 ```bash
@@ -30,7 +43,7 @@ Com o servidor no ar (`uvicorn app.main:app --reload`):
 | JSON OpenAPI | http://127.0.0.1:8000/openapi.json |
 
 | `GET /health` | `{"status": "ok"}` |
-| `POST /chat` | Request `{"question": string}` → Response `{"answer": string}`. Erros: `422` (pergunta ausente/vazia), `429` (rate limit excedido), `500` (falha ao chamar o provider de IA, mensagem genérica). Pergunta fora do escopo do currículo não é erro — retorna `200` com fallback textual. |
+| `POST /chat` | Request `{"question": string}` → Response `{"answer": string}`. Erros: `422` (pergunta ausente/vazia), `429` (rate limit excedido), `500` (falha ao gerar — mensagem genérica, sem detalhe interno). Pergunta fora do escopo do currículo não é erro — retorna `200` com fallback textual. |
 
 O model `Resume` (Pydantic) valida o `resume.json` nos testes e ainda não aparece no OpenAPI (não há endpoint que o use como request/response).
 

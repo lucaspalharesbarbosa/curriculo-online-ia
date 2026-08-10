@@ -43,6 +43,9 @@ _debug*.txt
 .env.*
 !.env.example
 
+# ---- RAG (gerado em runtime/deploy; exige LLM_API_KEY) ----
+backend/app/rag_index.json
+
 # ---- Editor / OS ----
 .vscode/
 .idea/
