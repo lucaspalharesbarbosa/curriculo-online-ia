@@ -72,7 +72,7 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
     suggestions: PROBES,
     skin: "soft" as const,
     title: "Assistente RAG",
-    subtitle: "Online · conheço a carreira e a experiência profissional",
+    subtitle: "Online · baseado no currículo",
     emptyHint:
       "Olá — sou o Assistente RAG. Pergunte sobre a trajetória e eu busco no currículo para responder.",
   };

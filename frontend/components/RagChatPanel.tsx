@@ -74,7 +74,7 @@ const SKIN_DEFAULTS: Record<
 > = {
   assistant: {
     title: "Assistente RAG",
-    subtitle: "Online · conheço a carreira e a experiência profissional",
+    subtitle: "Online · baseado no currículo",
     emptyHint:
       "Olá — sou o Assistente RAG. Pergunte sobre a trajetória e eu busco no currículo para responder.",
     placeholder: "Ex.: Quais projetos Lucas liderou?",
@@ -82,7 +82,7 @@ const SKIN_DEFAULTS: Record<
   },
   soft: {
     title: "Assistente RAG",
-    subtitle: "Online · conheço a carreira e a experiência profissional",
+    subtitle: "Online · baseado no currículo",
     emptyHint:
       "Olá — sou o Assistente RAG. Pergunte sobre a trajetória e eu busco no currículo para responder.",
     placeholder: "Digite sua pergunta…",
@@ -90,7 +90,7 @@ const SKIN_DEFAULTS: Record<
   },
   dock: {
     title: "Assistente RAG",
-    subtitle: "Online · pronto para falar da carreira",
+    subtitle: "Online · baseado no currículo",
     emptyHint: "Estou aqui — pergunte algo sobre a trajetória profissional.",
     placeholder: "Escreva sua pergunta…",
     icon: <MessageCircle className="h-4 w-4" aria-hidden />,
@@ -221,7 +221,7 @@ export function RagChatPanel({
               Live
             </span>
           </div>
-          <p className="mt-0.5 truncate font-mono text-[11px] text-neutral-400">
+          <p className="mt-0.5 font-mono text-[11px] leading-snug text-neutral-400">
             {resolvedSubtitle}
           </p>
         </div>

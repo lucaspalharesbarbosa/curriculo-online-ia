@@ -61,7 +61,7 @@ describe("ProfileAssistChat", () => {
       screen.getByRole("region", { name: /assistente rag/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByText(/conheço a carreira e a experiência profissional/i),
+      screen.getByText(/online · baseado no currículo/i),
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /onde lucas trabalha hoje/i }),
