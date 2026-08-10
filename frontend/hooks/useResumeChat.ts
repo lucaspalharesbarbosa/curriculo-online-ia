@@ -19,6 +19,24 @@ export const RESUME_CHAT_ENDPOINT = "/api/chat";
 export const RESUME_CHAT_ERROR_MESSAGE =
   "Não consegui responder agora, tente de novo.";
 
+export const RESUME_CHAT_RATE_LIMIT_MESSAGE =
+  "Muitas requisições. Tente novamente em instantes.";
+
+class ChatApiError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "ChatApiError";
+  }
+}
+
+/** Nunca repassa `detail` do backend — evita vazar config/stack ao visitante. */
+function publicErrorMessage(status: number): string {
+  if (status === 429) {
+    return RESUME_CHAT_RATE_LIMIT_MESSAGE;
+  }
+  return RESUME_CHAT_ERROR_MESSAGE;
+}
+
 /** Estado + envio para o endpoint real `/chat` (RAG) via proxy Next. */
 export function useResumeChat() {
   const [messages, setMessages] = useState<ResumeChatMessage[]>([]);
@@ -59,7 +77,7 @@ export function useResumeChat() {
         });
 
         if (!response.ok) {
-          throw new Error(`Resposta inesperada da API: ${response.status}`);
+          throw new ChatApiError(publicErrorMessage(response.status));
         }
 
         const data = (await response.json()) as ChatResponse;
@@ -71,11 +89,19 @@ export function useResumeChat() {
               : message,
           ),
         );
-      } catch {
+      } catch (error) {
+        const detail =
+          error instanceof ChatApiError
+            ? error.message
+            : RESUME_CHAT_ERROR_MESSAGE;
         setMessages((current) =>
           current.map((message) =>
             message.id === messageId
-              ? { ...message, status: "error" }
+              ? {
+                  ...message,
+                  answer: detail,
+                  status: "error",
+                }
               : message,
           ),
         );

@@ -59,6 +59,9 @@ const RAG_LOADING_STAGES = [
   "Respondendo…",
 ] as const;
 
+/** Tempo em cada estágio antes de avançar (último fica até a resposta chegar). */
+const RAG_LOADING_STAGE_MS = [1600, 1800, 2000] as const;
+
 const SKIN_DEFAULTS: Record<
   RagChatSkin,
   {
@@ -120,13 +123,20 @@ function TypingDots() {
 
 function RagLoadingStatus() {
   const [stageIndex, setStageIndex] = useState(0);
+  const lastIndex = RAG_LOADING_STAGES.length - 1;
 
   useEffect(() => {
-    const id = window.setInterval(() => {
-      setStageIndex((current) => (current + 1) % RAG_LOADING_STAGES.length);
-    }, 1100);
-    return () => window.clearInterval(id);
-  }, []);
+    if (stageIndex >= lastIndex) {
+      return;
+    }
+
+    const delay = RAG_LOADING_STAGE_MS[stageIndex] ?? 2000;
+    const id = window.setTimeout(() => {
+      setStageIndex((current) => Math.min(current + 1, lastIndex));
+    }, delay);
+
+    return () => window.clearTimeout(id);
+  }, [stageIndex, lastIndex]);
 
   return (
     <p className="font-mono text-xs text-accent-300/90 sm:text-sm">
@@ -283,9 +293,6 @@ export function RagChatPanel({
 
             {message.status === "done" ? (
               <div className="mr-4 max-w-[94%] rounded-2xl rounded-bl-md border border-[var(--assist-line)] border-l-[3px] border-l-accent-400 bg-[var(--assist-panel)] px-3.5 py-2.5 shadow-[inset_0_1px_0_rgba(125,211,252,0.06)]">
-                <p className="mb-1 font-mono text-[10px] tracking-wider text-accent-400/70 uppercase">
-                  reply
-                </p>
                 <p className="text-xs leading-relaxed text-neutral-100 sm:text-sm">
                   {message.answer}
                 </p>
@@ -294,7 +301,7 @@ export function RagChatPanel({
 
             {message.status === "error" ? (
               <p className="mr-4 max-w-[94%] rounded-2xl rounded-bl-md border border-red-900 bg-red-950 px-3.5 py-2.5 text-xs text-red-300 sm:text-sm">
-                {RESUME_CHAT_ERROR_MESSAGE}
+                {message.answer ?? RESUME_CHAT_ERROR_MESSAGE}
               </p>
             ) : null}
           </li>

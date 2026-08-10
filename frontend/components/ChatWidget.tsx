@@ -74,7 +74,7 @@ export function ChatWidget() {
                 ) : null}
                 {message.status === "error" ? (
                   <p className="rounded-lg border border-red-900 bg-red-950 px-3 py-2 text-sm text-red-300">
-                    {RESUME_CHAT_ERROR_MESSAGE}
+                    {message.answer ?? RESUME_CHAT_ERROR_MESSAGE}
                   </p>
                 ) : null}
               </li>

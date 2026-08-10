@@ -113,4 +113,25 @@ describe("ChatWidget", () => {
       await screen.findByText("Não consegui responder agora, tente de novo."),
     ).toBeInTheDocument();
   });
+
+  it("não expõe detalhe interno do backend na UI", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: false,
+      status: 500,
+      json: async () => ({
+        detail:
+          "Chave da OpenAI ausente ou inválida. Configure LLM_API_KEY no backend.",
+      }),
+    } as Response);
+
+    render(<ChatWidget />);
+    openChat();
+    askQuestion("Vai vazar config?");
+
+    expect(
+      await screen.findByText("Não consegui responder agora, tente de novo."),
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/LLM_API_KEY/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/OpenAI/i)).not.toBeInTheDocument();
+  });
 });
