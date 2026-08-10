@@ -48,7 +48,7 @@
 ### Dependências
 
 - US-07-11, US-07-12, `ADR-002`, `ADR-005`
-- **Gate humano:** letra do marcador PRAD/Mérito no protótipo `/prototipo/secoes-layout` (rodada 2)
+- **Gate humano:** letra do marcador PRAD/Mérito no protótipo `/prototipo/secoes-layout` (rodada 2) — código do protótipo removido em 2026-08-10 após decisão (`docs/agents/PROCESSO-PROTOTIPO.md`)
 
 ### Épico / Prioridade
 

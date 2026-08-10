@@ -17,7 +17,7 @@
 - [x] Épico e dependências identificados — Frontend & UX v2; depende de US-07-03 / US-07-11 (base visual + highlights)
 - [x] ADR registrado — N/A: sem stack/lib nova; reusa `framer-motion` / `lucide-react` (`ADR-005`)
 - [x] Variáveis de ambiente/segredos — N/A
-- [x] Referência visual definida — protótipos em `/prototipo/secoes-layout`; escolha do autor (2026-08-08): **Destaque=B** (anel respirando, pulse perceptível sem exagero), **Educação=F refinada** (nome como link + badge elegante `ExternalLink`), **Certificações=I** (card por emissor + selo grande)
+- [x] Referência visual definida — protótipos em `/prototipo/secoes-layout`; escolha do autor (2026-08-08): **Destaque=B** (anel respirando, pulse perceptível sem exagero), **Educação=F refinada** (nome como link + badge elegante `ExternalLink`), **Certificações=I** (card por emissor + selo grande). Código do protótipo removido em 2026-08-10 após promoção (`docs/agents/PROCESSO-PROTOTIPO.md`)
 - [x] Sem dúvida bloqueante — escolha das variantes registrada; implementação liberada
 
 #### Plano de testes
@@ -46,7 +46,7 @@
 ### Dependências
 
 - US-07-03, US-07-11, `ADR-005`
-- **Gate humano:** escolha das letras no protótipo `/prototipo/secoes-layout`
+- **Gate humano:** escolha das letras no protótipo `/prototipo/secoes-layout` — código do protótipo removido em 2026-08-10 após promoção (`docs/agents/PROCESSO-PROTOTIPO.md`)
 
 ### Épico / Prioridade
 
