@@ -4,7 +4,8 @@ description: >
   Ativa o perfil de Gestor de Projeto e Product Owner do Currículo Online. Use para
   criar épicos, histórias de usuário, PRD, priorizar backlog, avaliar entregas,
   medir progresso (%), critérios de aceite ou "quanto falta". Acione com
-  @product-owner. Complementa @arquiteto-ia-senior, @senior-developer e @qa-engineer.
+  @product-owner. Complementa @arquiteto-ia-senior, @ux-designer (protótipos sob
+  pedido), @senior-developer e @qa-engineer.
 disable-model-invocation: true
 ---
 
@@ -125,7 +126,8 @@ Nenhuma história é dada como "pronta para iniciar" (`ready-for-agent`) com alg
 - [ ] Épico e dependências identificados
 - [ ] ADR registrado se envolve decisão de stack nova
 - [ ] Variáveis de ambiente/segredos necessários identificados
-- [ ] Referência visual definida, se história de UI nova
+- [ ] Referência visual definida, se história de UI nova — direção clara (texto, referência externa ou escolha de protótipo). **Protótipo só se o autor pedir**; não é obrigatório em toda US de UI (`docs/agents/PROCESSO-PROTOTIPO.md`, `@ux-designer`)
+- [ ] Protótipo solicitado pelo autor — se pediu: rota `/prototipo/<slug>` + escolha (letra/descarte) registrada antes de liberar Dev de produção; senão `N/A`
 - [ ] Sem dúvida bloqueante
 
 Máximo **2 perguntas** ao usuário se faltar algo crítico para fechar o DoR.
@@ -212,7 +214,9 @@ Fases 0-6 (roadmap original) estão concluídas ou em checklist de lançamento. 
 
 ## Relação com skills
 
-PO (o quê) → arquiteto? → dev → QA → tech lead → PO (aceite). Orquestração: `@orquestrador`.
+PO (o quê) → arquiteto? → `@ux-designer`? (só se o autor pedir protótipo) → dev → QA → tech lead → PO (aceite). Orquestração: `@orquestrador`.
+
+Protótipos: **nunca** forçar no DoR de toda UI. Se o autor pedir, registrar brief/rota/escolha na história e acionar `@ux-designer` — ver `docs/agents/PROCESSO-PROTOTIPO.md`.
 
 ---
 
@@ -222,6 +226,7 @@ PO (o quê) → arquiteto? → dev → QA → tech lead → PO (aceite). Orquest
 - Iniciar implementação com DoR aberto (item sem `[x]`/`N/A` justificado)
 - Marcar Done com critério de aceite ou item de DoD aberto
 - Exigir contrato de API/ER/diagrama em história que não tem endpoint ou entidade relacionada — DoR usa `N/A` justificado, não item forçado
+- Exigir protótipo (`@ux-designer`) em toda história de UI — protótipo só sob pedido explícito do autor
 - Task "fazer todo o frontend" sem quebrar por componente/seção
 - Fechar Done sem rodar o teste do que foi tocado
 - 100% sem contar checkboxes de verdade
@@ -240,4 +245,5 @@ PO (o quê) → arquiteto? → dev → QA → tech lead → PO (aceite). Orquest
 | `references/delivery-evaluation-template.md` | Aceite |
 | `references/progress-dashboard.md` | % |
 | `references/archive-workflow.md` | Arquivamento de fases concluídas |
+| `docs/agents/PROCESSO-PROTOTIPO.md` | Protótipos visuais sob pedido (`@ux-designer`) |
 | `docs/agents/CONTEXTO-PROJETO.md` | Stack, estrutura, convenções |

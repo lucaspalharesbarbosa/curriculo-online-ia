@@ -26,7 +26,9 @@ Site pessoal de currículo (projeto #1 do portfólio) com um assistente de chat 
 curriculo-online-ia/
 ├── frontend/           # Next.js + TS + Tailwind
 │   ├── app/
+│   │   └── prototipo/  # rotas temporárias de exploração visual (@ux-designer) — limpar após decisão
 │   ├── components/     # Hero, ExperienceCard, SkillBadge, Contact... (ChatWidget na Fase 05)
+│   │   └── prototypes/ # UI descartável de protótipo — não acumular após promover/descartar
 │   ├── content/
 │   │   ├── resume.json
 │   │   ├── resume.schema.ts   # Zod
@@ -46,11 +48,13 @@ curriculo-online-ia/
 │   ├── product/        # PRD, backlog (product-owner)
 │   ├── architecture/   # ADRs + C4 (arquiteto-ia-senior)
 │   ├── qa/             # planos/relatórios de teste (qa-engineer)
-│   └── agents/          # prompts dos agentes (este arquivo)
+│   └── agents/          # prompts dos agentes (este arquivo + PROCESSO-PROTOTIPO.md)
 └── .github/workflows/
 ```
 
-Frontend e backend evoluem no mesmo repositório e, quando a feature exigir, no mesmo PR — mas cada um com seu próprio pipeline de CI.
+Frontend e backend evolvem no mesmo repositório e, quando a feature exigir, no mesmo PR — mas cada um com seu próprio pipeline de CI.
+
+**Protótipos visuais:** sob **pedido explícito** do autor (`@ux-designer`). Processo e ciclo de vida: [`PROCESSO-PROTOTIPO.md`](./PROCESSO-PROTOTIPO.md). Após aprovar ou descartar, limpar código do protótipo no **mesmo PR** — a decisão fica só na US/histórico.
 
 ## Convenção de nomenclatura de documentos
 

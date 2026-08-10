@@ -57,3 +57,4 @@ Aplicar com bom senso: citar SOLID só quando a violação for concreta e o diff
 
 - [ ] Sem reformatação em massa fora do escopo
 - [ ] Sem mudança de stack/arquitetura sem ADR
+- [ ] Se a entrega promoveu ou descartou protótipo: sem restos em `frontend/app/prototipo/` ou `frontend/components/prototypes/` (limpeza no mesmo PR — `docs/agents/PROCESSO-PROTOTIPO.md`)

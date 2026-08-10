@@ -23,6 +23,7 @@ Verificar antes de declarar implementação concluída. Projeto solo, pequeno �
 - [ ] Convenções de lint/format respeitadas (ESLint+Prettier / ruff+black)
 - [ ] Contrato de API implementado bate com o documentado no DoR (se aplicável)
 - [ ] Erros do endpoint implementados batendo com o mapeamento do DoR (exceção → HTTP → body → mensagem), se aplicável
+- [ ] Se houve protótipo decidido nesta entrega: rota `/prototipo/<slug>` e `components/prototypes/*` removidos **neste mesmo PR** (`docs/agents/PROCESSO-PROTOTIPO.md`)
 
 ## Testes
 
