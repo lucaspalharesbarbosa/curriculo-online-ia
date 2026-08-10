@@ -904,7 +904,7 @@ body {
 
 /* Destaques — badge Projeto / Artigo (mesmo tamanho) */
 .project-kind-badge {
-  @apply type-caption inline-flex items-center rounded-md border px-1.5 py-0.5 font-semibold tracking-wider uppercase;
+  @apply inline-flex items-center rounded-md border px-1.5 py-0.5 text-[11px] leading-snug font-semibold tracking-wider uppercase sm:text-xs;
 }
 
 /* Destaques — CTA ler artigo */
