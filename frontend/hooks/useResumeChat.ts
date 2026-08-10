@@ -13,12 +13,13 @@ type ChatResponse = {
   answer: string;
 };
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+/** Same-origin — Next faz proxy para o FastAPI (`app/api/chat`). */
+export const RESUME_CHAT_ENDPOINT = "/api/chat";
 
 export const RESUME_CHAT_ERROR_MESSAGE =
   "Não consegui responder agora, tente de novo.";
 
-/** Estado + envio para o endpoint real `/chat` (RAG). */
+/** Estado + envio para o endpoint real `/chat` (RAG) via proxy Next. */
 export function useResumeChat() {
   const [messages, setMessages] = useState<ResumeChatMessage[]>([]);
   const [question, setQuestion] = useState("");
@@ -51,7 +52,7 @@ export function useResumeChat() {
       setIsSubmitting(true);
 
       try {
-        const response = await fetch(`${apiUrl}/chat`, {
+        const response = await fetch(RESUME_CHAT_ENDPOINT, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question: trimmedQuestion }),

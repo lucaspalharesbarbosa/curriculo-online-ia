@@ -797,6 +797,205 @@ body {
   transform: translateY(-1px);
 }
 
+/* Destaque PRAD/Mérito — variante B (anel respirando, perceptível sem exagero) */
+.highlight-ring-dot {
+  position: relative;
+  display: inline-flex;
+  height: 0.625rem;
+  width: 0.625rem;
+  flex-shrink: 0;
+  margin-top: 0.4rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.highlight-ring-dot::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 9999px;
+  border: 1.5px solid rgba(var(--accent-rgb), 0.55);
+  animation: highlight-ring-breathe 2.6s ease-in-out infinite;
+}
+
+.highlight-ring-dot::after {
+  content: "";
+  height: 0.375rem;
+  width: 0.375rem;
+  border-radius: 9999px;
+  background: var(--accent-400);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.4);
+}
+
+@keyframes highlight-ring-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: scale(1.65);
+    opacity: 0.2;
+  }
+}
+
+/* Educação — CTA de site (visível, com ArrowUpRight) */
+.edu-site-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 0.65rem;
+  border: 1px solid rgba(var(--accent-rgb), 0.35);
+  background: rgba(var(--accent-rgb), 0.12);
+  padding: 0.3rem 0.65rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--accent-300);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.edu-site-cta:hover,
+.edu-site-cta:focus-visible {
+  border-color: rgba(var(--accent-rgb), 0.55);
+  background: rgba(var(--accent-rgb), 0.2);
+  color: var(--accent-200);
+  transform: translateY(-1px);
+}
+
+/* Certificações — CTA de credencial */
+.cert-credential-cta {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-rgb), 0.18),
+    rgba(var(--accent-rgb), 0.08)
+  );
+  padding: 0.45rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-200);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.cert-credential-cta:hover,
+.cert-credential-cta:focus-visible {
+  border-color: rgba(var(--accent-rgb), 0.65);
+  background: rgba(var(--accent-rgb), 0.22);
+  transform: translateY(-1px);
+}
+
+.cert-credential-cta--compact {
+  padding: 0.35rem 0.55rem;
+  font-size: 0.6875rem;
+}
+
+/* Destaques — badge Projeto / Artigo (mesmo tamanho) */
+.project-kind-badge {
+  @apply type-caption inline-flex items-center rounded-md border px-1.5 py-0.5 font-semibold tracking-wider uppercase;
+}
+
+/* Destaques — CTA ler artigo */
+.article-read-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(var(--accent-rgb), 0.4);
+  background: rgba(var(--accent-rgb), 0.12);
+  padding: 0.45rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-200);
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.article-read-cta:hover,
+.article-read-cta:focus-visible {
+  border-color: rgba(var(--accent-rgb), 0.65);
+  background: rgba(var(--accent-rgb), 0.22);
+  transform: translateY(-1px);
+}
+
+/* Hero — caret do typewriter em loop */
+.role-type-caret {
+  margin-left: 1px;
+  color: var(--accent-400);
+  animation: role-cursor-blink 0.9s step-end infinite;
+}
+
+/* Educação — link institucional (variante F refinada; legado/protótipo) */
+.edu-site-link {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.65rem;
+  border-radius: 0.75rem;
+  outline: none;
+  transition: color 0.25s ease;
+}
+
+.edu-site-link:hover .edu-site-name,
+.edu-site-link:focus-visible .edu-site-name {
+  color: var(--accent-300);
+  background-size: 100% 1.5px;
+}
+
+.edu-site-name {
+  background-image: linear-gradient(
+    to right,
+    var(--accent-400),
+    var(--accent-500)
+  );
+  background-position: left bottom;
+  background-repeat: no-repeat;
+  background-size: 0% 1.5px;
+  transition:
+    color 0.25s ease,
+    background-size 0.35s ease;
+}
+
+.edu-site-badge {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(var(--accent-rgb), 0.28);
+  background: rgba(var(--accent-rgb), 0.1);
+  color: var(--accent-300);
+  transition:
+    border-color 0.25s ease,
+    background 0.25s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+.edu-site-link:hover .edu-site-badge,
+.edu-site-link:focus-visible .edu-site-badge {
+  border-color: rgba(var(--accent-rgb), 0.5);
+  background: rgba(var(--accent-rgb), 0.18);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.12);
+}
+
 /* US-07-03 / ADR-005 — respeitar prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -819,13 +1018,24 @@ body {
   .spin-slow,
   .role-typewriter,
   .assist-signal-dot::before,
-  .assist-scanline {
+  .assist-scanline,
+  .highlight-ring-dot::before {
     animation: none !important;
+  }
+
+  .highlight-ring-dot::before {
+    opacity: 0.5;
+    transform: none;
   }
 
   .role-typewriter {
     width: calc(var(--role-chars) * 1ch) !important;
     border-right-color: transparent !important;
     animation: none !important;
+  }
+
+  .role-type-caret {
+    animation: none !important;
+    opacity: 0;
   }
 }

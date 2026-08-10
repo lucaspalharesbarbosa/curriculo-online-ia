@@ -29,7 +29,7 @@ class MockIntersectionObserver {
         {
           isIntersecting,
           target: document.createElement("div"),
-        } as IntersectionObserverEntry,
+        } as unknown as IntersectionObserverEntry,
       ],
       this as unknown as IntersectionObserver,
     );
@@ -48,7 +48,7 @@ describe("ProfileAssistChat", () => {
     cleanup();
   });
 
-  it("permite perguntar já no Perfil e envia para POST /chat", async () => {
+  it("permite perguntar já no Perfil e envia para POST /api/chat", async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,
       status: 200,
@@ -58,8 +58,20 @@ describe("ProfileAssistChat", () => {
     render(<ProfileAssistChat role="Tech Lead | Senior" />);
 
     expect(
-      screen.getByText(/online · pronto para falar sobre tech lead/i),
+      screen.getByRole("region", { name: /assistente rag/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(/conheço a carreira e a experiência profissional/i),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /onde lucas trabalha hoje/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /quais tecnologias ele usa/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /onde você trabalha/i }),
+    ).not.toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText("Sua pergunta"), {
       target: { value: "Qual sua stack?" },
@@ -67,7 +79,7 @@ describe("ProfileAssistChat", () => {
     fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
 
     expect(fetch).toHaveBeenCalledWith(
-      "http://localhost:8000/chat",
+      "/api/chat",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({ question: "Qual sua stack?" }),
@@ -85,7 +97,7 @@ describe("ProfileAssistChat", () => {
     render(<ProfileAssistChat role="Tech Lead" />);
 
     expect(
-      screen.getByRole("region", { name: /assistente do currículo/i }),
+      screen.getByRole("region", { name: /assistente rag/i }),
     ).toBeInTheDocument();
 
     expect(MockIntersectionObserver.latest).not.toBeNull();
@@ -94,11 +106,10 @@ describe("ProfileAssistChat", () => {
     });
 
     expect(
-      screen.getByText((content) => content.includes("Sinal ativo")),
+      screen.getByText((content) => content.includes("Assistente RAG ativo")),
     ).toBeInTheDocument();
     expect(
-      screen.getAllByRole("dialog", { name: /assistente do currículo/i })
-        .length,
+      screen.getAllByRole("dialog", { name: /assistente rag/i }).length,
     ).toBeGreaterThan(0);
   });
 });

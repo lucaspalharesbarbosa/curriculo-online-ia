@@ -21,6 +21,7 @@ import type {
   SkillGroup,
   SkillItem,
 } from "@/content/resume.schema";
+import { RoleTypewriter } from "@/components/RoleTypewriter";
 import { getSkillIcon } from "@/lib/skill-icons";
 import {
   buildGoogleMapsUrl,
@@ -232,26 +233,11 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           </h1>
 
           {primaryRoles.length > 0 ? (
-            <div className="mb-1.5 flex flex-col items-center gap-1">
-              {primaryRoles.map((role, index) => (
-                <span
-                  key={role}
-                  className={`role-typewriter font-mono ${
-                    index === 0
-                      ? "type-item-accent gradient-text font-semibold"
-                      : "type-meta text-accent-300"
-                  }`}
-                  style={
-                    {
-                      "--role-chars": role.length,
-                      "--role-type-duration": `${(role.length * 0.045).toFixed(2)}s`,
-                      "--role-delay": "0.2s",
-                    } as React.CSSProperties
-                  }
-                >
-                  {role}
-                </span>
-              ))}
+            <div className="mb-2 flex flex-col items-center">
+              <RoleTypewriter
+                lines={primaryRoles}
+                className="type-item-accent gradient-text font-semibold"
+              />
             </div>
           ) : null}
 

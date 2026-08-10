@@ -36,7 +36,7 @@ describe("ChatWidget", () => {
     askQuestion("Quais tecnologias você usa?");
 
     expect(fetch).toHaveBeenCalledWith(
-      "http://localhost:8000/chat",
+      "/api/chat",
       expect.objectContaining({
         method: "POST",
         headers: { "Content-Type": "application/json" },

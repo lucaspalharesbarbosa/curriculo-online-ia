@@ -87,61 +87,63 @@ function SectionBlock({
   );
 }
 
-/** Marcador atual (referência do que NÃO queremos mais). */
-function CurrentHighlightList() {
+/** Produção atual (US-07-12 variante B) — anel grande demais para o feedback. */
+function CurrentProductionMarker() {
+  return <span className="highlight-ring-dot" aria-hidden />;
+}
+
+/** P — só a bolinha pisca suavemente (opacity), sem anel. */
+function WhisperDot() {
   return (
-    <ul className="space-y-2 text-sm text-neutral-400">
-      <li className="flex items-start gap-2">
-        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500" />
-        <span>{SAMPLE_HIGHLIGHTS.default}</span>
-      </li>
-      <li className="flex items-start gap-2 rounded-xl border border-accent-500/25 bg-accent-500/[0.07] px-3 py-2.5 text-neutral-300">
-        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-400" />
-        <span>
-          <span className="mb-0.5 block text-[10px] font-semibold tracking-wider text-accent-400 uppercase">
-            Alto desempenho
-          </span>
-          {SAMPLE_HIGHLIGHTS.prad}
-        </span>
-      </li>
-      <li className="flex items-start gap-2 rounded-xl border border-accent-500/25 bg-accent-500/[0.07] px-3 py-2.5 text-neutral-300">
-        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-400" />
-        <span>
-          <span className="mb-0.5 block text-[10px] font-semibold tracking-wider text-accent-400 uppercase">
-            Mérito
-          </span>
-          {SAMPLE_HIGHLIGHTS.merit}
-        </span>
-      </li>
-    </ul>
+    <span
+      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-400 motion-reduce:animate-none"
+      style={{ animation: "proto-whisper 2.8s ease-in-out infinite" }}
+      aria-hidden
+    />
   );
 }
 
-function PulseDot({ className = "" }: { className?: string }) {
+/** Q — brilho externo mínimo (glow), escala quase imperceptível. */
+function SoftGlowDot() {
   return (
-    <span className={`relative mt-1.5 flex h-2 w-2 shrink-0 ${className}`}>
-      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-400/40 motion-reduce:animate-none" />
-      <span className="relative inline-flex h-2 w-2 rounded-full bg-accent-400" />
-    </span>
+    <span
+      className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-400 motion-reduce:animate-none"
+      style={{ animation: "proto-glow 3.2s ease-in-out infinite" }}
+      aria-hidden
+    />
   );
 }
 
-function SoftRingDot() {
+/** R — micro-anel (cresce pouco, opacidade baixa). */
+function MicroRingDot() {
   return (
-    <span className="relative mt-1 flex h-2.5 w-2.5 shrink-0 items-center justify-center">
-      <span className="absolute h-full w-full animate-ping rounded-full bg-accent-400/25 motion-reduce:animate-none" />
-      <span className="absolute h-2.5 w-2.5 rounded-full ring-2 ring-accent-400/50" />
+    <span className="relative mt-1.5 flex h-2 w-2 shrink-0 items-center justify-center">
+      <span
+        className="absolute inset-0 rounded-full border border-accent-400/40 motion-reduce:animate-none"
+        style={{ animation: "proto-micro-ring 2.8s ease-in-out infinite" }}
+      />
       <span className="relative h-1.5 w-1.5 rounded-full bg-accent-400" />
     </span>
   );
 }
 
-function BreathDot() {
+/** S — caret terminal `•` com pulse lento (estilo console). */
+function TerminalPulseDot() {
   return (
-    <span className="relative mt-1.5 h-2 w-2 shrink-0">
-      <span className="absolute inset-0 animate-pulse rounded-full bg-accent-400/50 motion-reduce:animate-none" />
-      <span className="absolute inset-[2px] rounded-full bg-accent-400" />
+    <span
+      className="mt-1 font-mono text-[10px] leading-none text-accent-400 motion-reduce:animate-none"
+      style={{ animation: "proto-whisper 2.4s steps(2, end) infinite" }}
+      aria-hidden
+    >
+      ●
     </span>
+  );
+}
+
+/** T — bolinha estática + label accent (sem motion); contraste só tipográfico. */
+function StaticAccentDot() {
+  return (
+    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-400 shadow-[0_0_6px_rgba(56,189,248,0.35)]" />
   );
 }
 
@@ -237,21 +239,47 @@ export function SectionsLayoutPrototype({
   return (
     <div className="min-h-screen bg-[#04080e] text-neutral-100">
       <div className="mx-auto max-w-5xl space-y-12 px-4 py-10 sm:px-6">
+        <style>{`
+          @keyframes proto-whisper {
+            0%, 100% { opacity: 0.45; }
+            50% { opacity: 1; }
+          }
+          @keyframes proto-glow {
+            0%, 100% {
+              opacity: 0.7;
+              box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+            }
+            50% {
+              opacity: 1;
+              box-shadow: 0 0 8px 1px rgba(56, 189, 248, 0.35);
+            }
+          }
+          @keyframes proto-micro-ring {
+            0%, 100% { transform: scale(1); opacity: 0.55; }
+            50% { transform: scale(1.35); opacity: 0.15; }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            [style*="proto-whisper"],
+            [style*="proto-glow"],
+            [style*="proto-micro-ring"] {
+              animation: none !important;
+            }
+          }
+        `}</style>
+
         <header className="space-y-3 border-b border-white/10 pb-8">
           <p className="text-xs font-semibold tracking-wider text-accent-400 uppercase">
-            US-07-12 · Descoberta visual
+            US-07-13 · Rodada 2 — marcadores subtler
           </p>
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-            Protótipos — Experiência, Educação e Certificações
+            Protótipos — PRAD / Mérito (pulse sutil)
           </h1>
           <p className="max-w-2xl text-sm leading-relaxed text-neutral-400">
-            Compare as variantes e me diga as letras preferidas (ex.:{" "}
-            <span className="text-neutral-200">
-              Destaque B · Educação F · Cert I
-            </span>
-            ). Tipografia das seções já foi padronizada na home (escala{" "}
-            <code className="rounded bg-white/5 px-1">type-*</code>
-            ); as variantes abaixo ainda aguardam sua escolha.
+            A variante B (anel respirando) ficou chamativa demais. Compare as
+            opções abaixo e responda só a letra do marcador (ex.:{" "}
+            <span className="text-neutral-200">“Marcador Q”</span>
+            ). Educação, Certificações, Destaques, Hero e Chat seguem com a
+            direção que você já deu — sem grade extra nesta rodada.
           </p>
           <p className="text-xs text-neutral-500">
             Rota só de protótipo ·{" "}
@@ -263,21 +291,13 @@ export function SectionsLayoutPrototype({
 
         {/* ——— EXPERIÊNCIA ——— */}
         <SectionBlock
-          title="1. Destaques PRAD / Mérito (Experiência)"
-          subtitle="Hoje há caixa com borda/fundo. Objetivo: lista limpa + bolinha pulsando de forma sutil."
+          title="1. Destaques PRAD / Mérito — pulse sutil"
+          subtitle="Lista limpa (sem caixa). Só a bolinha dos itens featured anima — elegante e discreta."
         >
           <VariantCard
             id="atual"
-            title="Como está hoje"
-            description="Referência — bloco com borda e fundo competindo com o restante."
-          >
-            <CurrentHighlightList />
-          </VariantCard>
-
-          <VariantCard
-            id="A"
-            title="Pulse ping (clássico)"
-            description="Lista limpa; só a bolinha dos itens featured pulsa com ping suave. Sem caixa."
+            title="Produção agora (B)"
+            description="Anel expandindo + glow — o que está na home e você achou destacado demais."
           >
             <ul className="space-y-2.5">
               <HighlightRow
@@ -290,21 +310,21 @@ export function SectionsLayoutPrototype({
                 featured
                 label="Alto desempenho"
                 text={SAMPLE_HIGHLIGHTS.prad}
-                marker={<PulseDot />}
+                marker={<CurrentProductionMarker />}
               />
               <HighlightRow
                 featured
                 label="Mérito"
                 text={SAMPLE_HIGHLIGHTS.merit}
-                marker={<PulseDot />}
+                marker={<CurrentProductionMarker />}
               />
             </ul>
           </VariantCard>
 
           <VariantCard
-            id="B"
-            title="Anel respirando"
-            description="Bolinha com anel externo em ping mais lento — elegante, pouco ruído."
+            id="P"
+            title="Whisper (opacity)"
+            description="Bolinha pequena que só altera opacidade — sem anel, sem ping. Mais discreto."
           >
             <ul className="space-y-2.5">
               <HighlightRow
@@ -317,21 +337,21 @@ export function SectionsLayoutPrototype({
                 featured
                 label="Alto desempenho"
                 text={SAMPLE_HIGHLIGHTS.prad}
-                marker={<SoftRingDot />}
+                marker={<WhisperDot />}
               />
               <HighlightRow
                 featured
                 label="Mérito"
                 text={SAMPLE_HIGHLIGHTS.merit}
-                marker={<SoftRingDot />}
+                marker={<WhisperDot />}
               />
             </ul>
           </VariantCard>
 
           <VariantCard
-            id="C"
-            title="Pulse + tipografia só"
-            description="Sem label uppercase. Texto um pouco mais claro + bolinha com pulse opacity."
+            id="Q"
+            title="Soft glow"
+            description="Glow mínimo ao redor da bolinha (respira). Sem anel crescer."
           >
             <ul className="space-y-2.5">
               <HighlightRow
@@ -342,45 +362,97 @@ export function SectionsLayoutPrototype({
               />
               <HighlightRow
                 featured
+                label="Alto desempenho"
                 text={SAMPLE_HIGHLIGHTS.prad}
-                marker={<BreathDot />}
+                marker={<SoftGlowDot />}
               />
               <HighlightRow
                 featured
+                label="Mérito"
                 text={SAMPLE_HIGHLIGHTS.merit}
-                marker={<BreathDot />}
+                marker={<SoftGlowDot />}
               />
             </ul>
           </VariantCard>
 
           <VariantCard
-            id="D"
-            title="Chip inline + pulse"
-            description="Mini-chip no início da linha (Alto desempenho / Mérito) + bolinha com ping; ainda sem caixa."
+            id="R"
+            title="Micro-anel"
+            description="Anel bem contido (scale ~1.35, opacidade baixa) — versão contida do B."
           >
-            <ul className="space-y-2.5 text-sm text-neutral-400">
-              <li className="flex items-start gap-2.5">
-                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500" />
-                <span>{SAMPLE_HIGHLIGHTS.default}</span>
-              </li>
-              <li className="flex items-start gap-2.5 text-neutral-300">
-                <PulseDot />
-                <span>
-                  <span className="mr-1.5 inline-flex rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-accent-300 uppercase">
-                    Alto desempenho
-                  </span>
-                  {SAMPLE_HIGHLIGHTS.prad}
-                </span>
-              </li>
-              <li className="flex items-start gap-2.5 text-neutral-300">
-                <PulseDot />
-                <span>
-                  <span className="mr-1.5 inline-flex rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 text-[10px] font-semibold tracking-wide text-accent-300 uppercase">
-                    Mérito
-                  </span>
-                  {SAMPLE_HIGHLIGHTS.merit}
-                </span>
-              </li>
+            <ul className="space-y-2.5">
+              <HighlightRow
+                text={SAMPLE_HIGHLIGHTS.default}
+                marker={
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500" />
+                }
+              />
+              <HighlightRow
+                featured
+                label="Alto desempenho"
+                text={SAMPLE_HIGHLIGHTS.prad}
+                marker={<MicroRingDot />}
+              />
+              <HighlightRow
+                featured
+                label="Mérito"
+                text={SAMPLE_HIGHLIGHTS.merit}
+                marker={<MicroRingDot />}
+              />
+            </ul>
+          </VariantCard>
+
+          <VariantCard
+            id="S"
+            title="Pulse terminal"
+            description="Marcador ● estilo console, piscando em steps — combina com o vibe AI/terminal."
+          >
+            <ul className="space-y-2.5">
+              <HighlightRow
+                text={SAMPLE_HIGHLIGHTS.default}
+                marker={
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500" />
+                }
+              />
+              <HighlightRow
+                featured
+                label="Alto desempenho"
+                text={SAMPLE_HIGHLIGHTS.prad}
+                marker={<TerminalPulseDot />}
+              />
+              <HighlightRow
+                featured
+                label="Mérito"
+                text={SAMPLE_HIGHLIGHTS.merit}
+                marker={<TerminalPulseDot />}
+              />
+            </ul>
+          </VariantCard>
+
+          <VariantCard
+            id="T"
+            title="Estático + accent"
+            description="Sem animação: bolinha accent com glow fixo + label. Zero movimento."
+          >
+            <ul className="space-y-2.5">
+              <HighlightRow
+                text={SAMPLE_HIGHLIGHTS.default}
+                marker={
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500" />
+                }
+              />
+              <HighlightRow
+                featured
+                label="Alto desempenho"
+                text={SAMPLE_HIGHLIGHTS.prad}
+                marker={<StaticAccentDot />}
+              />
+              <HighlightRow
+                featured
+                label="Mérito"
+                text={SAMPLE_HIGHLIGHTS.merit}
+                marker={<StaticAccentDot />}
+              />
             </ul>
           </VariantCard>
         </SectionBlock>
@@ -665,12 +737,10 @@ export function SectionsLayoutPrototype({
         <footer className="rounded-2xl border border-accent-500/20 bg-accent-500/5 px-4 py-5 text-sm text-neutral-300">
           <p className="font-semibold text-neutral-100">Como responder</p>
           <p className="mt-1 text-neutral-400">
-            Envie no chat algo como:{" "}
-            <span className="text-accent-300">
-              “Destaque B, Educação F, Certificações I”
-            </span>
-            . Aí o pipeline segue para implementar na home (Fase Dev → QA → TL →
-            PO).
+            Gate desta rodada: só o marcador. Ex.:{" "}
+            <span className="text-accent-300">“Marcador Q”</span> (ou P / R / S
+            / T). Com a letra, o orquestrador fecha o DoR da US-07-13 e segue
+            Dev → QA → TL → PO (educação, certs, hero, chat inclusos).
           </p>
         </footer>
       </div>

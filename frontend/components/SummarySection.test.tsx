@@ -32,9 +32,9 @@ describe("SummarySection", () => {
       screen.getByRole("heading", { name: /^perfil$/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("region", { name: /assistente do currículo/i }),
+      screen.getByRole("region", { name: /assistente rag/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/^assistente$/i)).toBeInTheDocument();
+    expect(screen.getByText(/^assistente rag$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/sua pergunta/i)).toBeInTheDocument();
     expect(screen.getByText("Texto sobre o autor.")).toBeInTheDocument();
     expect(

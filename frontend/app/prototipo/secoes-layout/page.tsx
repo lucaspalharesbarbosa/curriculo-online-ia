@@ -2,7 +2,7 @@ import { SectionsLayoutPrototype } from "@/components/prototypes/SectionsLayoutP
 import { resume } from "@/content/resume";
 
 export const metadata = {
-  title: "Protótipo — seções Experiência / Educação / Certificações",
+  title: "Protótipo — marcadores PRAD/Mérito (US-07-13)",
   robots: { index: false, follow: false },
 };
 

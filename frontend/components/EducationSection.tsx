@@ -1,6 +1,6 @@
 "use client";
 
-import { BookMarked, Calendar, Globe } from "lucide-react";
+import { ArrowUpRight, BookMarked, Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -58,18 +58,21 @@ export function EducationSection({ items }: EducationSectionProps) {
                 </div>
               </div>
               <div className="min-w-0 flex-1">
-                <div className="mb-1 flex items-center gap-1.5">
-                  <h3 className="type-item-title">{edu.institution}</h3>
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <h3 className="type-item-title min-w-0 text-neutral-100">
+                    {edu.institution}
+                  </h3>
                   {edu.websiteUrl ? (
                     <Link
                       href={edu.websiteUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={`Site oficial de ${edu.institution}`}
-                      title="Site oficial"
-                      className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-accent-500/15 text-accent-400 transition-colors hover:bg-accent-500/25 hover:text-accent-300"
+                      title="Abrir site oficial"
+                      className="edu-site-cta focus-visible:ring-2 focus-visible:ring-accent-500/40"
                     >
-                      <Globe className="h-3.5 w-3.5" />
+                      <span>Site</span>
+                      <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
                     </Link>
                   ) : null}
                 </div>

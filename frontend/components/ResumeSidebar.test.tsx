@@ -52,7 +52,9 @@ describe("ResumeSidebar", () => {
     expect(
       screen.getByRole("img", { name: /nível: especialista/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Tech Lead")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Tech Lead e Engenheiro de Software Sênior"),
+    ).toBeInTheDocument();
     expect(screen.queryByText(/languages/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/soft skills/i)).not.toBeInTheDocument();
 
@@ -88,8 +90,9 @@ describe("ResumeSidebar", () => {
       />,
     );
 
-    expect(screen.getByText("Tech Lead")).toBeInTheDocument();
-    expect(screen.getByText("Senior Software Engineer")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Tech Lead e Senior Software Engineer"),
+    ).toBeInTheDocument();
     expect(
       screen.getByText(
         "AI Engineering · Agentic AI · Java • Python · AWS Certified",

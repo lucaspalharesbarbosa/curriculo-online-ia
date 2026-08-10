@@ -137,7 +137,7 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                           </span>
                         </div>
 
-                        <ul className="type-body mb-3 space-y-2">
+                        <ul className="type-body mb-3 space-y-2.5">
                           {role.highlights.map((highlight) => {
                             const kind = getExperienceHighlightKind(highlight);
                             const isFeatured = kind !== "default";
@@ -146,17 +146,20 @@ export function ExperienceSection({ experiences }: ExperienceSectionProps) {
                               <li
                                 key={highlight}
                                 className={cn(
-                                  "flex items-start gap-2",
-                                  isFeatured &&
-                                    "rounded-xl border border-accent-500/25 bg-accent-500/[0.07] px-3 py-2.5 text-neutral-300",
+                                  "flex items-start gap-2.5",
+                                  isFeatured
+                                    ? "text-neutral-300"
+                                    : "text-neutral-400",
                                 )}
                               >
-                                <span
-                                  className={cn(
-                                    "mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500",
-                                    isFeatured && "mt-1.5 bg-accent-400",
-                                  )}
-                                />
+                                {isFeatured ? (
+                                  <span
+                                    className="highlight-ring-dot"
+                                    aria-hidden
+                                  />
+                                ) : (
+                                  <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-accent-500" />
+                                )}
                                 <span>
                                   {isFeatured ? (
                                     <span className="type-label mb-0.5 block tracking-wider text-accent-400">

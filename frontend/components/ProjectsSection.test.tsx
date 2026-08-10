@@ -60,9 +60,19 @@ describe("ProjectsSection", () => {
     );
     expect(articleLink).toHaveAttribute("target", "_blank");
     expect(articleLink).toHaveAttribute("rel", "noopener noreferrer");
+    expect(screen.getByText("Artigo")).toHaveClass("project-kind-badge");
     expect(
       screen.queryByRole("link", { name: /^repositório de/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("padroniza o tamanho visual dos labels Projeto e Artigo", () => {
+    render(<ProjectsSection projects={[project]} articles={[article]} />);
+
+    const projectBadge = screen.getByText("Projeto");
+    const articleBadge = screen.getByText("Artigo");
+    expect(projectBadge).toHaveClass("project-kind-badge");
+    expect(articleBadge).toHaveClass("project-kind-badge");
   });
 
   it("renderiza a seção quando só há artigos e nenhum projeto", () => {

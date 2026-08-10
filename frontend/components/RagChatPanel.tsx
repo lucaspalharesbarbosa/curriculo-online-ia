@@ -13,6 +13,7 @@ import {
   useEffect,
   useId,
   useRef,
+  useState,
   type FormEvent,
   type ReactNode,
 } from "react";
@@ -46,10 +47,17 @@ type RagChatPanelProps = {
 };
 
 const DEFAULT_SUGGESTIONS = [
-  "Qual sua stack principal?",
-  "Conte sobre liderança técnica",
-  "Quais experiências recentes?",
+  "Onde Lucas trabalha hoje?",
+  "Quais tecnologias ele usa?",
+  "Ele tem experiência como Tech Lead?",
 ];
+
+const RAG_LOADING_STAGES = [
+  "Buscando contexto…",
+  "Raciocinando…",
+  "Interpretando…",
+  "Respondendo…",
+] as const;
 
 const SKIN_DEFAULTS: Record<
   RagChatSkin,
@@ -62,30 +70,31 @@ const SKIN_DEFAULTS: Record<
   }
 > = {
   assistant: {
-    title: "Pergunte ao currículo",
-    subtitle: "Canal RAG · respostas do perfil",
-    emptyHint: "Dispare um probe — eu consulto o currículo e respondo.",
-    placeholder: "Ex.: Quais projetos você liderou?",
+    title: "Assistente RAG",
+    subtitle: "Online · conheço a carreira e a experiência profissional",
+    emptyHint:
+      "Olá — sou o Assistente RAG. Pergunte sobre a trajetória e eu busco no currículo para responder.",
+    placeholder: "Ex.: Quais projetos Lucas liderou?",
     icon: <Sparkles className="h-4 w-4" aria-hidden />,
   },
   soft: {
-    title: "Assistente",
-    subtitle: "Sinal ao vivo · currículo",
+    title: "Assistente RAG",
+    subtitle: "Online · conheço a carreira e a experiência profissional",
     emptyHint:
-      "Pergunte em linguagem natural. Eu busco no currículo e devolvo o trecho certo.",
+      "Olá — sou o Assistente RAG. Pergunte sobre a trajetória e eu busco no currículo para responder.",
     placeholder: "Digite sua pergunta…",
     icon: <Bot className="h-4 w-4" aria-hidden />,
   },
   dock: {
-    title: "Fale comigo",
-    subtitle: "Chat do site · respostas do perfil",
-    emptyHint: "Estou no painel — pergunte algo sobre minha trajetória.",
+    title: "Assistente RAG",
+    subtitle: "Online · pronto para falar da carreira",
+    emptyHint: "Estou aqui — pergunte algo sobre a trajetória profissional.",
     placeholder: "Escreva sua pergunta…",
     icon: <MessageCircle className="h-4 w-4" aria-hidden />,
   },
   chips: {
-    title: "Explore o perfil",
-    subtitle: "Sugestões + busca RAG",
+    title: "Assistente RAG",
+    subtitle: "Sugestões + busca no currículo",
     emptyHint: "Toque numa sugestão ou digite a sua própria pergunta.",
     placeholder: "Ou digite sua pergunta…",
     icon: <Sparkles className="h-4 w-4" aria-hidden />,
@@ -106,6 +115,23 @@ function TypingDots() {
         />
       ))}
     </span>
+  );
+}
+
+function RagLoadingStatus() {
+  const [stageIndex, setStageIndex] = useState(0);
+
+  useEffect(() => {
+    const id = window.setInterval(() => {
+      setStageIndex((current) => (current + 1) % RAG_LOADING_STAGES.length);
+    }, 1100);
+    return () => window.clearInterval(id);
+  }, []);
+
+  return (
+    <p className="font-mono text-xs text-accent-300/90 sm:text-sm">
+      {RAG_LOADING_STAGES[stageIndex]}
+    </p>
   );
 }
 
@@ -153,11 +179,11 @@ export function RagChatPanel({
   const shellProps = embedded
     ? ({
         role: "region" as const,
-        "aria-label": "Assistente do currículo",
+        "aria-label": "Assistente RAG",
       } as const)
     : ({
         role: "dialog" as const,
-        "aria-label": "Chat com o assistente do currículo",
+        "aria-label": "Assistente RAG",
       } as const);
 
   return (
@@ -210,10 +236,7 @@ export function RagChatPanel({
         {messages.length === 0 ? (
           <li className="space-y-4">
             <div className="rounded-2xl border border-dashed border-[var(--assist-line)] bg-[var(--assist-panel)] px-3.5 py-3">
-              <p className="font-mono text-[10px] tracking-wider text-accent-400/80 uppercase">
-                canal · rag
-              </p>
-              <p className="mt-1.5 text-sm leading-relaxed text-neutral-300">
+              <p className="text-sm leading-relaxed text-neutral-300">
                 {emptyHint ?? defaults.emptyHint}
               </p>
             </div>
@@ -254,9 +277,7 @@ export function RagChatPanel({
             {message.status === "loading" ? (
               <div className="mr-6 flex max-w-[94%] items-start gap-2 rounded-2xl rounded-bl-md border border-[var(--assist-line)] bg-[var(--assist-panel)] px-3.5 py-2.5">
                 <TypingDots />
-                <p className="text-xs text-neutral-400 italic sm:text-sm">
-                  Consultando o currículo…
-                </p>
+                <RagLoadingStatus />
               </div>
             ) : null}
 
