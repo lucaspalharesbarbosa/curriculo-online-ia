@@ -17,6 +17,7 @@ describe("resume.schema", () => {
     expect(resume.education.length).toBeGreaterThan(0);
     expect(resume.skills.length).toBeGreaterThan(0);
     expect(Array.isArray(resume.certifications)).toBe(true);
+    expect(Array.isArray(resume.recognitions)).toBe(true);
     expect(Array.isArray(resume.projects)).toBe(true);
     expect(resume.contact.linkedin).toMatch(/^https:\/\//);
     expect(resume.contact.whatsapp).toMatch(/^https:\/\/wa\.me\//);

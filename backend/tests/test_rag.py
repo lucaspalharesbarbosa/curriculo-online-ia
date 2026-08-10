@@ -51,16 +51,47 @@ FIXTURE_RESUME = Resume.model_validate(
             }
         ],
         "skills": [
-            {"category": "Linguagens", "items": ["Python", "Java"]},
-            {"category": "Cloud", "items": ["AWS"]},
+            {
+                "category": "Linguagens",
+                "items": [
+                    {"name": "Python", "level": 4},
+                    {"name": "Java", "level": 5},
+                ],
+            },
+            {"category": "Cloud", "items": [{"name": "AWS", "level": 4}]},
         ],
-        "certifications": [],
+        "certifications": [
+            {
+                "name": "Certificação Exemplo",
+                "issuer": "Instituto Exemplo",
+                "issuedAt": "2020-05",
+                "expiresAt": None,
+                "credentialUrl": None,
+            }
+        ],
+        "recognitions": [
+            {
+                "title": "Reconhecimento Exemplo",
+                "issuer": "Empresa A",
+                "year": "2023",
+                "description": "Descrição do reconhecimento exemplo.",
+            }
+        ],
         "projects": [
             {
                 "title": "Projeto X",
                 "description": "Descrição do projeto X.",
                 "technologies": ["Next.js"],
                 "repositoryUrl": "https://github.com/exemplo/projeto-x",
+            }
+        ],
+        "articles": [
+            {
+                "title": "Artigo Exemplo",
+                "description": "Descrição do artigo exemplo.",
+                "url": "https://blog.exemplo.com/artigo-exemplo",
+                "source": "Blog Exemplo",
+                "publishedAt": None,
             }
         ],
         "contact": {
@@ -73,13 +104,17 @@ FIXTURE_RESUME = Resume.model_validate(
 )
 
 
-def test_build_chunks_gera_um_chunk_por_experiencia_skill_e_projeto() -> None:
+def test_build_chunks_gera_um_chunk_por_secao_do_curriculo() -> None:
     chunks = build_chunks(FIXTURE_RESUME)
 
     total_esperado = (
         len(FIXTURE_RESUME.experiences)
         + len(FIXTURE_RESUME.skills)
         + len(FIXTURE_RESUME.projects)
+        + len(FIXTURE_RESUME.certifications)
+        + len(FIXTURE_RESUME.recognitions)
+        + len(FIXTURE_RESUME.education)
+        + len(FIXTURE_RESUME.articles)
     )
     assert len(chunks) == total_esperado
 
@@ -90,11 +125,19 @@ def test_build_chunks_nao_gera_texto_vazio() -> None:
     assert all(chunk.text.strip() for chunk in chunks)
 
 
-def test_build_chunks_cobre_as_tres_secoes() -> None:
+def test_build_chunks_cobre_as_sete_secoes() -> None:
     chunks = build_chunks(FIXTURE_RESUME)
 
     sections = {chunk.section for chunk in chunks}
-    assert sections == {"experience", "skill", "project"}
+    assert sections == {
+        "experience",
+        "skill",
+        "project",
+        "certification",
+        "recognition",
+        "education",
+        "article",
+    }
 
 
 def test_chunk_de_experiencia_contem_empresa_e_tecnologias() -> None:
@@ -103,6 +146,25 @@ def test_chunk_de_experiencia_contem_empresa_e_tecnologias() -> None:
     experience_chunk = next(c for c in chunks if c.id == "experience-0")
     assert "Empresa A" in experience_chunk.text
     assert "Python" in experience_chunk.text
+
+
+def test_chunk_de_certificacao_contem_nome_e_emissor() -> None:
+    """Chunk de certificação inclui nome e emissor no texto."""
+    chunks = build_chunks(FIXTURE_RESUME)
+
+    certification_chunk = next(c for c in chunks if c.id == "certification-0")
+    assert "Certificação Exemplo" in certification_chunk.text
+    assert "Instituto Exemplo" in certification_chunk.text
+
+
+def test_chunk_de_reconhecimento_contem_titulo_emissor_e_descricao() -> None:
+    """Chunk de reconhecimento inclui título, emissor e descrição no texto."""
+    chunks = build_chunks(FIXTURE_RESUME)
+
+    recognition_chunk = next(c for c in chunks if c.id == "recognition-0")
+    assert "Reconhecimento Exemplo" in recognition_chunk.text
+    assert "Empresa A" in recognition_chunk.text
+    assert "Descrição do reconhecimento exemplo." in recognition_chunk.text
 
 
 class _FakeEmbeddingData:

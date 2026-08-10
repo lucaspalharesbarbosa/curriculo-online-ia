@@ -2,20 +2,24 @@
 
 from __future__ import annotations
 
+import logging
+import os
 import time
 from collections import defaultdict
 
 from fastapi import APIRouter, HTTPException, Request
-from openai import OpenAIError
+from openai import AuthenticationError, OpenAIError, RateLimitError
 from pydantic import BaseModel, Field
 
 from app import rag
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
 
 GENERATION_MODEL = "gpt-4o-mini"
 SIMILARITY_THRESHOLD = 0.2
 TOP_K = 3
+# Mensagens públicas: genéricas, sem revelar stack, provider ou variáveis internas.
 GENERIC_ERROR_MESSAGE = "Erro ao gerar resposta. Tente novamente mais tarde."
 RATE_LIMIT_MESSAGE = "Muitas requisições. Tente novamente em instantes."
 
@@ -79,16 +83,31 @@ def _generate_answer(question: str, chunks: list[rag.Chunk]) -> str:
     return response.choices[0].message.content or FALLBACK_ANSWER
 
 
+def _http_error_from_openai(exc: OpenAIError) -> HTTPException:
+    """Falha do provider → resposta genérica ao client; detalhe só no log."""
+    if isinstance(exc, AuthenticationError):
+        logger.error("Falha de autenticação no provider de LLM.")
+    elif isinstance(exc, RateLimitError):
+        logger.error("Rate limit / quota do provider de LLM.")
+    else:
+        logger.error("Falha no provider de LLM: %s", type(exc).__name__)
+    return HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE)
+
+
 @router.post("/chat", response_model=ChatResponse)
 def chat(request: ChatRequest, http_request: Request) -> ChatResponse:
     client_id = http_request.client.host if http_request.client else "unknown"
     if _is_rate_limited(client_id):
         raise HTTPException(status_code=429, detail=RATE_LIMIT_MESSAGE)
 
+    if not os.environ.get("LLM_API_KEY"):
+        logger.error("LLM_API_KEY ausente — /chat indisponível.")
+        raise HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE)
+
     try:
         results = rag.search(request.question, get_index(), top_k=TOP_K)
     except OpenAIError as exc:
-        raise HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE) from exc
+        raise _http_error_from_openai(exc) from exc
 
     if not results or results[0][1] < SIMILARITY_THRESHOLD:
         return ChatResponse(answer=FALLBACK_ANSWER)
@@ -98,6 +117,6 @@ def chat(request: ChatRequest, http_request: Request) -> ChatResponse:
     try:
         answer = _generate_answer(request.question, relevant_chunks)
     except OpenAIError as exc:
-        raise HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE) from exc
+        raise _http_error_from_openai(exc) from exc
 
     return ChatResponse(answer=answer)

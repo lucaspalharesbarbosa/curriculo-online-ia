@@ -1,10 +1,13 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Award, Sparkles, Trophy } from "lucide-react";
+import { ArrowUpRight, Award, KeyRound } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
+import { CollapsibleSection } from "@/components/CollapsibleSection";
 import type { Certification } from "@/content/resume.schema";
+import { formatYear, groupCertificationsByIssuer } from "@/lib/utils";
 
 type CertificationsProps = {
   items: Certification[];
@@ -15,82 +18,105 @@ export function Certifications({ items }: CertificationsProps) {
     return null;
   }
 
+  const groups = groupCertificationsByIssuer(items);
+
   return (
-    <section aria-labelledby="certifications-heading">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="glass relative overflow-hidden rounded-3xl p-6 lg:p-8"
-      >
-        <div className="absolute right-0 bottom-0 h-64 w-64 translate-x-1/2 translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl" />
+    <CollapsibleSection
+      headingId="certifications-heading"
+      title="Certificações"
+      subtitle="Cursos e Credenciais Técnicas"
+      icon={<KeyRound className="h-5 w-5" aria-hidden />}
+      orbClassName="right-0 bottom-0 h-64 w-64 translate-x-1/2 translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl"
+    >
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {groups.map((group, groupIndex) => (
+          <motion.article
+            key={group.issuer}
+            initial={{ opacity: 0, y: 22 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              type: "spring",
+              stiffness: 140,
+              damping: 20,
+              delay: groupIndex * 0.06,
+            }}
+            className="cert-issuer-card glass-card group relative overflow-hidden rounded-2xl p-4 sm:p-5"
+          >
+            <div
+              className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-accent-500/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
+              aria-hidden
+            />
 
-        <div className="relative z-10">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="rounded-xl bg-accent-500/20 p-3 text-accent-400">
-              <Trophy className="h-5 w-5" />
-            </div>
-            <div>
-              <h2
-                id="certifications-heading"
-                className="flex items-center gap-2 text-xl font-bold text-neutral-100"
-              >
-                Certificações
-                <Sparkles className="h-4 w-4 text-accent-400" />
-              </h2>
-              <p className="text-xs text-neutral-400">
-                Reconhecimentos e Conquistas
-              </p>
-            </div>
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {items.map((cert, index) => (
-              <motion.div
-                key={`${cert.name}-${cert.issuedAt}`}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="glass-card group relative overflow-hidden rounded-2xl p-5 text-center"
-              >
-                <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-accent-500/5 to-transparent transition-transform duration-1000 group-hover:translate-x-full" />
-
-                <div className="relative z-10">
-                  <div className="mx-auto mb-5 flex h-28 w-28 items-center justify-center overflow-hidden rounded-2xl border border-neutral-700/40 bg-neutral-950/60 p-1.5 sm:h-32 sm:w-32">
-                    {cert.logoUrl ? (
-                      <Image
-                        src={cert.logoUrl}
-                        alt={`Logo ${cert.name}`}
-                        width={128}
-                        height={128}
-                        className="h-full w-full object-contain"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center rounded-xl bg-gradient-to-br from-accent-500/20 to-accent-600/20">
-                        <Award className="h-10 w-10 text-accent-400" />
-                      </div>
-                    )}
-                  </div>
-                  <span className="mb-3 inline-block rounded-full border border-accent-500/30 bg-accent-500/20 px-3 py-1 text-xs font-semibold text-accent-400">
-                    {cert.issuedAt}
-                  </span>
-                  <h3 className="mb-2 text-sm leading-tight font-semibold text-neutral-100">
-                    {cert.name}
-                  </h3>
-                  <p className="text-xs text-neutral-400">{cert.issuer}</p>
-                  {cert.expiresAt ? (
-                    <p className="mt-2 text-xs font-medium text-accent-400">
-                      Válido até {cert.expiresAt}
-                    </p>
-                  ) : null}
+            <header className="relative mb-4 flex items-center gap-3.5">
+              <div className="cert-seal shrink-0">
+                <div className="cert-seal__ring" aria-hidden />
+                <div className="cert-seal__face">
+                  {group.logoUrl ? (
+                    <Image
+                      src={group.logoUrl}
+                      alt={`Logo ${group.issuer}`}
+                      width={44}
+                      height={44}
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <Award className="h-5 w-5 text-accent-400" aria-hidden />
+                  )}
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    </section>
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <h3 className="type-item-title truncate text-sm sm:text-base">
+                  {group.issuer}
+                </h3>
+                <p className="type-meta mt-0.5">
+                  {group.items.length}{" "}
+                  {group.items.length === 1 ? "credencial" : "credenciais"}
+                </p>
+              </div>
+            </header>
+
+            <ul className="relative space-y-2">
+              {group.items.map((cert) => (
+                <li key={`${cert.name}-${cert.issuedAt}`}>
+                  <div className="cert-credential-row">
+                    <div className="min-w-0 flex-1">
+                      <p className="type-body leading-snug font-medium text-neutral-100">
+                        {cert.name}
+                      </p>
+                      {cert.expiresAt ? (
+                        <p className="type-meta mt-1 text-neutral-500">
+                          válido até {formatYear(cert.expiresAt)}
+                        </p>
+                      ) : null}
+                    </div>
+
+                    <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-center">
+                      <time dateTime={cert.issuedAt} className="cert-year-pill">
+                        {formatYear(cert.issuedAt)}
+                      </time>
+
+                      {cert.credentialUrl ? (
+                        <Link
+                          href={cert.credentialUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={`Ver certificado ${cert.name}`}
+                          className="cert-credential-link"
+                        >
+                          <span>Ver certificado</span>
+                          <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+                        </Link>
+                      ) : null}
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </motion.article>
+        ))}
+      </div>
+    </CollapsibleSection>
   );
 }

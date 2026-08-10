@@ -76,7 +76,8 @@ Cada história carrega seu próprio **DoR** (bloqueia início), **Critérios de 
 - [ ] Épico e dependências identificados (US-FF-NN, ADR-XXX)
 - [ ] ADR registrado se envolve decisão de stack nova
 - [ ] Variáveis de ambiente/segredos necessários identificados (nome, onde configurar — nunca no client)
-- [ ] Referência visual definida — se a história é de UI nova (evita retrabalho de layout)
+- [ ] Referência visual definida — se a história é de UI nova (direção clara: texto, referência externa ou escolha de protótipo). Protótipo **não** é automático — só se o autor pedir (`docs/agents/PROCESSO-PROTOTIPO.md`, `@ux-designer`)
+- [ ] Protótipo solicitado pelo autor — se pediu: rota `/prototipo/<slug>` + escolha (letra/descarte) registrada; senão `N/A`
 - [ ] Sem dúvida bloqueante
 
 #### Contrato de API (se aplica — remover a subseção se não houver endpoint)

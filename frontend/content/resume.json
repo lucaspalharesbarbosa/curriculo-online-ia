@@ -2,9 +2,9 @@
   "hero": {
     "name": "Lucas Palhares Barbosa",
     "title": "Tech Lead | Senior Software Engineer — AI Engineering | Agentic AI | Java • Python | AWS Certified",
-    "location": "São José do Rio Preto, SP (remoto)",
+    "location": "São José do Rio Preto, SP",
     "summary": "Tech Lead e Senior Software Engineer com mais de 10 anos de experiência em soluções escaláveis para bancos, telecomunicações e saúde. Lidero tecnicamente squads na Engineering Brasil no desenvolvimento de soluções de IA para a Claro, aplicando AI Engineering — Agentic AI, Context Engineering e Spec-Driven Development — para acelerar a entrega de software. Base sólida em arquitetura de microsserviços, Java, Python, Spring Boot, Kubernetes e Cloud, com histórico de entregas estratégicas em produtos de grande porte.",
-    "photoUrl": "/foto-lucas-palhares.png"
+    "photoUrl": "/foto-lucas-palhares-2026.png"
   },
   "about": "Tech Lead e Senior Software Engineer com mais de 10 anos de experiência desenvolvendo soluções escaláveis para grandes empresas dos setores bancário, telecomunicações e saúde. Atualmente lidera tecnicamente squads na Engineering Brasil responsáveis por soluções estratégicas de Inteligência Artificial para a Claro. Seu foco evoluiu da engenharia de software tradicional para soluções orientadas por IA, aplicando práticas de AI Engineering — Context Engineering, Prompt Engineering, Harness Engineering, Agentic AI e Spec-Driven Development (SDD) — na construção de AI Agents, AI Skills e fluxos agentic integrados ao ciclo de desenvolvimento. Como Tech Lead, responde por liderança técnica, arquitetura, mentoria, revisão de código, padrões de engenharia e condução da adoção de IA no processo de desenvolvimento, utilizando ferramentas como Claude Code e Cursor no dia a dia. Experiência sólida em Java, Python, microsserviços, Spring Boot, Kubernetes, Cloud (AWS e GCP), APIs REST e arquiteturas distribuídas.",
   "experiences": [
@@ -70,7 +70,8 @@
         "Atuei no desenvolvimento do MVP do produto de Crédito para Energia Solar, possibilitando a entrada do Itaú em novo segmento de negócios",
         "Refatorei o sistema de Gestão de Carteira de Microcrédito, aumentando a manutenibilidade e reduzindo incidentes críticos",
         "Contribuí para o projeto de Realocação de Carteiras Desassistidas no sistema de Gestão de Carteira de Microcrédito, com foco na redução dos índices de inadimplência dos contratos",
-        "Reconhecido por Alto Desempenho (2023 e 2024) e Mérito (2024): avaliado com classificação \"Destaca-se em relação ao grupo\", recebi PRAD pela qualidade das minhas entregas, colaboração e impacto nos resultados do time"
+        "Reconhecido por Alto Desempenho (2023 e 2024): avaliado com classificação \"Destaca-se em relação ao grupo\", recebi PRAD pela qualidade das minhas entregas, colaboração e impacto nos resultados do time",
+        "Reconhecimento de Mérito (2024): concedido individualmente pela liderança pela qualidade das entregas, colaboração e impacto nos resultados do time"
       ],
       "technologies": [
         "Java (Spring Boot)",
@@ -85,14 +86,15 @@
       "company": "Shift",
       "role": "Web Developer",
       "logoUrl": "/shift_logo.jpg",
-      "startDate": "2020-09",
+      "startDate": "2021-07",
       "endDate": "2022-07",
       "location": "São José do Rio Preto, SP",
       "modality": "Presencial",
       "highlights": [
-        "Atuei na evolução e manutenção de sistema LIS (Laboratory Information System) para análises clínicas, imagem e imunização",
+        "Atuei na evolução e manutenção do LIS (Laboratory Information System), apoiando todo o fluxo operacional do sistema — do processo pré-analítico ao faturamento — para laboratórios de análises clínicas, diagnóstico por imagem, anatomia patológica e imunização",
         "Participei da modernização do sistema legado, migrando de COS para Java e de arquitetura monolítica para microsserviços, resultando em maior performance, flexibilidade e redução de custos operacionais",
-        "Realizava suporte técnico e mentoria de desenvolvedores juniores e estagiários, apoiando na qualidade das entregas"
+        "Dei apoio técnico e mentoria a desenvolvedores juniores, trainees e estagiários, contribuindo para sua evolução técnica e acompanhamento das entregas",
+        "Colaborei com equipes multidisciplinares na análise de requisitos, resolução de problemas e melhoria contínua da plataforma"
       ],
       "technologies": [
         "Java (Quarkus)",
@@ -103,11 +105,58 @@
       ]
     },
     {
+      "company": "Shift",
+      "role": "Junior Web Developer",
+      "logoUrl": "/shift_logo.jpg",
+      "startDate": "2020-09",
+      "endDate": "2021-07",
+      "location": "São José do Rio Preto, SP",
+      "modality": "Presencial",
+      "highlights": [
+        "Atuei no desenvolvimento e manutenção do LIS (Laboratory Information System), participando da evolução de funcionalidades e correção de problemas em plataforma utilizada por laboratórios clínicos e centros de diagnóstico",
+        "Consolidei conhecimentos em desenvolvimento Full Stack, participando de todo o ciclo de desenvolvimento de software em ambiente ágil"
+      ],
+      "technologies": [
+        "Java",
+        "COS (Caché Object Script)",
+        "InterSystems IRIS/Caché",
+        "ZEN",
+        "JavaScript",
+        "Angular"
+      ]
+    },
+    {
+      "company": "WebPic",
+      "role": "Web Developer",
+      "logoUrl": "/grupowebpic_logo.jpg",
+      "startDate": "2018-05",
+      "endDate": "2020-09",
+      "location": "São José do Rio Preto, SP",
+      "modality": "Presencial",
+      "highlights": [
+        "Atuei em ERP para indústria de confecção e moda, participando de todo o ciclo de desenvolvimento",
+        "Desenvolvi integração com TEF e emissão de cupom fiscal eletrônico (MF-e/CE), ampliando a base de clientes e receita da empresa",
+        "Apoiei o Scrum Master e o Product Owner no refinamento do backlog e melhoria de processos ágeis"
+      ],
+      "technologies": [
+        "C#",
+        "ASP.NET MVC",
+        "Windows Forms",
+        "Entity Framework",
+        "SQL Server",
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "KnockoutJS",
+        "Scrum/Kanban"
+      ]
+    },
+    {
       "company": "WebPic",
       "role": "Junior Web Developer",
       "logoUrl": "/grupowebpic_logo.jpg",
       "startDate": "2016-11",
-      "endDate": "2020-09",
+      "endDate": "2018-05",
       "location": "São José do Rio Preto, SP",
       "modality": "Presencial",
       "highlights": [
@@ -157,59 +206,233 @@
       "degree": "Pós-graduação em Gerenciamento de Projetos – Práticas do PMI",
       "logoUrl": "/centrouniversitariosenac_logo.jpg",
       "startDate": "2016",
-      "endDate": "2017"
+      "endDate": "2017",
+      "websiteUrl": "https://www.sp.senac.br/pos-graduacao/pos-em-gerenciamento-de-projetos-praticas-do-project-management-institute-pmi-"
     },
     {
       "institution": "FATEC São José do Rio Preto",
       "degree": "Graduação em Análise e Desenvolvimento de Sistemas",
       "logoUrl": "/fatec_rio_preto_logo.jpg",
       "startDate": "2013",
-      "endDate": "2015"
+      "endDate": "2015",
+      "websiteUrl": "https://fatecriopreto.cps.sp.gov.br/analise-e-desenvolvimento-de-sistemas/"
+    },
+    {
+      "institution": "Etec Philadelpho Gouvêa Netto",
+      "degree": "Técnico em Informática",
+      "logoUrl": "/etec_philadelpho_logo.jpg",
+      "startDate": "2011",
+      "endDate": "2012",
+      "websiteUrl": "https://etecphiladelpho.cps.sp.gov.br/informatica-para-internet/"
     }
   ],
   "skills": [
     {
-      "category": "Linguagens",
-      "items": ["Java", "Spring Boot", "Python", "C#"]
+      "category": "AI Engineering",
+      "items": [
+        {
+          "name": "Agentic AI",
+          "level": 3
+        },
+        {
+          "name": "Context Engineering",
+          "level": 3
+        },
+        {
+          "name": "Prompt Engineering",
+          "level": 3
+        },
+        {
+          "name": "Spec-Driven Development (SDD)",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "category": "Backend",
+      "items": [
+        {
+          "name": "Java",
+          "level": 4
+        },
+        {
+          "name": "Spring Boot",
+          "level": 3
+        },
+        {
+          "name": "Python",
+          "level": 2
+        },
+        {
+          "name": "C#",
+          "level": 1
+        }
+      ]
+    },
+    {
+      "category": "Frontend",
+      "items": [
+        {
+          "name": "Angular",
+          "level": 2
+        },
+        {
+          "name": "React",
+          "level": 1
+        },
+        {
+          "name": "JavaScript",
+          "level": 3
+        },
+        {
+          "name": "HTML5",
+          "level": 3
+        },
+        {
+          "name": "CSS3",
+          "level": 3
+        }
+      ]
     },
     {
       "category": "Cloud",
-      "items": ["AWS", "GCP"]
+      "items": [
+        {
+          "name": "AWS",
+          "level": 3
+        },
+        {
+          "name": "GCP",
+          "level": 1
+        }
+      ]
     },
     {
       "category": "Mensageria",
-      "items": ["Apache Kafka", "RabbitMQ", "AWS SQS", "AWS SNS"]
-    },
-    {
-      "category": "Devops",
-      "items": ["Docker", "Git", "GitLab", "CI/CD"]
-    },
-    {
-      "category": "Arquitetura",
       "items": [
-        "Microsserviços",
-        "APIs REST",
-        "BFF",
-        "Clean Architecture",
-        "SOLID",
-        "Design Patterns"
+        {
+          "name": "Apache Kafka",
+          "level": 3
+        },
+        {
+          "name": "RabbitMQ",
+          "level": 3
+        },
+        {
+          "name": "AWS SQS",
+          "level": 3
+        },
+        {
+          "name": "AWS SNS",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "category": "DevOps & CI/CD",
+      "items": [
+        {
+          "name": "Docker",
+          "level": 4
+        },
+        {
+          "name": "Git",
+          "level": 5
+        },
+        {
+          "name": "GitLab",
+          "level": 3
+        },
+        {
+          "name": "CI/CD",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "category": "Arquitetura & Padrões",
+      "items": [
+        {
+          "name": "Microsserviços",
+          "level": 5
+        },
+        {
+          "name": "APIs REST",
+          "level": 4
+        },
+        {
+          "name": "BFF",
+          "level": 3
+        },
+        {
+          "name": "Clean Architecture",
+          "level": 4
+        },
+        {
+          "name": "SOLID",
+          "level": 4
+        },
+        {
+          "name": "Design Patterns",
+          "level": 4
+        }
+      ]
+    },
+    {
+      "category": "Banco de Dados (SQL)",
+      "items": [
+        {
+          "name": "SQL Server",
+          "level": 4
+        },
+        {
+          "name": "PostgreSQL",
+          "level": 3
+        }
+      ]
+    },
+    {
+      "category": "Banco de Dados (NoSQL)",
+      "items": [
+        {
+          "name": "Redis",
+          "level": 3
+        },
+        {
+          "name": "DynamoDB",
+          "level": 3
+        }
       ]
     },
     {
       "category": "Observabilidade",
-      "items": ["Splunk", "Grafana", "DataDog"]
-    },
-    {
-      "category": "Frontend",
-      "items": ["Angular", "React", "JavaScript", "HTML5", "CSS3"]
-    },
-    {
-      "category": "Banco de Dados",
-      "items": ["SQL Server", "PostgreSQL"]
+      "items": [
+        {
+          "name": "Splunk",
+          "level": 3
+        },
+        {
+          "name": "Grafana",
+          "level": 3
+        },
+        {
+          "name": "DataDog",
+          "level": 3
+        }
+      ]
     },
     {
       "category": "Metodologias",
-      "items": ["Scrum", "Kanban", "CI/CD"]
+      "items": [
+        {
+          "name": "Scrum",
+          "level": 5
+        },
+        {
+          "name": "Kanban",
+          "level": 4
+        }
+      ]
     }
   ],
   "certifications": [
@@ -218,14 +441,92 @@
       "issuer": "AWS",
       "logoUrl": "/aws-certified-cloud-pratctitioner-logo.png",
       "issuedAt": "2024-07",
-      "expiresAt": "2027-07"
+      "expiresAt": "2027-07",
+      "credentialUrl": "https://www.credly.com/badges/b200cc1c-b062-4c15-8037-32031a581900/linked_in_profile"
     },
     {
       "name": "Scrum Fundamentals Certified (SFC)",
       "issuer": "SCRUMStudy",
       "logoUrl": "/scrum-fundamentals-certified-logo.png",
       "issuedAt": "2018-01",
-      "expiresAt": null
+      "expiresAt": null,
+      "credentialUrl": null
+    },
+    {
+      "name": "Codificação e criação de Agentes na prática",
+      "issuer": "Full Cycle",
+      "logoUrl": "/logo-full-cycle.png",
+      "issuedAt": "2026-05",
+      "expiresAt": null,
+      "credentialUrl": "https://fullcycle.com.br/certificado/e51f2956-a652-4658-9999-135866ffaec4/"
+    },
+    {
+      "name": "Formação Angular",
+      "issuer": "Alura",
+      "logoUrl": "/alura-logo.png",
+      "issuedAt": "2021-03",
+      "expiresAt": null,
+      "credentialUrl": "https://cursos.alura.com.br/degree/certificate/a0c4d7c3-8216-4d9d-b065-1323cfa26960"
+    },
+    {
+      "name": "SOLID com Java: Princípios da programação orientada a objetos",
+      "issuer": "Alura",
+      "logoUrl": "/alura-logo.png",
+      "issuedAt": "2022-03",
+      "expiresAt": null,
+      "credentialUrl": "https://cursos.alura.com.br/certificate/lucas-barbosa7/solid-orientacao-objetos-java"
+    },
+    {
+      "name": "Design Patterns em Java 1: Introdução às boas práticas de programação",
+      "issuer": "Alura",
+      "logoUrl": "/alura-logo.png",
+      "issuedAt": "2022-04",
+      "expiresAt": null,
+      "credentialUrl": "https://cursos.alura.com.br/certificate/lucas-barbosa7/introducao-design-patterns-java"
+    },
+    {
+      "name": "Design Patterns em Java 2: Avançando nas boas práticas de programação",
+      "issuer": "Alura",
+      "logoUrl": "/alura-logo.png",
+      "issuedAt": "2022-04",
+      "expiresAt": null,
+      "credentialUrl": "https://cursos.alura.com.br/certificate/lucas-barbosa7/avancando-design-patterns-java"
+    },
+    {
+      "name": "Claude Desktop – Automatize tarefas do dia a dia",
+      "issuer": "Asimov Academy",
+      "logoUrl": "/logo-asimov.png",
+      "issuedAt": "2026-05",
+      "expiresAt": null,
+      "credentialUrl": "https://hub.asimov.academy/validar-certificado/607ab11d-5074-48cc-8e44-7423e4bd420f/"
+    },
+    {
+      "name": "Dominando o OpenClaw",
+      "issuer": "Asimov Academy",
+      "logoUrl": "/logo-asimov.png",
+      "issuedAt": "2026-05",
+      "expiresAt": null,
+      "credentialUrl": "https://hub.asimov.academy/validar-certificado/dbe84701-553a-4811-a69d-68cb4656cea4/"
+    }
+  ],
+  "recognitions": [
+    {
+      "title": "Reconhecimento PRAD — Alto Desempenho",
+      "issuer": "Itaú Unibanco",
+      "year": "2024",
+      "description": "PRAD — Programa de Remuneração de Alto Desempenho: avaliação interna do Itaú Unibanco com classificação \"Destaca-se em relação ao grupo\". Segundo ano consecutivo (2023 e 2024) com essa classificação, concedida pela qualidade das entregas, colaboração e impacto nos resultados do time."
+    },
+    {
+      "title": "Reconhecimento de Mérito",
+      "issuer": "Itaú Unibanco",
+      "year": "2024",
+      "description": "Reconhecimento de Mérito: reconhecimento interno do Itaú Unibanco concedido individualmente pela liderança a colaboradores que se destacam pela qualidade das entregas, colaboração e impacto nos resultados do time — sem vínculo a um programa formal como o PRAD."
+    },
+    {
+      "title": "Reconhecimento PRAD — Alto Desempenho",
+      "issuer": "Itaú Unibanco",
+      "year": "2023",
+      "description": "PRAD — Programa de Remuneração de Alto Desempenho: avaliação interna do Itaú Unibanco com classificação \"Destaca-se em relação ao grupo\", concedida pela qualidade das entregas, colaboração e impacto nos resultados do time."
     }
   ],
   "projects": [
@@ -240,6 +541,22 @@
         "Python"
       ],
       "repositoryUrl": "https://github.com/lucaspalharesbarbosa/curriculo-online-ia"
+    }
+  ],
+  "articles": [
+    {
+      "title": "Introdução aos conceitos de refatoração",
+      "description": "Artigo autoral sobre os conceitos fundamentais de refatoração de software, publicado no blog de desenvolvimento da Shift.",
+      "url": "https://desenvolvimento.shift.com.br/introdu%C3%A7%C3%A3o-aos-conceitos-de-refatora%C3%A7%C3%A3o-61027c8127e4",
+      "source": "Shift Desenvolvimento",
+      "publishedAt": null
+    },
+    {
+      "title": "O segredo do sucesso na utilização do Scrum",
+      "description": "Artigo autoral sobre boas práticas e fatores de sucesso na adoção do Scrum em times de desenvolvimento, publicado no Medium.",
+      "url": "https://medium.com/shift-desenvolvimento-e-tecnologia/o-segredo-do-sucesso-na-utiliza%C3%A7%C3%A3o-do-scrum-d524e27b2c17",
+      "source": "Medium — Shift Desenvolvimento e Tecnologia",
+      "publishedAt": null
     }
   ],
   "contact": {

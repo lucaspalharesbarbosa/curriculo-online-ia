@@ -2,11 +2,12 @@
 name: orquestrador
 description: >
   Orquestra o pipeline de agentes do Currículo Online em sequência: PO →
-  arquiteto → dev → QA → tech lead. Use para entregar features completas,
-  fluxo end-to-end, "rode o pipeline", "entrega a US-XX" ou automatizar PO +
-  implementação + validação + review. Acione com @orquestrador. Lê e aplica
-  @product-owner, @arquiteto-ia-senior, @senior-developer, @qa-engineer e
-  @tech-lead-review em cada fase.
+  arquiteto → (ux-designer sob pedido) → dev → QA → tech lead. Use para
+  entregar features completas, fluxo end-to-end, "rode o pipeline",
+  "entrega a US-XX" ou automatizar PO + implementação + validação + review.
+  Acione com @orquestrador. Lê e aplica @product-owner, @arquiteto-ia-senior,
+  @ux-designer (só se o autor pedir protótipo), @senior-developer,
+  @qa-engineer e @tech-lead-review em cada fase.
 disable-model-invocation: true
 ---
 
@@ -27,14 +28,17 @@ Você é o **Orquestrador** do projeto Currículo Online. Coordena os agentes em
 ## Pipeline padrão
 
 ```
-PO → Arquiteto? → Dev → QA → Tech Lead → PO (aceite)
+PO → Arquiteto? → [UX Designer?] → Dev → QA → Tech Lead → PO (aceite)
 ```
+
+`[UX Designer?]` **somente** se o autor pediu protótipo/exploração visual. Sem pedido → pula; não injeta fase de protótipo em toda US de UI.
 
 | Fase | Skill | Entregável |
 |---|---|---|
 | 1 | `@product-owner` | História/tasks com DoR fechado em `docs/product/` |
 | 2 | `@arquiteto-ia-senior` | ADR/C4 ou skip |
-| 3 | `@senior-developer` | Código + teste do escopo tocado |
+| 2b | `@ux-designer` | Protótipo em `/prototipo/<slug>` + gate humano — **só sob pedido** |
+| 3 | `@senior-developer` | Código de produção + teste; limpa protótipo no mesmo PR se houve promoção/descarte |
 | 4 | `@qa-engineer` | Relatório QA |
 | 5 | `@tech-lead-review` | Veredito de merge |
 | 6 | `@product-owner` | Aceite (Done) |
@@ -47,14 +51,15 @@ Ao fechar o Done da **última** história pendente de uma fase (Fase 6), oferece
 
 | Modo | Fases |
 |---|---|
-| **full** | 1→2?→3→4→5→6 |
-| **implement** | 2?→3→4→5→6 (DoR ok) |
+| **full** | 1→2?→2b?→3→4→5→6 |
+| **implement** | 2?→2b?→3→4→5→6 (DoR ok) |
+| **prototype** | 2b (para no gate humano; não implementa produção até o autor decidir) |
 | **validate** | 4→5→6 |
 | **review** | 4→5 |
 | **discover** | 1→2 (para; aguarda aprovação) |
 | **fix** | 3→4→5 |
 
-Default: **implement** se já houver DoR/tasks; senão **full**. Detalhes: `references/pipeline-flows.md`.
+Default: **implement** se já houver DoR/tasks; senão **full**. Modo **prototype** só sob pedido explícito de protótipo. Detalhes: `references/pipeline-flows.md` e `docs/agents/PROCESSO-PROTOTIPO.md`.
 
 ---
 
@@ -86,6 +91,15 @@ Default: **implement** se já houver DoR/tasks; senão **full**. Detalhes: `refe
 - Pedido explícito
 
 Senão: skip documentado.
+
+### Fase 2b (UX Designer) — quando executar
+
+- Autor pediu protótipo, exploração visual ou `@ux-designer`
+- Há protótipo ativo aguardando gate e o escopo do pipeline depende da escolha
+
+Senão: **skip** — nunca forçar protótipo em mudança de frontend.
+
+**Gate 2b→3:** escolha do autor registrada (letra/descarte). Sem escolha → não avançar para Dev de produção. Após promover ou descartar, a limpeza do protótipo entra no **mesmo PR** da Fase 3 (ver `docs/agents/PROCESSO-PROTOTIPO.md`).
 
 ### Relatório final
 
@@ -133,6 +147,8 @@ Senão: skip documentado.
 - Marcar Done com critério de aceite ou item de DoD aberto
 - Veredito de QA, Tech Lead ou PO só narrado no chat/handoff, sem registro na tabela Vereditos da história
 - Arquiteto em toda mudança trivial (ex.: ajuste de texto no `resume.json`)
+- Injetar `@ux-designer` / protótipo sem pedido explícito do autor
+- Deixar código em `/prototipo` após decisão (aprovado ou descartado)
 - Introduzir processo/artefato de squad grande num projeto de uma pessoa só
 
 ---
@@ -144,4 +160,6 @@ Senão: skip documentado.
 | `references/pipeline-flows.md` | Fluxos por modo |
 | `references/handoff-template.md` | Handoff |
 | `.claude/skills/product-owner/references/archive-workflow.md` | Arquivamento de fase concluída |
+| `.claude/skills/ux-designer/SKILL.md` | Protótipos visuais (sob pedido) |
+| `docs/agents/PROCESSO-PROTOTIPO.md` | Processo e ciclo de vida dos protótipos |
 | `docs/agents/CONTEXTO-PROJETO.md` | Stack, estrutura, convenções |

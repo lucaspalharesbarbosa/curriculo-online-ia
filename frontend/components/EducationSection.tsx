@@ -1,9 +1,11 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Calendar, GraduationCap, Sparkles } from "lucide-react";
+import { ArrowUpRight, BookMarked, Calendar } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
+import { motion } from "framer-motion";
 
+import { CollapsibleSection } from "@/components/CollapsibleSection";
 import type { Education } from "@/content/resume.schema";
 
 type EducationSectionProps = {
@@ -12,79 +14,77 @@ type EducationSectionProps = {
 
 export function EducationSection({ items }: EducationSectionProps) {
   return (
-    <section aria-labelledby="education-heading">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="glass relative overflow-hidden rounded-3xl p-6 lg:p-8"
-      >
-        <div className="absolute top-0 left-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl" />
+    <CollapsibleSection
+      headingId="education-heading"
+      title="Educação"
+      subtitle="Formação Acadêmica"
+      icon={<BookMarked className="h-5 w-5" aria-hidden />}
+      orbClassName="top-0 left-0 h-64 w-64 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl"
+    >
+      <div className="space-y-4">
+        {items.map((edu, index) => (
+          <motion.div
+            key={`${edu.institution}-${edu.startDate}`}
+            initial={{ opacity: 0, x: -36 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{
+              type: "spring",
+              stiffness: 120,
+              damping: 16,
+              delay: index * 0.12,
+            }}
+            className="edu-card glass-card group relative rounded-2xl p-4 sm:p-5"
+          >
+            <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-r from-accent-500/0 via-accent-500/8 to-accent-600/0 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
-        <div className="relative z-10">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="rounded-xl bg-accent-500/20 p-3 text-accent-400">
-              <GraduationCap className="h-5 w-5" />
-            </div>
-            <div>
-              <h2
-                id="education-heading"
-                className="flex items-center gap-2 text-xl font-bold text-neutral-100"
-              >
-                Educação
-                <Sparkles className="h-4 w-4 text-accent-400" />
-              </h2>
-              <p className="text-xs text-neutral-400">Formação Acadêmica</p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {items.map((edu, index) => (
-              <motion.div
-                key={`${edu.institution}-${edu.startDate}`}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-                className="glass-card group relative rounded-2xl p-5"
-              >
-                <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-accent-500/0 via-accent-500/5 to-accent-600/0 opacity-0 transition-opacity group-hover:opacity-100" />
-
-                <div className="relative z-10 flex gap-4">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-neutral-700/50 bg-white p-2">
-                    {edu.logoUrl ? (
-                      <Image
-                        src={edu.logoUrl}
-                        alt={`Logo ${edu.institution}`}
-                        width={56}
-                        height={56}
-                        className="h-full w-full object-contain"
-                      />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-accent-500/20 to-accent-600/20 text-accent-400">
-                        <GraduationCap className="h-6 w-6" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="mb-1 text-lg font-bold text-neutral-100">
-                      {edu.institution}
-                    </h3>
-                    <p className="mb-3 font-medium text-accent-400">
-                      {edu.degree}
-                    </p>
-                    <span className="flex items-center gap-1.5 text-sm text-neutral-400">
-                      <Calendar className="h-4 w-4" />
-                      {edu.startDate} – {edu.endDate}
-                    </span>
-                  </div>
+            <div className="relative z-10 flex gap-3 sm:gap-4">
+              <div className="icon-glow h-12 w-12 shrink-0 rounded-xl bg-accent-500/20 sm:h-14 sm:w-14">
+                <div className="flex h-full w-full items-center justify-center overflow-hidden rounded-xl border border-neutral-700/50 bg-white p-2">
+                  {edu.logoUrl ? (
+                    <Image
+                      src={edu.logoUrl}
+                      alt={`Logo ${edu.institution}`}
+                      width={56}
+                      height={56}
+                      className="h-full w-full object-contain"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center rounded-lg bg-gradient-to-br from-accent-500/20 to-accent-600/20 text-accent-400">
+                      <BookMarked className="h-6 w-6" />
+                    </div>
+                  )}
                 </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
-    </section>
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="mb-1 flex flex-wrap items-center gap-2">
+                  <h3 className="type-item-title min-w-0 text-neutral-100">
+                    {edu.institution}
+                  </h3>
+                  {edu.websiteUrl ? (
+                    <Link
+                      href={edu.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Site oficial de ${edu.institution}`}
+                      title="Abrir site oficial"
+                      className="edu-site-cta focus-visible:ring-2 focus-visible:ring-accent-500/40"
+                    >
+                      <span>Site</span>
+                      <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
+                    </Link>
+                  ) : null}
+                </div>
+                <p className="type-item-accent mb-3">{edu.degree}</p>
+                <span className="type-meta flex items-center gap-1.5">
+                  <Calendar className="h-4 w-4 shrink-0" />
+                  {edu.startDate} – {edu.endDate}
+                </span>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </CollapsibleSection>
   );
 }

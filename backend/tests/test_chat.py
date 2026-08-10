@@ -110,6 +110,12 @@ def _reset_rate_limit() -> None:
     chat._request_log.clear()
 
 
+@pytest.fixture(autouse=True)
+def _llm_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Garante LLM_API_KEY nos testes — o client OpenAI é sempre mockado."""
+    monkeypatch.setenv("LLM_API_KEY", "test-key-not-real")
+
+
 @pytest.fixture
 def stub_index(monkeypatch: pytest.MonkeyPatch) -> None:
     """Substitui o índice real por um fixo e determinístico, sem chamar OpenAI."""
@@ -195,6 +201,41 @@ def test_chat_retorna_429_apos_exceder_rate_limit(
 
     assert response.status_code == 429
     assert response.json() == {"detail": chat.RATE_LIMIT_MESSAGE}
+
+
+def test_chat_retorna_500_generico_quando_chave_ausente(
+    stub_index: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Sem LLM_API_KEY, o client só vê mensagem genérica (sem vazar config)."""
+    monkeypatch.delenv("LLM_API_KEY", raising=False)
+
+    response = client.post("/chat", json={"question": "Onde você trabalha?"})
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
+    assert "LLM_API_KEY" not in response.text
+    assert "OpenAI" not in response.text
+
+
+def test_chat_retorna_500_generico_quando_quota_esgotada(
+    stub_index: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    class _QuotaFailEmbeddings:
+        def create(self, model: str, input: str):  # noqa: A002, ANN001
+            raise OpenAIError("Error code: 429 - insufficient_quota")
+
+    class _QuotaClient:
+        def __init__(self) -> None:
+            self.embeddings = _QuotaFailEmbeddings()
+
+    monkeypatch.setattr(rag, "get_client", lambda: _QuotaClient())
+
+    response = client.post("/chat", json={"question": "Onde você trabalha?"})
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
+    assert "quota" not in response.text.lower()
+    assert "OpenAI" not in response.text
 
 
 def test_get_index_carrega_uma_vez_e_reaproveita_cache_em_memoria(

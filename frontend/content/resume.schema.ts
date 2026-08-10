@@ -38,11 +38,21 @@ export const educationSchema = z.object({
     .union([z.string().url(), publicAssetPathSchema])
     .nullable()
     .default(null),
+  // null quando não há site oficial cadastrado — EducationSection renderiza
+  // sem o link discreto nesse caso (mesmo padrão de credentialUrl)
+  websiteUrl: z.string().url().nullable().default(null),
+});
+
+// `level` é a proficiência autoavaliada (1 a 5) usada no medidor de
+// Habilidades Técnicas — barra segmentada (ResumeSidebar).
+export const skillItemSchema = z.object({
+  name: z.string().min(1),
+  level: z.number().int().min(1).max(5),
 });
 
 export const skillGroupSchema = z.object({
   category: z.string().min(1),
-  items: z.array(z.string().min(1)).min(1),
+  items: z.array(skillItemSchema).min(1),
 });
 
 export const certificationSchema = z.object({
@@ -55,6 +65,20 @@ export const certificationSchema = z.object({
     .union([z.string().url(), publicAssetPathSchema])
     .nullable()
     .default(null),
+  // null quando não há link de validação do certificado — Certifications
+  // renderiza sem o botão "Ver certificado" nesse caso (ADR-006)
+  credentialUrl: z.string().url().nullable().default(null),
+});
+
+// Reconhecimento interno de empresa (ex.: PRAD, Mérito) — diferente de
+// certificação/curso formal: sem emissor externo verificável, por isso sem
+// `logoUrl`/`credentialUrl` (Recognitions.tsx sempre usa um ícone decorativo,
+// nunca uma foto — decisão do addendum 2026-08-08 do ADR-006)
+export const recognitionSchema = z.object({
+  title: z.string().min(1),
+  issuer: z.string().min(1),
+  year: z.string().min(1),
+  description: z.string().nullable().default(null),
 });
 
 export const projectSchema = z.object({
@@ -62,6 +86,16 @@ export const projectSchema = z.object({
   description: z.string().min(1),
   technologies: z.array(z.string().min(1)).min(1),
   repositoryUrl: z.string().url(),
+});
+
+// Artigo autoral publicado fora do repositório (blog/Medium) — array irmão de
+// `projects`, sem `technologies`/`repositoryUrl` (ADR-006)
+export const articleSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  url: z.string().url(),
+  source: z.string().min(1),
+  publishedAt: z.string().nullable().default(null),
 });
 
 export const contactSchema = z.object({
@@ -79,16 +113,21 @@ export const resumeSchema = z.object({
   education: z.array(educationSchema).min(1),
   skills: z.array(skillGroupSchema).min(1),
   certifications: z.array(certificationSchema),
+  recognitions: z.array(recognitionSchema),
   projects: z.array(projectSchema),
+  articles: z.array(articleSchema),
   contact: contactSchema,
 });
 
 export type Hero = z.infer<typeof heroSchema>;
 export type Experience = z.infer<typeof experienceSchema>;
 export type Education = z.infer<typeof educationSchema>;
+export type SkillItem = z.infer<typeof skillItemSchema>;
 export type SkillGroup = z.infer<typeof skillGroupSchema>;
 export type Certification = z.infer<typeof certificationSchema>;
+export type Recognition = z.infer<typeof recognitionSchema>;
 export type Project = z.infer<typeof projectSchema>;
+export type Article = z.infer<typeof articleSchema>;
 export type Contact = z.infer<typeof contactSchema>;
 export type Resume = z.infer<typeof resumeSchema>;
 

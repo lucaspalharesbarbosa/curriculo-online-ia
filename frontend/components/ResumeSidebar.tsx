@@ -2,19 +2,37 @@
 
 import { motion } from "framer-motion";
 import {
+  AtSign,
+  Cpu,
   Download,
   Github,
   Linkedin,
   Mail,
   MapPin,
   MessageCircle,
-  Sparkles,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
-import type { Contact, Hero, SkillGroup } from "@/content/resume.schema";
-import { deriveProfileBadges } from "@/lib/utils";
+import type {
+  Contact,
+  Hero,
+  SkillGroup,
+  SkillItem,
+} from "@/content/resume.schema";
+import { RoleTypewriter } from "@/components/RoleTypewriter";
+import { getSkillIcon } from "@/lib/skill-icons";
+import {
+  buildGoogleMapsUrl,
+  formatSkillLevel,
+  parseHeroTitle,
+} from "@/lib/utils";
+
+const SKILL_LEVEL_SEGMENTS = [1, 2, 3, 4, 5] as const;
+
+const SQL_CATEGORY = "Banco de Dados (SQL)";
+const NOSQL_CATEGORY = "Banco de Dados (NoSQL)";
 
 type ResumeSidebarProps = {
   hero: Hero;
@@ -22,16 +40,152 @@ type ResumeSidebarProps = {
   skills: SkillGroup[];
 };
 
+type SkillChipProps = {
+  skill: SkillItem;
+  delay: number;
+  icon: ReactNode;
+  compact?: boolean;
+};
+
+function SkillChip({ skill, delay, icon, compact = false }: SkillChipProps) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -8 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay }}
+      className={`skill-tag type-chip flex cursor-default items-center gap-2 rounded-lg border border-neutral-700/50 bg-neutral-800/50 text-neutral-200 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 ${
+        compact ? "px-2 py-1.5" : "px-2.5 py-2"
+      }`}
+    >
+      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-accent-500/15 text-accent-300">
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1 leading-tight" title={skill.name}>
+        {skill.name}
+      </span>
+      <span
+        className="flex shrink-0 items-center gap-[3px]"
+        role="img"
+        aria-label={`Nível: ${formatSkillLevel(skill.level)}`}
+        title={formatSkillLevel(skill.level)}
+      >
+        {SKILL_LEVEL_SEGMENTS.map((segment) => (
+          <span
+            key={segment}
+            className={`h-[5px] w-2 rounded-full ${
+              segment <= skill.level
+                ? "bg-gradient-to-r from-accent-400 to-accent-500"
+                : "bg-neutral-700/60"
+            }`}
+          />
+        ))}
+      </span>
+    </motion.div>
+  );
+}
+
+type SkillBlock = {
+  key: string;
+  title: string;
+  body: ReactNode;
+};
+
+function buildSkillBlocks(skills: SkillGroup[]): SkillBlock[] {
+  const blocks: SkillBlock[] = [];
+
+  skills.forEach((category, catIndex) => {
+    if (category.category === NOSQL_CATEGORY) {
+      return;
+    }
+
+    if (category.category === SQL_CATEGORY) {
+      const nosqlCategory = skills.find((c) => c.category === NOSQL_CATEGORY);
+      blocks.push({
+        key: "banco-de-dados",
+        title: "Banco de Dados",
+        body: (
+          <div className="space-y-2">
+            <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2.5 pt-3">
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-400 to-transparent" />
+              <h4 className="type-label mb-2 text-neutral-400">
+                Relacional (SQL)
+              </h4>
+              <div className="space-y-1.5">
+                {category.items.map((skill, skillIndex) => {
+                  const SkillIcon = getSkillIcon(skill.name);
+                  return (
+                    <SkillChip
+                      key={skill.name}
+                      skill={skill}
+                      delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
+                      icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+            <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2.5 pt-3">
+              <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-600 to-transparent" />
+              <h4 className="type-label mb-2 text-neutral-400">
+                Não-relacional (NoSQL)
+              </h4>
+              <div className="space-y-1.5">
+                {(nosqlCategory?.items ?? []).map((skill, skillIndex) => {
+                  const SkillIcon = getSkillIcon(skill.name);
+                  return (
+                    <SkillChip
+                      key={skill.name}
+                      skill={skill}
+                      delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
+                      icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
+                    />
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        ),
+      });
+      return;
+    }
+
+    blocks.push({
+      key: category.category,
+      title: category.category,
+      body: (
+        <div className="space-y-1.5">
+          {category.items.map((skill, skillIndex) => {
+            const SkillIcon = getSkillIcon(skill.name);
+            return (
+              <SkillChip
+                key={skill.name}
+                skill={skill}
+                delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
+                icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
+              />
+            );
+          })}
+        </div>
+      ),
+    });
+  });
+
+  return blocks;
+}
+
 export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
-  const badges = deriveProfileBadges(hero.title);
+  const { primary: primaryRoles, secondary: secondaryInfo } = parseHeroTitle(
+    hero.title,
+  );
+  const skillBlocks = buildSkillBlocks(skills);
 
   return (
-    <aside className="w-full shrink-0 p-4 lg:w-[340px] lg:min-h-screen lg:p-6 xl:w-[380px]">
+    <aside className="w-full shrink-0 p-3 sm:p-4 lg:w-[340px] lg:min-h-screen lg:p-6 xl:w-[380px]">
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6 }}
-        className="glass space-y-6 rounded-3xl p-6 lg:sticky lg:top-6"
+        className="glass space-y-5 rounded-3xl p-5 sm:space-y-6 sm:p-6 lg:sticky lg:top-6"
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
@@ -41,7 +195,15 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
         >
           <div className="relative mb-4 inline-block">
             <div className="absolute inset-0 animate-pulse rounded-full bg-gradient-to-r from-accent-400 via-accent-500 to-accent-400 opacity-40 blur-xl" />
-            <div className="relative h-28 w-28 rounded-full bg-gradient-to-r from-accent-400 via-accent-500 to-accent-600 p-[3px] lg:h-36 lg:w-36">
+            <div
+              className="spin-slow absolute -inset-1.5 rounded-full opacity-70"
+              style={{
+                background:
+                  "conic-gradient(from 0deg, transparent 0deg, var(--accent-500) 90deg, transparent 180deg, var(--accent-400) 270deg, transparent 360deg)",
+              }}
+              aria-hidden
+            />
+            <div className="pulse-glow relative h-28 w-28 rounded-full bg-gradient-to-r from-accent-400 via-accent-500 to-accent-600 p-[3px] transition-transform duration-300 hover:scale-105 lg:h-36 lg:w-36">
               {hero.photoUrl ? (
                 <Image
                   src={hero.photoUrl}
@@ -66,28 +228,23 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             </div>
           </div>
 
-          <h1 className="gradient-text mb-1 text-xl font-bold lg:text-2xl">
+          <h1 className="type-section-title gradient-text glow-text mb-2">
             {hero.name}
           </h1>
-          <p className="mb-3 text-sm font-medium text-accent-400">
-            {hero.title}
-          </p>
 
-          {badges.length > 0 ? (
-            <div className="flex flex-wrap justify-center gap-2">
-              {badges.map((badge, index) => (
-                <span
-                  key={badge}
-                  className={
-                    index === 0
-                      ? "rounded-full border border-accent-500/30 bg-accent-500/20 px-3 py-1 text-xs text-accent-300"
-                      : "rounded-full border border-neutral-600/50 bg-neutral-700/50 px-3 py-1 text-xs text-neutral-300"
-                  }
-                >
-                  {badge}
-                </span>
-              ))}
+          {primaryRoles.length > 0 ? (
+            <div className="mb-2 flex flex-col items-center">
+              <RoleTypewriter
+                lines={primaryRoles}
+                className="type-item-accent gradient-text font-semibold"
+              />
             </div>
+          ) : null}
+
+          {secondaryInfo.length > 0 ? (
+            <p className="type-label mb-3 text-neutral-500">
+              {secondaryInfo.join(" · ")}
+            </p>
           ) : null}
         </motion.div>
 
@@ -97,8 +254,8 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           transition={{ duration: 0.5, delay: 0.3 }}
           className="space-y-3"
         >
-          <h2 className="flex items-center gap-2 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
-            <Sparkles className="h-3 w-3 text-accent-400" />
+          <h2 className="type-sidebar-heading flex items-center gap-2">
+            <AtSign className="h-3.5 w-3.5 text-accent-400" aria-hidden />
             Contato
           </h2>
 
@@ -110,7 +267,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
               <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
                 <Mail className="h-4 w-4" />
               </div>
-              <span className="truncate text-xs text-neutral-300 transition-colors group-hover:text-white">
+              <span className="type-sidebar-link truncate transition-colors group-hover:text-white">
                 {contact.email}
               </span>
             </Link>
@@ -126,18 +283,25 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
               <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
                 <MessageCircle className="h-4 w-4" />
               </div>
-              <span className="text-xs text-neutral-300 transition-colors group-hover:text-white">
+              <span className="type-sidebar-link transition-colors group-hover:text-white">
                 WhatsApp
               </span>
             </Link>
           ) : null}
 
-          <div className="glass-card flex items-center gap-3 rounded-xl p-3">
-            <div className="rounded-lg bg-neutral-700/50 p-2 text-neutral-300">
+          <Link
+            href={buildGoogleMapsUrl(hero.location)}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="glass-card group flex items-center gap-3 rounded-xl p-3"
+          >
+            <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
               <MapPin className="h-4 w-4" />
             </div>
-            <span className="text-xs text-neutral-300">{hero.location}</span>
-          </div>
+            <span className="type-sidebar-link transition-colors group-hover:text-white">
+              {hero.location}
+            </span>
+          </Link>
         </motion.div>
 
         <motion.div
@@ -172,34 +336,27 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="space-y-4"
+          className="space-y-3"
         >
-          <h2 className="flex items-center gap-2 text-xs font-semibold tracking-wider text-neutral-400 uppercase">
-            <Sparkles className="h-3 w-3 text-accent-400" />
+          <h2 className="type-sidebar-heading flex items-center gap-2">
+            <Cpu className="h-3.5 w-3.5 text-accent-400" aria-hidden />
             Habilidades Técnicas
           </h2>
 
-          <div className="grid grid-cols-1 gap-x-4 gap-y-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-1">
-            {skills.map((category, catIndex) => (
-              <div key={category.category} className="space-y-2">
-                <h3 className="text-xs font-medium text-accent-400">
-                  {category.category}
+          {/* Mobile/tablet: trilho horizontal; desktop: pilha vertical — mesmo DOM */}
+          <div
+            className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 lg:mx-0 lg:snap-none lg:flex-col lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0"
+            data-testid="skills-layout"
+          >
+            {skillBlocks.map((block) => (
+              <div
+                key={block.key}
+                className="w-[min(78vw,280px)] shrink-0 snap-center rounded-2xl border border-neutral-700/40 bg-neutral-900/40 p-3 lg:w-full lg:shrink lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0"
+              >
+                <h3 className="type-caption mb-2.5 font-semibold text-accent-400 lg:mb-1.5">
+                  {block.title}
                 </h3>
-                <div className="flex flex-wrap gap-1.5">
-                  {category.items.map((skill, skillIndex) => (
-                    <motion.span
-                      key={skill}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        delay: 0.5 + catIndex * 0.1 + skillIndex * 0.02,
-                      }}
-                      className="skill-tag cursor-default rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2.5 py-1 text-xs text-neutral-300 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300"
-                    >
-                      {skill}
-                    </motion.span>
-                  ))}
-                </div>
+                {block.body}
               </div>
             ))}
           </div>
@@ -214,10 +371,23 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             <Link
               href={contact.resumePdfUrl}
               download
-              className="neon-glow flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-accent-400 via-accent-500 to-accent-400 bg-[length:200%_100%] py-3.5 text-sm font-medium text-neutral-900 transition-all duration-500 hover:bg-[position:100%_0] hover:shadow-lg hover:shadow-accent-500/25"
+              className="group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 p-1.5 shadow-[0_12px_32px_rgba(56,189,248,0.28)] transition-[transform,box-shadow] duration-300 hover:scale-[1.015] hover:shadow-[0_16px_40px_rgba(56,189,248,0.4)] focus-visible:outline-offset-4"
             >
-              <Download className="h-4 w-4" />
-              Download CV
+              <span
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_35%,rgba(255,255,255,0.28)_50%,transparent_65%)] bg-[length:220%_100%] bg-[-80%_0] transition-[background-position] duration-700 group-hover:bg-[120%_0]"
+                aria-hidden
+              />
+              <span className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-neutral-950/18 text-neutral-950 ring-1 ring-neutral-950/10">
+                <Download className="h-5 w-5" strokeWidth={2.25} />
+              </span>
+              <span className="relative flex min-w-0 flex-1 flex-col items-start py-1.5 pr-2">
+                <span className="text-sm font-semibold tracking-tight text-neutral-950 sm:text-[15px]">
+                  Baixar CV
+                </span>
+                <span className="text-[11px] font-medium text-neutral-950/75">
+                  PDF · currículo completo
+                </span>
+              </span>
             </Link>
           </motion.div>
         ) : null}

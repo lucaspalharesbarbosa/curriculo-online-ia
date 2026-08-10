@@ -1,7 +1,7 @@
+import { MotionConfig } from "framer-motion";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 
-import { ChatWidget } from "@/components/ChatWidget";
 import { resume } from "@/content/resume";
 
 import "./globals.css";
@@ -40,8 +40,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${inter.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full font-sans">
-        {children}
-        <ChatWidget />
+        {/* reducedMotion="user" — US-07-06: whileHover/whileInView do
+        framer-motion (não cobertos pela media query CSS) também respeitam
+        prefers-reduced-motion do SO, em todo o app */}
+        <MotionConfig reducedMotion="user">{children}</MotionConfig>
       </body>
     </html>
   );

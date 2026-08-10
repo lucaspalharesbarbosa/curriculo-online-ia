@@ -4,6 +4,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.chat import router as chat_router
+from app.env_bootstrap import ensure_local_env
+
+ensure_local_env()
 
 # Origem do frontend: localhost em dev, URL da Vercel configurada no painel do
 # Render em produção (ADR-003 seção 5, US-05-09).
