@@ -92,7 +92,7 @@ export function Certifications({ items }: CertificationsProps) {
                       ) : null}
                     </div>
 
-                    <div className="flex shrink-0 items-center gap-2">
+                    <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-center">
                       <time dateTime={cert.issuedAt} className="cert-year-pill">
                         {formatYear(cert.issuedAt)}
                       </time>
@@ -103,8 +103,9 @@ export function Certifications({ items }: CertificationsProps) {
                           target="_blank"
                           rel="noopener noreferrer"
                           aria-label={`Ver certificado ${cert.name}`}
-                          className="cert-credential-icon"
+                          className="cert-credential-link"
                         >
+                          <span>Ver certificado</span>
                           <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
                         </Link>
                       ) : null}

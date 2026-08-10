@@ -942,26 +942,41 @@ body {
   color: var(--accent-300);
 }
 
-.cert-credential-icon {
+.cert-credential-link {
   display: inline-flex;
-  height: 1.75rem;
-  width: 1.75rem;
   align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 1px solid rgba(var(--accent-rgb), 0.35);
-  background: rgba(var(--accent-rgb), 0.12);
-  color: var(--accent-200);
+  gap: 0.3rem;
+  border-radius: 0.7rem;
+  border: 1px solid rgba(var(--accent-rgb), 0.45);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-rgb), 0.28) 0%,
+    rgba(var(--accent-rgb), 0.12) 100%
+  );
+  padding: 0.4rem 0.7rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--accent-300);
+  white-space: nowrap;
   transition:
     border-color 0.2s ease,
     background 0.2s ease,
-    transform 0.2s ease;
+    color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
-.cert-credential-icon:hover,
-.cert-credential-icon:focus-visible {
-  border-color: rgba(var(--accent-rgb), 0.65);
-  background: rgba(var(--accent-rgb), 0.22);
+.cert-credential-link:hover,
+.cert-credential-link:focus-visible {
+  border-color: rgba(var(--accent-rgb), 0.75);
+  background: linear-gradient(
+    135deg,
+    rgba(var(--accent-rgb), 0.4) 0%,
+    rgba(var(--accent-rgb), 0.18) 100%
+  );
+  color: #e0f2fe;
+  box-shadow: 0 8px 20px -8px rgba(var(--accent-rgb), 0.45);
   transform: translateY(-1px);
 }
 

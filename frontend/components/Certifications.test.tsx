@@ -90,6 +90,7 @@ describe("Certifications", () => {
       name: /ver certificado formação react/i,
     });
     expect(link).toBeInTheDocument();
+    expect(link).toHaveTextContent(/ver certificado/i);
     expect(link).toHaveAttribute(
       "href",
       "https://cursos.alura.com.br/certificate/abc123",
