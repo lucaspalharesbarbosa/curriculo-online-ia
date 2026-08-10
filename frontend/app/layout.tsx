@@ -13,7 +13,7 @@ const inter = Inter({
 
 // mesma URL documentada em frontend/README.md (seção Deploy)
 const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ?? "https://curriculo-online-ia.vercel.app";
+  process.env.NEXT_PUBLIC_SITE_URL ?? "https://lucas-palhares-cv.vercel.app";
 const shortRole = resume.hero.title.split("|")[0].trim();
 const title = `${resume.hero.name} — ${shortRole}`;
 const description = resume.hero.summary;
