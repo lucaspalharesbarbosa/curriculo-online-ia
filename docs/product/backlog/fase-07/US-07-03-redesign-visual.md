@@ -65,7 +65,7 @@ Decisões fechadas pelo `@product-owner` em 2026-08-07 (regra do projeto: nunca 
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
 
-- [x] CA-001: paleta amber/dark do template em `globals.css`; identidade PortfolioHub (ciano/Clash) removida do fluxo ativo
+- [x] CA-001: paleta do template em `globals.css` (inicialmente amber/dark; superseded por D1 Deep Ice — ver "Ajustes pós-entrega"); identidade PortfolioHub (ciano/Clash) removida do fluxo ativo
 - [x] CA-002: glass, orbs, glow, skill-tag/project-card; `prefers-reduced-motion` em `globals.css`
 - [x] CA-003: layout sidebar sticky + main; empilha em mobile
 - [x] CA-004: contato na sidebar (e-mail, WhatsApp, LinkedIn, GitHub, PDF)
@@ -75,7 +75,7 @@ Decisões fechadas pelo `@product-owner` em 2026-08-07 (regra do projeto: nunca 
 - [x] CA-008: Education com `education[]`
 - [x] CA-009: Certificações no layout Awards
 - [x] CA-010: Projects no padrão featured cards
-- [x] CA-011: ChatWidget funcional na paleta amber
+- [x] CA-011: ChatWidget funcional na paleta do site (amber na entrega inicial; D1 Deep Ice após ajuste)
 - [x] CA-012: tipografia `Inter` via `next/font/google`; Clash fora do layout
 - [x] CA-013: sem dados do autor do template (teste em `page.test.tsx`)
 - [x] CA-014: Lighthouse mobile (build prod, porta 3456): A11y **100**, Best Practices **100**, Performance **81** (baseline anterior Perf 64 — sem regressão)

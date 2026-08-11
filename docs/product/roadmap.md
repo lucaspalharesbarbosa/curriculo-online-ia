@@ -84,14 +84,25 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 7 — Frontend & UX v2
 
-**Status:** Em andamento (4/4 histórias decompostas; DoR fechado; US-07-03 replanejada 2026-08-07)
-**Backlog:** [`docs/product/backlog/fase-07/`](backlog/fase-07/) (US-07-01 a US-07-04)
+**Status:** Em andamento (15 histórias: 3 Done · 10 Quase lá · 1 In Progress · 1 Ready for Agent)
+**Backlog:** [`docs/product/backlog/fase-07/`](backlog/fase-07/) (US-07-01 a US-07-15)
 **PRD:** [`PRD-005-frontend-ux-v2.md`](PRD-005-frontend-ux-v2.md)
 
-- [ ] Seção de Contato: adicionar WhatsApp — [US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md)
-- [ ] Auditoria e correção de responsividade (mobile/tablet/desktop) — [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md)
-- [ ] Redesign visual (clonagem estrutural do template personal-resume) — [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md), P2, `Quase lá` (referência: [giasinguyen/personal-resume](https://github.com/giasinguyen/personal-resume) · [demo](https://cv.nguyentrangiasi.id.vn/); falta preview de deploy)
-- [ ] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) — [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md), P3
+- [ ] Seção de Contato: adicionar WhatsApp — [US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md) (`Quase lá`)
+- [ ] Auditoria e correção de responsividade (mobile/tablet/desktop) — [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md) (`Quase lá`)
+- [ ] Redesign visual (clonagem estrutural do template personal-resume) — [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md), P2 (`Quase lá`; referência: [giasinguyen/personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice)
+- [ ] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) — [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md), P3 (`Ready for Agent`)
+- [ ] Conteúdo novo: reconhecimentos, formação, artigos — [US-07-05](backlog/fase-07/US-07-05-conteudo-reconhecimentos-formacao-artigos.md) (`Quase lá`; `ADR-006`)
+- [ ] Layout mais dinâmico e chamativo — [US-07-06](backlog/fase-07/US-07-06-layout-dinamico-chamativo.md) (`Quase lá`)
+- [ ] Redesign do bloco abaixo do nome (sidebar) — [US-07-07](backlog/fase-07/US-07-07-redesign-info-abaixo-nome.md) (`Quase lá`)
+- [x] Recalibrar níveis de skills — [US-07-08](backlog/fase-07/US-07-08-ajuste-niveis-skills.md) (`Done`)
+- [ ] Timeline de Experiência mais clara/marcante — [US-07-09](backlog/fase-07/US-07-09-timeline-experiencia-mais-clara-marcante.md) (`Quase lá`)
+- [ ] Exibição Bancos de Dados SQL/NoSQL — [US-07-10](backlog/fase-07/US-07-10-exibicao-bancos-de-dados-sql-nosql.md) (`Quase lá`; `ADR-007`)
+- [x] Polimento de layout e UX — [US-07-11](backlog/fase-07/US-07-11-polimento-layout-ux.md) (`Done`)
+- [ ] Refino Experiência/Educação/Certificações — [US-07-12](backlog/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) (`In Progress`)
+- [ ] Polimento UX: hero, seções e Assistente RAG — [US-07-13](backlog/fase-07/US-07-13-polimento-ux-chat-hero-secoes.md) (`Quase lá`)
+- [x] Ajuste fino hero/probes/certs — [US-07-14](backlog/fase-07/US-07-14-ajuste-hero-probes-certs-destaques.md) (`Done`)
+- [ ] Redesign radical UX mobile-first — [US-07-15](backlog/fase-07/US-07-15-redesign-mobile-first.md), P0 (`Quase lá`)
 
 ## Fase 8 — Segurança & Performance
 
@@ -135,12 +146,11 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 12 — Área Administrativa
 
-**Status:** Bloqueada até resolver pré-requisito de captura de contato (Fase 7) + ADRs de auth/persistência
+**Status:** Bloqueada até ADRs de auth/persistência de métricas (pré-requisito de captura de contato resolvido em 2026-08-06: sem formulário — só métricas)
 **PRD:** [`PRD-010-area-administrativa.md`](PRD-010-area-administrativa.md)
 
-- [ ] ADR: estratégia de autenticação single-user
-- [ ] ADR: onde persistir dados (contatos/métricas)
-- [ ] Formulário de contato com persistência (depende da Fase 7)
+- [ ] Formulário de contato com persistência — **fora de escopo** (decisão 2026-08-06: Contato permanece link direto; ver `PRD-005` / `PRD-010`)
 - [ ] Login da área administrativa
-- [ ] Dashboard: lista de contatos recebidos
 - [ ] Dashboard: métricas de acesso e de uso do chat
+- [ ] ADR: estratégia de autenticação single-user
+- [ ] ADR: onde persistir métricas

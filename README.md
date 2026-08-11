@@ -44,6 +44,7 @@ Contexto obrigatório dos agentes: [`docs/agents/CONTEXTO-PROJETO.md`](docs/agen
   - [ADR-001 — Stack inicial (monorepo Next.js + FastAPI)](docs/architecture/ADR-001-stack-inicial-monorepo.md)
   - [ADR-002 — Hospedagem gratuita (Vercel + Render)](docs/architecture/ADR-002-hospedagem-gratuita.md)
   - [ADR-003 — Fluxo de RAG](docs/architecture/ADR-003-fluxo-rag.md)
+  - Índice completo (incl. ADR-004 a ADR-007): [`docs/architecture/`](docs/architecture/)
 - Backlog por fase: [`docs/product/backlog/`](docs/product/backlog/)
 
 Cada história de backlog carrega tabela **Vereditos** (QA, Tech Lead, PO) — o aceite não fica só no chat.

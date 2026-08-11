@@ -17,7 +17,7 @@ Escopo documental de lançamento. Validado o `README.md` (seção de agentes + l
 | Suite / comando | Resultado | Notas |
 |---|---|---|
 | Links do README (`ADR-001`…`003`, `CONTEXTO`, PRDs, roadmap, skill orquestrador) | OK | `Test-Path` → True |
-| `Invoke-WebRequest` HEAD `https://curriculo-online-ia.vercel.app` | OK | HTTP 200 |
+| `Invoke-WebRequest` HEAD `https://curriculo-online-ia.vercel.app` | OK | HTTP 200 (URL vigente na data do relatório; em 2026-08-10 a produção passou a `https://lucas-palhares-cv.vercel.app`) |
 | Busca de secret no README (`sk-`, valor de API key) | OK | sem match de valor real |
 | `npm test` / `pytest` | N/A | sem alteração em frontend/backend |
 

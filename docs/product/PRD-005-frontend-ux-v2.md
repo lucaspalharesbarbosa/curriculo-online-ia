@@ -1,6 +1,6 @@
 # PRD-005 — Frontend & UX v2
 
-**Status:** ready-for-agent (histórias P1–P3 decompostas; US-07-03 replanejada em 2026-08-07 para o template `personal-resume`)
+**Status:** em execução (15 histórias em `backlog/fase-07/`; US-07-03 replanejada em 2026-08-07 para o template `personal-resume`)
 **Épico:** Frontend & UX v2
 **Prioridade:** P1
 
@@ -10,18 +10,19 @@ O site está publicado e funcional (Fase 3-4), mas ainda não passou por um cicl
 
 ## Objetivo
 
-Site mais fácil de contatar (e-mail + WhatsApp), responsivo de verdade em mobile/tablet/desktop, com visual clonado do template de referência **personal-resume**, aproveitando melhor os recursos do Next.js já adotado como stack.
+Site mais fácil de contatar (e-mail + WhatsApp), responsivo de verdade em mobile/tablet/desktop, com visual baseado no template de referência **personal-resume** (paleta definitiva **D1 Deep Ice**), aproveitando melhor os recursos do Next.js já adotado como stack.
 
 ## Escopo
 
 ### Incluído
 - Seção de Contato: adicionar canal direto de WhatsApp (`wa.me`), mantendo e-mail/LinkedIn/GitHub/PDF já existentes
 - Auditoria e correção de responsividade em mobile, tablet e desktop (breakpoints reais, não só visual em uma resolução)
-- Redesign visual: **clonagem estrutural** do template [personal-resume](https://github.com/giasinguyen/personal-resume) ([demo](https://cv.nguyentrangiasi.id.vn/)) — sidebar sticky, cards glass, paleta amber/dark, seções About/Experience/Education/Certifications/Projects — com dados reais de `resume.json` (sem inventar conteúdo)
+- Redesign visual: **clonagem estrutural** do template [personal-resume](https://github.com/giasinguyen/personal-resume) ([demo](https://cv.nguyentrangiasi.id.vn/)) — sidebar sticky, cards glass, seções About/Experience/Education/Certifications/Projects — com dados reais de `resume.json` (sem inventar conteúdo); paleta supersede amber do template → **D1 Deep Ice** (`#04080e` / accent `#38bdf8`)
 - Revisão de uso de recursos do Next.js já adotado (`next/image`, fontes otimizadas, Server Components onde fizer sentido) — ver nota abaixo
+- Extensões de conteúdo e polimentos UX posteriores (US-07-05 a US-07-15): artigos, reconhecimentos, motion, skills, timeline, mobile-first
 
 ### Excluído
-- Formulário de contato com persistência de dados (isso é pré-requisito da Fase 12 — Área Administrativa; decisão de ter ou não formulário fica registrada aqui, mas a implementação de persistência é escopo do PRD-010)
+- Formulário de contato com persistência de dados (isso era pré-requisito da Fase 12 — Área Administrativa; decisão 2026-08-06: mantém link direto; Fase 12 fica só com métricas)
 - Troca de framework — o projeto já usa Next.js (`docs/agents/CONTEXTO-PROJETO.md`); esta fase é sobre aproveitar melhor a stack já decidida, não reabri-la
 - Seções do template sem dado real (Languages, Soft Skills)
 - Manter identidade visual PortfolioHub (ciano, Clash Grotesk, ticker, stats, tools grid)
@@ -42,6 +43,12 @@ O frontend já é Next.js (App Router) desde o `ADR-001`. Não é uma decisão e
 | Auditoria e correção de responsividade (mobile/tablet/desktop) | P1 | [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md) |
 | Redesign visual do site (clonagem do template personal-resume) | P2 | [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md) |
 | Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) | P3 | [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md) |
+| Conteúdo novo: reconhecimentos, formação técnica, cursos livres e artigos | P1 | [US-07-05](backlog/fase-07/US-07-05-conteudo-reconhecimentos-formacao-artigos.md) |
+| Layout mais dinâmico e chamativo | P2 | [US-07-06](backlog/fase-07/US-07-06-layout-dinamico-chamativo.md) |
+| Redesign do bloco de informações abaixo do nome (sidebar) | P2 | [US-07-07](backlog/fase-07/US-07-07-redesign-info-abaixo-nome.md) |
+| Remover duplicidade em AI Engineering e recalibrar níveis de skills | P2 | [US-07-08](backlog/fase-07/US-07-08-ajuste-niveis-skills.md) |
+| Timeline de Experiência mais clara e marcante | P2 | [US-07-09](backlog/fase-07/US-07-09-timeline-experiencia-mais-clara-marcante.md) |
+| Melhorar a exibição de Bancos de Dados (SQL/NoSQL) | P2 | [US-07-10](backlog/fase-07/US-07-10-exibicao-bancos-de-dados-sql-nosql.md) |
 | Polimento de layout e UX (collapse, perfil, mobile, reconhecimentos) | P1 | [US-07-11](backlog/fase-07/US-07-11-polimento-layout-ux.md) |
 | Refino visual: destaques PRAD/Mérito, Educação e Certificações | P1 | [US-07-12](backlog/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) |
 | Polimento UX: hero typewriter, seções e Assistente RAG | P1 | [US-07-13](backlog/fase-07/US-07-13-polimento-ux-chat-hero-secoes.md) |
@@ -57,7 +64,7 @@ O frontend já é Next.js (App Router) desde o `ADR-001`. Não é uma decisão e
 - ~~Referência visual~~ — fechada em 2026-08-07: template **personal-resume** (substitui Omnira e PortfolioHub)
 
 ## DoR do épico
-- [x] Toda história do épico tem seu próprio DoR fechado — P1 (US-07-01, US-07-02), P2 (US-07-03 replanejada 2026-08-07) e P3 (US-07-04) fechados
-- [x] Tasks decompostas (`references/task-breakdown-guide.md`) — todas as 4 histórias já criadas
+- [x] Toda história do épico tem seu próprio DoR fechado — US-07-01 a US-07-15
+- [x] Tasks decompostas (`references/task-breakdown-guide.md`) — 15 histórias em `backlog/fase-07/`
 - [x] Decisão "link direto (mailto/wa.me) vs. formulário com persistência" tomada antes de abrir a história de Contato — impacta o PRD-010 — resolvida em 2026-08-06: link direto
 - [x] Referência visual do redesign — template personal-resume (MIT) + ADR-005 para deps
