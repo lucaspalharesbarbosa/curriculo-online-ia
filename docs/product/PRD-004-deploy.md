@@ -1,6 +1,6 @@
 # PRD-004 — Deploy
 
-**Status:** ready-for-agent
+**Status:** Done (CI real, deploy Vercel e Render — Fases 02, 03 e 05)
 **Épico:** Deploy
 **Prioridade:** P1 (CI real) / P2 (deploy inicial) / P3 (deploy do backend com RAG)
 
