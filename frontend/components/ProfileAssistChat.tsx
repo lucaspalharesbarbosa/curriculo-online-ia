@@ -7,6 +7,8 @@ import { createPortal } from "react-dom";
 
 import { RagChatPanel } from "@/components/RagChatPanel";
 import { useResumeChat } from "@/hooks/useResumeChat";
+import { useVisualViewportOffset } from "@/hooks/useVisualViewportOffset";
+import { OPEN_ASSIST_CHAT_EVENT } from "@/lib/mobile-nav";
 
 type ProfileAssistChatProps = {
   /** Aceito pelo Perfil; o copy do assistente é fixo (Assistente RAG). */
@@ -21,9 +23,10 @@ const PROBES = [
 
 const emptySubscribe = () => () => {};
 
-/** Assistente no Perfil: console de sinal; ao rolar vira sticky/dock. */
+/** Assistente no Perfil: console de sinal; ao rolar vira sticky/dock / bottom sheet. */
 export function ProfileAssistChat({}: ProfileAssistChatProps) {
   const [transformed, setTransformed] = useState(false);
+  const [forceOpen, setForceOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const portalReady = useSyncExternalStore(
     emptySubscribe,
@@ -32,8 +35,11 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
   );
   const anchorRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
+  const viewportOffset = useVisualViewportOffset();
   const { messages, question, setQuestion, isSubmitting, sendQuestion } =
     useResumeChat();
+
+  const docked = transformed || forceOpen;
 
   useEffect(() => {
     const anchor = anchorRef.current;
@@ -45,6 +51,7 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
         setTransformed(next);
         if (!next) {
           setMinimized(false);
+          setForceOpen(false);
         }
       },
       {
@@ -56,6 +63,15 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
 
     observer.observe(anchor);
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const onOpen = () => {
+      setForceOpen(true);
+      setMinimized(false);
+    };
+    window.addEventListener(OPEN_ASSIST_CHAT_EVENT, onOpen);
+    return () => window.removeEventListener(OPEN_ASSIST_CHAT_EVENT, onOpen);
   }, []);
 
   const chatProps = {
@@ -86,7 +102,7 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
       };
 
   const floatingUi =
-    portalReady && transformed ? (
+    portalReady && docked ? (
       <>
         <AnimatePresence>
           {!minimized ? (
@@ -102,32 +118,52 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
                   listClassName="max-h-[50vh] min-h-[12rem]"
                 />
               </motion.div>
+
               <motion.div
-                key="assist-mobile"
-                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 28 }}
+                key="assist-mobile-sheet"
+                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 16 }}
-                className="pointer-events-auto fixed right-3 bottom-3 left-3 z-[200] xl:hidden"
+                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 28 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                style={{ bottom: `calc(${viewportOffset}px + 4.75rem)` }}
+                className="pointer-events-auto fixed inset-x-0 z-[200] px-3 xl:hidden"
               >
-                <RagChatPanel
-                  {...chatProps}
-                  onMinimize={() => setMinimized(true)}
-                />
+                <div className="mx-auto max-w-lg overflow-hidden rounded-t-[1.5rem] rounded-b-2xl border border-[#16324a] shadow-[0_-16px_48px_rgba(0,0,0,0.5)]">
+                  <RagChatPanel
+                    {...chatProps}
+                    sheet
+                    onMinimize={() => setMinimized(true)}
+                    listClassName="max-h-[min(42dvh,20rem)] min-h-[9rem]"
+                    className="max-h-[min(72dvh,560px)]"
+                  />
+                </div>
               </motion.div>
             </>
           ) : null}
         </AnimatePresence>
 
         {minimized ? (
-          <button
-            type="button"
-            onClick={() => setMinimized(false)}
-            className="fixed right-4 bottom-4 z-[200] inline-flex items-center gap-2 rounded-2xl border border-[#16324a] bg-[#03070d] px-4 py-3 text-xs font-semibold text-accent-200 shadow-[0_12px_40px_rgba(0,0,0,0.55)]"
-          >
-            <span className="assist-signal-dot" aria-hidden />
-            <MessageSquare className="h-4 w-4" />
-            Abrir Assistente RAG
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={() => setMinimized(false)}
+              style={{ bottom: `calc(${viewportOffset}px + 4.75rem)` }}
+              className="tap-target fixed right-4 z-[200] inline-flex min-h-12 items-center gap-2 rounded-2xl border border-[#16324a] bg-[#03070d] px-4 py-3 text-sm font-semibold text-accent-200 shadow-[0_12px_40px_rgba(0,0,0,0.55)] xl:hidden"
+            >
+              <span className="assist-signal-dot" aria-hidden />
+              <MessageSquare className="h-4 w-4" />
+              Abrir Assistente
+            </button>
+            <button
+              type="button"
+              onClick={() => setMinimized(false)}
+              className="tap-target fixed right-4 bottom-4 z-[200] hidden min-h-12 items-center gap-2 rounded-2xl border border-[#16324a] bg-[#03070d] px-4 py-3 text-sm font-semibold text-accent-200 shadow-[0_12px_40px_rgba(0,0,0,0.55)] xl:inline-flex"
+            >
+              <span className="assist-signal-dot" aria-hidden />
+              <MessageSquare className="h-4 w-4" />
+              Abrir Assistente RAG
+            </button>
+          </>
         ) : null}
       </>
     ) : null;
@@ -135,18 +171,18 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
   return (
     <>
       <div ref={anchorRef}>
-        {!transformed ? (
+        {!docked ? (
           <RagChatPanel
             {...chatProps}
             embedded
             listClassName="max-h-52 min-h-[9rem]"
           />
         ) : (
-          <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-[#16324a] bg-[#03070d] px-4 py-4 text-center font-mono text-[11px] text-neutral-400">
+          <div className="flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-dashed border-[#16324a] bg-[#03070d] px-4 py-4 text-center font-mono text-xs text-neutral-400">
             <Radio className="h-3.5 w-3.5 text-accent-400" aria-hidden />
             Assistente RAG ativo{" "}
             <span className="hidden xl:inline">no painel à direita</span>
-            <span className="xl:hidden">no painel flutuante</span>
+            <span className="xl:hidden">no sheet inferior</span>
             {minimized ? " · minimizado" : null}
           </div>
         )}

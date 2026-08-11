@@ -1,9 +1,9 @@
 "use client";
 
-import { ArrowUpRight, Award, KeyRound } from "lucide-react";
+import { ArrowUpRight, Award, ExternalLink, KeyRound } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 import { CollapsibleSection } from "@/components/CollapsibleSection";
 import type { Certification } from "@/content/resume.schema";
@@ -14,6 +14,8 @@ type CertificationsProps = {
 };
 
 export function Certifications({ items }: CertificationsProps) {
+  const reduceMotion = useReducedMotion();
+
   if (items.length === 0) {
     return null;
   }
@@ -23,51 +25,43 @@ export function Certifications({ items }: CertificationsProps) {
   return (
     <CollapsibleSection
       headingId="certifications-heading"
+      sectionId="certificacoes"
       title="Certificações"
       subtitle="Cursos e Credenciais Técnicas"
       icon={<KeyRound className="h-5 w-5" aria-hidden />}
-      orbClassName="right-0 bottom-0 h-64 w-64 translate-x-1/2 translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl"
+      orbClassName="right-0 bottom-0 h-64 w-64 translate-x-1/2 translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl max-md:hidden"
     >
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
         {groups.map((group, groupIndex) => (
           <motion.article
             key={group.issuer}
-            initial={{ opacity: 0, y: 22 }}
+            initial={reduceMotion ? false : { opacity: 0, y: 12 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, margin: "0px 0px -40px 0px" }}
             transition={{
-              type: "spring",
-              stiffness: 140,
-              damping: 20,
-              delay: groupIndex * 0.06,
+              duration: 0.35,
+              delay: Math.min(groupIndex * 0.05, 0.15),
+              ease: [0.16, 1, 0.3, 1],
             }}
-            className="cert-issuer-card glass-card group relative overflow-hidden rounded-2xl p-4 sm:p-5"
+            className="cert-issuer-card relative overflow-hidden rounded-2xl border border-neutral-700/45 bg-[#0a1520]/90 p-4 sm:p-5"
           >
-            <div
-              className="pointer-events-none absolute -top-16 -right-10 h-40 w-40 rounded-full bg-accent-500/10 blur-3xl transition-opacity duration-500 group-hover:opacity-100"
-              aria-hidden
-            />
-
-            <header className="relative mb-4 flex items-center gap-3.5">
-              <div className="cert-seal shrink-0">
-                <div className="cert-seal__ring" aria-hidden />
-                <div className="cert-seal__face">
-                  {group.logoUrl ? (
-                    <Image
-                      src={group.logoUrl}
-                      alt={`Logo ${group.issuer}`}
-                      width={44}
-                      height={44}
-                      className="h-full w-full object-contain"
-                    />
-                  ) : (
-                    <Award className="h-5 w-5 text-accent-400" aria-hidden />
-                  )}
-                </div>
+            <header className="relative mb-3.5 flex items-center gap-3">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-accent-500/25 bg-white p-2">
+                {group.logoUrl ? (
+                  <Image
+                    src={group.logoUrl}
+                    alt={`Logo ${group.issuer}`}
+                    width={40}
+                    height={40}
+                    className="h-full w-full object-contain"
+                  />
+                ) : (
+                  <Award className="h-5 w-5 text-accent-400" aria-hidden />
+                )}
               </div>
 
               <div className="min-w-0 flex-1">
-                <h3 className="type-item-title truncate text-sm sm:text-base">
+                <h3 className="type-item-title text-sm sm:text-base">
                   {group.issuer}
                 </h3>
                 <p className="type-meta mt-0.5">
@@ -77,39 +71,44 @@ export function Certifications({ items }: CertificationsProps) {
               </div>
             </header>
 
-            <ul className="relative space-y-2">
+            <ul className="relative space-y-2.5">
               {group.items.map((cert) => (
                 <li key={`${cert.name}-${cert.issuedAt}`}>
-                  <div className="cert-credential-row">
-                    <div className="min-w-0 flex-1">
-                      <p className="type-body leading-snug font-medium text-neutral-100">
+                  <div className="rounded-xl border border-white/5 bg-black/25 p-3.5">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <p className="type-body min-w-0 flex-1 leading-snug font-medium text-neutral-100">
                         {cert.name}
                       </p>
-                      {cert.expiresAt ? (
-                        <p className="type-meta mt-1 text-neutral-500">
-                          válido até {formatYear(cert.expiresAt)}
-                        </p>
-                      ) : null}
-                    </div>
-
-                    <div className="flex shrink-0 flex-col items-end gap-2 sm:flex-row sm:items-center">
-                      <time dateTime={cert.issuedAt} className="cert-year-pill">
+                      <time
+                        dateTime={cert.issuedAt}
+                        className="cert-year-pill shrink-0"
+                      >
                         {formatYear(cert.issuedAt)}
                       </time>
-
-                      {cert.credentialUrl ? (
-                        <Link
-                          href={cert.credentialUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`Ver certificado ${cert.name}`}
-                          className="cert-credential-link"
-                        >
-                          <span>Ver certificado</span>
-                          <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
-                        </Link>
-                      ) : null}
                     </div>
+
+                    {cert.expiresAt ? (
+                      <p className="type-meta mt-1.5 text-neutral-500">
+                        válido até {formatYear(cert.expiresAt)}
+                      </p>
+                    ) : null}
+
+                    {cert.credentialUrl ? (
+                      <Link
+                        href={cert.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Ver certificado ${cert.name}`}
+                        className="cert-credential-link mt-3 w-full justify-center sm:w-auto"
+                      >
+                        <ExternalLink className="h-4 w-4" aria-hidden />
+                        <span>Ver certificado</span>
+                        <ArrowUpRight
+                          className="h-3.5 w-3.5 opacity-80"
+                          aria-hidden
+                        />
+                      </Link>
+                    ) : null}
                   </div>
                 </li>
               ))}

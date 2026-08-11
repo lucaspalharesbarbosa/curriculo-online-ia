@@ -28,10 +28,11 @@ export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
   return (
     <CollapsibleSection
       headingId="projects-heading"
+      sectionId="destaques"
       title="Destaques"
       subtitle="Projetos e Artigos Publicados"
       icon={<Sparkles className="h-5 w-5" aria-hidden />}
-      orbClassName="top-1/2 left-0 h-64 w-64 -translate-x-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl"
+      orbClassName="top-1/2 left-0 h-64 w-64 -translate-x-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl max-md:opacity-40"
     >
       <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
         {projects.map((project, index) => (

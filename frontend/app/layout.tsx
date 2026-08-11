@@ -1,6 +1,6 @@
 import { MotionConfig } from "framer-motion";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Inter, Outfit } from "next/font/google";
 
 import { resume } from "@/content/resume";
 
@@ -8,6 +8,11 @@ import "./globals.css";
 
 const inter = Inter({
   variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
 });
 
@@ -33,11 +38,18 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#04080e",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${inter.variable} h-full scroll-smooth antialiased`}
+      className={`${inter.variable} ${outfit.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans">
         {/* reducedMotion="user" — US-07-06: whileHover/whileInView do

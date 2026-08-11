@@ -46,6 +46,7 @@ O frontend já é Next.js (App Router) desde o `ADR-001`. Não é uma decisão e
 | Refino visual: destaques PRAD/Mérito, Educação e Certificações | P1 | [US-07-12](backlog/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) |
 | Polimento UX: hero typewriter, seções e Assistente RAG | P1 | [US-07-13](backlog/fase-07/US-07-13-polimento-ux-chat-hero-secoes.md) |
 | Ajuste fino: hero em linhas, probes 3ª pessoa, certs e label Artigo | P1 | [US-07-14](backlog/fase-07/US-07-14-ajuste-hero-probes-certs-destaques.md) |
+| Redesign radical UX mobile-first (hero, bottom nav, chat sheet) | P0 | [US-07-15](backlog/fase-07/US-07-15-redesign-mobile-first.md) |
 
 ## Riscos
 

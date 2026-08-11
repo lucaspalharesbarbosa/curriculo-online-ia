@@ -112,4 +112,19 @@ describe("ProfileAssistChat", () => {
       screen.getAllByRole("dialog", { name: /assistente rag/i }).length,
     ).toBeGreaterThan(0);
   });
+
+  it("abre o sheet ao receber o evento do hero mobile", () => {
+    render(<ProfileAssistChat role="Tech Lead" />);
+
+    act(() => {
+      window.dispatchEvent(new CustomEvent("open-assist-chat"));
+    });
+
+    expect(
+      screen.getByText((content) => content.includes("Assistente RAG ativo")),
+    ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("dialog", { name: /assistente rag/i }).length,
+    ).toBeGreaterThan(0);
+  });
 });
