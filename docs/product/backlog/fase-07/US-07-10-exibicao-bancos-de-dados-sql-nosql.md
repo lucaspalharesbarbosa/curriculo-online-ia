@@ -66,7 +66,7 @@ Frontend & UX v2 — P2
 - [x] Contrato de API — N/A
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — N/A (sem ADR/contrato novo)
-- [~] Deploy/preview verificado (UI) — mesma ressalva estrutural de US-07-07/09 (sem browser headless neste ambiente); autor já conferiu no próprio `npm run dev` durante a sessão (inclusive refinou o cursor do typewriter de US-07-07 diretamente nos arquivos)
+- [x] Deploy/preview verificado (UI) — autor confirmou preview/produção 2026-08-11
 - [x] Vereditos QA, Tech Lead e PO na tabela abaixo
 - [x] Status da história atualizado
 
@@ -90,5 +90,6 @@ Após uso real, o autor apontou que a opção 6 ("colunas leves", CA-002) cortav
 | QA (revisão — seções empilhadas) | `@qa-engineer` | Aprovado — `vitest run`: 11 arquivos, 45/45 verdes (nenhuma asserção de teste dependia da estrutura de grid); `npm run build` (com `validate:resume`) e `npm run lint` limpos; nome dos 4 itens (`SQL Server`, `PostgreSQL`, `Redis`, `DynamoDB`) não corta mais na largura real da sidebar; distinção SQL/NoSQL preservada (rótulo textual + linha de destaque no topo, mesmos tokens já validados) | 2026-08-08 | `ResumeSidebar.tsx` |
 | Tech Lead (revisão — seções empilhadas) | `@tech-lead-review` | Aprovar — troca local de `grid-cols-2` por `space-y-2` num único bloco já isolado (`SkillChip` reaproveitado sem alteração); nenhuma mudança de schema/dado; resolve a causa raiz do corte (largura insuficiente por coluna) em vez de paliativo (ex.: reduzir fonte); sem chave de API/CORS tocado | 2026-08-08 | `frontend/components/ResumeSidebar.tsx` |
 | PO (revisão — seções empilhadas) | `@product-owner` | Aceito — autor aprovou a opção "Seções empilhadas" entre 3 alternativas propostas antes da implementação (conforme pedido); nome não corta mais; status da história permanece Quase lá (mesma pendência de preview de deploy formal) | 2026-08-08 | avaliação acima |
+| PO | `@product-owner` | Aceito/Done — autor confirmou preview/produção 2026-08-11; DoD completo | 2026-08-11 | preview/produção |
 
-**Status:** Quase lá — implementado, testado e revisado; falta só o preview de deploy formal para fechar o Done (mesma pendência estrutural das demais histórias desta rodada)
+**Status:** Done

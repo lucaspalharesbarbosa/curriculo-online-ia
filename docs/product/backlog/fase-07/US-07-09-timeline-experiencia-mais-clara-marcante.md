@@ -72,7 +72,7 @@ Frontend & UX v2 — P2
 - [x] Contrato de API — N/A
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — N/A (só motion/markup, sem ADR/contrato novo)
-- [~] Deploy/preview verificado (UI) — **ressalva**: mesma limitação já registrada em US-07-07 — sem browser headless neste ambiente para screenshot; verificação visual real fica pendente do preview de deploy ou do autor rodando `npm run dev` localmente
+- [x] Deploy/preview verificado (UI) — autor confirmou preview/produção 2026-08-11
 - [x] Vereditos QA, Tech Lead e PO na tabela abaixo
 - [x] Status da história atualizado
 
@@ -82,6 +82,6 @@ Frontend & UX v2 — P2
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalva — `vitest run`: 11 arquivos, 41/41 verdes (inclui os 4 testes de `ExperienceSection.test.tsx`, sem alteração de asserção necessária); `npm run build`/`lint` limpos; agrupamento de promoções, selo "Atual" e logo/ícone decorativo continuam funcionando; contraste inalterado; ressalva única: sem browser headless neste ambiente para confirmar visualmente o alinhamento da coluna de anos com o ícone/trilha em telas estreitas — recomendo checar em `npm run dev` ou no preview Vercel | 2026-08-08 | `ExperienceSection.tsx`, saída de `vitest run`/`next build`/`eslint` |
 | Tech Lead | `@tech-lead-review` | Aprovar — diff local a um componente (`ExperienceSection.tsx`), sem tocar `resume.json`/schema/outros componentes; reveal da trilha via `framer-motion` (`whileInView` + `once: true`) evita o problema já visto em US-07-06 de motion infinito custando performance — aqui dispara uma vez só; offsets de `left`/`pl-*` recalculados de forma consistente (ano w-11 + gap + ícone left-14/w-12 = `pl-28`), sem número mágico solto; nenhuma chave/CORS tocado | 2026-08-08 | `frontend/components/ExperienceSection.tsx` |
-| PO | `@product-owner` | Quase lá — CA-001–007 fechados, DoD fechado exceto o preview de deploy (mesma pendência estrutural de US-07-07/US-07-06); conceito aprovado pelo autor (opção A) implementado fielmente; falta o autor conferir visualmente para fechar o Done | 2026-08-08 | avaliação acima |
+| PO | `@product-owner` | Aceito/Done — autor confirmou preview/produção 2026-08-11; DoD completo | 2026-08-11 | preview/produção |
 
-**Status:** Quase lá — implementado, testado e revisado; falta o autor confirmar visualmente (dev local ou preview de deploy) para fechar o Done
+**Status:** Done

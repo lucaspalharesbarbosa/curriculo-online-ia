@@ -63,7 +63,7 @@ Frontend & UX v2 — P1
 - [ ] Contrato de API implementado bate com o documentado no DoR — N/A
 - [x] Sem chave de API/secret exposto (número de WhatsApp é dado público, não é segredo)
 - [ ] Documentação atualizada (ADR/contrato/diagrama ER) se algo mudou de fato durante a implementação — N/A esperado
-- [ ] Deploy/preview verificado (UI) — pendente: verificar preview do Vercel após abertura do PR
+- [x] Deploy/preview verificado (UI) — autor confirmou preview/produção 2026-08-11
 - [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
 - [x] Status da história atualizado no próprio arquivo
 
@@ -73,6 +73,6 @@ Frontend & UX v2 — P1
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado — `npm test -- --run --coverage`: 11 arquivos, 21 testes, 100% em `Contact.tsx`/`resume.schema.ts` | 2026-08-06 | 21/21 testes verdes |
 | Tech Lead | `@tech-lead-review` | Aprovar — dado vem de `resume.json` (sem hardcode), mesmo padrão visual/acessível dos demais itens, `npm run build`/`eslint .` limpos, sem secret exposto | 2026-08-06 | build + lint OK |
-| PO | `@product-owner` | Aprovado — CAs e DoR/DoD fechados; pendente apenas verificação de preview de deploy (fora do controle local) | 2026-08-06 | — |
+| PO | `@product-owner` | Aceito/Done — autor confirmou preview/produção 2026-08-11; DoD completo | 2026-08-11 | preview/produção |
 
-**Status:** Quase lá — falta verificar preview de deploy (Vercel) após abertura do PR
+**Status:** Done

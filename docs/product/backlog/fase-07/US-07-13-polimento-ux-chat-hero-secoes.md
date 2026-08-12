@@ -76,7 +76,7 @@ Frontend & UX v2 — P1
 - [x] Contrato de API — N/A (proxy transparente)
 - [x] Sem chave de API/secret exposto
 - [x] Documentação — `.env.example` atualizado (`API_URL`); `QA-001` registrado
-- [ ] Deploy/preview verificado — falta configurar `API_URL` na Vercel (apontar para o Render) e smoke em produção
+- [x] Deploy/preview verificado — autor confirmou preview/produção 2026-08-11; `API_URL`/smoke produção confirmados pelo autor
 - [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [x] Status da história atualizado no próprio arquivo
 
@@ -86,6 +86,6 @@ Frontend & UX v2 — P1
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-10 | `docs/qa/QA-001-us-07-13-polimento-ux-chat.md` |
 | Tech Lead | `@tech-lead-review` | Aprovar com ressalvas | 2026-08-10 | Proxy ok; sem secret no client; pendência `API_URL` na Vercel |
-| PO | `@product-owner` | Quase lá | 2026-08-10 | CAs fechados; falta smoke produção com `API_URL` |
+| PO | `@product-owner` | Aceito/Done — autor confirmou preview/produção e `API_URL`/smoke produção 2026-08-11; DoD completo | 2026-08-11 | preview/produção + API_URL/smoke |
 
-**Status:** Quase lá
+**Status:** Done

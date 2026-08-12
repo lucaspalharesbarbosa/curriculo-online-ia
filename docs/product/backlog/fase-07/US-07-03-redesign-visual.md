@@ -124,7 +124,7 @@ Frontend & UX v2 — P2
 - [x] Contrato de API — N/A
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada
-- [ ] Deploy/preview verificado (UI) — pendente preview Vercel após PR
+- [x] Deploy/preview verificado (UI) — autor confirmou preview/produção 2026-08-11
 - [x] Vereditos QA, Tech Lead e PO na tabela abaixo
 - [x] Status da história atualizado
 
@@ -213,5 +213,6 @@ Autor aprovou a opção "Barra segmentada" entre 4 alternativas visuais apresent
 | QA (medidor de proficiência) | `@qa-engineer` | Aprovado — `vitest run`: 12 arquivos, 41/41 verdes (novo caso cobrindo a barra segmentada com `aria-label` de nível em `ResumeSidebar.test.tsx`); `pytest` backend 27/27 verdes (fixture de `test_rag.py` atualizada para `items` como objeto); `npm run build`/`lint`/`tsc --noEmit` limpos; QA visual via CDP em 1440px/~900px/390px confirmou barra preenchida corretamente por nível, truncamento com `title` no hover em colunas estreitas, sem regressão nas demais seções | 2026-08-08 | `ResumeSidebar.tsx`, `resume.schema.ts`, `backend/app/models/resume.py`, `backend/app/rag.py`, `backend/tests/test_rag.py` |
 | Tech Lead (medidor de proficiência) | `@tech-lead-review` | Aprovar — mudança de schema (`items: string[]` → `{name, level}[]`) espelhada corretamente Zod/Pydantic, sem quebrar `rag.py` (chunk de skill atualizado para o novo shape, enriquecido com o nível por extenso); sem dependência nova; ressalva registrada e não bloqueante: níveis de proficiência são um rascunho do agente, não uma autoavaliação do autor — pendente de revisão antes de tratar este ajuste como definitivo | 2026-08-08 | diff de `resume.schema.ts`, `models/resume.py`, `rag.py`, `ResumeSidebar.tsx` |
 | PO (medidor de proficiência) | `@product-owner` | Aceito com ressalva — formato "barra segmentada" aprovado pelo autor entre as opções apresentadas e implementado; níveis por habilidade são rascunho pendente de revisão do autor (não é Done deste sub-item até a revisão); status da história permanece Quase lá (preview Vercel) | 2026-08-08 | escolha do autor no chat + avaliação acima |
+| PO | `@product-owner` | Aceito/Done — autor confirmou preview/produção 2026-08-11; DoD completo (níveis recalibrados em US-07-08) | 2026-08-11 | preview/produção |
 
-**Status:** Quase lá — implementação e aceite locais fechados (incl. paleta D1 Deep Ice e grid responsivo de skills); falta preview de deploy (Vercel) após abertura do PR
+**Status:** Done
