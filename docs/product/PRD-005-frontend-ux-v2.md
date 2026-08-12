@@ -1,6 +1,6 @@
 # PRD-005 — Frontend & UX v2
 
-**Status:** em execução (15 histórias em `backlog/fase-07/`; US-07-03 replanejada em 2026-08-07 para o template `personal-resume`)
+**Status:** Done (15/15 histórias — Fase 07 concluída em 2026-08-11)
 **Épico:** Frontend & UX v2
 **Prioridade:** P1
 

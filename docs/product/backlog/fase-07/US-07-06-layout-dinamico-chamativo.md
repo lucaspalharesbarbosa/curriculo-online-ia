@@ -32,7 +32,7 @@
 - [x] CA-002: `ExperienceSection`, `EducationSection`, `Certifications` e `ProjectsSection` com stagger de entrada mais expressivo (curva expo-out/`spring`, `whileHover`) e hover mais rico nos cards (`icon-glow` nos logos, `scale`/`y` no hover), mantendo `glass`/`accent` já definidos
 - [x] CA-003: background da página (`page.tsx`) com mais profundidade — 2 dos 3 orbs com `orb-drift`/`orb-drift-delayed` (drift lento via `transform`), sem gerar layout shift nem prejudicar leitura de texto
 - [x] CA-004: todo motion novo respeita `prefers-reduced-motion` — classes CSS novas (`orb-drift`, `orb-drift-delayed`) adicionadas ao bloco `@media (prefers-reduced-motion: reduce)` existente; `<MotionConfig reducedMotion="user">` adicionado em `layout.tsx` envolvendo `children` + `ChatWidget`, para que `whileHover`/`whileInView` do `framer-motion` (não cobertos pela media query CSS) também respeitem a preferência do SO em todo o app
-- [~] CA-005: Lighthouse mobile (build de produção, headless local) — **não confirmável com confiança nesta máquina**: a mesma medição na `develop` sem nenhuma mudança desta história já retorna Performance 56 neste ambiente (headless Chrome + throttling 4x, notebook em uso), longe dos 81 documentados em US-07-03/CA-014, e o score varia ±10 pontos entre execuções idênticas consecutivas (ruído de ambiente). Dois anti-padrões de performance reais foram identificados e corrigidos durante o QA: `pulse-glow` (animação de `box-shadow`, cara para repaint) estava aplicado em 11 badges de certificação simultâneas — removido; os orbs de fundo acumulavam 2 animações infinitas simultâneas (`pulse-slow` + `orb-drift`) no mesmo elemento — resolvido para 1 animação por orbe. Após as correções, o score local ficou em 48 (vs. 56 da própria `develop` neste ambiente) — ainda com uma diferença que não dá pra atribuir só a ruído, mas sem regressão qualitativa nova (A11y 100, Best Practices 100 mantidos). Verificação definitiva fica para o preview de deploy real (Vercel + Lighthouse CI ou PageSpeed Insights), item já pendente no DoD
+- [x] CA-005: Lighthouse mobile reconfirmado em **produção** (`https://lucas-palhares-cv.vercel.app`, 2026-08-11/12): Performance **66**, Accessibility **96**, Best Practices **96** (CLI Lighthouse mobile; PageSpeed Insights API retornou 429). Baseline US-07-03 era Perf **81** — queda esperada pelo motion (orbs/hover/stagger); autor já aceitou o trade-off explicitamente (2026-08-08). Anti-padrões corrigidos na entrega original mantidos (`pulse-glow` em massa removido; 1 animação por orbe)
 - [x] CA-006: contraste WCAG AA mantido — nenhuma cor foi alterada nesta história (só motion/CSS de animação), os 8 pares já validados em US-07-03 continuam os mesmos (recalculados por amostragem: accent-400/background 12.04:1, muted/surface 6.16:1 — idêntico ao registro anterior)
 - [x] CA-007: suíte de testes existente (frontend) continua 100% verde após as mudanças de motion/estilo — `vitest --run`: 10 arquivos, 27/27
 
@@ -64,14 +64,14 @@ Frontend & UX v2 — P2
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [x] Todos os critérios de aceite acima `[x]` — exceto CA-005, marcado `[~]` com ressalva documentada (ambiente local não reproduz a baseline; verificação real fica para o preview de deploy)
+- [x] Todos os critérios de aceite acima `[x]`
 - [x] Cobertura de testes ≥ 70% no código tocado — `N/A` justificado: mudanças são classes CSS/props de motion sobre componentes já cobertos por teste existente, sem lógica nova; suíte completa (94,62% stmts) não regrediu
 - [x] Build/lint limpo — `npm run build` OK, `npm run lint` sem erro (1 warning pré-existente em `coverage/`)
 - [x] Review do `@tech-lead-review` sem Critical/High em aberto
 - [x] Contrato de API — N/A
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — N/A (sem ADR/contrato novo; só motion/CSS)
-- [ ] Deploy/preview verificado (UI) — pendente preview Vercel após PR (inclui reconfirmar CA-005 em ambiente real)
+- [x] Deploy/preview verificado (UI) — produção medida com Lighthouse mobile 2026-08-11/12 (CA-005)
 - [x] Vereditos QA, Tech Lead e PO na tabela abaixo
 - [x] Status da história atualizado
 
@@ -93,5 +93,8 @@ Autor validou manualmente o resultado desta história e confirmou explicitamente
 | QA (reforço motion, pós-validação) | `@qa-engineer` | Aprovado — `vitest run`: 12 arquivos, 33/33 verdes após halo giratório e rotação em hover; novas classes atrás do bloco `prefers-reduced-motion` existente; sem regressão visual nos breakpoints testados (desktop/mobile via CDP) | 2026-08-08 | `globals.css`, `ResumeSidebar.tsx` |
 | Tech Lead (reforço motion, pós-validação) | `@tech-lead-review` | Aprovar — adição pontual de 1 keyframe CSS + `whileHover` em 2 componentes, mesmo padrão de `ADR-005`; nenhuma mudança de estrutura/paleta; risco de performance já é uma decisão explícita e informada do autor, não uma lacuna de review | 2026-08-08 | `globals.css` |
 | PO (reforço motion, pós-validação) | `@product-owner` | Aceito — autor confirmou aceitar o trade-off de performance por um visual mais chamativo; status da história permanece Quase lá (mesma pendência de preview Vercel para reconfirmar CA-005) | 2026-08-08 | pedido explícito do autor |
+| QA (Lighthouse produção) | `@qa-engineer` | Aprovado — Lighthouse mobile em produção: Perf 66 / A11y 96 / BP 96; trade-off de motion já aceito pelo autor; CA-005 fechado com evidência real | 2026-08-11 | `lh-us0706.json` (artefato local, não commitado) |
+| Tech Lead (Lighthouse produção) | `@tech-lead-review` | Aprovar — medição em URL de produção fecha a ressalva; sem mudança de código nesta rodada | 2026-08-11 | produção Vercel |
+| PO (fechamento) | `@product-owner` | Done — CA-005 e DoD fechados com Lighthouse em produção; trade-off Perf documentado e aceito | 2026-08-11 | |
 
-**Status:** Quase lá — implementação, testes e review fechados; falta preview de deploy (Vercel) para reconfirmar Lighthouse (CA-005) e fechar o DoD
+**Status:** Done

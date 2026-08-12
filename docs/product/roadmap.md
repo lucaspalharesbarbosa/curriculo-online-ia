@@ -84,25 +84,25 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 7 — Frontend & UX v2
 
-**Status:** Em andamento (15 histórias: 3 Done · 10 Quase lá · 1 In Progress · 1 Ready for Agent)
+**Status:** Done (15/15 histórias)
 **Backlog:** [`docs/product/backlog/fase-07/`](backlog/fase-07/) (US-07-01 a US-07-15)
 **PRD:** [`PRD-005-frontend-ux-v2.md`](PRD-005-frontend-ux-v2.md)
 
-- [ ] Seção de Contato: adicionar WhatsApp — [US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md) (`Quase lá`)
-- [ ] Auditoria e correção de responsividade (mobile/tablet/desktop) — [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md) (`Quase lá`)
-- [ ] Redesign visual (clonagem estrutural do template personal-resume) — [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md), P2 (`Quase lá`; referência: [giasinguyen/personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice)
-- [ ] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) — [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md), P3 (`Ready for Agent`)
-- [ ] Conteúdo novo: reconhecimentos, formação, artigos — [US-07-05](backlog/fase-07/US-07-05-conteudo-reconhecimentos-formacao-artigos.md) (`Quase lá`; `ADR-006`)
-- [ ] Layout mais dinâmico e chamativo — [US-07-06](backlog/fase-07/US-07-06-layout-dinamico-chamativo.md) (`Quase lá`)
-- [ ] Redesign do bloco abaixo do nome (sidebar) — [US-07-07](backlog/fase-07/US-07-07-redesign-info-abaixo-nome.md) (`Quase lá`)
+- [x] Seção de Contato: adicionar WhatsApp — [US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md) (`Done`)
+- [x] Auditoria e correção de responsividade (mobile/tablet/desktop) — [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md) (`Done`)
+- [x] Redesign visual (clonagem estrutural do template personal-resume) — [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md), P2 (`Done`; referência: [giasinguyen/personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice)
+- [x] Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) — [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md), P3 (`Done`)
+- [x] Conteúdo novo: reconhecimentos, formação, artigos — [US-07-05](backlog/fase-07/US-07-05-conteudo-reconhecimentos-formacao-artigos.md) (`Done`; `ADR-006`)
+- [x] Layout mais dinâmico e chamativo — [US-07-06](backlog/fase-07/US-07-06-layout-dinamico-chamativo.md) (`Done`; Lighthouse produção Perf 66 — trade-off motion aceito)
+- [x] Redesign do bloco abaixo do nome (sidebar) — [US-07-07](backlog/fase-07/US-07-07-redesign-info-abaixo-nome.md) (`Done`)
 - [x] Recalibrar níveis de skills — [US-07-08](backlog/fase-07/US-07-08-ajuste-niveis-skills.md) (`Done`)
-- [ ] Timeline de Experiência mais clara/marcante — [US-07-09](backlog/fase-07/US-07-09-timeline-experiencia-mais-clara-marcante.md) (`Quase lá`)
-- [ ] Exibição Bancos de Dados SQL/NoSQL — [US-07-10](backlog/fase-07/US-07-10-exibicao-bancos-de-dados-sql-nosql.md) (`Quase lá`; `ADR-007`)
+- [x] Timeline de Experiência mais clara/marcante — [US-07-09](backlog/fase-07/US-07-09-timeline-experiencia-mais-clara-marcante.md) (`Done`)
+- [x] Exibição Bancos de Dados SQL/NoSQL — [US-07-10](backlog/fase-07/US-07-10-exibicao-bancos-de-dados-sql-nosql.md) (`Done`; `ADR-007`)
 - [x] Polimento de layout e UX — [US-07-11](backlog/fase-07/US-07-11-polimento-layout-ux.md) (`Done`)
-- [ ] Refino Experiência/Educação/Certificações — [US-07-12](backlog/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) (`In Progress`)
-- [ ] Polimento UX: hero, seções e Assistente RAG — [US-07-13](backlog/fase-07/US-07-13-polimento-ux-chat-hero-secoes.md) (`Quase lá`)
+- [x] Refino Experiência/Educação/Certificações — [US-07-12](backlog/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) (`Done`)
+- [x] Polimento UX: hero, seções e Assistente RAG — [US-07-13](backlog/fase-07/US-07-13-polimento-ux-chat-hero-secoes.md) (`Done`)
 - [x] Ajuste fino hero/probes/certs — [US-07-14](backlog/fase-07/US-07-14-ajuste-hero-probes-certs-destaques.md) (`Done`)
-- [ ] Redesign radical UX mobile-first — [US-07-15](backlog/fase-07/US-07-15-redesign-mobile-first.md), P0 (`Quase lá`)
+- [x] Redesign radical UX mobile-first — [US-07-15](backlog/fase-07/US-07-15-redesign-mobile-first.md), P0 (`Done`)
 
 ## Fase 8 — Segurança & Performance
 
