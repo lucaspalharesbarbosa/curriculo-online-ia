@@ -18,10 +18,11 @@ export function Recognitions({ items }: RecognitionsProps) {
   return (
     <CollapsibleSection
       headingId="recognitions-heading"
+      sectionId="reconhecimentos"
       title="Reconhecimentos"
       subtitle="Prêmios e Méritos"
       icon={<Trophy className="h-5 w-5" aria-hidden />}
-      orbClassName="top-1/2 right-0 h-64 w-64 translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl"
+      orbClassName="top-1/2 right-0 h-64 w-64 translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl max-md:opacity-40"
     >
       <div className="grid gap-4 sm:grid-cols-2">
         {items.map((recognition, index) => (

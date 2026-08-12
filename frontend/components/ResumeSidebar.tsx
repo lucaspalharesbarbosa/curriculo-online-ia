@@ -13,165 +13,17 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
 
-import type {
-  Contact,
-  Hero,
-  SkillGroup,
-  SkillItem,
-} from "@/content/resume.schema";
 import { RoleTypewriter } from "@/components/RoleTypewriter";
-import { getSkillIcon } from "@/lib/skill-icons";
-import {
-  buildGoogleMapsUrl,
-  formatSkillLevel,
-  parseHeroTitle,
-} from "@/lib/utils";
-
-const SKILL_LEVEL_SEGMENTS = [1, 2, 3, 4, 5] as const;
-
-const SQL_CATEGORY = "Banco de Dados (SQL)";
-const NOSQL_CATEGORY = "Banco de Dados (NoSQL)";
+import type { Contact, Hero, SkillGroup } from "@/content/resume.schema";
+import { buildSkillBlocks } from "@/lib/skill-blocks";
+import { buildGoogleMapsUrl, parseHeroTitle } from "@/lib/utils";
 
 type ResumeSidebarProps = {
   hero: Hero;
   contact: Contact;
   skills: SkillGroup[];
 };
-
-type SkillChipProps = {
-  skill: SkillItem;
-  delay: number;
-  icon: ReactNode;
-  compact?: boolean;
-};
-
-function SkillChip({ skill, delay, icon, compact = false }: SkillChipProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -8 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay }}
-      className={`skill-tag type-chip flex cursor-default items-center gap-2 rounded-lg border border-neutral-700/50 bg-neutral-800/50 text-neutral-200 hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-300 ${
-        compact ? "px-2 py-1.5" : "px-2.5 py-2"
-      }`}
-    >
-      <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-accent-500/15 text-accent-300">
-        {icon}
-      </span>
-      <span className="min-w-0 flex-1 leading-tight" title={skill.name}>
-        {skill.name}
-      </span>
-      <span
-        className="flex shrink-0 items-center gap-[3px]"
-        role="img"
-        aria-label={`Nível: ${formatSkillLevel(skill.level)}`}
-        title={formatSkillLevel(skill.level)}
-      >
-        {SKILL_LEVEL_SEGMENTS.map((segment) => (
-          <span
-            key={segment}
-            className={`h-[5px] w-2 rounded-full ${
-              segment <= skill.level
-                ? "bg-gradient-to-r from-accent-400 to-accent-500"
-                : "bg-neutral-700/60"
-            }`}
-          />
-        ))}
-      </span>
-    </motion.div>
-  );
-}
-
-type SkillBlock = {
-  key: string;
-  title: string;
-  body: ReactNode;
-};
-
-function buildSkillBlocks(skills: SkillGroup[]): SkillBlock[] {
-  const blocks: SkillBlock[] = [];
-
-  skills.forEach((category, catIndex) => {
-    if (category.category === NOSQL_CATEGORY) {
-      return;
-    }
-
-    if (category.category === SQL_CATEGORY) {
-      const nosqlCategory = skills.find((c) => c.category === NOSQL_CATEGORY);
-      blocks.push({
-        key: "banco-de-dados",
-        title: "Banco de Dados",
-        body: (
-          <div className="space-y-2">
-            <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2.5 pt-3">
-              <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-400 to-transparent" />
-              <h4 className="type-label mb-2 text-neutral-400">
-                Relacional (SQL)
-              </h4>
-              <div className="space-y-1.5">
-                {category.items.map((skill, skillIndex) => {
-                  const SkillIcon = getSkillIcon(skill.name);
-                  return (
-                    <SkillChip
-                      key={skill.name}
-                      skill={skill}
-                      delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
-                      icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-            <div className="relative overflow-hidden rounded-lg border border-neutral-700/50 bg-neutral-800/30 p-2.5 pt-3">
-              <div className="absolute inset-x-0 top-0 h-0.5 bg-gradient-to-r from-accent-600 to-transparent" />
-              <h4 className="type-label mb-2 text-neutral-400">
-                Não-relacional (NoSQL)
-              </h4>
-              <div className="space-y-1.5">
-                {(nosqlCategory?.items ?? []).map((skill, skillIndex) => {
-                  const SkillIcon = getSkillIcon(skill.name);
-                  return (
-                    <SkillChip
-                      key={skill.name}
-                      skill={skill}
-                      delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
-                      icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
-                    />
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        ),
-      });
-      return;
-    }
-
-    blocks.push({
-      key: category.category,
-      title: category.category,
-      body: (
-        <div className="space-y-1.5">
-          {category.items.map((skill, skillIndex) => {
-            const SkillIcon = getSkillIcon(skill.name);
-            return (
-              <SkillChip
-                key={skill.name}
-                skill={skill}
-                delay={0.5 + catIndex * 0.1 + skillIndex * 0.02}
-                icon={<SkillIcon className="h-3.5 w-3.5" aria-hidden />}
-              />
-            );
-          })}
-        </div>
-      ),
-    });
-  });
-
-  return blocks;
-}
 
 export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
   const { primary: primaryRoles, secondary: secondaryInfo } = parseHeroTitle(
@@ -180,7 +32,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
   const skillBlocks = buildSkillBlocks(skills);
 
   return (
-    <aside className="w-full shrink-0 p-3 sm:p-4 lg:w-[340px] lg:min-h-screen lg:p-6 xl:w-[380px]">
+    <aside className="hidden w-full shrink-0 p-3 sm:p-4 lg:block lg:w-[340px] lg:min-h-screen lg:p-6 xl:w-[380px]">
       <motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
@@ -228,7 +80,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             </div>
           </div>
 
-          <h1 className="type-section-title gradient-text glow-text mb-2">
+          <h1 className="type-section-title font-display gradient-text glow-text mb-2">
             {hero.name}
           </h1>
 
@@ -262,7 +114,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
           {contact.email ? (
             <Link
               href={`mailto:${contact.email}`}
-              className="glass-card group flex items-center gap-3 rounded-xl p-3"
+              className="glass-card group flex min-h-11 items-center gap-3 rounded-xl p-3 active:scale-[0.99]"
             >
               <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
                 <Mail className="h-4 w-4" />
@@ -278,7 +130,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
               href={contact.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="glass-card group flex items-center gap-3 rounded-xl p-3"
+              className="glass-card group flex min-h-11 items-center gap-3 rounded-xl p-3 active:scale-[0.99]"
             >
               <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
                 <MessageCircle className="h-4 w-4" />
@@ -293,7 +145,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             href={buildGoogleMapsUrl(hero.location)}
             target="_blank"
             rel="noopener noreferrer"
-            className="glass-card group flex items-center gap-3 rounded-xl p-3"
+            className="glass-card group flex min-h-11 items-center gap-3 rounded-xl p-3 active:scale-[0.99]"
           >
             <div className="rounded-lg bg-accent-500/20 p-2 text-accent-400 transition-colors group-hover:bg-accent-500/30">
               <MapPin className="h-4 w-4" />
@@ -316,7 +168,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="GitHub"
-              className="glass-card group rounded-xl p-3 transition-all hover:border-accent-500/30 hover:bg-accent-500/10"
+              className="glass-card group flex h-11 w-11 items-center justify-center rounded-xl transition-all hover:border-accent-500/30 hover:bg-accent-500/10"
             >
               <Github className="h-5 w-5 text-neutral-400 transition-colors group-hover:text-accent-400" />
             </Link>
@@ -326,7 +178,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="LinkedIn"
-            className="glass-card group rounded-xl p-3 transition-all hover:border-accent-500/30 hover:bg-accent-500/10"
+            className="glass-card group flex h-11 w-11 items-center justify-center rounded-xl transition-all hover:border-accent-500/30 hover:bg-accent-500/10"
           >
             <Linkedin className="h-5 w-5 text-neutral-400 transition-colors group-hover:text-accent-400" />
           </Link>
@@ -343,17 +195,10 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             Habilidades Técnicas
           </h2>
 
-          {/* Mobile/tablet: trilho horizontal; desktop: pilha vertical — mesmo DOM */}
-          <div
-            className="-mx-1 flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-1 lg:mx-0 lg:snap-none lg:flex-col lg:gap-4 lg:overflow-visible lg:px-0 lg:pb-0"
-            data-testid="skills-layout"
-          >
+          <div className="flex flex-col gap-4" data-testid="skills-layout">
             {skillBlocks.map((block) => (
-              <div
-                key={block.key}
-                className="w-[min(78vw,280px)] shrink-0 snap-center rounded-2xl border border-neutral-700/40 bg-neutral-900/40 p-3 lg:w-full lg:shrink lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0"
-              >
-                <h3 className="type-caption mb-2.5 font-semibold text-accent-400 lg:mb-1.5">
+              <div key={block.key}>
+                <h3 className="type-caption mb-1.5 font-semibold text-accent-400">
                   {block.title}
                 </h3>
                 {block.body}
@@ -371,7 +216,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             <Link
               href={contact.resumePdfUrl}
               download
-              className="group relative flex w-full items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 p-1.5 shadow-[0_12px_32px_rgba(56,189,248,0.28)] transition-[transform,box-shadow] duration-300 hover:scale-[1.015] hover:shadow-[0_16px_40px_rgba(56,189,248,0.4)] focus-visible:outline-offset-4"
+              className="group relative flex min-h-12 w-full items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 p-1.5 shadow-[0_12px_32px_rgba(56,189,248,0.28)] transition-[transform,box-shadow] duration-300 hover:scale-[1.015] hover:shadow-[0_16px_40px_rgba(56,189,248,0.4)] active:scale-[0.99] focus-visible:outline-offset-4"
             >
               <span
                 className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,transparent_35%,rgba(255,255,255,0.28)_50%,transparent_65%)] bg-[length:220%_100%] bg-[-80%_0] transition-[background-position] duration-700 group-hover:bg-[120%_0]"
@@ -384,7 +229,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
                 <span className="text-sm font-semibold tracking-tight text-neutral-950 sm:text-[15px]">
                   Baixar CV
                 </span>
-                <span className="text-[11px] font-medium text-neutral-950/75">
+                <span className="text-xs font-medium text-neutral-950/75">
                   PDF · currículo completo
                 </span>
               </span>

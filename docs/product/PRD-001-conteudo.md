@@ -1,6 +1,6 @@
 # PRD-001 — Conteúdo
 
-**Status:** ready-for-agent
+**Status:** Done (Fase 03 — histórias US-03-01 a US-03-08)
 **Épico:** Conteúdo
 **Prioridade:** P1 (schema) / P2 (população das seções)
 
@@ -10,7 +10,7 @@ O histórico profissional real do autor (mais de 10 anos, 6 empresas, liderança
 
 ## Objetivo
 
-`frontend/content/resume.json` valida contra um schema (Zod no frontend, Pydantic no backend) e contém os dados reais do autor nas 6 seções: Hero/Sobre, Experiência, Formação, Skills, Certificações, Contato. Seção Projetos fica com estrutura pronta, aguardando input do autor (ver Riscos).
+`frontend/content/resume.json` valida contra um schema (Zod no frontend, Pydantic no backend) e contém os dados reais do autor nas seções: Hero/Sobre, Experiência, Formação, Skills, Certificações, Projetos e Contato.
 
 ## Escopo
 
@@ -20,7 +20,6 @@ O histórico profissional real do autor (mais de 10 anos, 6 empresas, liderança
 - Estrutura da seção Contato, com campos que dependem de confirmação do autor (ver Riscos)
 
 ### Excluído
-- Seção Projetos/Portfólio com conteúdo populado — falta a lista de repositórios que o autor quer destacar (ver Riscos)
 - Geração do PDF do currículo (depende de US-03-16/Contato no épico Frontend)
 - Layout/componentes que renderizam esses dados (épico Frontend)
 
@@ -38,20 +37,20 @@ Visitante/recrutador navegando o site.
 | Popular seção Formação Acadêmica | P2 | [US-03-04](backlog/fase-03/US-03-04-dados-formacao.md) |
 | Popular seção Habilidades Técnicas | P2 | [US-03-05](backlog/fase-03/US-03-05-dados-skills.md) |
 | Popular seção Certificações | P2 | [US-03-06](backlog/fase-03/US-03-06-dados-certificacoes.md) |
-| Popular seção Projetos/Portfólio | P3 (bloqueada) | [US-03-07](backlog/fase-03/US-03-07-dados-projetos.md) |
-| Popular seção Contato | P2 (parcialmente bloqueada) | [US-03-08](backlog/fase-03/US-03-08-dados-contato.md) |
+| Popular seção Projetos/Portfólio | P3 | [US-03-07](backlog/fase-03/US-03-07-dados-projetos.md) |
+| Popular seção Contato | P2 | [US-03-08](backlog/fase-03/US-03-08-dados-contato.md) |
 
 ## Riscos
 
-- **Projetos/Portfólio sem dados**: o autor não listou repositórios específicos. Este próprio projeto (`curriculo-online-ia`) é candidato natural a primeiro card, mas faltam 1-3 outros para a seção não ficar vazia. US-03-07 fica com DoR incompleto até o autor indicar quais repositórios entram.
-- **Contato incompleto**: telefone não está no schema; e-mail e GitHub confirmados no PDF final.
+- ~~**Projetos/Portfólio sem dados**~~ — resolvido na Fase 03: autor confirmou único projeto (`curriculo-online-ia`) — [US-03-07](backlog/fase-03/US-03-07-dados-projetos.md)
+- ~~**Contato incompleto**~~ — resolvido: e-mail/GitHub/LinkedIn em [US-03-08](backlog/fase-03/US-03-08-dados-contato.md); WhatsApp acrescentado na Fase 07 ([US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md))
 - **PDF do currículo**: fonte de verdade em `frontend/public/Lucas_Palhares_Barbosa_Engenheiro_De_Software.pdf` (atualizado em 2026-08-04).
 
 ## DoR
 - [x] Critérios de aceite claros
 - [x] ADR se envolve decisão de stack nova — não envolve (schema já decidido em `CONTEXTO-PROJETO.md`)
 - [x] Tasks decompostas (ver `docs/product/backlog/fase-03/`)
-- [ ] US-03-07 aguarda input do autor (não bloqueia as demais histórias do épico)
+- [x] US-03-07 — input do autor recebido e história Done
 
 ---
 
@@ -115,7 +114,7 @@ Uso interno do `@senior-developer` ao implementar US-03-02 a US-03-08 — evita 
 
 ### Projetos/Portfólio
 
-Pendente — ver Riscos.
+Resolvido na Fase 03 — único projeto destacado: `curriculo-online-ia`. Artigos externos entraram na Fase 07 via `articles[]` (`ADR-006` / US-07-05).
 
 ### Contato
 

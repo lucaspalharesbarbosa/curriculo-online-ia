@@ -87,4 +87,6 @@ Deploy — P2
 
 Trade-off de hospedagem gratuita documentado em [ADR-002](../../../architecture/ADR-002-hospedagem-gratuita.md) (status **Aceita**). Frontend na Vercel Hobby; não reabrir sem novo ADR.
 
-**Status:** Done — CA-001/002/003/004 fechados e DoD 100% fechado em 2026-08-04 (revalidação pós ação humana no painel Vercel: GitHub conectado, Root Directory/Production Branch ajustados). URL de produção: https://curriculo-online-ia.vercel.app. Pendência não bloqueante: alias órfão `lucas-palhares-dev.vercel.app` (nome de projeto antigo) segue com SSO ativo — recomenda-se removê-lo/ignorá-lo no painel da Vercel para não ser confundido com a URL oficial
+**Status:** Done — CA-001/002/003/004 fechados e DoD 100% fechado em 2026-08-04 (revalidação pós ação humana no painel Vercel: GitHub conectado, Root Directory/Production Branch ajustados). URL de produção na data do Done: https://curriculo-online-ia.vercel.app. Pendência não bloqueante: alias órfão `lucas-palhares-dev.vercel.app` (nome de projeto antigo) segue com SSO ativo — recomenda-se removê-lo/ignorá-lo no painel da Vercel para não ser confundido com a URL oficial.
+
+> **Nota posterior (2026-08-10):** projeto Vercel renomeado; URL de produção atual é https://lucas-palhares-cv.vercel.app (ver `frontend/README.md` e Fase 06).

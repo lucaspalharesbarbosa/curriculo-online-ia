@@ -24,9 +24,11 @@ describe("Home page", () => {
     // Timeout maior: com --coverage a árvore inteira (sidebar + seções
     // colapsáveis) passa dos 5s padrão em máquinas mais lentas.
 
+    // Hero mobile + sidebar desktop (ambos no DOM; CSS esconde um por breakpoint)
     expect(
-      screen.getByRole("heading", { name: /lucas palhares barbosa/i }),
-    ).toBeInTheDocument();
+      screen.getAllByRole("heading", { name: /lucas palhares barbosa/i })
+        .length,
+    ).toBeGreaterThanOrEqual(1);
     expect(
       screen.getByRole("heading", { name: /^perfil$/i }),
     ).toBeInTheDocument();
@@ -46,8 +48,11 @@ describe("Home page", () => {
       screen.getByRole("heading", { name: /^destaques$/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: /baixar cv/i }),
+      screen.getByRole("navigation", { name: /seções do currículo/i }),
     ).toBeInTheDocument();
+    expect(
+      screen.getAllByRole("link", { name: /baixar cv/i }).length,
+    ).toBeGreaterThanOrEqual(1);
     expect(screen.queryByText(/nguyen tran gia si/i)).not.toBeInTheDocument();
   }, 15_000);
 });

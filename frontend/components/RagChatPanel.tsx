@@ -44,6 +44,8 @@ type RagChatPanelProps = {
   onSuggestion?: (text: string) => void;
   /** Inline no Perfil — region em vez de dialog */
   embedded?: boolean;
+  /** Bottom sheet mobile — cantos retos no clip, targets maiores */
+  sheet?: boolean;
 };
 
 const DEFAULT_SUGGESTIONS = [
@@ -163,6 +165,7 @@ export function RagChatPanel({
   suggestions,
   onSuggestion,
   embedded = false,
+  sheet = false,
 }: RagChatPanelProps) {
   const inputId = useId();
   const listRef = useRef<HTMLUListElement>(null);
@@ -199,7 +202,7 @@ export function RagChatPanel({
   return (
     <section
       {...shellProps}
-      className={`assist-console flex flex-col ${className}`}
+      className={`assist-console flex flex-col ${sheet ? "assist-console--sheet" : ""} ${className}`}
     >
       <div className="assist-console-rail" aria-hidden />
       <div className="assist-scanline" aria-hidden />
@@ -216,12 +219,12 @@ export function RagChatPanel({
             <p className="truncate text-sm font-semibold tracking-tight text-neutral-50">
               {resolvedTitle}
             </p>
-            <span className="inline-flex items-center gap-1 rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 font-mono text-[10px] font-semibold tracking-wider text-accent-300 uppercase">
+            <span className="inline-flex items-center gap-1 rounded-md border border-accent-500/30 bg-accent-500/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold tracking-wider text-accent-300 uppercase">
               <Terminal className="h-3 w-3" aria-hidden />
               Live
             </span>
           </div>
-          <p className="mt-0.5 font-mono text-[11px] leading-snug text-neutral-400">
+          <p className="mt-0.5 font-mono text-xs leading-snug text-neutral-400">
             {resolvedSubtitle}
           </p>
         </div>
@@ -230,10 +233,11 @@ export function RagChatPanel({
           <button
             type="button"
             onClick={onMinimize}
-            className="rounded-lg border border-transparent p-1.5 text-neutral-400 transition-colors hover:border-[var(--assist-line)] hover:bg-[#0c2233] hover:text-accent-300"
+            className="tap-target relative z-[3] mr-6 inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-[var(--assist-line)] bg-[#0c2233] px-3 text-xs font-semibold text-accent-200 transition-colors hover:border-accent-500/40 hover:bg-[#0f2a3d] hover:text-accent-100 active:scale-[0.97] active:bg-[#123247] sm:mr-7"
             aria-label="Minimizar chat"
           >
-            <Minimize2 className="h-4 w-4" />
+            <Minimize2 className="h-4 w-4 shrink-0" aria-hidden />
+            <span>Minimizar</span>
           </button>
         ) : null}
       </header>
@@ -264,7 +268,7 @@ export function RagChatPanel({
                       }
                       setQuestion(item);
                     }}
-                    className="assist-probe inline-flex items-center gap-1.5 rounded-xl border border-[var(--assist-line)] bg-[var(--assist-rail)] px-2.5 py-1.5 text-[11px] text-neutral-200 hover:border-accent-500/45 hover:bg-[#0c2233] hover:text-accent-200 disabled:opacity-50"
+                    className="assist-probe inline-flex min-h-11 items-center gap-1.5 rounded-xl border border-[var(--assist-line)] bg-[var(--assist-rail)] px-3 py-2.5 text-xs text-neutral-200 active:border-accent-500/45 active:bg-[#0c2233] active:text-accent-200 hover:border-accent-500/45 hover:bg-[#0c2233] hover:text-accent-200 disabled:opacity-50"
                   >
                     <span className="font-mono text-accent-400">/</span>
                     {item}
@@ -328,12 +332,12 @@ export function RagChatPanel({
           onChange={(event) => setQuestion(event.target.value)}
           placeholder={placeholder ?? defaults.placeholder}
           disabled={isSubmitting}
-          className="min-w-0 flex-1 rounded-xl border border-[var(--assist-line)] bg-[var(--assist-ink)] px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors placeholder:text-neutral-500 focus:border-accent-500/50 focus:shadow-[0_0_0_3px_rgba(56,189,248,0.12)] disabled:opacity-60"
+          className="min-h-11 min-w-0 flex-1 rounded-xl border border-[var(--assist-line)] bg-[var(--assist-ink)] px-3 py-2.5 text-sm text-neutral-100 outline-none transition-colors placeholder:text-neutral-500 focus:border-accent-500/50 focus:shadow-[0_0_0_3px_rgba(56,189,248,0.12)] disabled:opacity-60"
         />
         <button
           type="submit"
           disabled={isSubmitting || question.trim().length === 0}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 text-neutral-950 shadow-[0_10px_28px_rgba(56,189,248,0.35)] transition-[transform,opacity] hover:scale-[1.03] hover:opacity-95 disabled:scale-100 disabled:opacity-35"
+          className="tap-target flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 text-neutral-950 shadow-[0_10px_28px_rgba(56,189,248,0.35)] transition-[transform,opacity] hover:scale-[1.03] hover:opacity-95 active:scale-[0.97] disabled:scale-100 disabled:opacity-35"
           aria-label="Enviar"
         >
           <Send className="h-4 w-4" />

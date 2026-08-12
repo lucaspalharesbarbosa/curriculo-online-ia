@@ -9,6 +9,8 @@ import { cn } from "@/lib/utils";
 
 type CollapsibleSectionProps = {
   headingId: string;
+  /** Âncora para nav mobile / scroll-spy */
+  sectionId?: string;
   title: string;
   subtitle: string;
   icon: ReactNode;
@@ -20,6 +22,7 @@ type CollapsibleSectionProps = {
 
 export function CollapsibleSection({
   headingId,
+  sectionId,
   title,
   subtitle,
   icon,
@@ -32,12 +35,12 @@ export function CollapsibleSection({
   const reduceMotion = useReducedMotion();
 
   return (
-    <section aria-labelledby={headingId}>
+    <section id={sectionId} aria-labelledby={headingId} className="scroll-mt-4">
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={reduceMotion ? false : { opacity: 0, y: 14 }}
         whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
+        viewport={{ once: true, margin: "0px 0px -32px 0px" }}
+        transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
         className="glass relative overflow-hidden rounded-3xl p-5 sm:p-6 lg:p-8"
       >
         {orbClassName ? (
@@ -47,7 +50,7 @@ export function CollapsibleSection({
         <div className="relative z-10">
           <button
             type="button"
-            className="group -m-1 flex w-full items-center rounded-2xl p-1 text-left transition-colors hover:bg-accent-500/5 focus-visible:bg-accent-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40"
+            className="group -m-1 flex min-h-12 w-full items-center rounded-2xl p-1 text-left transition-colors hover:bg-accent-500/5 active:bg-accent-500/10 focus-visible:bg-accent-500/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40"
             aria-expanded={open}
             aria-controls={panelId}
             onClick={() => setOpen((value) => !value)}
@@ -60,7 +63,7 @@ export function CollapsibleSection({
               trailing={
                 <span
                   className={cn(
-                    "ml-2 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-neutral-700/50 bg-neutral-900/40 text-neutral-400 transition-all duration-300 group-hover:border-accent-500/40 group-hover:text-accent-400",
+                    "ml-2 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-neutral-700/50 bg-neutral-900/40 text-neutral-400 transition-all duration-300 group-hover:border-accent-500/40 group-hover:text-accent-400",
                     open && "border-accent-500/30 text-accent-400",
                   )}
                   aria-hidden

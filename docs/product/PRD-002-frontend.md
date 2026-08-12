@@ -1,6 +1,6 @@
 # PRD-002 — Frontend
 
-**Status:** ready-for-agent
+**Status:** Done (Fases 02–04 — setup, componentes UI, SEO e a11y)
 **Épico:** Frontend
 **Prioridade:** P1 (setup) / P2 (componentes e polimento)
 
@@ -48,7 +48,7 @@ Visitante/recrutador navegando o site.
 
 ## Riscos
 
-- Sem dados reais de Projetos e parte de Contato (ver `docs/product/PRD-001-conteudo.md`), US-03-14 e parte de US-03-16 ficam com escopo de UI pronto mas sem conteúdo final até o autor completar as pendências de Conteúdo.
+- Sem dados reais de Projetos e parte de Contato ~~(ver `docs/product/PRD-001-conteudo.md`)~~ — resolvido na Fase 03 (`US-03-07`, `US-03-08`); WhatsApp na Fase 07 (`US-07-01`).
 - Nenhuma decisão de stack nova — segue Next.js/TS/Tailwind já definido em `CONTEXTO-PROJETO.md`, sem necessidade de ADR.
 
 ## DoR
