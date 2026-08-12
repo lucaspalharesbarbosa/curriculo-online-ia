@@ -1,6 +1,6 @@
 # QA-004 — US-07-15 Redesign mobile-first
 
-**História:** [US-07-15](../product/backlog/fase-07/US-07-15-redesign-mobile-first.md)  
+**História:** [US-07-15](../product/backlog/archive/fase-07/US-07-15-redesign-mobile-first.md)  
 **Data:** 2026-08-11  
 **Agente:** `@qa-engineer`
 

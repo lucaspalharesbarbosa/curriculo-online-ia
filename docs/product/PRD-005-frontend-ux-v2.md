@@ -39,32 +39,32 @@ O frontend já é Next.js (App Router) desde o `ADR-001`. Não é uma decisão e
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Ampliar seção de Contato com link direto para WhatsApp | P1 | [US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md) |
-| Auditoria e correção de responsividade (mobile/tablet/desktop) | P1 | [US-07-02](backlog/fase-07/US-07-02-auditoria-responsividade.md) |
-| Redesign visual do site (clonagem do template personal-resume) | P2 | [US-07-03](backlog/fase-07/US-07-03-redesign-visual.md) |
-| Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) | P3 | [US-07-04](backlog/fase-07/US-07-04-revisao-nextjs.md) |
-| Conteúdo novo: reconhecimentos, formação técnica, cursos livres e artigos | P1 | [US-07-05](backlog/fase-07/US-07-05-conteudo-reconhecimentos-formacao-artigos.md) |
-| Layout mais dinâmico e chamativo | P2 | [US-07-06](backlog/fase-07/US-07-06-layout-dinamico-chamativo.md) |
-| Redesign do bloco de informações abaixo do nome (sidebar) | P2 | [US-07-07](backlog/fase-07/US-07-07-redesign-info-abaixo-nome.md) |
-| Remover duplicidade em AI Engineering e recalibrar níveis de skills | P2 | [US-07-08](backlog/fase-07/US-07-08-ajuste-niveis-skills.md) |
-| Timeline de Experiência mais clara e marcante | P2 | [US-07-09](backlog/fase-07/US-07-09-timeline-experiencia-mais-clara-marcante.md) |
-| Melhorar a exibição de Bancos de Dados (SQL/NoSQL) | P2 | [US-07-10](backlog/fase-07/US-07-10-exibicao-bancos-de-dados-sql-nosql.md) |
-| Polimento de layout e UX (collapse, perfil, mobile, reconhecimentos) | P1 | [US-07-11](backlog/fase-07/US-07-11-polimento-layout-ux.md) |
-| Refino visual: destaques PRAD/Mérito, Educação e Certificações | P1 | [US-07-12](backlog/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) |
-| Polimento UX: hero typewriter, seções e Assistente RAG | P1 | [US-07-13](backlog/fase-07/US-07-13-polimento-ux-chat-hero-secoes.md) |
-| Ajuste fino: hero em linhas, probes 3ª pessoa, certs e label Artigo | P1 | [US-07-14](backlog/fase-07/US-07-14-ajuste-hero-probes-certs-destaques.md) |
-| Redesign radical UX mobile-first (hero, bottom nav, chat sheet) | P0 | [US-07-15](backlog/fase-07/US-07-15-redesign-mobile-first.md) |
+| Ampliar seção de Contato com link direto para WhatsApp | P1 | [US-07-01](backlog/archive/fase-07/US-07-01-contato-whatsapp.md) |
+| Auditoria e correção de responsividade (mobile/tablet/desktop) | P1 | [US-07-02](backlog/archive/fase-07/US-07-02-auditoria-responsividade.md) |
+| Redesign visual do site (clonagem do template personal-resume) | P2 | [US-07-03](backlog/archive/fase-07/US-07-03-redesign-visual.md) |
+| Revisão de uso de recursos do Next.js (`next/image`, fontes, Server Components) | P3 | [US-07-04](backlog/archive/fase-07/US-07-04-revisao-nextjs.md) |
+| Conteúdo novo: reconhecimentos, formação técnica, cursos livres e artigos | P1 | [US-07-05](backlog/archive/fase-07/US-07-05-conteudo-reconhecimentos-formacao-artigos.md) |
+| Layout mais dinâmico e chamativo | P2 | [US-07-06](backlog/archive/fase-07/US-07-06-layout-dinamico-chamativo.md) |
+| Redesign do bloco de informações abaixo do nome (sidebar) | P2 | [US-07-07](backlog/archive/fase-07/US-07-07-redesign-info-abaixo-nome.md) |
+| Remover duplicidade em AI Engineering e recalibrar níveis de skills | P2 | [US-07-08](backlog/archive/fase-07/US-07-08-ajuste-niveis-skills.md) |
+| Timeline de Experiência mais clara e marcante | P2 | [US-07-09](backlog/archive/fase-07/US-07-09-timeline-experiencia-mais-clara-marcante.md) |
+| Melhorar a exibição de Bancos de Dados (SQL/NoSQL) | P2 | [US-07-10](backlog/archive/fase-07/US-07-10-exibicao-bancos-de-dados-sql-nosql.md) |
+| Polimento de layout e UX (collapse, perfil, mobile, reconhecimentos) | P1 | [US-07-11](backlog/archive/fase-07/US-07-11-polimento-layout-ux.md) |
+| Refino visual: destaques PRAD/Mérito, Educação e Certificações | P1 | [US-07-12](backlog/archive/fase-07/US-07-12-refino-experiencia-educacao-certificacoes.md) |
+| Polimento UX: hero typewriter, seções e Assistente RAG | P1 | [US-07-13](backlog/archive/fase-07/US-07-13-polimento-ux-chat-hero-secoes.md) |
+| Ajuste fino: hero em linhas, probes 3ª pessoa, certs e label Artigo | P1 | [US-07-14](backlog/archive/fase-07/US-07-14-ajuste-hero-probes-certs-destaques.md) |
+| Redesign radical UX mobile-first (hero, bottom nav, chat sheet) | P0 | [US-07-15](backlog/archive/fase-07/US-07-15-redesign-mobile-first.md) |
 
 ## Riscos
 
 - Redesign pode regredir contraste/acessibilidade já corrigidos na Fase 4 — re-rodar Lighthouse é obrigatório no DoD dessas histórias
 - Adotar `framer-motion` (do template) aumenta bundle — mitigado por `ADR-005` e `prefers-reduced-motion`
-- ~~WhatsApp expõe um número pessoal publicamente~~ — autor confirmou publicação do número via `@orquestrador` em 2026-08-06 ([US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md))
+- ~~WhatsApp expõe um número pessoal publicamente~~ — autor confirmou publicação do número via `@orquestrador` em 2026-08-06 ([US-07-01](backlog/archive/fase-07/US-07-01-contato-whatsapp.md))
 - ~~Decisão "link direto vs. formulário" no Contato~~ — resolvida em 2026-08-06: mantém link direto (mailto/wa.me), sem formulário com persistência; Fase 12 fica sem lista de contatos recebidos, só métricas de acesso/uso do chat
 - ~~Referência visual~~ — fechada em 2026-08-07: template **personal-resume** (substitui Omnira e PortfolioHub)
 
 ## DoR do épico
 - [x] Toda história do épico tem seu próprio DoR fechado — US-07-01 a US-07-15
-- [x] Tasks decompostas (`references/task-breakdown-guide.md`) — 15 histórias em `backlog/fase-07/`
+- [x] Tasks decompostas (`references/task-breakdown-guide.md`) — 15 histórias em `backlog/archive/fase-07/`
 - [x] Decisão "link direto (mailto/wa.me) vs. formulário com persistência" tomada antes de abrir a história de Contato — impacta o PRD-010 — resolvida em 2026-08-06: link direto
 - [x] Referência visual do redesign — template personal-resume (MIT) + ADR-005 para deps

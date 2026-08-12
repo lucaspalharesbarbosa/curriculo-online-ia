@@ -67,5 +67,5 @@ Sem chunking novo no RAG (`recognitions`/`certifications`/`education` já cobert
 ## Referências
 
 - `docs/architecture/ADR-003-fluxo-rag.md`
-- `docs/product/backlog/fase-07/US-07-05-conteudo-reconhecimentos-formacao-artigos.md`
+- `docs/product/backlog/archive/fase-07/US-07-05-conteudo-reconhecimentos-formacao-artigos.md`
 - `frontend/content/resume.schema.ts`, `backend/app/models/resume.py`, `backend/app/rag.py`

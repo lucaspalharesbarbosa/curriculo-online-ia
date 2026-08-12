@@ -43,7 +43,7 @@ Visitante/recrutador navegando o site.
 ## Riscos
 
 - ~~**Projetos/Portfólio sem dados**~~ — resolvido na Fase 03: autor confirmou único projeto (`curriculo-online-ia`) — [US-03-07](backlog/fase-03/US-03-07-dados-projetos.md)
-- ~~**Contato incompleto**~~ — resolvido: e-mail/GitHub/LinkedIn em [US-03-08](backlog/fase-03/US-03-08-dados-contato.md); WhatsApp acrescentado na Fase 07 ([US-07-01](backlog/fase-07/US-07-01-contato-whatsapp.md))
+- ~~**Contato incompleto**~~ — resolvido: e-mail/GitHub/LinkedIn em [US-03-08](backlog/fase-03/US-03-08-dados-contato.md); WhatsApp acrescentado na Fase 07 ([US-07-01](backlog/archive/fase-07/US-07-01-contato-whatsapp.md))
 - **PDF do currículo**: fonte de verdade em `frontend/public/Lucas_Palhares_Barbosa_Engenheiro_De_Software.pdf` (atualizado em 2026-08-04).
 
 ## DoR

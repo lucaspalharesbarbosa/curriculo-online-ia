@@ -13,7 +13,7 @@ Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
 - [PRD-004 — Deploy](PRD-004-deploy.md)
 
 ### Evolução pós-lançamento
-- [PRD-005 — Frontend & UX v2](PRD-005-frontend-ux-v2.md) — Done (15/15; histórias em `backlog/fase-07/`)
+- [PRD-005 — Frontend & UX v2](PRD-005-frontend-ux-v2.md) — Done (15/15; histórias em `backlog/archive/fase-07/`)
 - [PRD-006 — Segurança & Performance](PRD-006-seguranca-performance.md) — draft, sem histórias
 - [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — draft, sem histórias
 - [PRD-008 — Observabilidade](PRD-008-observabilidade.md) — draft, sem histórias
@@ -29,12 +29,12 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 - [Fase 02 — Setup do projeto](backlog/fase-02/) (4 histórias — Done)
 - [Fase 03 — MVP estático](backlog/fase-03/) (17 histórias — 17/17 Done)
 - [Fase 04 — Polimento](backlog/fase-04/) (2 histórias — 2/2 Done)
-- [Fase 07 — Frontend & UX v2](backlog/fase-07/) (US-07-01 a US-07-15 — 15/15 Done; candidata a arquivamento; referência [personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice)
 
 ### Fases arquivadas
 
 - [Fase 05 — Feature de IA (RAG)](backlog/archive/fase-05/) (9 histórias — 9/9 Done) — arquivada 2026-08-11
 - [Fase 06 — Divulgação](backlog/archive/fase-06/) (US-06-01–02 Done; US-06-03 Cancelada) — arquivada 2026-08-11
+- [Fase 07 — Frontend & UX v2](backlog/archive/fase-07/) (US-07-01 a US-07-15 — 15/15 Done) — arquivada 2026-08-11; referência [personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice
 
 ### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
 
