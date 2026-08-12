@@ -31,8 +31,8 @@ O autor atua profissionalmente com Java e Python; o ecossistema de RAG/embedding
 - Dois pipelines de CI (`frontend-ci.yml`, `backend-ci.yml`) e um workflow de E2E dedicado (`e2e/`), todos vivendo no mesmo repositório
 - PRs que tocam frontend e backend ao mesmo tempo (quando a feature exigir) passam pelos dois checks de CI
 - Qualquer decisão de mudar frontend (ex.: sair de Next.js) ou backend (ex.: sair de FastAPI) exige novo ADR — não deve ser reaberta em uma história comum
-- RAG segue "do zero", sem framework pesado (LangChain/LlamaIndex) nem banco vetorial — decisão detalhada em ADR futuro do fluxo de RAG ([US-05-01](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md)), quando essa fase entrar em execução
+- RAG segue "do zero", sem framework pesado (LangChain/LlamaIndex) nem banco vetorial — decisão detalhada em ADR futuro do fluxo de RAG ([US-05-01](../product/backlog/archive/fase-05/US-05-01-adr-fluxo-rag.md)), quando essa fase entrar em execução
 
 ## Referências
 - `docs/agents/CONTEXTO-PROJETO.md`
-- `docs/product/PRD-003-rag.md` e [`docs/product/backlog/fase-05/US-05-01-adr-fluxo-rag.md`](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md) (ADR do fluxo de RAG, decisão futura e específica)
+- `docs/product/PRD-003-rag.md` e [`docs/product/backlog/archive/fase-05/US-05-01-adr-fluxo-rag.md`](../product/backlog/archive/fase-05/US-05-01-adr-fluxo-rag.md) (ADR do fluxo de RAG, decisão futura e específica)

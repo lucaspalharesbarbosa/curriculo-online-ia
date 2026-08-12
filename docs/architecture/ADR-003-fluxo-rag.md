@@ -5,7 +5,7 @@ Aceita
 
 ## Contexto
 
-A Fase 05 (RAG) implementa o diferencial de AI Engineering do projeto: um assistente de chat que responde perguntas sobre a trajetória do autor com base no `resume.json` real (`docs/product/PRD-003-rag.md`). [US-05-01](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md) — esta história — **bloqueia** todas as demais da fase (US-05-02 a US-05-07): nenhuma delas pode decidir sozinha estratégia de chunking, provider de embeddings ou onde fica a chave de API, sob risco de reabrir a decisão a cada história.
+A Fase 05 (RAG) implementa o diferencial de AI Engineering do projeto: um assistente de chat que responde perguntas sobre a trajetória do autor com base no `resume.json` real (`docs/product/PRD-003-rag.md`). [US-05-01](../product/backlog/archive/fase-05/US-05-01-adr-fluxo-rag.md) — esta história — **bloqueia** todas as demais da fase (US-05-02 a US-05-07): nenhuma delas pode decidir sozinha estratégia de chunking, provider de embeddings ou onde fica a chave de API, sob risco de reabrir a decisão a cada história.
 
 `docs/agents/CONTEXTO-PROJETO.md` já fixa o desenho de alto nível — chunking do `resume.json` → embeddings → similaridade em memória/JSON, sem banco vetorial — e `references/ai-architecture-patterns.md` (arquiteto) detalha o padrão. Falta apenas a decisão concreta de **qual provider de embeddings/LLM** usar e **onde ficam as chaves**, que é o objeto desta ADR.
 
@@ -52,7 +52,7 @@ Custo total esperado: **sub-dólar por mês**, mesmo com tráfego de lançamento
 
 ### 5. Onde fica a chave de API (CA-002)
 
-A chave (`LLM_API_KEY`, cobrindo embeddings + geração já que é o mesmo provider) fica **só no backend FastAPI**, como variável de ambiente — nunca em código, nunca no bundle do frontend/client. Em produção, configurada no painel do Render (`docs/product/backlog/fase-05/US-05-09-env-vars-segredos.md` documenta o `.env.example` e o passo a passo). Não há necessidade de Serverless Function/BFF intermediário na Vercel: o frontend já fala com o backend FastAPI via HTTPS (mesmo padrão de CORS do restante do projeto), e é o FastAPI — não o Next.js — quem faz as chamadas ao provider de IA.
+A chave (`LLM_API_KEY`, cobrindo embeddings + geração já que é o mesmo provider) fica **só no backend FastAPI**, como variável de ambiente — nunca em código, nunca no bundle do frontend/client. Em produção, configurada no painel do Render (`docs/product/backlog/archive/fase-05/US-05-09-env-vars-segredos.md` documenta o `.env.example` e o passo a passo). Não há necessidade de Serverless Function/BFF intermediário na Vercel: o frontend já fala com o backend FastAPI via HTTPS (mesmo padrão de CORS do restante do projeto), e é o FastAPI — não o Next.js — quem faz as chamadas ao provider de IA.
 
 ## Alternativas consideradas
 
@@ -66,10 +66,10 @@ A chave (`LLM_API_KEY`, cobrindo embeddings + geração já que é o mesmo provi
 
 ## Consequências
 
-- [US-05-02](../product/backlog/fase-05/US-05-02-chunking-resume-json.md) implementa o chunking por seção descrito aqui
-- [US-05-03](../product/backlog/fase-05/US-05-03-geracao-embeddings.md) usa `text-embedding-3-small` da OpenAI, cacheado em JSON
-- [US-05-04](../product/backlog/fase-05/US-05-04-endpoint-chat.md) usa `gpt-4o-mini` da OpenAI para geração, chamado via `httpx` assíncrono com timeout curto (`references/ai-architecture-patterns.md`, seção 5)
-- [US-05-09](../product/backlog/fase-05/US-05-09-env-vars-segredos.md) documenta `LLM_API_KEY` no `.env.example` do backend e no README de deploy
+- [US-05-02](../product/backlog/archive/fase-05/US-05-02-chunking-resume-json.md) implementa o chunking por seção descrito aqui
+- [US-05-03](../product/backlog/archive/fase-05/US-05-03-geracao-embeddings.md) usa `text-embedding-3-small` da OpenAI, cacheado em JSON
+- [US-05-04](../product/backlog/archive/fase-05/US-05-04-endpoint-chat.md) usa `gpt-4o-mini` da OpenAI para geração, chamado via `httpx` assíncrono com timeout curto (`references/ai-architecture-patterns.md`, seção 5)
+- [US-05-09](../product/backlog/archive/fase-05/US-05-09-env-vars-segredos.md) documenta `LLM_API_KEY` no `.env.example` do backend e no README de deploy
 - `backend/requirements.txt` ganha a dependência do SDK oficial da OpenAI (`openai`) quando US-05-03/US-05-04 forem implementadas
 - Nenhuma chave de API é exposta no client — todas as chamadas de IA passam pelo FastAPI
 - Reavaliar esta ADR (novo ADR) se: o volume de conteúdo crescer a ponto de justificar banco vetorial; o custo real observado destoar da estimativa; ou o Render free tier deixar de comportar o backend, forçando reconsiderar a decisão de embeddings locais
@@ -80,4 +80,4 @@ A chave (`LLM_API_KEY`, cobrindo embeddings + geração já que é o mesmo provi
 - `.claude/skills/arquiteto-ia-senior/references/ai-architecture-patterns.md`
 - `docs/product/PRD-003-rag.md`
 - [ADR-002](ADR-002-hospedagem-gratuita.md) (restrições de memória do Render free tier)
-- [US-05-01](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md), [US-05-02](../product/backlog/fase-05/US-05-02-chunking-resume-json.md), [US-05-03](../product/backlog/fase-05/US-05-03-geracao-embeddings.md), [US-05-04](../product/backlog/fase-05/US-05-04-endpoint-chat.md), [US-05-09](../product/backlog/fase-05/US-05-09-env-vars-segredos.md)
+- [US-05-01](../product/backlog/archive/fase-05/US-05-01-adr-fluxo-rag.md), [US-05-02](../product/backlog/archive/fase-05/US-05-02-chunking-resume-json.md), [US-05-03](../product/backlog/archive/fase-05/US-05-03-geracao-embeddings.md), [US-05-04](../product/backlog/archive/fase-05/US-05-04-endpoint-chat.md), [US-05-09](../product/backlog/archive/fase-05/US-05-09-env-vars-segredos.md)

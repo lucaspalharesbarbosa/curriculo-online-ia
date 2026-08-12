@@ -64,23 +64,23 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 ## Fase 5 — Feature de IA (RAG)
 
 **Status:** Done (9/9 histórias)
-**Backlog:** [`docs/product/backlog/fase-05/`](backlog/fase-05/) (US-05-01 a US-05-09)
+**Backlog:** [`docs/product/backlog/archive/fase-05/`](backlog/archive/fase-05/) (US-05-01 a US-05-09)
 
 - [x] ADR do fluxo de RAG (chunking, embeddings, custo)
 - [x] Endpoint `/chat` no FastAPI + geração de embeddings
 - [x] Widget de chat no frontend
 - [x] Testes do fluxo de chat (respostas, fallback, custo/latência)
 - [x] Segurança (chaves de API, CORS, rate limit)
-- [x] Deploy do backend no Render — [US-05-08](backlog/fase-05/US-05-08-deploy-backend.md) (2026-08-05)
+- [x] Deploy do backend no Render — [US-05-08](backlog/archive/fase-05/US-05-08-deploy-backend.md) (2026-08-05)
 
 ## Fase 6 — Divulgação
 
-**Status:** Em andamento
-**Backlog:** [`docs/product/backlog/fase-06/`](backlog/fase-06/) (US-06-01 a US-06-03) — branch `feature/fase-06-divulgacao`
+**Status:** Done (2 Done · 1 Cancelada)
+**Backlog:** [`docs/product/backlog/archive/fase-06/`](backlog/archive/fase-06/) (US-06-01 a US-06-03)
 
-- [x] README com a seção "Como este projeto foi construído com agentes de IA" — [US-06-01](backlog/fase-06/US-06-01-readme-agentes-ia.md)
-- [ ] Link do site no LinkedIn e no GitHub — [US-06-02](backlog/fase-06/US-06-02-links-github-linkedin.md) (Quase lá — falta confirmação do autor)
-- [ ] Feedback de 2-3 pessoas antes de divulgar amplamente — [US-06-03](backlog/fase-06/US-06-03-feedback-pre-divulgacao.md) (Quase lá — falta registro)
+- [x] README com a seção "Como este projeto foi construído com agentes de IA" — [US-06-01](backlog/archive/fase-06/US-06-01-readme-agentes-ia.md)
+- [x] Link do site no LinkedIn e no GitHub — [US-06-02](backlog/archive/fase-06/US-06-02-links-github-linkedin.md)
+- [x] Feedback de 2-3 pessoas antes de divulgar amplamente — [US-06-03](backlog/archive/fase-06/US-06-03-feedback-pre-divulgacao.md) (**Cancelada** em 2026-08-11 — autor não fará a coleta formal)
 
 ## Fase 7 — Frontend & UX v2
 

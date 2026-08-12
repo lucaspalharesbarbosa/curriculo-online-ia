@@ -35,8 +35,8 @@ Visitante/recrutador acessando o site publicado; o próprio autor validando PRs 
 | Conectar `frontend-ci.yml` ao lint + build reais | P1 | [US-02-03](backlog/fase-02/US-02-03-ci-frontend-real.md) |
 | Conectar `backend-ci.yml` ao lint + testes reais | P1 | [US-02-04](backlog/fase-02/US-02-04-ci-backend-real.md) |
 | Deploy inicial do frontend na Vercel | P2 | [US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md) |
-| Deploy do backend no Render/Cloud Run | P3 | [US-05-08](backlog/fase-05/US-05-08-deploy-backend.md) |
-| Documentar variáveis de ambiente / segredos | P3 | [US-05-09](backlog/fase-05/US-05-09-env-vars-segredos.md) |
+| Deploy do backend no Render/Cloud Run | P3 | [US-05-08](backlog/archive/fase-05/US-05-08-deploy-backend.md) |
+| Documentar variáveis de ambiente / segredos | P3 | [US-05-09](backlog/archive/fase-05/US-05-09-env-vars-segredos.md) |
 
 ## Riscos
 
