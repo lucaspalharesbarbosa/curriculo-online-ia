@@ -28,10 +28,10 @@
 
 ### Critérios de aceite
 
-- [x] CA-001: existe um registro em `docs/product/backlog/fase-06/` (esta história) com roteiro curto para o revisor
-- [ ] CA-002: pelo menos **2** feedbacks distintos registrados (nome/iniciais, data, canal, 1–3 pontos)
-- [ ] CA-003: cada feedback tem disposition: `ok` | `ajuste feito` | `adiado` (com motivo curto se adiado)
-- [ ] CA-004: se houver ajuste de produto derivado do feedback, link da US/PR correspondente — ou `N/A` se só validação
+- [x] CA-001: existe um registro em `docs/product/backlog/archive/fase-06/` (esta história) com roteiro curto para o revisor
+- [N/A] CA-002: pelo menos **2** feedbacks distintos registrados — **cancelada** (decisão do autor 2026-08-11)
+- [N/A] CA-003: disposition por feedback — **cancelada** (decisão do autor 2026-08-11)
+- [N/A] CA-004: link US/PR de ajuste ou `N/A` — **cancelada** (decisão do autor 2026-08-11)
 
 ### Fora de escopo
 
@@ -42,7 +42,7 @@
 ### Dependências
 
 - Site em produção (US-03-17) e chat utilizável (Fase 05)
-- US-06-01 e US-06-02 podem avançar em paralelo; divulgação ampla espera este gate
+- US-06-01 e US-06-02 podem avançar em paralelo; divulgação ampla espera este gate — **gate removido** com o cancelamento desta US
 
 ### Área / Prioridade
 
@@ -51,10 +51,12 @@ Divulgação — P3
 ### Tasks
 
 - [x] T01 Escrever roteiro curto de review nesta história
-- [ ] T02 Autor coleta e registra ≥ 2 feedbacks na tabela abaixo
-- [ ] T03 Marcar disposition de cada item; abrir US/fix só se necessário
+- [N/A] T02 Autor coleta e registra ≥ 2 feedbacks — cancelada pelo autor (2026-08-11)
+- [N/A] T03 Marcar disposition / abrir US/fix — cancelada pelo autor (2026-08-11)
 
 ### Roteiro para o revisor (5–10 min)
+
+> Mantido só como referência histórica; coleta formal não será feita nesta US.
 
 1. Abrir https://lucas-palhares-cv.vercel.app no celular e no desktop (se possível)
 2. Conferir se nome, papel e contatos fazem sentido
@@ -66,22 +68,24 @@ Divulgação — P3
 
 | # | Quem (iniciais/nome) | Data | Canal | Pontos | Disposition |
 |---|---|---|---|---|---|
-| 1 | _pendente_ | | | | |
-| 2 | _pendente_ | | | | |
-| 3 | _opcional_ | | | | |
+| — | _não coletado_ | — | — | US cancelada | N/A |
+
+### Motivo do cancelamento
+
+Autor decidiu **não** executar a coleta formal de 2–3 feedbacks antes da divulgação (2026-08-11). README + links GitHub/LinkedIn (US-06-01/02) bastam para fechar a Fase 6. Feedback espontâneo pode entrar depois via histórias da Fase 7+ se necessário.
 
 ### DoD (antes de concluir)
 
-- [ ] Todos os critérios de aceite acima `[x]`
+- [N/A] Todos os critérios de aceite acima `[x]` — escopo restante cancelado; CA-001 mantido; CA-002–004 `N/A`
 - [N/A] Cobertura de testes ≥ 70% — processo de lançamento
 - [N/A] Build/lint
-- [ ] Review do `@tech-lead-review` sem Critical/High (escopo docs)
+- [N/A] Review do `@tech-lead-review` sem Critical/High — cancelamento de escopo, sem entrega nova
 - [N/A] Contrato de API
-- [ ] Sem chave de API/secret exposto
-- [ ] Roadmap atualizado se a Fase 6 fechar
+- [x] Sem chave de API/secret exposto
+- [x] Roadmap atualizado se a Fase 6 fechar
 - [N/A] Deploy/preview de UI nova
-- [ ] Vereditos de QA, Tech Lead e PO na tabela abaixo
-- [ ] Status da história atualizado neste arquivo
+- [x] Vereditos de QA, Tech Lead e PO na tabela abaixo
+- [x] Status da história atualizado neste arquivo
 
 ### Vereditos
 
@@ -89,6 +93,6 @@ Divulgação — P3
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas — CA-002–004 pendentes (feedbacks) | 2026-08-10 | `docs/qa/QA-003-fase-06-divulgacao.md` |
 | Tech Lead | `@tech-lead-review` | Aprovar com ressalvas — roteiro ok; Done espera ≥2 feedbacks | 2026-08-10 | review branch `feature/fase-06-divulgacao` |
-| PO | `@product-owner` | Quase lá — falta registro de ≥2 feedbacks (CA-002–004) | 2026-08-10 | |
+| PO | `@product-owner` | **Cancelada** — autor desistiu da coleta formal de feedback; não bloqueia Fase 6 | 2026-08-11 | decisão do autor no chat |
 
-**Status:** Quase lá
+**Status:** Cancelada

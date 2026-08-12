@@ -55,7 +55,7 @@ Rel(backend, llm, "Embeddings + geração", "HTTPS")
 
 ## Próximos níveis
 
-Component (L3), Sequence e Deployment (L4) ficam para quando a Fase 5 (RAG) entrar em execução ([US-05-01](../product/backlog/fase-05/US-05-01-adr-fluxo-rag.md) em diante) — ver modelos prontos em `.claude/skills/arquiteto-ia-senior/references/c4-patterns.md`. Não antecipar detalhe de componente antes do ADR do fluxo de RAG (US-05-01) existir.
+Component (L3), Sequence e Deployment (L4) ficam para quando a Fase 5 (RAG) entrar em execução ([US-05-01](../product/backlog/archive/fase-05/US-05-01-adr-fluxo-rag.md) em diante) — ver modelos prontos em `.claude/skills/arquiteto-ia-senior/references/c4-patterns.md`. Não antecipar detalhe de componente antes do ADR do fluxo de RAG (US-05-01) existir.
 
 ## Referências
 - [ADR-001 — Stack inicial e monorepo](ADR-001-stack-inicial-monorepo.md)

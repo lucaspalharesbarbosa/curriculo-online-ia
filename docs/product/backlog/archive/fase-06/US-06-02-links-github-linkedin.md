@@ -31,7 +31,7 @@
 - [x] CA-001: `README.md` (raiz) exibe de forma proeminente o link do site em produção (`https://lucas-palhares-cv.vercel.app`)
 - [x] CA-002: checklist no backlog (esta história) lista o passo de configurar **Website** / About do repositório GitHub com a URL do site
 - [x] CA-003: checklist lista o passo de adicionar o link do site no perfil LinkedIn (destaque / seção Featured ou equivalente)
-- [ ] CA-004: autor confirma CA-002 e CA-003 feitos **ou** registra pendência explícita com data — sem isso a história não fecha Done
+- [x] CA-004: autor confirma CA-002 e CA-003 feitos **ou** registra pendência explícita com data — sem isso a história não fecha Done
 
 ### Fora de escopo
 
@@ -52,15 +52,13 @@ Divulgação — P3
 
 - [x] T01 Incluir bloco “Site em produção” no `README.md` com a URL
 - [x] T02 Registrar checklist do autor (GitHub About + LinkedIn) nesta história
-- [ ] T03 Aguardar LinkedIn + URL final pós-domínio (GitHub Website já ok; atualizar URL se o domínio mudar)
+- [x] T03 Aguardar LinkedIn + URL final pós-domínio (GitHub Website já ok; atualizar URL se o domínio mudar)
 
 ### Checklist do autor (ações fora do repositório)
 
 - [x] GitHub → Settings do repo (ou About na home) → **Website** = `https://lucas-palhares-cv.vercel.app` — confirmado pelo autor em 2026-08-10 (após rename Vercel)
-- [ ] LinkedIn → perfil → destaque/Featured → link `https://lucas-palhares-cv.vercel.app` — **adiado** pelo autor (2026-08-10): quer correções de UX mobile antes de divulgar
-- [ ] Feedback (US-06-03) — após LinkedIn / estabilidade da URL
-
-**Pendência explícita (CA-004 parcial):** painéis Vercel (`NEXT_PUBLIC_SITE_URL`), Render (`ALLOWED_ORIGIN`) e GitHub Website ok na URL nova (2026-08-10). Falta LinkedIn (bloqueado por UX mobile).
+- [x] LinkedIn → perfil → destaque/Featured → link `https://lucas-palhares-cv.vercel.app` — confirmado pelo autor em 2026-08-11
+- [N/A] Feedback (US-06-03) — US cancelada pelo autor em 2026-08-11
 
 Env / hospedagem (fora do checklist original, mas necessário pós-rename):
 
@@ -69,16 +67,16 @@ Env / hospedagem (fora do checklist original, mas necessário pós-rename):
 
 ### DoD (antes de concluir)
 
-- [ ] Todos os critérios de aceite acima `[x]`
+- [x] Todos os critérios de aceite acima `[x]`
 - [N/A] Cobertura de testes ≥ 70% — docs + ações manuais
 - [N/A] Build/lint — sem código de app (ou só Markdown)
-- [ ] Review do `@tech-lead-review` sem Critical/High
+- [x] Review do `@tech-lead-review` sem Critical/High
 - [N/A] Contrato de API
-- [ ] Sem chave de API/secret exposto
-- [ ] Documentação/roadmap atualizada se o status da fase mudar
+- [x] Sem chave de API/secret exposto
+- [x] Documentação/roadmap atualizada se o status da fase mudar
 - [N/A] Deploy/preview de UI do app
-- [ ] Vereditos de QA, Tech Lead e PO na tabela abaixo
-- [ ] Status da história atualizado neste arquivo
+- [x] Vereditos de QA, Tech Lead e PO na tabela abaixo
+- [x] Status da história atualizado neste arquivo
 
 ### Vereditos
 
@@ -86,6 +84,6 @@ Env / hospedagem (fora do checklist original, mas necessário pós-rename):
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas — CA-004 pendente (confirmação autor) | 2026-08-10 | `docs/qa/QA-003-fase-06-divulgacao.md` |
 | Tech Lead | `@tech-lead-review` | Aprovar com ressalvas — merge do README ok; Done da história espera CA-004 | 2026-08-10 | review branch `feature/fase-06-divulgacao` |
-| PO | `@product-owner` | Quase lá — Vercel/Render/GitHub ok na URL nova; LinkedIn adiado por UX mobile (2026-08-10) | 2026-08-10 | |
+| PO | `@product-owner` | Aceito — LinkedIn Featured confirmado pelo autor; CA-004 fechado | 2026-08-11 | |
 
-**Status:** Quase lá
+**Status:** Done
