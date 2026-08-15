@@ -14,7 +14,7 @@ Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
 
 ### Evolução pós-lançamento
 - [PRD-005 — Frontend & UX v2](PRD-005-frontend-ux-v2.md) — Done (15/15; histórias em `backlog/archive/fase-07/`)
-- [PRD-006 — Segurança & Performance](PRD-006-seguranca-performance.md) — review (discover); 4 histórias em `backlog/fase-08/`
+- [PRD-006 — Segurança & Performance](PRD-006-seguranca-performance.md) — review (discover); 8 histórias em `backlog/fase-08/`
 - [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — draft, sem histórias
 - [PRD-008 — Observabilidade](PRD-008-observabilidade.md) — draft, sem histórias
 - [PRD-009 — Chat v2](PRD-009-chat-v2.md) — draft, sem histórias
@@ -24,7 +24,7 @@ Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
 
 Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por história, com ID `US-<fase>-<sequência>` (ex.: `US-03-10`) e um slug descritivo no nome do arquivo. O ID já carrega o número da fase, então não há ambiguidade entre `US-03-01` (fase 03) e `US-05-01` (fase 05). A tabela "Histórias" de cada PRD linka para o arquivo correspondente.
 
-- [Fase 08 — Segurança & Performance](backlog/fase-08/) (US-08-01 a US-08-04 — Ready for Agent; discover aguardando aprovação) — `PRD-006`, `ADR-008`
+- [Fase 08 — Segurança & Performance](backlog/fase-08/) (US-08-01 Done; US-08-02 a US-08-08 Ready for Agent; discover aguardando aprovação) — `PRD-006`, `ADR-008`
 
 Demais fases do roadmap original e da evolução pós-lançamento executada estão arquivadas (ver abaixo). Fases 09–12 seguem em `draft`, sem histórias ainda.
 

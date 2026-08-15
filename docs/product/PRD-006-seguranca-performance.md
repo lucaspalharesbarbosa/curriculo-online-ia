@@ -44,28 +44,25 @@ Visitante/recrutador (experiência de carregamento) e o próprio autor (superfí
 | Timeout e retry limitado no client de IA do `/chat` (`ADR-004`) | P2 | [US-08-02](backlog/fase-08/US-08-02-timeout-retry-openai.md) |
 | Plano de mitigação de cold start do backend gratuito (Render free tier) | P2 | [US-08-03](backlog/fase-08/US-08-03-mitigacao-cold-start-render.md) |
 | Auditoria de performance (Lighthouse Home, bundle, cache) | P2 | [US-08-04](backlog/fase-08/US-08-04-auditoria-performance.md) |
+| Atualizar `nanoid` transitivo (`npm audit fix`) | P1 | [US-08-05](backlog/fase-08/US-08-05-atualizar-nanoid-transitivo.md) |
+| Desativar documentação OpenAPI em produção | P1 | [US-08-06](backlog/fase-08/US-08-06-desativar-docs-openapi-producao.md) |
+| Headers de segurança HTTP (frontend e backend) | P1 | [US-08-07](backlog/fase-08/US-08-07-headers-seguranca-http.md) |
+| Atualizar FastAPI/Starlette (e deps de dev com CVE) | P2 | [US-08-08](backlog/fase-08/US-08-08-atualizar-fastapi-starlette.md) |
 
-Nota: US-08-01 e US-08-04 são spikes — o resultado decide se nascem histórias de correção específica (achado por achado). US-08-02 pode rodar em paralelo aos spikes (lacuna já decidida no ADR-004). US-08-03 depende da escolha de custo do autor (A/B/C ou aceitar risco — ADR-008).
+Nota: US-08-01 e US-08-04 são spikes — o resultado decide se nascem histórias de correção específica (achado por achado). US-08-02 pode rodar em paralelo aos spikes (lacuna já decidida no ADR-004). US-08-03 depende da escolha de custo do autor (A/B/C ou aceitar risco — ADR-008). US-08-05 a US-08-08 nasceram dos achados da auditoria US-08-01 (ver nota abaixo).
 
-### Histórias filhas propostas (achados de US-08-01 — rascunho de título, sem arquivo criado ainda)
+### Histórias filhas propostas (achados de US-08-01)
 
-Origem: `docs/qa/QA-005-auditoria-seguranca.md`. Cada uma precisa de DoR próprio antes de virar `US-08-NN` de verdade — decomposição fica para uma próxima rodada do `@product-owner`.
+Origem: `docs/qa/QA-005-auditoria-seguranca.md`. Formalizadas em **US-08-05 a US-08-08** em 2026-08-15, cada uma com DoR próprio fechado — ver arquivos linkados na tabela "Histórias" acima.
 
-| Título (rascunho) | Sev do achado | CA em 1 linha |
-|---|---|---|
-| Atualizar `nanoid` transitivo (`npm audit fix`) | High | `npm audit` não reporta mais vulnerabilidade `nanoid`; `npm test` (63 testes) e `npm run build` seguem verdes após o bump |
-| Desativar documentação OpenAPI em produção | Medium | Dado `ENVIRONMENT=production`, `/docs`, `/redoc` e `/openapi.json` retornam 404, mantendo-os ativos em dev/local |
-| Adicionar headers de segurança HTTP no frontend e no backend | Medium | `curl -I` em produção retorna `Content-Security-Policy`, `X-Content-Type-Options: nosniff` e `X-Frame-Options`/`frame-ancestors`, sem quebrar fontes/imagens/chat existentes |
-| Atualizar FastAPI/Starlette para versões sem CVE conhecido | Low (observação) | `pip-audit -r backend/requirements.txt` não reporta CVE para `fastapi`/`starlette` após o bump, com os 29 testes de backend e CI verdes |
-
-Achado Low L1 (`python-dotenv`/`pytest`/`black`, uso local/dev) — risco aceito, sem história filha dedicada (pode ser agrupado com o bump de Starlette acima se o autor preferir).
+Achado Low L1 (`python-dotenv`/`pytest`/`black`, uso local/dev) — agrupado na US-08-08 junto com o bump de Starlette (achado L2), conforme sugerido no relatório do QA.
 
 ## Ordem sugerida de implementação (após aprovação do discover)
 
 1. **US-08-01** (P1 — spike segurança) e/ou **US-08-02** (timeout — paralelo)
 2. **US-08-04** (spike performance)
 3. **US-08-03** (cold start — após decisão de custo do autor)
-4. US filhas de correção (se houver) — DoR próprio por achado
+4. US filhas de correção (se houver) — DoR próprio por achado; as nascidas de **US-08-01** já formalizadas (US-08-05 a US-08-08); as de **US-08-04** (performance), se houver, seguem o mesmo processo quando o spike rodar
 
 ## Riscos
 
@@ -77,4 +74,4 @@ Achado Low L1 (`python-dotenv`/`pytest`/`black`, uso local/dev) — risco aceito
 
 - [x] Toda história do épico tem seu próprio DoR fechado
 - [x] Tasks decompostas (`references/task-breakdown-guide.md`)
-- [ ] Auditoria (spike) rodada antes de criar histórias de correção específicas — gate da US-08-01 / US-08-04 (pós-implement)
+- [ ] Auditoria (spike) rodada antes de criar histórias de correção específicas — US-08-01 (segurança) Done, histórias filhas formalizadas (US-08-05 a US-08-08); US-08-04 (performance) ainda pendente, gate segue aberto até esse spike rodar
