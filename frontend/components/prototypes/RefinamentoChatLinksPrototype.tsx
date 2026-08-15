@@ -41,7 +41,7 @@ function Frame({ children }: { children: ReactNode }) {
   );
 }
 
-/** Cabeçalho do chat (mobile, ~360px) — subtítulo + botão minimizar, variantes A/B. */
+/** Cabeçalho do chat (mobile, ~360px) — variante A, decidida. */
 function ChatHeaderVariantA() {
   return (
     <header className="relative flex w-full max-w-[360px] items-center gap-3 rounded-t-2xl border-b border-[var(--assist-line)] bg-[var(--assist-panel)] px-4 py-3.5 pl-5">
@@ -77,36 +77,7 @@ function ChatHeaderVariantA() {
   );
 }
 
-function ChatHeaderVariantB() {
-  return (
-    <header className="relative flex w-full max-w-[360px] items-center gap-3 rounded-t-2xl border-b border-[var(--assist-line)] bg-[var(--assist-panel)] px-4 py-3.5 pl-5">
-      <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0c2233] text-accent-300 shadow-[inset_0_0_0_1px_rgba(56,189,248,0.35)]">
-        <Sparkles className="h-4 w-4" aria-hidden />
-        <span className="assist-signal-dot absolute -right-0.5 -bottom-0.5" />
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold tracking-tight text-neutral-50">
-          Assistente RAG
-        </p>
-        <p className="mt-0.5 truncate font-mono text-[11px] leading-snug text-neutral-400">
-          Baseado no currículo
-        </p>
-      </div>
-
-      <button
-        type="button"
-        aria-label="Minimizar chat"
-        title="Minimizar"
-        className="relative inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-neutral-400 transition-colors hover:bg-white/5 hover:text-accent-200 active:scale-[0.95]"
-      >
-        <Minimize2 className="h-4 w-4" aria-hidden />
-      </button>
-    </header>
-  );
-}
-
-/** Botões de link (CTA) — variantes A/B/C aplicadas aos 3 casos reais do site. */
+/** Botões de link (CTA) — variantes aplicadas aos 3 casos reais do site. */
 function LinkVariantA({
   href,
   label,
@@ -179,6 +150,57 @@ function LinkVariantC({
   );
 }
 
+/** Só o botão (evolução do B, sem texto) — ícone com tooltip/aria-label. */
+function LinkVariantD({
+  href,
+  label,
+  icon,
+}: {
+  href: string;
+  label: string;
+  icon: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      aria-label={label}
+      title={label}
+      className="tap-target inline-flex h-8 w-8 items-center justify-center rounded-lg border border-accent-500/25 text-accent-300 transition-all hover:border-accent-500/50 hover:bg-accent-500/10 hover:text-accent-100"
+    >
+      {icon}
+    </Link>
+  );
+}
+
+/** Botão (estilo B) + texto bem sutil e pequeno ao lado (evolução do C). */
+function LinkVariantE({
+  href,
+  label,
+  icon,
+}: {
+  href: string;
+  label: string;
+  icon: ReactNode;
+}) {
+  return (
+    <Link
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group inline-flex items-center gap-2"
+    >
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-accent-500/25 text-accent-300 transition-all group-hover:border-accent-500/50 group-hover:bg-accent-500/10 group-hover:text-accent-100">
+        {icon}
+      </span>
+      <span className="text-[11px] font-normal text-neutral-500 transition-colors group-hover:text-neutral-300">
+        {label}
+      </span>
+    </Link>
+  );
+}
+
 export function RefinamentoChatLinksPrototype({
   education,
   certification,
@@ -236,41 +258,17 @@ export function RefinamentoChatLinksPrototype({
               1. Cabeçalho do chat (mobile)
             </h2>
             <p className="mt-1 text-sm text-neutral-400">
-              Hoje o subtítulo &ldquo;Online · baseado no currículo&rdquo;
-              quebra em duas linhas e o botão &ldquo;Minimizar&rdquo; ocupa
-              muito espaço com ícone + rótulo.
+              <span className="text-accent-400">Decidido: variante A.</span>{" "}
+              Texto completo do subtítulo, truncado com reticências se não
+              couber; botão &ldquo;Minimizar&rdquo; virou quadrado de ícone
+              (36px), sem rótulo.
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2">
-            <div>
-              <VariantLabel
-                letter="A"
-                name="Truncado + ícone-só no minimizar"
-              />
-              <Frame>
-                <ChatHeaderVariantA />
-              </Frame>
-              <p className="mt-2 text-xs text-neutral-500">
-                Mantém o texto completo, mas trunca com reticências se não
-                couber. Botão vira quadrado de ícone (36px), sem rótulo.
-              </p>
-            </div>
-
-            <div>
-              <VariantLabel
-                letter="B"
-                name="Copy mais curta + ícone flutuante"
-              />
-              <Frame>
-                <ChatHeaderVariantB />
-              </Frame>
-              <p className="mt-2 text-xs text-neutral-500">
-                Remove o prefixo &ldquo;Online ·&rdquo; (o status já aparece no
-                ponto verde do avatar) e o botão de minimizar vira um ícone
-                circular discreto (32px), sem borda.
-              </p>
-            </div>
+          <div className="max-w-[360px]">
+            <Frame>
+              <ChatHeaderVariantA />
+            </Frame>
           </div>
         </section>
 
@@ -280,32 +278,15 @@ export function RefinamentoChatLinksPrototype({
               2. Botões de link (Educação, Certificações, Destaques)
             </h2>
             <p className="mt-1 text-sm text-neutral-400">
-              Hoje todos usam o mesmo padrão: pill grande (44px de altura),
-              fundo em gradiente e borda. Abaixo, 3 variantes mais sutis
-              aplicadas aos 3 casos reais do site.
+              Você curtiu mais <span className="text-accent-400">B</span> e{" "}
+              <span className="text-accent-400">C</span>. Nova rodada: duas
+              variantes a mais na mesma linha — <strong>D</strong> só com o
+              botão (sem texto) e <strong>E</strong> com botão + texto bem sutil
+              e pequeno ao lado.
             </p>
           </div>
 
-          <div className="grid gap-8 sm:grid-cols-3">
-            <div>
-              <VariantLabel letter="A" name="Link de texto" />
-              <p className="mb-3 text-xs text-neutral-500">
-                Sem borda/fundo — só texto colorido, sublinha no hover.
-              </p>
-              <Frame>
-                <div className="flex flex-col gap-3">
-                  {linkCases.map((item) => (
-                    <LinkVariantA
-                      key={item.key}
-                      href={item.href}
-                      label={item.label}
-                      icon={item.icon}
-                    />
-                  ))}
-                </div>
-              </Frame>
-            </div>
-
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <VariantLabel letter="B" name="Chip fantasma" />
               <p className="mb-3 text-xs text-neutral-500">
@@ -334,6 +315,46 @@ export function RefinamentoChatLinksPrototype({
                 <div className="flex flex-col gap-3">
                   {linkCases.map((item) => (
                     <LinkVariantC
+                      key={item.key}
+                      href={item.href}
+                      label={item.label}
+                      icon={item.icon}
+                    />
+                  ))}
+                </div>
+              </Frame>
+            </div>
+
+            <div>
+              <VariantLabel letter="D" name="Só o botão" />
+              <p className="mb-3 text-xs text-neutral-500">
+                Sem texto nenhum — só o ícone (32px, estilo do B), com
+                tooltip/aria-label. O mais discreto de todos.
+              </p>
+              <Frame>
+                <div className="flex flex-col gap-3">
+                  {linkCases.map((item) => (
+                    <LinkVariantD
+                      key={item.key}
+                      href={item.href}
+                      label={item.label}
+                      icon={item.icon}
+                    />
+                  ))}
+                </div>
+              </Frame>
+            </div>
+
+            <div>
+              <VariantLabel letter="E" name="Botão + texto sutil" />
+              <p className="mb-3 text-xs text-neutral-500">
+                Botão quadrado (estilo B) + texto pequeno (11px) e apagado ao
+                lado — só ganha cor no hover.
+              </p>
+              <Frame>
+                <div className="flex flex-col gap-3">
+                  {linkCases.map((item) => (
+                    <LinkVariantE
                       key={item.key}
                       href={item.href}
                       label={item.label}
