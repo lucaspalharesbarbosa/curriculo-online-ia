@@ -1,6 +1,6 @@
 import os
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.chat import router as chat_router
@@ -31,6 +31,31 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 app.include_router(chat_router)
+
+# US-08-07 (achado M2 de QA-005): mesmo conjunto de headers de seguranca do
+# frontend (frontend/next.config.ts), aplicado a toda resposta da API. Como o
+# backend so serve JSON (nunca HTML/JS/CSS proprio), a CSP fica no modo mais
+# restritivo possivel (default-src 'none') — nao ha recurso nenhum para a API
+# carregar ou permitir carregarem dela. HSTS fica de fora de proposito
+# (CA-004): API roda sempre atras de HTTPS via Render/Cloudflare, sem
+# necessidade de header proprio.
+SECURITY_HEADERS = {
+    "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": (
+        "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+    ),
+}
+
+
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    for header, value in SECURITY_HEADERS.items():
+        response.headers[header] = value
+    return response
 
 
 @app.get("/health")

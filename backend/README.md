@@ -86,6 +86,10 @@ Em **produção** (`ENVIRONMENT=production`, configurado no painel do Render), o
 - **Rate limit**: contador simples em memória por IP (`app/chat.py`, `_request_log`) — sem lib externa (`slowapi` avaliado, mas dispensado; volume do projeto não justifica a dependência extra). Limite: 10 requisições/minuto por IP; excedente retorna `429`. Reinicia a cada deploy (estado em memória, não persistido) — aceitável para o volume de tráfego esperado (visitantes ocasionais de portfólio).
 - **Chave de API**: `LLM_API_KEY` só existe como variável de ambiente no backend (lida em `app/rag.py`), nunca no client — ver [ADR-003](../docs/architecture/ADR-003-fluxo-rag.md) seção 5.
 
+## Headers de segurança HTTP (US-08-07)
+
+Middleware custom (`add_security_headers` em `app/main.py`, sem lib externa) injeta em toda resposta: `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'` (API só serve JSON, nenhum recurso próprio para permitir), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` e `Permissions-Policy` desativando `camera`/`microphone`/`geolocation`/`payment`/`usb`. Sem `Strict-Transport-Security` próprio — a API roda sempre atrás de HTTPS (Render/Cloudflare). Teste de regressão: `backend/tests/test_main.py::test_health_check_retorna_headers_de_seguranca`.
+
 ## Deploy
 
 Decisão de hospedagem: [`ADR-002`](../docs/architecture/ADR-002-hospedagem-gratuita.md) (Aceita) — **Render free tier**, Root Directory = `backend/`; Google Cloud Run documentado como fallback caso o cold start do Render atrapalhe o chat.
