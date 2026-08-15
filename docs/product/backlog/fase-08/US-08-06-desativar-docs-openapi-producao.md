@@ -48,6 +48,7 @@ Mapeamento de erros:
 - [ ] CA-003: dado `ENVIRONMENT=production`, `GET /openapi.json` retorna 404
 - [ ] CA-004: dado `ENVIRONMENT` ausente ou diferente de `production` (dev/local), os três endpoints continuam respondendo 200 como hoje
 - [ ] CA-005: `ENVIRONMENT=production` configurado no painel do Render (produção real) e comportamento confirmado via `curl -I` pós-deploy
+- [ ] CA-006: `backend/README.md` (com referência no `README.md` raiz) documenta como acessar Swagger/ReDoc/OpenAPI **localmente** (rodar o backend sem `ENVIRONMENT=production` → `http://localhost:8000/docs`) — a documentação da API continua disponível para o autor, só não fica exposta publicamente em produção
 
 ### Fora de escopo
 
@@ -73,6 +74,7 @@ Segurança & Performance — P1
 - [ ] T03 [P] Teste em `backend/tests/test_main.py` cobrindo os dois cenários (produção bloqueado / dev liberado)
 - [ ] T04 Configurar `ENVIRONMENT=production` no painel do Render (produção) e validar com `curl -I` pós-deploy nos três endpoints
 - [ ] T05 Atualizar `backend/README.md` (seção de variáveis de ambiente) documentando `ENVIRONMENT`
+- [ ] T06 Adicionar em `backend/README.md` uma seção curta "Documentação da API" explicando que Swagger/ReDoc/OpenAPI ficam em `http://localhost:8000/docs` (`/redoc`, `/openapi.json`) ao rodar local (sem `ENVIRONMENT=production`), e por que ficam fechados em produção; linkar essa seção a partir do `README.md` raiz
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
@@ -82,7 +84,7 @@ Segurança & Performance — P1
 - [ ] Review do `@tech-lead-review` sem Critical/High em aberto
 - [ ] Contrato de API implementado bate com o documentado acima (404 condicional aos três endpoints de docs)
 - [ ] Sem chave de API/secret exposto (client bundle ou repo) — `ENVIRONMENT` não é segredo, mas confirmar que nenhuma outra variável vazou no processo
-- [ ] Documentação atualizada — `backend/.env.example` e `backend/README.md` (variável `ENVIRONMENT`)
+- [ ] Documentação atualizada — `backend/.env.example` e `backend/README.md` (variável `ENVIRONMENT` + seção "Documentação da API" de como acessar Swagger localmente); `README.md` raiz linkando essa seção
 - [ ] Deploy/preview verificado — `curl -I` real em produção (Render) pós-deploy, nos três endpoints
 - [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [ ] Status da história atualizado no próprio arquivo
