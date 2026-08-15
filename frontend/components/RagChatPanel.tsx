@@ -233,7 +233,7 @@ export function RagChatPanel({
           <button
             type="button"
             onClick={onMinimize}
-            className="tap-target relative z-[3] mr-6 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--assist-line)] bg-[#0c2233] text-accent-200 transition-colors hover:border-accent-500/40 hover:bg-[#0f2a3d] hover:text-accent-100 active:scale-[0.97] active:bg-[#123247] sm:mr-7"
+            className="tap-target relative z-[3] mr-6 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[var(--assist-line)] bg-[#0c2233] text-accent-200 transition-colors hover:border-accent-500/40 hover:bg-[#0f2a3d] hover:text-accent-100 active:scale-[0.97] active:bg-[#123247] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40 sm:mr-7"
             aria-label="Minimizar chat"
             title="Minimizar"
           >
