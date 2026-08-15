@@ -1,7 +1,6 @@
 "use client";
 
-import { ExternalLink, Minimize2 } from "lucide-react";
-import Link from "next/link";
+import { Minimize2 } from "lucide-react";
 
 function VariantLabel({ name }: { name: string }) {
   return <p className="mb-2 font-mono text-xs text-accent-400">{name}</p>;
@@ -49,41 +48,6 @@ function MinimizeProposed() {
   );
 }
 
-/** LinkButton — atual vs. com active:scale + anel de foco. */
-function LinkCurrent() {
-  return (
-    <Link
-      href="#"
-      onClick={(e) => e.preventDefault()}
-      className="group inline-flex items-center gap-2"
-    >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-accent-500/25 text-accent-300 transition-all group-hover:border-accent-500/50 group-hover:bg-accent-500/10 group-hover:text-accent-100">
-        <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-      </span>
-      <span className="text-[11px] font-normal text-neutral-500 transition-colors group-hover:text-neutral-300">
-        Ver certificado
-      </span>
-    </Link>
-  );
-}
-
-function LinkProposed() {
-  return (
-    <Link
-      href="#"
-      onClick={(e) => e.preventDefault()}
-      className="group inline-flex items-center gap-2 rounded-lg transition-transform active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40"
-    >
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-accent-500/25 text-accent-300 transition-all group-hover:border-accent-500/50 group-hover:bg-accent-500/10 group-hover:text-accent-100">
-        <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-      </span>
-      <span className="text-[11px] font-normal text-neutral-500 transition-colors group-hover:text-neutral-300">
-        Ver certificado
-      </span>
-    </Link>
-  );
-}
-
 export function EstadosInteracaoPrototype() {
   return (
     <main className="min-h-screen bg-[#03070d] px-4 py-10 text-neutral-100 sm:px-8">
@@ -123,24 +87,15 @@ export function EstadosInteracaoPrototype() {
           </div>
         </section>
 
-        <section className="space-y-4">
+        <section className="space-y-2">
           <h2 className="text-lg font-semibold text-neutral-50">
             2. Botão de link (Educação / Certificações / Destaques)
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <VariantLabel name="Atual" />
-              <Frame hint="Clique e segure: nada acontece. Dê Tab até aqui: contorno azul padrão do navegador.">
-                <LinkCurrent />
-              </Frame>
-            </div>
-            <div>
-              <VariantLabel name="Proposto (+ pressionado + anel de foco)" />
-              <Frame hint="Clique e segure: o botão encolhe levemente (mesmo efeito do botão de minimizar). Dê Tab até aqui: anel sutil com a cor de destaque.">
-                <LinkProposed />
-              </Frame>
-            </div>
-          </div>
+          <p className="text-sm text-neutral-400">
+            <span className="text-accent-400">Decidido: aplicado.</span> O
+            `LinkButton` de produção já ganhou o efeito de pressionado
+            (`active:scale-0.97`) e o anel de foco.
+          </p>
         </section>
       </div>
     </main>
