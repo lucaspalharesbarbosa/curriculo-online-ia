@@ -47,6 +47,19 @@ Visitante/recrutador (experiência de carregamento) e o próprio autor (superfí
 
 Nota: US-08-01 e US-08-04 são spikes — o resultado decide se nascem histórias de correção específica (achado por achado). US-08-02 pode rodar em paralelo aos spikes (lacuna já decidida no ADR-004). US-08-03 depende da escolha de custo do autor (A/B/C ou aceitar risco — ADR-008).
 
+### Histórias filhas propostas (achados de US-08-01 — rascunho de título, sem arquivo criado ainda)
+
+Origem: `docs/qa/QA-005-auditoria-seguranca.md`. Cada uma precisa de DoR próprio antes de virar `US-08-NN` de verdade — decomposição fica para uma próxima rodada do `@product-owner`.
+
+| Título (rascunho) | Sev do achado | CA em 1 linha |
+|---|---|---|
+| Atualizar `nanoid` transitivo (`npm audit fix`) | High | `npm audit` não reporta mais vulnerabilidade `nanoid`; `npm test` (63 testes) e `npm run build` seguem verdes após o bump |
+| Desativar documentação OpenAPI em produção | Medium | Dado `ENVIRONMENT=production`, `/docs`, `/redoc` e `/openapi.json` retornam 404, mantendo-os ativos em dev/local |
+| Adicionar headers de segurança HTTP no frontend e no backend | Medium | `curl -I` em produção retorna `Content-Security-Policy`, `X-Content-Type-Options: nosniff` e `X-Frame-Options`/`frame-ancestors`, sem quebrar fontes/imagens/chat existentes |
+| Atualizar FastAPI/Starlette para versões sem CVE conhecido | Low (observação) | `pip-audit -r backend/requirements.txt` não reporta CVE para `fastapi`/`starlette` após o bump, com os 29 testes de backend e CI verdes |
+
+Achado Low L1 (`python-dotenv`/`pytest`/`black`, uso local/dev) — risco aceito, sem história filha dedicada (pode ser agrupado com o bump de Starlette acima se o autor preferir).
+
 ## Ordem sugerida de implementação (após aprovação do discover)
 
 1. **US-08-01** (P1 — spike segurança) e/ou **US-08-02** (timeout — paralelo)

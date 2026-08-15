@@ -29,11 +29,11 @@
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
 
-- [ ] CA-001: Relatório salvo em `docs/qa/QA-NNN-auditoria-seguranca.md` (próximo `NNN` livre) com escopo, método, data e ambiente (local/preview/produção)
-- [ ] CA-002: Achados classificados por severidade (Critical / High / Medium / Low / Info), com evidência (comando, header ausente, CVE, URL)
-- [ ] CA-003: Checklist mínimo coberto: (a) headers HTTP no frontend (`next.config` / Vercel) e backend; (b) CORS app-wide vs só `/chat`; (c) `npm audit` + auditoria Python (`pip-audit` ou `safety`); (d) exposição de `/docs`, `/redoc`, `/openapi.json` em produção; (e) segredos no bundle client
-- [ ] CA-004: Para cada achado Critical/High/Medium, proposta de história filha (título + CA em 1 linha) **ou** justificativa explícita de “aceitar risco” (projeto solo / free tier)
-- [ ] CA-005: Sem correção de código nesta história, exceto se o autor pedir hot-fix Critical no mesmo PR — default = só auditoria + backlog derivado
+- [x] CA-001: Relatório salvo em `docs/qa/QA-NNN-auditoria-seguranca.md` (próximo `NNN` livre) com escopo, método, data e ambiente (local/preview/produção) — [`docs/qa/QA-005-auditoria-seguranca.md`](../../../qa/QA-005-auditoria-seguranca.md)
+- [x] CA-002: Achados classificados por severidade (Critical / High / Medium / Low / Info), com evidência (comando, header ausente, CVE, URL) — nenhum Critical; 1 High (nanoid/GHSA-2v37-7h3g-55p8), 2 Medium (docs OpenAPI abertos; headers ausentes), 2 Low (deps dev com CVE; starlette), 2 Info (CORS app-wide adequado ao tamanho da API; segredos confirmados fora do bundle)
+- [x] CA-003: Checklist mínimo coberto: (a) headers HTTP no frontend (`next.config` / Vercel) e backend; (b) CORS app-wide vs só `/chat`; (c) `npm audit` + auditoria Python (`pip-audit` ou `safety`); (d) exposição de `/docs`, `/redoc`, `/openapi.json` em produção; (e) segredos no bundle client — os 5 itens cobertos com evidência real (comando + saída) no relatório
+- [x] CA-004: Para cada achado Critical/High/Medium, proposta de história filha (título + CA em 1 linha) **ou** justificativa explícita de “aceitar risco” (projeto solo / free tier) — 4 histórias filhas rascunhadas no `PRD-006` (nanoid — High; docs OpenAPI abertos e headers de segurança — Medium; Starlette — Low tratado com atenção elevada); L1 (deps dev) aceito como risco, sem história dedicada
+- [x] CA-005: Sem correção de código nesta história, exceto se o autor pedir hot-fix Critical no mesmo PR — default = só auditoria + backlog derivado — nenhum achado Critical; nenhuma correção de código aplicada (`git status` confirma só o relatório QA/story/PRD tocados); decisão documentada explicitamente na seção "CA-005" do relatório
 
 ### Fora de escopo
 
@@ -53,31 +53,31 @@ Segurança & Performance — P1
 
 ### Tasks
 
-- [ ] T01 Rodar `npm audit` em `frontend/` e registrar vulnerabilidades relevantes
-- [ ] T02 [P] Rodar auditoria de deps em `backend/` (`pip-audit` ou `safety`) e registrar
-- [ ] T03 Checklist headers + CORS + FastAPI docs + bundle (sem secret no client)
-- [ ] T04 Escrever `docs/qa/QA-NNN-auditoria-seguranca.md` com classificação e propostas de US filhas
-- [ ] T05 Atualizar `PRD-006` / backlog se nascerem histórias de correção (rascunho de títulos na tabela do PRD)
+- [x] T01 Rodar `npm audit` em `frontend/` e registrar vulnerabilidades relevantes
+- [x] T02 [P] Rodar auditoria de deps em `backend/` (`pip-audit` ou `safety`) e registrar
+- [x] T03 Checklist headers + CORS + FastAPI docs + bundle (sem secret no client)
+- [x] T04 Escrever `docs/qa/QA-NNN-auditoria-seguranca.md` com classificação e propostas de US filhas
+- [x] T05 Atualizar `PRD-006` / backlog se nascerem histórias de correção (rascunho de títulos na tabela do PRD)
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado — N/A (spike sem código de produção, salvo hot-fix Critical pedido)
-- [ ] Build/lint limpo — N/A se sem diff de código; se houver hot-fix, `npm run build` / `ruff check` no escopo tocado
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto no **relatório** (achados do produto podem existir; o review valida método e classificação)
-- [ ] Contrato de API — N/A
-- [ ] Sem chave de API/secret exposto (client bundle ou repo) — confirmado no CA-003(e)
-- [ ] Documentação atualizada — relatório QA + links no `PRD-006` se US filhas forem criadas
-- [ ] Deploy/preview verificado — N/A (auditoria); smoke de headers em produção documentado no relatório
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado — N/A (spike sem código de produção, nenhum hot-fix aplicado)
+- [x] Build/lint limpo — N/A (sem diff de código; nenhum hot-fix aplicado nesta história)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto no **relatório** (achados do produto podem existir; o review valida método e classificação) — Aprovado, ver `docs/qa/QA-005-auditoria-seguranca.md` e veredito abaixo
+- [x] Contrato de API — N/A
+- [x] Sem chave de API/secret exposto (client bundle ou repo) — confirmado no CA-003(e)
+- [x] Documentação atualizada — relatório QA (`docs/qa/QA-005-auditoria-seguranca.md`) + `docs/qa/README.md` + 4 histórias filhas rascunhadas na tabela do `PRD-006`
+- [x] Deploy/preview verificado — N/A (auditoria); smoke de headers em produção documentado no relatório (`curl -I` real contra Vercel e Render)
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | | | |
-| Tech Lead | `@tech-lead-review` | | | |
-| PO | `@product-owner` | | | |
+| QA | `@qa-engineer` | Aprovado | 2026-08-15 | `docs/qa/QA-005-auditoria-seguranca.md` — todo achado tem comando/evidência real; classificação justificada; checklist CA-003(a-e) sem item em aberto |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-15 | Método e classificação de severidade validados; nenhum Critical/High de produto tratado como bloqueio do spike (regra do DoD: "achados do produto podem existir"); decisão de não aplicar hot-fix (CA-005) correta — H1 não é Critical |
+| PO | `@product-owner` | Done | 2026-08-15 | `docs/qa/QA-005-auditoria-seguranca.md`; CAs e DoD 100% fechados; 4 histórias filhas rascunhadas no `PRD-006` |
 
-**Status:** Ready for Agent
+**Status:** Done
