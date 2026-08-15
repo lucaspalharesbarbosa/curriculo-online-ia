@@ -23,7 +23,7 @@ export function LinkButton({
       target="_blank"
       rel="noopener noreferrer"
       aria-label={ariaLabel}
-      className={`group inline-flex items-center gap-2 ${className}`}
+      className={`group inline-flex items-center gap-2 rounded-lg transition-transform active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-500/40 ${className}`}
     >
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-accent-500/25 text-accent-300 transition-all group-hover:border-accent-500/50 group-hover:bg-accent-500/10 group-hover:text-accent-100">
         {icon}
