@@ -29,10 +29,10 @@
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
 
-- [ ] CA-001: `npm audit` (em `frontend/`) não reporta mais a vulnerabilidade de `nanoid` (GHSA-2v37-7h3g-55p8)
-- [ ] CA-002: `npm test` continua verde com os 63 testes existentes (nenhuma regressão introduzida pelo bump)
-- [ ] CA-003: `npm run build` conclui sem erro após o bump
-- [ ] CA-004: nenhuma dependência **direta** do `package.json` foi alterada manualmente — só o lockfile reflete o bump transitivo de `nanoid` (via `npm audit fix`, sem `--force`)
+- [x] CA-001: `npm audit` (em `frontend/`) não reporta mais a vulnerabilidade de `nanoid` (GHSA-2v37-7h3g-55p8)
+- [x] CA-002: `npm test` continua verde com os 63 testes existentes (nenhuma regressão introduzida pelo bump)
+- [x] CA-003: `npm run build` conclui sem erro após o bump
+- [x] CA-004: nenhuma dependência **direta** do `package.json` foi alterada manualmente — só o lockfile reflete o bump transitivo de `nanoid` (via `npm audit fix`, sem `--force`)
 
 ### Fora de escopo
 
@@ -51,30 +51,30 @@ Segurança & Performance — P1
 
 ### Tasks
 
-- [ ] T01 Rodar `npm audit fix` em `frontend/` (bump de patch do `nanoid` transitivo, sem `--force`)
-- [ ] T02 [P] Rodar `npm test` e confirmar os 63 testes verdes
-- [ ] T03 [P] Rodar `npm run build` e confirmar build de produção sem erro
-- [ ] T04 Rodar `npm audit` novamente e confirmar ausência do achado `nanoid`/GHSA-2v37-7h3g-55p8
+- [x] T01 Rodar `npm audit fix` em `frontend/` (bump de patch do `nanoid` transitivo, sem `--force`)
+- [x] T02 [P] Rodar `npm test` e confirmar os 63 testes verdes
+- [x] T03 [P] Rodar `npm run build` e confirmar build de produção sem erro
+- [x] T04 Rodar `npm audit` novamente e confirmar ausência do achado `nanoid`/GHSA-2v37-7h3g-55p8
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado — N/A (só lockfile de dependência transitiva de build, sem código de aplicação tocado)
-- [ ] Build/lint limpo (`npm run build`, lint do frontend)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API implementado bate com o documentado — N/A
-- [ ] Sem chave de API/secret exposto (client bundle ou repo)
-- [ ] Documentação atualizada — N/A (bump pontual de lockfile; sem mudança de comportamento a documentar)
-- [ ] Deploy/preview verificado — `npm run build` local já cobre o gate de build; próximo deploy Vercel automático confirma em produção (sem mudança de comportamento visível esperada)
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado — N/A (só lockfile de dependência transitiva de build, sem código de aplicação tocado)
+- [x] Build/lint limpo (`npm run build`, lint do frontend)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto
+- [x] Contrato de API implementado bate com o documentado — N/A
+- [x] Sem chave de API/secret exposto (client bundle ou repo)
+- [x] Documentação atualizada — N/A (bump pontual de lockfile; sem mudança de comportamento a documentar)
+- [x] Deploy/preview verificado — `npm run build` local já cobre o gate de build; próximo deploy Vercel automático confirma em produção (sem mudança de comportamento visível esperada)
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | | | |
-| Tech Lead | `@tech-lead-review` | | | |
-| PO | `@product-owner` | | | |
+| QA | `@qa-engineer` | Aprovado | 2026-08-15 | `npm audit` antes: 1 high (`nanoid` GHSA-2v37-7h3g-55p8); após `npm audit fix`: 0 vulnerabilidades. `npm test -- --run`: 16 arquivos, 63/63 testes verdes. `npm run build`: sucesso (validate:resume + `next build`). Diff de `frontend/package-lock.json` revisado: única mudança é `nanoid` 3.3.17 → 3.3.18 (3 linhas alteradas); `frontend/package.json` sem diff — sem reinstalação ampla nem dependência direta tocada |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-15 | Diff revisado: `frontend/package-lock.json` só reflete bump transitivo de patch do `nanoid` (via `postcss`/`@tailwindcss/postcss`), sem alteração de dependência direta em `package.json`, sem mudança de comportamento de build (`next build` e `npm run lint` seguem limpos, únicos 2 warnings pré-existentes e não relacionados). Sem achado Critical/High |
+| PO | `@product-owner` | Done | 2026-08-15 | CAs 100% `[x]`, DoD 100% fechado, vereditos QA e Tech Lead sem bloqueio, escopo respeitado (só bump do `nanoid`) |
 
-**Status:** Ready for Agent
+**Status:** Done
