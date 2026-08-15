@@ -7,7 +7,7 @@ Aceita
 
 O Currículo Online é um produto pessoal solo: site Next.js + backend FastAPI (RAG na Fase 05), com meta explícita de **hospedagem gratuita**. O `ADR-001` já citava Vercel (frontend) e Render/Cloud Run (backend), mas sem trade-off formal das alternativas free-tier.
 
-Antes do deploy inicial ([US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md)) e do deploy do backend ([US-05-08](../product/backlog/archive/fase-05/US-05-08-deploy-backend.md)), a decisão precisa estar registrada: existem opções “melhores” que a Vercel no free tier? Em quais critérios?
+Antes do deploy inicial ([US-03-17](../product/backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md)) e do deploy do backend ([US-05-08](../product/backlog/archive/fase-05/US-05-08-deploy-backend.md)), a decisão precisa estar registrada: existem opções “melhores” que a Vercel no free tier? Em quais critérios?
 
 **Requisitos que a hospedagem precisa atender:**
 
@@ -67,7 +67,7 @@ Não é “a melhor hospedagem gratuita do mundo em abstrato” — é a melhor 
 
 ## Consequências
 
-- [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) segue com Vercel; DoR de ADR passa a apontar este documento
+- [US-03-17](../product/backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md) segue com Vercel; DoR de ADR passa a apontar este documento
 - [US-05-08](../product/backlog/archive/fase-05/US-05-08-deploy-backend.md) prioriza Render free; Cloud Run documentado como fallback
 - CORS: origem do frontend (`.vercel.app` ou domínio futuro) liberada no FastAPI
 - Segredos de IA só no backend (e, se houver proxy, em env da Vercel Function) — nunca no bundle client ([US-05-09](../product/backlog/archive/fase-05/US-05-09-env-vars-segredos.md))
@@ -79,4 +79,4 @@ Não é “a melhor hospedagem gratuita do mundo em abstrato” — é a melhor 
 - `docs/agents/CONTEXTO-PROJETO.md` (seção Hospedagem)
 - [ADR-001](ADR-001-stack-inicial-monorepo.md) (stack; hospedagem citada sem trade-off)
 - `docs/product/PRD-004-deploy.md`
-- [US-03-17](../product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md), [US-05-08](../product/backlog/archive/fase-05/US-05-08-deploy-backend.md)
+- [US-03-17](../product/backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md), [US-05-08](../product/backlog/archive/fase-05/US-05-08-deploy-backend.md)

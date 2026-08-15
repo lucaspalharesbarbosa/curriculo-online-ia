@@ -9,7 +9,7 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 ## Fase 0 — Preparação: agentes + repositório
 
 **Status:** Done
-**Backlog:** [`docs/product/backlog/fase-00/`](backlog/fase-00/) (US-00-01 a US-00-02)
+**Backlog:** [`docs/product/backlog/archive/fase-00/`](backlog/archive/fase-00/) (US-00-01 a US-00-02) — arquivada 2026-08-15
 
 - [x] Criar `docs/agents/CONTEXTO-PROJETO.md` com stack, branching, hospedagem, convenções
 - [x] Ajustar cada agente conforme checklist de customização
@@ -27,7 +27,7 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 ## Fase 1 — Descoberta e planejamento
 
 **Status:** Done
-**Backlog:** [`docs/product/backlog/fase-01/`](backlog/fase-01/) (US-01-01 a US-01-03)
+**Backlog:** [`docs/product/backlog/archive/fase-01/`](backlog/archive/fase-01/) (US-01-01 a US-01-03) — arquivada 2026-08-15
 
 - [x] PRD do site + backlog inicial (épicos: Conteúdo, Frontend, RAG, Deploy)
 - [x] DoR/DoD e quadro de tarefas
@@ -36,7 +36,7 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 ## Fase 2 — Setup do projeto
 
 **Status:** Done
-**Backlog:** [`docs/product/backlog/fase-02/`](backlog/fase-02/) (US-02-01 a US-02-04)
+**Backlog:** [`docs/product/backlog/archive/fase-02/`](backlog/archive/fase-02/) (US-02-01 a US-02-04) — arquivada 2026-08-15
 
 - [x] `create-next-app` (TS + Tailwind) em `frontend/` + esqueleto FastAPI em `backend/`
 - [x] ESLint/Prettier conectados aos workflows de CI da Fase 0
@@ -45,21 +45,21 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 ## Fase 3 — MVP estático
 
 **Status:** Done (17/17 histórias)
-**Backlog:** [`docs/product/backlog/fase-03/`](backlog/fase-03/) (US-03-01 a US-03-17)
+**Backlog:** [`docs/product/backlog/archive/fase-03/`](backlog/archive/fase-03/) (US-03-01 a US-03-17) — arquivada 2026-08-15
 
 - [x] Histórias de usuário por seção (Hero, Experiência, Skills...)
 - [x] `content/resume.json` + componentes da UI
 - [x] Testes dos componentes principais
 - [x] Revisão antes do merge
-- [x] Deploy inicial na Vercel — [US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md)
+- [x] Deploy inicial na Vercel — [US-03-17](backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md)
 
 ## Fase 4 — Polimento
 
 **Status:** Done (2/2 histórias)
-**Backlog:** [`docs/product/backlog/fase-04/`](backlog/fase-04/) (US-04-01 a US-04-02)
+**Backlog:** [`docs/product/backlog/archive/fase-04/`](backlog/archive/fase-04/) (US-04-01 a US-04-02) — arquivada 2026-08-15
 
-- [x] SEO básico (meta tags, Open Graph) — [US-04-01](backlog/fase-04/US-04-01-seo-basico.md)
-- [x] Acessibilidade básica (contraste, alt, navegação por teclado) — [US-04-02](backlog/fase-04/US-04-02-acessibilidade-basica.md)
+- [x] SEO básico (meta tags, Open Graph) — [US-04-01](backlog/archive/fase-04/US-04-01-seo-basico.md)
+- [x] Acessibilidade básica (contraste, alt, navegação por teclado) — [US-04-02](backlog/archive/fase-04/US-04-02-acessibilidade-basica.md)
 
 ## Fase 5 — Feature de IA (RAG)
 

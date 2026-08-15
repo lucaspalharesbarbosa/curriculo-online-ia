@@ -32,9 +32,9 @@ Visitante/recrutador acessando o site publicado; o próprio autor validando PRs 
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Conectar `frontend-ci.yml` ao lint + build reais | P1 | [US-02-03](backlog/fase-02/US-02-03-ci-frontend-real.md) |
-| Conectar `backend-ci.yml` ao lint + testes reais | P1 | [US-02-04](backlog/fase-02/US-02-04-ci-backend-real.md) |
-| Deploy inicial do frontend na Vercel | P2 | [US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md) |
+| Conectar `frontend-ci.yml` ao lint + build reais | P1 | [US-02-03](backlog/archive/fase-02/US-02-03-ci-frontend-real.md) |
+| Conectar `backend-ci.yml` ao lint + testes reais | P1 | [US-02-04](backlog/archive/fase-02/US-02-04-ci-backend-real.md) |
+| Deploy inicial do frontend na Vercel | P2 | [US-03-17](backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md) |
 | Deploy do backend no Render/Cloud Run | P3 | [US-05-08](backlog/archive/fase-05/US-05-08-deploy-backend.md) |
 | Documentar variáveis de ambiente / segredos | P3 | [US-05-09](backlog/archive/fase-05/US-05-09-env-vars-segredos.md) |
 
@@ -46,4 +46,4 @@ Visitante/recrutador acessando o site publicado; o próprio autor validando PRs 
 ## DoR
 - [x] Critérios de aceite claros
 - [x] ADR se envolve decisão de stack nova — [ADR-002](../architecture/ADR-002-hospedagem-gratuita.md) (hospedagem gratuita; Aceita)
-- [x] Tasks decompostas (ver `docs/product/backlog/fase-02/`, `fase-03/US-03-17-deploy-inicial-vercel.md` e `fase-05/`)
+- [x] Tasks decompostas (ver `docs/product/backlog/archive/fase-02/`, `archive/fase-03/US-03-17-deploy-inicial-vercel.md` e `archive/fase-05/`)

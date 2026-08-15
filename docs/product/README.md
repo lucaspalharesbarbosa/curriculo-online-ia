@@ -24,14 +24,15 @@ Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
 
 Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por história, com ID `US-<fase>-<sequência>` (ex.: `US-03-10`) e um slug descritivo no nome do arquivo. O ID já carrega o número da fase, então não há ambiguidade entre `US-03-01` (fase 03) e `US-05-01` (fase 05). A tabela "Histórias" de cada PRD linka para o arquivo correspondente.
 
-- [Fase 00 — Preparação](backlog/fase-00/) (2 histórias — Done)
-- [Fase 01 — Descoberta e planejamento](backlog/fase-01/) (3 histórias — Done)
-- [Fase 02 — Setup do projeto](backlog/fase-02/) (4 histórias — Done)
-- [Fase 03 — MVP estático](backlog/fase-03/) (17 histórias — 17/17 Done)
-- [Fase 04 — Polimento](backlog/fase-04/) (2 histórias — 2/2 Done)
+Nenhuma fase ativa no momento — todas as fases do roadmap original e da evolução pós-lançamento executada estão arquivadas (ver abaixo). Fases 08–12 seguem em `draft`, sem histórias ainda.
 
 ### Fases arquivadas
 
+- [Fase 00 — Preparação](backlog/archive/fase-00/) (2 histórias — Done) — arquivada 2026-08-15
+- [Fase 01 — Descoberta e planejamento](backlog/archive/fase-01/) (3 histórias — Done) — arquivada 2026-08-15
+- [Fase 02 — Setup do projeto](backlog/archive/fase-02/) (4 histórias — Done) — arquivada 2026-08-15
+- [Fase 03 — MVP estático](backlog/archive/fase-03/) (17 histórias — 17/17 Done) — arquivada 2026-08-15
+- [Fase 04 — Polimento](backlog/archive/fase-04/) (2 histórias — 2/2 Done) — arquivada 2026-08-15
 - [Fase 05 — Feature de IA (RAG)](backlog/archive/fase-05/) (9 histórias — 9/9 Done) — arquivada 2026-08-11
 - [Fase 06 — Divulgação](backlog/archive/fase-06/) (US-06-01–02 Done; US-06-03 Cancelada) — arquivada 2026-08-11
 - [Fase 07 — Frontend & UX v2](backlog/archive/fase-07/) (US-07-01 a US-07-15 — 15/15 Done) — arquivada 2026-08-11; referência [personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice
@@ -58,8 +59,8 @@ Protótipos visuais (sob pedido, `@ux-designer`): [`docs/agents/PROCESSO-PROTOTI
 
 Nenhuma pendência ativa de conteúdo. Resolvidas na Fase 03:
 
-- ~~Repositórios extras para Projetos~~ — autor confirmou único projeto (`curriculo-online-ia`) — [US-03-07](backlog/fase-03/US-03-07-dados-projetos.md)
-- ~~E-mail público e GitHub~~ — [US-03-08](backlog/fase-03/US-03-08-dados-contato.md)
-- ~~PDF do currículo~~ — [US-03-16](backlog/fase-03/US-03-16-componente-contato-pdf.md)
+- ~~Repositórios extras para Projetos~~ — autor confirmou único projeto (`curriculo-online-ia`) — [US-03-07](backlog/archive/fase-03/US-03-07-dados-projetos.md)
+- ~~E-mail público e GitHub~~ — [US-03-08](backlog/archive/fase-03/US-03-08-dados-contato.md)
+- ~~PDF do currículo~~ — [US-03-16](backlog/archive/fase-03/US-03-16-componente-contato-pdf.md)
 
-Deploy Vercel ([US-03-17](backlog/fase-03/US-03-17-deploy-inicial-vercel.md)) — Done em 2026-08-04 (mergeado). URL de produção atual: https://lucas-palhares-cv.vercel.app (renomeada em 2026-08-10).
+Deploy Vercel ([US-03-17](backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md)) — Done em 2026-08-04 (mergeado). URL de produção atual: https://lucas-palhares-cv.vercel.app (renomeada em 2026-08-10; domínio antigo `curriculo-online-ia.vercel.app` removido em 2026-08-15).
