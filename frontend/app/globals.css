@@ -81,6 +81,15 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Tailwind não seta cursor:pointer em <button> por padrão — sinaliza clicável no desktop */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 /*
   Escala tipográfica das seções (US-07-12)
   mobile → sm/tablet → md/desktop — evita text-[10px]/[11px]/[12px] soltos
@@ -903,40 +912,6 @@ body {
   }
 }
 
-/* Educação — CTA de site (visível, com ArrowUpRight) */
-.edu-site-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  min-height: 2.75rem;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(var(--accent-rgb), 0.4);
-  background: linear-gradient(
-    135deg,
-    rgba(var(--accent-rgb), 0.2) 0%,
-    rgba(var(--accent-rgb), 0.08) 100%
-  );
-  padding: 0.55rem 0.95rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: var(--accent-200);
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.15s ease;
-}
-
-.edu-site-cta:hover,
-.edu-site-cta:focus-visible,
-.edu-site-cta:active {
-  border-color: rgba(var(--accent-rgb), 0.65);
-  background: rgba(var(--accent-rgb), 0.22);
-  color: #e0f2fe;
-  transform: translateY(-1px);
-}
-
 /* Certificações — galeria por emissor */
 .cert-issuer-card {
   transition:
@@ -1012,46 +987,6 @@ body {
   color: var(--accent-300);
 }
 
-.cert-credential-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  min-height: 2.75rem;
-  border-radius: 0.85rem;
-  border: 1px solid rgba(var(--accent-rgb), 0.45);
-  background: linear-gradient(
-    135deg,
-    rgba(var(--accent-rgb), 0.28) 0%,
-    rgba(var(--accent-rgb), 0.12) 100%
-  );
-  padding: 0.55rem 0.95rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  color: var(--accent-200);
-  white-space: nowrap;
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.15s ease,
-    box-shadow 0.2s ease;
-}
-
-.cert-credential-link:hover,
-.cert-credential-link:focus-visible,
-.cert-credential-link:active {
-  border-color: rgba(var(--accent-rgb), 0.75);
-  background: linear-gradient(
-    135deg,
-    rgba(var(--accent-rgb), 0.4) 0%,
-    rgba(var(--accent-rgb), 0.18) 100%
-  );
-  color: #e0f2fe;
-  box-shadow: 0 8px 20px -8px rgba(var(--accent-rgb), 0.45);
-  transform: translateY(-1px);
-}
-
 @keyframes cert-seal-spin {
   to {
     transform: rotate(360deg);
@@ -1092,100 +1027,11 @@ body {
   text-transform: uppercase;
 }
 
-/* Destaques — CTA unificado (repositório / artigo) */
-.highlight-cta {
-  display: inline-flex;
-  width: fit-content;
-  min-height: 2.75rem;
-  align-items: center;
-  gap: 0.35rem;
-  border-radius: 0.7rem;
-  border: 1px solid rgba(var(--accent-rgb), 0.4);
-  background: linear-gradient(
-    135deg,
-    rgba(var(--accent-rgb), 0.18),
-    rgba(var(--accent-rgb), 0.08)
-  );
-  padding: 0.55rem 0.95rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: var(--accent-200);
-  transition:
-    border-color 0.2s ease,
-    background 0.2s ease,
-    transform 0.2s ease;
-}
-
-.highlight-cta:hover,
-.highlight-cta:focus-visible,
-.highlight-cta:active {
-  border-color: rgba(var(--accent-rgb), 0.65);
-  background: rgba(var(--accent-rgb), 0.22);
-  transform: translateY(-1px);
-}
-
 /* Hero — caret do typewriter em loop */
 .role-type-caret {
   margin-left: 1px;
   color: var(--accent-400);
   animation: role-cursor-blink 0.9s step-end infinite;
-}
-
-/* Educação — link institucional (variante F refinada; legado/protótipo) */
-.edu-site-link {
-  display: inline-flex;
-  max-width: 100%;
-  align-items: center;
-  gap: 0.65rem;
-  border-radius: 0.75rem;
-  outline: none;
-  transition: color 0.25s ease;
-}
-
-.edu-site-link:hover .edu-site-name,
-.edu-site-link:focus-visible .edu-site-name {
-  color: var(--accent-300);
-  background-size: 100% 1.5px;
-}
-
-.edu-site-name {
-  background-image: linear-gradient(
-    to right,
-    var(--accent-400),
-    var(--accent-500)
-  );
-  background-position: left bottom;
-  background-repeat: no-repeat;
-  background-size: 0% 1.5px;
-  transition:
-    color 0.25s ease,
-    background-size 0.35s ease;
-}
-
-.edu-site-badge {
-  display: inline-flex;
-  height: 2rem;
-  width: 2rem;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.7rem;
-  border: 1px solid rgba(var(--accent-rgb), 0.28);
-  background: rgba(var(--accent-rgb), 0.1);
-  color: var(--accent-300);
-  transition:
-    border-color 0.25s ease,
-    background 0.25s ease,
-    transform 0.25s ease,
-    box-shadow 0.25s ease;
-}
-
-.edu-site-link:hover .edu-site-badge,
-.edu-site-link:focus-visible .edu-site-badge {
-  border-color: rgba(var(--accent-rgb), 0.5);
-  background: rgba(var(--accent-rgb), 0.18);
-  transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(var(--accent-rgb), 0.12);
 }
 
 /* US-07-03 / ADR-005 — respeitar prefers-reduced-motion */

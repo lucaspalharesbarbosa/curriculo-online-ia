@@ -1,11 +1,11 @@
 "use client";
 
-import { ArrowUpRight, BookMarked, Calendar, ExternalLink } from "lucide-react";
+import { BookMarked, Calendar, ExternalLink } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { LinkButton } from "@/components/LinkButton";
 import type { Education } from "@/content/resume.schema";
 
 type EducationSectionProps = {
@@ -66,21 +66,13 @@ export function EducationSection({ items }: EducationSectionProps) {
                 </span>
 
                 {edu.websiteUrl ? (
-                  <Link
+                  <LinkButton
                     href={edu.websiteUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Site oficial de ${edu.institution}`}
-                    title="Abrir site oficial"
-                    className="edu-site-cta mt-3.5 w-full justify-center sm:mt-4 sm:w-auto sm:justify-start"
-                  >
-                    <ExternalLink className="h-4 w-4" aria-hidden />
-                    <span>Visitar site da instituição</span>
-                    <ArrowUpRight
-                      className="h-3.5 w-3.5 opacity-80"
-                      aria-hidden
-                    />
-                  </Link>
+                    label="Visitar site da instituição"
+                    icon={<ExternalLink className="h-3.5 w-3.5" aria-hidden />}
+                    ariaLabel={`Site oficial de ${edu.institution}`}
+                    className="mt-3.5 sm:mt-4"
+                  />
                 ) : null}
               </div>
             </div>

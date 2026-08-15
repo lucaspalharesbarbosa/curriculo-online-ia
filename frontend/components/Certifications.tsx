@@ -1,11 +1,11 @@
 "use client";
 
-import { ArrowUpRight, Award, ExternalLink, KeyRound } from "lucide-react";
+import { Award, ExternalLink, KeyRound } from "lucide-react";
 import Image from "next/image";
-import Link from "next/link";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { LinkButton } from "@/components/LinkButton";
 import type { Certification } from "@/content/resume.schema";
 import { formatYear, groupCertificationsByIssuer } from "@/lib/utils";
 
@@ -94,20 +94,15 @@ export function Certifications({ items }: CertificationsProps) {
                     ) : null}
 
                     {cert.credentialUrl ? (
-                      <Link
+                      <LinkButton
                         href={cert.credentialUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        aria-label={`Ver certificado ${cert.name}`}
-                        className="cert-credential-link mt-3 w-full justify-center sm:w-auto"
-                      >
-                        <ExternalLink className="h-4 w-4" aria-hidden />
-                        <span>Ver certificado</span>
-                        <ArrowUpRight
-                          className="h-3.5 w-3.5 opacity-80"
-                          aria-hidden
-                        />
-                      </Link>
+                        label="Ver certificado"
+                        icon={
+                          <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+                        }
+                        ariaLabel={`Ver certificado ${cert.name}`}
+                        className="mt-3"
+                      />
                     ) : null}
                   </div>
                 </li>
