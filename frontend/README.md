@@ -43,6 +43,10 @@ Deploy inicial feito via CLI (`vercel deploy --prod`) a partir de `frontend/`; G
 
 História de backlog: [US-03-17](../docs/product/backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md).
 
+## Headers de segurança HTTP (US-08-07)
+
+`next.config.ts` (`headers()`, nativo do Next.js — sem lib externa) aplica a todas as rotas: `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` e `Permissions-Policy` (desativa `camera`/`microphone`/`geolocation`/`payment`/`usb`, não usados pelo site). Sem `Strict-Transport-Security` próprio — já vem por default na Vercel. `script-src` da CSP libera `'unsafe-eval'` só fora de produção (necessário para o dev server); `style-src` mantém `'unsafe-inline'` (framer-motion anima via `style` inline). Config é declarativa, sem lógica testável por unit test — validação real é por smoke manual pós-deploy (`curl -I` + navegação verificando fontes/imagens/chat sem erro de CSP no console).
+
 ## Estrutura
 
 ```

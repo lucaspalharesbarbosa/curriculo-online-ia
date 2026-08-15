@@ -106,13 +106,15 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 8 — Segurança & Performance
 
-**Status:** Draft, sem histórias criadas
+**Status:** Em andamento (discover — backlog criado; aguarda aprovação para `implement`)
 **PRD:** [`PRD-006-seguranca-performance.md`](PRD-006-seguranca-performance.md)
+**Backlog:** [`docs/product/backlog/fase-08/`](backlog/fase-08/) (US-08-01 a US-08-04)
+**ADR:** [`ADR-008`](../architecture/ADR-008-mitigacao-cold-start-render.md) (cold start); timeout/retry já em [`ADR-004`](../architecture/ADR-004-resiliencia-backend-chat.md)
 
-- [ ] Auditoria de segurança (headers, CORS em todos os endpoints, dependências)
-- [ ] Auditoria de performance (Lighthouse, bundle, cache)
-- [ ] Mitigação de cold start do backend no Render free tier
-- [ ] Timeout e retry limitado no client de IA do `/chat` (`ADR-004`)
+- [ ] Auditoria de segurança (headers, CORS, dependências, docs) — [US-08-01](backlog/fase-08/US-08-01-auditoria-seguranca.md)
+- [ ] Timeout e retry limitado no client de IA do `/chat` (`ADR-004`) — [US-08-02](backlog/fase-08/US-08-02-timeout-retry-openai.md)
+- [ ] Mitigação de cold start do backend no Render free tier (`ADR-008`) — [US-08-03](backlog/fase-08/US-08-03-mitigacao-cold-start-render.md)
+- [ ] Auditoria de performance (Lighthouse Home, bundle, cache) — [US-08-04](backlog/fase-08/US-08-04-auditoria-performance.md)
 
 ## Fase 9 — Qualidade de Engenharia
 
