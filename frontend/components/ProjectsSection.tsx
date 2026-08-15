@@ -1,10 +1,10 @@
 "use client";
 
-import { ArrowUpRight, Sparkles } from "lucide-react";
-import Link from "next/link";
+import { ExternalLink, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { LinkButton } from "@/components/LinkButton";
 import type { Article, Project } from "@/content/resume.schema";
 
 type ProjectsSectionProps = {
@@ -67,16 +67,12 @@ export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
                 ))}
               </div>
 
-              <Link
+              <LinkButton
                 href={project.repositoryUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Ver repositório de ${project.title}`}
-                className="highlight-cta"
-              >
-                Ver repositório
-                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
-              </Link>
+                label="Ver repositório"
+                icon={<ExternalLink className="h-3.5 w-3.5" aria-hidden />}
+                ariaLabel={`Ver repositório de ${project.title}`}
+              />
             </div>
           </motion.div>
         ))}
@@ -106,16 +102,12 @@ export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
                 {article.source}
               </span>
 
-              <Link
+              <LinkButton
                 href={article.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Ler artigo ${article.title}`}
-                className="highlight-cta"
-              >
-                Ler artigo
-                <ArrowUpRight className="h-3.5 w-3.5" aria-hidden />
-              </Link>
+                label="Ler artigo"
+                icon={<ExternalLink className="h-3.5 w-3.5" aria-hidden />}
+                ariaLabel={`Ler artigo ${article.title}`}
+              />
             </div>
           </motion.div>
         ))}

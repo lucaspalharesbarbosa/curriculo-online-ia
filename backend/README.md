@@ -41,6 +41,14 @@ black --check .                 # format check
 pytest                          # testes
 ```
 
+## Variáveis de ambiente
+
+Definidas em `backend/.env` local (a partir de `.env.example`) e no painel do Render em produção — nunca commitadas com valor real. `LLM_API_KEY` e `ALLOWED_ORIGIN` já documentadas na seção [Segurança do `/chat`](#segurança-do-chat-us-05-07) e na tabela do [`README.md` raiz](../README.md#env).
+
+| Variável | Valores esperados | Default | Efeito |
+|---|---|---|---|
+| `ENVIRONMENT` | `development` \| `production` | `development` (quando ausente) | Em `production`, desativa `/docs`, `/redoc` e `/openapi.json` (404) — ver [Documentação da API](#documentacao-da-api). Não é segredo; configurar `ENVIRONMENT=production` no painel do Render (produção). |
+
 ## OpenAPI (contrato da API)
 
 Com o servidor no ar (`uvicorn app.main:app --reload`):
@@ -56,11 +64,31 @@ Com o servidor no ar (`uvicorn app.main:app --reload`):
 
 O model `Resume` (Pydantic) valida o `resume.json` nos testes e ainda não aparece no OpenAPI (não há endpoint que o use como request/response).
 
+<a id="documentacao-da-api"></a>
+
+### Documentação da API — Swagger/ReDoc/OpenAPI local vs. produção
+
+Swagger UI (`/docs`), ReDoc (`/redoc`) e o schema JSON (`/openapi.json`) ficam **disponíveis só rodando o backend localmente**, sem `ENVIRONMENT=production` (ausente ou `development`):
+
+```bash
+cd backend
+uvicorn app.main:app --reload
+# http://localhost:8000/docs
+# http://localhost:8000/redoc
+# http://localhost:8000/openapi.json
+```
+
+Em **produção** (`ENVIRONMENT=production`, configurado no painel do Render), os três endpoints retornam `404` — as rotas nem são registradas no app. Isso reduz a superfície de informação exposta a qualquer visitante anônimo (achado M1 da auditoria de segurança, [`US-08-01`](../docs/product/backlog/fase-08/US-08-01-auditoria-seguranca.md) / [`QA-005`](../docs/qa/QA-005-auditoria-seguranca.md)); a documentação da API continua acessível ao autor rodando local. Detalhes da decisão: [`US-08-06`](../docs/product/backlog/fase-08/US-08-06-desativar-docs-openapi-producao.md).
+
 ## Segurança do `/chat` (US-05-07)
 
 - **CORS**: restrito à origem definida em `ALLOWED_ORIGIN` (env var; default `http://localhost:3000` em dev). Em produção, configurar com a URL do frontend na Vercel — nunca `allow_origins=["*"]`. **Origem única** (`allow_origins=[ALLOWED_ORIGIN]` em `app/main.py`, sem lista) — para rodar um smoke manual do `/chat` a partir de um frontend local (`http://localhost:3000`) contra o backend real no Render, é preciso trocar `ALLOWED_ORIGIN` temporariamente no painel do Render para `http://localhost:3000` e depois reverter para a URL da Vercel; não dá para atender as duas origens ao mesmo tempo sem alterar o código.
 - **Rate limit**: contador simples em memória por IP (`app/chat.py`, `_request_log`) — sem lib externa (`slowapi` avaliado, mas dispensado; volume do projeto não justifica a dependência extra). Limite: 10 requisições/minuto por IP; excedente retorna `429`. Reinicia a cada deploy (estado em memória, não persistido) — aceitável para o volume de tráfego esperado (visitantes ocasionais de portfólio).
 - **Chave de API**: `LLM_API_KEY` só existe como variável de ambiente no backend (lida em `app/rag.py`), nunca no client — ver [ADR-003](../docs/architecture/ADR-003-fluxo-rag.md) seção 5.
+
+## Headers de segurança HTTP (US-08-07)
+
+Middleware custom (`add_security_headers` em `app/main.py`, sem lib externa) injeta em toda resposta: `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'` (API só serve JSON, nenhum recurso próprio para permitir), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` e `Permissions-Policy` desativando `camera`/`microphone`/`geolocation`/`payment`/`usb`. Sem `Strict-Transport-Security` próprio — a API roda sempre atrás de HTTPS (Render/Cloudflare). Teste de regressão: `backend/tests/test_main.py::test_health_check_retorna_headers_de_seguranca`.
 
 ## Deploy
 

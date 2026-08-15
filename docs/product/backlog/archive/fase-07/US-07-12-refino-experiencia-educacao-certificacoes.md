@@ -64,23 +64,23 @@ Frontend & UX v2 — P1
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado
-- [ ] Build/lint limpo
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API — N/A
-- [ ] Sem chave de API/secret exposto
-- [ ] Documentação — N/A (sem ADR novo); PRD-005 linka esta US
-- [ ] Deploy/preview verificado — se UI
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado
+- [x] Build/lint limpo
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto
+- [x] Contrato de API — N/A
+- [x] Sem chave de API/secret exposto
+- [x] Documentação — N/A (sem ADR novo); PRD-005 linka esta US
+- [x] Deploy/preview verificado — se UI — autor validou preview/produção no lote Fase 07 em 2026-08-11 (código na linha develop/produção)
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | | | |
-| Tech Lead | `@tech-lead-review` | | | |
-| PO | `@product-owner` | | | |
+| QA | `@qa-engineer` | Aprovado — `vitest --run ExperienceSection EducationSection Certifications`: 3 arquivos, 13/13 verdes; cobertura scoped `vitest --run --coverage` (mesmos filtros): stmts 71,95% / lines 73,41% (components 90,32%; EducationSection 100%; Certifications 87,5%); `npm run build` OK (Next.js 16.3.0); `eslint .` 0 errors (3 warnings pré-existentes fora do escopo). CA-001–008 conferidos no código: `.highlight-ring-dot` sem caixa card-like + `prefers-reduced-motion`; Educação com CTA `ExternalLink`/`aria-label`; Certificações agrupadas por emissor com logo/selo no header; tipografia `type-*`; dados via props/`resume.json`. | 2026-08-11 | saída vitest/coverage/build; `ExperienceSection.tsx`, `EducationSection.tsx`, `Certifications.tsx`, `globals.css` |
+| Tech Lead | `@tech-lead-review` | Aprovar — escopo UI-only (Experience/Education/Certifications + CSS `highlight-ring-dot`/`edu-site-cta`/`cert-*`/`type-*`); sem secrets/CORS; sem schema/API. Destaques B e reduced-motion corretos. Ressalva Low (não bloqueia): CA-003 descreve “nome como link + badge”, implementação usa CTA `.edu-site-cta` com `ExternalLink` (intenção de link óbvio atendida); CSS morto residual `.edu-site-link*` / `.cert-seal*` sem uso nos componentes. Sem Critical/High. | 2026-08-11 | review estático dos 3 componentes + `globals.css` |
+| PO | `@product-owner` | Aceito/Done — CAs e DoD fechados; QA+TL ok; autor validou preview/produção no lote Fase 07 em 2026-08-11 | 2026-08-11 | preview/produção |
 
-**Status:** In Progress
+**Status:** Done

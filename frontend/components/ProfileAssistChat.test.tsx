@@ -113,6 +113,43 @@ describe("ProfileAssistChat", () => {
     ).toBeGreaterThan(0);
   });
 
+  it("mantém o chat minimizado ao rolar para o topo e descer de novo, só reabrindo pelo botão", async () => {
+    render(<ProfileAssistChat role="Tech Lead" />);
+
+    act(() => {
+      MockIntersectionObserver.latest?.trigger(false);
+    });
+    expect(
+      screen.getAllByRole("dialog", { name: /assistente rag/i }).length,
+    ).toBeGreaterThan(0);
+
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /minimizar chat/i })[0],
+    );
+    await waitFor(() => {
+      expect(
+        screen.queryAllByRole("dialog", { name: /assistente rag/i }).length,
+      ).toBe(0);
+    });
+    expect(
+      screen.getAllByRole("button", { name: /abrir assistente/i }).length,
+    ).toBeGreaterThan(0);
+
+    act(() => {
+      MockIntersectionObserver.latest?.trigger(true);
+    });
+    act(() => {
+      MockIntersectionObserver.latest?.trigger(false);
+    });
+
+    expect(
+      screen.queryAllByRole("dialog", { name: /assistente rag/i }).length,
+    ).toBe(0);
+    expect(
+      screen.getAllByRole("button", { name: /abrir assistente/i }).length,
+    ).toBeGreaterThan(0);
+  });
+
   it("abre o sheet ao receber o evento do hero mobile", () => {
     render(<ProfileAssistChat role="Tech Lead" />);
 

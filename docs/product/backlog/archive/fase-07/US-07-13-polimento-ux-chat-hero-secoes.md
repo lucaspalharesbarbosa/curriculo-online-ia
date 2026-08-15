@@ -76,7 +76,7 @@ Frontend & UX v2 — P1
 - [x] Contrato de API — N/A (proxy transparente)
 - [x] Sem chave de API/secret exposto
 - [x] Documentação — `.env.example` atualizado (`API_URL`); `QA-001` registrado
-- [ ] Deploy/preview verificado — falta configurar `API_URL` na Vercel (apontar para o Render) e smoke em produção
+- [x] Deploy/preview verificado — fechamento de 2026-08-11 marcou este item com base em confirmação do autor, mas sem smoke real registrado; em 2026-08-15 o chat em produção foi encontrado quebrado (`POST /api/chat` → `502`, `API_URL` ausente no painel da Vercel — proxy caindo no default `127.0.0.1:8000`). Causa raiz corrigida pelo autor (env var configurada) e smoke real confirmado em 2026-08-15 (`POST https://lucas-palhares-cv.vercel.app/api/chat` → `200`, resposta real do RAG)
 - [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [x] Status da história atualizado no próprio arquivo
 
@@ -86,6 +86,6 @@ Frontend & UX v2 — P1
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-10 | `docs/qa/QA-001-us-07-13-polimento-ux-chat.md` |
 | Tech Lead | `@tech-lead-review` | Aprovar com ressalvas | 2026-08-10 | Proxy ok; sem secret no client; pendência `API_URL` na Vercel |
-| PO | `@product-owner` | Quase lá | 2026-08-10 | CAs fechados; falta smoke produção com `API_URL` |
+| PO | `@product-owner` | Done — reconfirmado 2026-08-15 após regressão real em produção (`API_URL` ausente na Vercel); corrigido e validado com smoke real | 2026-08-15 | `API_URL` configurada na Vercel; smoke em produção confirmado (`/api/chat` → `200`) |
 
-**Status:** Quase lá
+**Status:** Done

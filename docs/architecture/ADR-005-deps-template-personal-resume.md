@@ -41,4 +41,4 @@ O frontend atual (`frontend/package.json`) só tem Next.js + React + Zod. Sem AD
 
 - Template: https://github.com/giasinguyen/personal-resume (MIT)
 - Demo: https://cv.nguyentrangiasi.id.vn/
-- História: `docs/product/backlog/fase-07/US-07-03-redesign-visual.md`
+- História: `docs/product/backlog/archive/fase-07/US-07-03-redesign-visual.md`

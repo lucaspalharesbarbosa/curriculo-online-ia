@@ -79,7 +79,7 @@ Frontend & UX v2 — P1
 - [x] Contrato de API — N/A
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — `ADR-006` criado; `US-07-05` preenchida
-- [ ] Deploy/preview verificado (UI) — pendente preview Vercel após PR
+- [x] Deploy/preview verificado (UI) — autor confirmou preview/produção 2026-08-11; reindex RAG produção feito pelo autor
 - [x] Vereditos QA, Tech Lead e PO na tabela abaixo
 - [x] Status da história atualizado
 
@@ -116,5 +116,6 @@ Autor pediu 3 melhorias pontuais sobre o conteúdo/layout já entregue (Certific
 | QA (rodada 2 — ícone por certificado, PRAD/tooltip, link de educação) | `@qa-engineer` | Aprovado — `vitest run`: 11 arquivos, 45/45 verdes (inclui os 3 testes novos); `npm run build` (com `validate:resume`) e `npm run lint` limpos; `pytest -q` backend 27/27 verdes; `ruff check` sem erro; tooltip de Reconhecimentos verificado via `aria-describedby`/`role="tooltip"` (acessível a teclado e leitor de tela, não só hover); link de site em Educação com `target="_blank"`/`rel="noopener noreferrer"` corretos | 2026-08-08 | `Certifications.tsx`, `Recognitions.tsx`, `EducationSection.tsx`, `resume.json`, `resume.schema.ts`, `resume.py` |
 | Tech Lead (rodada 2) | `@tech-lead-review` | Aprovar — `websiteUrl` segue exatamente o padrão já estabelecido de `credentialUrl`/`logoUrl` (opcional, `nullable().default(null)`, espelhado em Pydantic); tooltip implementado só com CSS/Tailwind + `aria-describedby`, sem dependência nova (evita reabrir decisão de stack); split de PRAD 2023/2024 é mudança de dado dentro de um schema que já suportava múltiplos itens por ano, sem risco de regressão; `ShieldCheck` por certificado é aditivo e não quebra o agrupamento por emissor existente; sem chave de API/CORS tocado | 2026-08-08 | `resume.schema.ts`, `backend/app/models/resume.py`, diffs dos 3 componentes |
 | PO (rodada 2) | `@product-owner` | Aceito — as 3 melhorias pedidas foram entregues fielmente (ícone por certificado, PRAD/Mérito separados com explicação em tooltip, link de site em Educação); status da história permanece Quase lá (mesma pendência estrutural de preview Vercel + reindexação do RAG, não afetada por esta rodada) | 2026-08-08 | avaliação acima |
+| PO | `@product-owner` | Aceito/Done — autor confirmou preview/produção 2026-08-11 e reindex RAG em produção; DoD completo | 2026-08-11 | preview/produção + reindex RAG |
 
-**Status:** Quase lá — implementação, testes e review fechados; falta preview de deploy (Vercel) após abertura do PR
+**Status:** Done

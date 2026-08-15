@@ -60,7 +60,7 @@ describe("ProjectsSection", () => {
     );
     expect(articleLink).toHaveAttribute("target", "_blank");
     expect(articleLink).toHaveAttribute("rel", "noopener noreferrer");
-    expect(articleLink).toHaveClass("highlight-cta");
+    expect(articleLink.querySelector("svg")).not.toBeNull();
     expect(screen.getByText("Artigo")).toHaveClass("project-kind-badge");
     expect(
       screen.queryByRole("link", { name: /ver repositório/i }),
@@ -75,12 +75,10 @@ describe("ProjectsSection", () => {
     expect(projectBadge).toHaveClass("project-kind-badge");
     expect(articleBadge).toHaveClass("project-kind-badge");
 
-    expect(screen.getByRole("link", { name: /ver repositório/i })).toHaveClass(
-      "highlight-cta",
-    );
-    expect(screen.getByRole("link", { name: /ler artigo/i })).toHaveClass(
-      "highlight-cta",
-    );
+    const repoLink = screen.getByRole("link", { name: /ver repositório/i });
+    const articleLink = screen.getByRole("link", { name: /ler artigo/i });
+    expect(repoLink.querySelector("svg")).not.toBeNull();
+    expect(articleLink.querySelector("svg")).not.toBeNull();
   });
 
   it("renderiza a seção quando só há artigos e nenhum projeto", () => {
