@@ -12,7 +12,18 @@ ensure_local_env()
 # Render em produção (ADR-003 seção 5, US-05-09).
 ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "http://localhost:3000")
 
-app = FastAPI(title="Curriculo Online API")
+# Em produção, desativa /docs, /redoc e /openapi.json (US-08-06, achado M1 da
+# auditoria de seguranca) — qualquer valor diferente de "production" (ou
+# ausente) mantem o comportamento padrao do FastAPI, aberto em dev/local.
+ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
+IS_PRODUCTION = ENVIRONMENT == "production"
+
+app = FastAPI(
+    title="Curriculo Online API",
+    docs_url=None if IS_PRODUCTION else "/docs",
+    redoc_url=None if IS_PRODUCTION else "/redoc",
+    openapi_url=None if IS_PRODUCTION else "/openapi.json",
+)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[ALLOWED_ORIGIN],

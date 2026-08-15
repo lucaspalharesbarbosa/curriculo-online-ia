@@ -41,6 +41,14 @@ black --check .                 # format check
 pytest                          # testes
 ```
 
+## Variáveis de ambiente
+
+Definidas em `backend/.env` local (a partir de `.env.example`) e no painel do Render em produção — nunca commitadas com valor real. `LLM_API_KEY` e `ALLOWED_ORIGIN` já documentadas na seção [Segurança do `/chat`](#segurança-do-chat-us-05-07) e na tabela do [`README.md` raiz](../README.md#env).
+
+| Variável | Valores esperados | Default | Efeito |
+|---|---|---|---|
+| `ENVIRONMENT` | `development` \| `production` | `development` (quando ausente) | Em `production`, desativa `/docs`, `/redoc` e `/openapi.json` (404) — ver [Documentação da API](#documentacao-da-api). Não é segredo; configurar `ENVIRONMENT=production` no painel do Render (produção). |
+
 ## OpenAPI (contrato da API)
 
 Com o servidor no ar (`uvicorn app.main:app --reload`):
@@ -55,6 +63,22 @@ Com o servidor no ar (`uvicorn app.main:app --reload`):
 | `POST /chat` | Request `{"question": string}` → Response `{"answer": string}`. Erros: `422` (pergunta ausente/vazia), `429` (rate limit excedido), `500` (falha ao gerar — mensagem genérica, sem detalhe interno). Pergunta fora do escopo do currículo não é erro — retorna `200` com fallback textual. |
 
 O model `Resume` (Pydantic) valida o `resume.json` nos testes e ainda não aparece no OpenAPI (não há endpoint que o use como request/response).
+
+<a id="documentacao-da-api"></a>
+
+### Documentação da API — Swagger/ReDoc/OpenAPI local vs. produção
+
+Swagger UI (`/docs`), ReDoc (`/redoc`) e o schema JSON (`/openapi.json`) ficam **disponíveis só rodando o backend localmente**, sem `ENVIRONMENT=production` (ausente ou `development`):
+
+```bash
+cd backend
+uvicorn app.main:app --reload
+# http://localhost:8000/docs
+# http://localhost:8000/redoc
+# http://localhost:8000/openapi.json
+```
+
+Em **produção** (`ENVIRONMENT=production`, configurado no painel do Render), os três endpoints retornam `404` — as rotas nem são registradas no app. Isso reduz a superfície de informação exposta a qualquer visitante anônimo (achado M1 da auditoria de segurança, [`US-08-01`](../docs/product/backlog/fase-08/US-08-01-auditoria-seguranca.md) / [`QA-005`](../docs/qa/QA-005-auditoria-seguranca.md)); a documentação da API continua acessível ao autor rodando local. Detalhes da decisão: [`US-08-06`](../docs/product/backlog/fase-08/US-08-06-desativar-docs-openapi-producao.md).
 
 ## Segurança do `/chat` (US-05-07)
 
