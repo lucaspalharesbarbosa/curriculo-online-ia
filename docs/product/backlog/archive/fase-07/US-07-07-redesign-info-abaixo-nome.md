@@ -68,7 +68,7 @@ Frontend & UX v2 — P2
 - [x] Contrato de API — N/A
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — N/A (só motion/CSS, sem ADR/contrato novo)
-- [~] Deploy/preview verificado (UI) — **ressalva**: sem ferramenta de browser headless disponível neste ambiente (sem `chromium-cli`/Playwright instalado) para capturar screenshot; verificação visual real fica pendente do preview de deploy (Vercel), mesmo padrão de ressalva já usado em US-07-06/CA-005. Evidência substituta: build de produção sem erro, 41/41 testes (incluindo os que checam `getByText("Tech Lead")`/`getByText("Senior Software Engineer")` no DOM), CSS aditivo seguindo exatamente o padrão de `orb-drift`/`spin-slow` já em produção
+- [x] Deploy/preview verificado (UI) — autor confirmou preview/produção 2026-08-11
 - [x] Vereditos QA, Tech Lead e PO na tabela abaixo
 - [x] Status da história atualizado
 
@@ -78,6 +78,6 @@ Frontend & UX v2 — P2
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalva — `vitest run`: 11 arquivos, 41/41 verdes (inclui os 3 testes de `ResumeSidebar.test.tsx`, sem alteração de asserção necessária); `npm run build`/`lint` limpos; contraste inalterado (nenhuma cor nova, mesmos tokens de US-07-03); `prefers-reduced-motion` coberto (`.role-typewriter` no bloco existente + fallback de largura fixa, evitando o texto sumir com `animation: none`); ressalva única: sem browser headless neste ambiente para confirmar visualmente o timing/alinhamento das duas linhas simultâneas e o comportamento em telas estreitas — recomendo checar no preview Vercel antes do aceite final de UI | 2026-08-08 | `ResumeSidebar.tsx`, `globals.css`, saída de `vitest run`/`next build` |
 | Tech Lead | `@tech-lead-review` | Aprovar — diff é local e reversível: 1 keyframe CSS novo + troca de markup de um único bloco (`primaryRoles`) em `ResumeSidebar.tsx`, sem tocar contato/skills/download; usa `ch`+fonte mono para a largura final bater exatamente com o texto (evita o risco de clipping de texto em fonte proporcional); `--role-chars` calculado a partir de `role.length` no próprio componente, sem dado novo; segue o mesmo padrão de motion-atrás-de-`prefers-reduced-motion` já estabelecido em US-07-06; nenhuma chave/CORS tocado | 2026-08-08 | `frontend/app/globals.css`, `frontend/components/ResumeSidebar.tsx` |
-| PO | `@product-owner` | Quase lá — CA-001–006 fechados, DoD fechado exceto o item de preview de deploy (mesma pendência estrutural de US-07-06, ambiente sem browser headless); layout aprovado pelo autor (opção B3) implementado fielmente ao comparativo mostrado; falta o autor conferir visualmente em `npm run dev` ou no preview Vercel para fechar de vez | 2026-08-08 | avaliação acima |
+| PO | `@product-owner` | Aceito/Done — autor confirmou preview/produção 2026-08-11; DoD completo | 2026-08-11 | preview/produção |
 
-**Status:** Quase lá — implementado, testado e revisado; falta o autor confirmar visualmente (dev local ou preview de deploy) para fechar o Done
+**Status:** Done

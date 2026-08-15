@@ -77,7 +77,7 @@ Frontend & UX v2 — **P0** (bloqueia divulgação)
 - [x] Contrato de API — N/A
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — PRD-005 linka esta US; sem ADR novo
-- [ ] Deploy/preview verificado — pendente confirmação do autor no preview/Vercel
+- [x] Deploy/preview verificado — autor confirmou preview/produção 2026-08-11
 - [x] Vereditos de QA, Tech Lead e PO documentados na tabela abaixo
 - [x] Status da história atualizado no próprio arquivo
 
@@ -87,9 +87,9 @@ Frontend & UX v2 — **P0** (bloqueia divulgação)
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-11 | `docs/qa/QA-004-us-07-15-redesign-mobile-first.md` |
 | Tech Lead | `@tech-lead-review` | Aprovar com ressalvas | 2026-08-11 | Sem Critical/High; ressalva = preview device + dual h1 no DOM |
-| PO | `@product-owner` | Quase lá | 2026-08-11 | Falta smoke/preview do autor nos breakpoints |
+| PO | `@product-owner` | Aceito/Done — autor confirmou preview/produção 2026-08-11; DoD completo | 2026-08-11 | preview/produção |
 
-**Status:** Quase lá
+**Status:** Done
 
 ### Arquitetura mobile (decisão de UX — Orquestrador / Dev)
 

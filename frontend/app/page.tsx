@@ -1,5 +1,3 @@
-"use client";
-
 import { Certifications } from "@/components/Certifications";
 import { EducationSection } from "@/components/EducationSection";
 import { ExperienceSection } from "@/components/ExperienceSection";
