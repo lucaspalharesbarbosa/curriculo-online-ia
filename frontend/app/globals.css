@@ -81,6 +81,15 @@ body {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Tailwind não seta cursor:pointer em <button> por padrão — sinaliza clicável no desktop */
+button:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
 /*
   Escala tipográfica das seções (US-07-12)
   mobile → sm/tablet → md/desktop — evita text-[10px]/[11px]/[12px] soltos
