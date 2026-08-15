@@ -33,7 +33,7 @@ Visitante/recrutador conversando com o assistente.
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
 | ADR do fluxo de RAG (chunking, embeddings, custo) | P3 | [US-05-01](backlog/archive/fase-05/US-05-01-adr-fluxo-rag.md) |
-| Setup do esqueleto do serviço FastAPI | P1 | [US-02-02](backlog/fase-02/US-02-02-setup-fastapi.md) |
+| Setup do esqueleto do serviço FastAPI | P1 | [US-02-02](backlog/archive/fase-02/US-02-02-setup-fastapi.md) |
 | Chunking do `resume.json` | P3 | [US-05-02](backlog/archive/fase-05/US-05-02-chunking-resume-json.md) |
 | Geração de embeddings | P3 | [US-05-03](backlog/archive/fase-05/US-05-03-geracao-embeddings.md) |
 | Endpoint `/chat` | P3 | [US-05-04](backlog/archive/fase-05/US-05-04-endpoint-chat.md) |
@@ -49,5 +49,5 @@ Visitante/recrutador conversando com o assistente.
 ## DoR
 - [x] Critérios de aceite claros para US-02-02
 - [x] US-05-02 a US-05-07: ADR do fluxo de RAG registrada — [ADR-003](../architecture/ADR-003-fluxo-rag.md) ([US-05-01](backlog/archive/fase-05/US-05-01-adr-fluxo-rag.md), Done em 2026-08-04)
-- [x] Tasks decompostas (ver `docs/product/backlog/archive/fase-05/` e `docs/product/backlog/fase-02/US-02-02-setup-fastapi.md`)
+- [x] Tasks decompostas (ver `docs/product/backlog/archive/fase-05/` e `docs/product/backlog/archive/fase-02/US-02-02-setup-fastapi.md`)
 - [x] DoR próprio de cada história de US-05-02 a US-05-09 fechado — todas Done (2026-08-04/05)

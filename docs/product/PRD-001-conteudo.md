@@ -31,25 +31,25 @@ Visitante/recrutador navegando o site.
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Definir e validar schema do `resume.json` | P1 | [US-03-01](backlog/fase-03/US-03-01-schema-resume-json.md) |
-| Popular seção Hero/Sobre | P2 | [US-03-02](backlog/fase-03/US-03-02-dados-hero-sobre.md) |
-| Popular seção Experiência Profissional | P2 | [US-03-03](backlog/fase-03/US-03-03-dados-experiencia.md) |
-| Popular seção Formação Acadêmica | P2 | [US-03-04](backlog/fase-03/US-03-04-dados-formacao.md) |
-| Popular seção Habilidades Técnicas | P2 | [US-03-05](backlog/fase-03/US-03-05-dados-skills.md) |
-| Popular seção Certificações | P2 | [US-03-06](backlog/fase-03/US-03-06-dados-certificacoes.md) |
-| Popular seção Projetos/Portfólio | P3 | [US-03-07](backlog/fase-03/US-03-07-dados-projetos.md) |
-| Popular seção Contato | P2 | [US-03-08](backlog/fase-03/US-03-08-dados-contato.md) |
+| Definir e validar schema do `resume.json` | P1 | [US-03-01](backlog/archive/fase-03/US-03-01-schema-resume-json.md) |
+| Popular seção Hero/Sobre | P2 | [US-03-02](backlog/archive/fase-03/US-03-02-dados-hero-sobre.md) |
+| Popular seção Experiência Profissional | P2 | [US-03-03](backlog/archive/fase-03/US-03-03-dados-experiencia.md) |
+| Popular seção Formação Acadêmica | P2 | [US-03-04](backlog/archive/fase-03/US-03-04-dados-formacao.md) |
+| Popular seção Habilidades Técnicas | P2 | [US-03-05](backlog/archive/fase-03/US-03-05-dados-skills.md) |
+| Popular seção Certificações | P2 | [US-03-06](backlog/archive/fase-03/US-03-06-dados-certificacoes.md) |
+| Popular seção Projetos/Portfólio | P3 | [US-03-07](backlog/archive/fase-03/US-03-07-dados-projetos.md) |
+| Popular seção Contato | P2 | [US-03-08](backlog/archive/fase-03/US-03-08-dados-contato.md) |
 
 ## Riscos
 
-- ~~**Projetos/Portfólio sem dados**~~ — resolvido na Fase 03: autor confirmou único projeto (`curriculo-online-ia`) — [US-03-07](backlog/fase-03/US-03-07-dados-projetos.md)
-- ~~**Contato incompleto**~~ — resolvido: e-mail/GitHub/LinkedIn em [US-03-08](backlog/fase-03/US-03-08-dados-contato.md); WhatsApp acrescentado na Fase 07 ([US-07-01](backlog/archive/fase-07/US-07-01-contato-whatsapp.md))
+- ~~**Projetos/Portfólio sem dados**~~ — resolvido na Fase 03: autor confirmou único projeto (`curriculo-online-ia`) — [US-03-07](backlog/archive/fase-03/US-03-07-dados-projetos.md)
+- ~~**Contato incompleto**~~ — resolvido: e-mail/GitHub/LinkedIn em [US-03-08](backlog/archive/fase-03/US-03-08-dados-contato.md); WhatsApp acrescentado na Fase 07 ([US-07-01](backlog/archive/fase-07/US-07-01-contato-whatsapp.md))
 - **PDF do currículo**: fonte de verdade em `frontend/public/Lucas_Palhares_Barbosa_Engenheiro_De_Software.pdf` (atualizado em 2026-08-04).
 
 ## DoR
 - [x] Critérios de aceite claros
 - [x] ADR se envolve decisão de stack nova — não envolve (schema já decidido em `CONTEXTO-PROJETO.md`)
-- [x] Tasks decompostas (ver `docs/product/backlog/fase-03/`)
+- [x] Tasks decompostas (ver `docs/product/backlog/archive/fase-03/`)
 - [x] US-03-07 — input do autor recebido e história Done
 
 ---

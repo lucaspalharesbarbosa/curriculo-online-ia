@@ -34,17 +34,17 @@ Visitante/recrutador navegando o site.
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Setup do projeto Next.js (TS + Tailwind) | P1 | [US-02-01](backlog/fase-02/US-02-01-setup-nextjs.md) |
-| Layout base e navegação entre seções | P1 | [US-03-09](backlog/fase-03/US-03-09-layout-navegacao.md) |
-| Componente Hero/Sobre | P2 | [US-03-10](backlog/fase-03/US-03-10-componente-hero.md) |
-| Componente de Experiência Profissional | P2 | [US-03-11](backlog/fase-03/US-03-11-componente-experiencia.md) |
-| Componente de Formação Acadêmica | P2 | [US-03-12](backlog/fase-03/US-03-12-componente-formacao.md) |
-| Componente de Habilidades Técnicas | P2 | [US-03-13](backlog/fase-03/US-03-13-componente-skills.md) |
-| Componente de Projetos/Portfólio | P3 (depende de US-03-07) | [US-03-14](backlog/fase-03/US-03-14-componente-projetos.md) |
-| Componente de Certificações | P2 | [US-03-15](backlog/fase-03/US-03-15-componente-certificacoes.md) |
-| Componente de Contato + download do PDF | P2 (parcial, depende de US-03-08) | [US-03-16](backlog/fase-03/US-03-16-componente-contato-pdf.md) |
-| SEO básico (meta tags, Open Graph) | P2 | [US-04-01](backlog/fase-04/US-04-01-seo-basico.md) |
-| Acessibilidade (contraste, alt, navegação por teclado) | P2 | [US-04-02](backlog/fase-04/US-04-02-acessibilidade-basica.md) |
+| Setup do projeto Next.js (TS + Tailwind) | P1 | [US-02-01](backlog/archive/fase-02/US-02-01-setup-nextjs.md) |
+| Layout base e navegação entre seções | P1 | [US-03-09](backlog/archive/fase-03/US-03-09-layout-navegacao.md) |
+| Componente Hero/Sobre | P2 | [US-03-10](backlog/archive/fase-03/US-03-10-componente-hero.md) |
+| Componente de Experiência Profissional | P2 | [US-03-11](backlog/archive/fase-03/US-03-11-componente-experiencia.md) |
+| Componente de Formação Acadêmica | P2 | [US-03-12](backlog/archive/fase-03/US-03-12-componente-formacao.md) |
+| Componente de Habilidades Técnicas | P2 | [US-03-13](backlog/archive/fase-03/US-03-13-componente-skills.md) |
+| Componente de Projetos/Portfólio | P3 (depende de US-03-07) | [US-03-14](backlog/archive/fase-03/US-03-14-componente-projetos.md) |
+| Componente de Certificações | P2 | [US-03-15](backlog/archive/fase-03/US-03-15-componente-certificacoes.md) |
+| Componente de Contato + download do PDF | P2 (parcial, depende de US-03-08) | [US-03-16](backlog/archive/fase-03/US-03-16-componente-contato-pdf.md) |
+| SEO básico (meta tags, Open Graph) | P2 | [US-04-01](backlog/archive/fase-04/US-04-01-seo-basico.md) |
+| Acessibilidade (contraste, alt, navegação por teclado) | P2 | [US-04-02](backlog/archive/fase-04/US-04-02-acessibilidade-basica.md) |
 
 ## Riscos
 
@@ -54,5 +54,5 @@ Visitante/recrutador navegando o site.
 ## DoR
 - [x] Critérios de aceite claros
 - [x] ADR se envolve decisão de stack nova — não envolve
-- [x] Tasks decompostas (ver `docs/product/backlog/fase-02/`, `fase-03/` e `fase-04/`)
+- [x] Tasks decompostas (ver `docs/product/backlog/archive/fase-02/`, `archive/fase-03/` e `archive/fase-04/`)
 - [x] Sem dúvida bloqueante para US-02-01, US-03-09 a US-03-13, US-03-15, US-04-01/US-04-02

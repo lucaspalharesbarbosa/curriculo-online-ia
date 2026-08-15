@@ -31,7 +31,7 @@ Após `npm install`, o Husky configura o hook `pre-commit` (Prettier + ESLint no
 
 **URL de produção:** https://lucas-palhares-cv.vercel.app
 
-> ℹ️ **Nota (2026-08-10):** URL de produção atual é `https://lucas-palhares-cv.vercel.app` (projeto Vercel renomeado). URLs antigas (`curriculo-online-ia.vercel.app`, alias órfão `lucas-palhares-dev.vercel.app`) não devem ser usadas na divulgação. Ver [US-03-17](../docs/product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md) (histórico) e Fase 06.
+> ℹ️ **Nota (2026-08-10):** URL de produção atual é `https://lucas-palhares-cv.vercel.app` (projeto Vercel renomeado). URLs antigas (`curriculo-online-ia.vercel.app` — removido do painel Vercel em 2026-08-15; alias órfão `lucas-palhares-dev.vercel.app`) não devem ser usadas na divulgação. Ver [US-03-17](../docs/product/backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md) (histórico) e Fase 06.
 
 Configuração do projeto (`lucas-palhares-cv` na conta Vercel do autor):
 
@@ -41,7 +41,7 @@ Configuração do projeto (`lucas-palhares-cv` na conta Vercel do autor):
 
 Deploy inicial feito via CLI (`vercel deploy --prod`) a partir de `frontend/`; GitHub conectado posteriormente pelo painel da Vercel. Decisão de hospedagem: [ADR-002](../docs/architecture/ADR-002-hospedagem-gratuita.md).
 
-História de backlog: [US-03-17](../docs/product/backlog/fase-03/US-03-17-deploy-inicial-vercel.md).
+História de backlog: [US-03-17](../docs/product/backlog/archive/fase-03/US-03-17-deploy-inicial-vercel.md).
 
 ## Estrutura
 
