@@ -2,9 +2,9 @@ export const MOBILE_NAV_SECTIONS = [
   { id: "perfil", label: "Perfil", short: "Perfil" },
   { id: "experiencia", label: "Experiência", short: "Exp." },
   { id: "educacao", label: "Educação", short: "Edu." },
-  { id: "certificacoes", label: "Certificações", short: "Certs" },
+  { id: "certificacoes", label: "Certificações", short: "Cert." },
   { id: "reconhecimentos", label: "Reconhecimentos", short: "Reco." },
-  { id: "destaques", label: "Destaques", short: "Projetos" },
+  { id: "destaques", label: "Destaques", short: "Destaques" },
 ] as const;
 
 export type MobileNavSectionId = (typeof MOBILE_NAV_SECTIONS)[number]["id"];

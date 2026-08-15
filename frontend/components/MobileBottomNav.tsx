@@ -110,7 +110,7 @@ export function MobileBottomNav() {
                     "tap-target relative flex min-h-12 w-full flex-col items-center justify-center gap-0.5 rounded-xl px-0.5 py-1.5 text-[11px] font-medium transition-colors",
                     isActive
                       ? "text-accent-300"
-                      : "text-neutral-500 active:text-neutral-300",
+                      : "text-neutral-400 active:text-neutral-300",
                   )}
                   aria-current={isActive ? "true" : undefined}
                   aria-label={section.label}
