@@ -50,7 +50,6 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
         const next = !entry.isIntersecting;
         setTransformed(next);
         if (!next) {
-          setMinimized(false);
           setForceOpen(false);
         }
       },
