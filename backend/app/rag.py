@@ -28,6 +28,11 @@ RESUME_JSON_PATH = (
 INDEX_CACHE_PATH = Path(__file__).resolve().parent / "rag_index.json"
 
 EMBEDDING_MODEL = "text-embedding-3-small"
+# ADR-004 / US-08-02: timeout curto (faixa 15–30s) + no máximo 1 retry (SDK só
+# reenvia em erros transitórios tipicamente 429/5xx). Evita o default de minutos
+# do SDK, que trava o único worker do Render free tier.
+OPENAI_TIMEOUT_SECONDS = 20.0
+OPENAI_MAX_RETRIES = 1
 
 
 @dataclass(frozen=True)
@@ -152,7 +157,11 @@ def build_chunks(resume: Resume) -> list[Chunk]:
 
 @lru_cache(maxsize=1)
 def get_client() -> OpenAI:
-    return OpenAI(api_key=os.environ.get("LLM_API_KEY"))
+    return OpenAI(
+        api_key=os.environ.get("LLM_API_KEY"),
+        timeout=OPENAI_TIMEOUT_SECONDS,
+        max_retries=OPENAI_MAX_RETRIES,
+    )
 
 
 def embed_text(text: str) -> list[float]:

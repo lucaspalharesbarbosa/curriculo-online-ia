@@ -175,7 +175,7 @@ Fase 6 (divulgação) **concluída e arquivada** (2026-08-11) — [US-06-01](../
 
 Fase 7 (Frontend & UX v2) **concluída e arquivada** (2026-08-11) — 15/15 histórias Done em `docs/product/backlog/archive/fase-07/` (`PRD-005`). Referência visual **personal-resume** ([repo](https://github.com/giasinguyen/personal-resume)); paleta **D1 Deep Ice**; deps em `ADR-005`/`ADR-006`/`ADR-007`.
 
-Fase 8 (Segurança & Performance) **em discover** — backlog em `docs/product/backlog/fase-08/` (US-08-01 a US-08-08, DoR fechado); US-08-01 (auditoria) Done, com 4 histórias filhas formalizadas (US-08-05 a US-08-08, achados High/Medium/Low do relatório `QA-005`); `PRD-006` em review; cold start em [`ADR-008`](../architecture/ADR-008-mitigacao-cold-start-render.md); timeout/retry em `ADR-004`. Fases 9 a 12 seguem em `draft` (`PRD-007` a `PRD-010`).
+Fase 8 (Segurança & Performance) **em execução** — backlog em `docs/product/backlog/fase-08/` (US-08-01 a US-08-11); Done: US-08-01, 03, 04, 05, 10 (US-08-10 fechada em 2026-08-16 com CA-002/CA-003 por risco aceito — decisão do autor, sem alavanca de código disponível, ver conclusão da investigação na própria história); Quase lá (código pronto, pendente de merge `develop`→`main` e verificação manual pós-deploy): US-08-02, 06, 07, 08, 09, 11. `PRD-006` em review; cold start em [`ADR-008`](../architecture/ADR-008-mitigacao-cold-start-render.md); timeout/retry em `ADR-004`. Fases 9 a 12 seguem em `draft` (`PRD-007` a `PRD-010`).
 
 ## Fases do roadmap e backlog correspondente
 

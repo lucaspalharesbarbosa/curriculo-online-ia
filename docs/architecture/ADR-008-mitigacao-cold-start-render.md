@@ -2,7 +2,7 @@
 
 ## Status
 
-Aceita (recomendação default; escolha de custo do autor na US-08-03)
+Aceita — decisão final do autor em [US-08-03](../product/backlog/fase-08/US-08-03-mitigacao-cold-start-render.md) (2026-08-15): **aceitar risco**, sem mitigação ativa (ver seção "Decisão do autor" abaixo)
 
 ## Contexto
 
@@ -35,6 +35,14 @@ Fora desta ADR: mudar código do RAG, aumentar timeout do client OpenAI ([ADR-00
 | Cloud Run (C) | Cold start em geral menor; ADR-002 já prevê | Setup GCP + cartão; migração de env/deploy | Plano B de hospedagem, não primeiro passo |
 | Cron interno na app | Controle no repo | Free tier ainda hiberna o processo — cron interno não roda dormindo | Descartada |
 | Ping em `/chat` | “Exercita” o caminho real | Gasta LLM, polui rate limit, risco de custo OpenAI | Descartada |
+
+## Decisão do autor (US-08-03)
+
+Volumetria atual do site é baixíssima (poucos visitantes/dia). Manter a opção A (keep-alive) rodando 24h/dia para evitar um cold start que, na prática, raramente seria atingido (poucas visitas já reduzem a chance de coincidir com o servidor hibernado) é desproporcional: gasta instance-hours do Render continuamente, adiciona uma dependência externa (conta de monitor) e vai contra o próprio propósito do free tier (hibernar app ocioso).
+
+**Decisão: aceitar o risco.** Sem keep-alive, sem upgrade, sem migração. Cold start (~30–60s na primeira mensagem após idle) permanece um trade-off consciente do free tier enquanto o tráfego for baixo.
+
+Reabrir esta ADR se o volume de acesso crescer de forma sustentada (ex.: divulgação ativa em processo seletivo) — nesse cenário, a opção A (keep-alive) volta a ser a recomendação default.
 
 ## Consequências
 

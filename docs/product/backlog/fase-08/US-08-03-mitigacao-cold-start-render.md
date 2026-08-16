@@ -30,11 +30,11 @@
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
 
-- [ ] CA-001: Autor escolhe e registra no relatório/ADR a opção aplicada: **(A)** keep-alive gratuito externo em `GET /health` (recomendado ADR-008), **(B)** upgrade Render, ou **(C)** migrar Cloud Run (plano B do ADR-002) — com custo explícito
-- [ ] CA-002: Mitigação **(A)** configurada: ping periódico a `/health` com intervalo **&lt; 14 min** (abaixo do spin-down típico ~15 min do Render free), documentado em `backend/README.md` (ferramenta, URL, intervalo — sem credenciais)
-- [ ] CA-003: Evidência de melhoria: latência do primeiro hit após idle documentada (antes vs depois) **ou**, se (B)/(C), smoke pós-migração do `/chat`
-- [ ] CA-004: `/health` permanece barato (sem carregar embeddings/LLM) — sem mudar o health check para disparar OpenAI
-- [ ] CA-005: Se o autor optar por **não** mitigar (aceitar cold start), registrar “aceitar risco” no ADR-008 / história e marcar CAs de mitigação como N/A justificado — Done só com essa decisão explícita
+- [x] CA-001: Autor escolhe e registra no relatório/ADR a opção aplicada: **(A)** keep-alive gratuito externo em `GET /health` (recomendado ADR-008), **(B)** upgrade Render, ou **(C)** migrar Cloud Run (plano B do ADR-002) — com custo explícito — autor optou por **não mitigar** (ver CA-005); decisão registrada em [ADR-008](../../../architecture/ADR-008-mitigacao-cold-start-render.md) (seção "Decisão do autor")
+- [x] CA-002: N/A — autor não optou pela mitigação (A); ver CA-005
+- [x] CA-003: N/A — sem mitigação aplicada, não há antes/depois a medir; ver CA-005
+- [x] CA-004: `/health` permanece barato (sem carregar embeddings/LLM) — sem mudar o health check para disparar OpenAI — já satisfeito pelo código atual: `backend/app/main.py:61-63` (`health_check()`) só retorna `{"status": "ok"}`, sem chamar `rag`/`chat`/OpenAI; nenhuma mudança necessária
+- [x] CA-005: Se o autor optar por **não** mitigar (aceitar cold start), registrar “aceitar risco” no ADR-008 / história e marcar CAs de mitigação como N/A justificado — Done só com essa decisão explícita — **decisão explícita registrada** em 2026-08-15: volumetria atual baixíssima torna o custo do keep-alive (instance-hours 24h/dia + dependência externa) desproporcional ao benefício (raramente evitaria o cold start, já que visitas são pouco frequentes); risco aceito conscientemente, revisitar se o tráfego crescer — ver [ADR-008](../../../architecture/ADR-008-mitigacao-cold-start-render.md)
 
 ### Fora de escopo
 
@@ -55,30 +55,30 @@ Segurança & Performance — P2
 
 ### Tasks
 
-- [ ] T01 Confirmar com o autor a opção A/B/C (ou aceitar risco) e registrar no ADR-008 / README
-- [ ] T02 Aplicar a opção escolhida (config externa keep-alive **ou** passos de upgrade/migração documentados)
-- [ ] T03 Medir e documentar latência pós-idle (ou smoke pós-migração) em `backend/README.md` ou `docs/qa/`
-- [ ] T04 Garantir que `/health` não dispara LLM/embeddings
+- [x] T01 Confirmar com o autor a opção A/B/C (ou aceitar risco) e registrar no ADR-008 / README — autor escolheu aceitar risco; registrado em ADR-008
+- [x] T02 N/A — sem mitigação a aplicar (risco aceito)
+- [x] T03 N/A — sem mitigação, sem antes/depois a medir
+- [x] T04 Garantir que `/health` não dispara LLM/embeddings — já verdade no código atual (`backend/app/main.py:61-63`), sem alteração necessária
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]` (ou N/A justificado em CA-005)
-- [ ] Cobertura de testes ≥ 70% — N/A se só config externa; se código no repo, `pytest` no escopo
-- [ ] Build/lint limpo — N/A se sem diff de app; senão `ruff`/`black`
-- [ ] Review do `@tech-lead-review` sem Critical/High (atenção: não expor URL com secret; não sobrecarregar `/chat` com ping)
-- [ ] Contrato de API — N/A
-- [ ] Sem chave de API/secret exposto
-- [ ] Documentação atualizada (`backend/README.md`, ADR-008 se a escolha divergir da recomendação)
-- [ ] Deploy/preview verificado — evidência de latência ou smoke em produção
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Todos os critérios de aceite acima `[x]` (ou N/A justificado em CA-005)
+- [x] Cobertura de testes ≥ 70% — N/A, sem código novo (decisão é só documental)
+- [x] Build/lint limpo — N/A, sem diff de app (`rag.py`/`chat.py`/`main.py` inalterados)
+- [x] Review do `@tech-lead-review` sem Critical/High (atenção: não expor URL com secret; não sobrecarregar `/chat` com ping) — N/A ambos os riscos: sem mitigação aplicada, nenhum monitor/ping configurado
+- [x] Contrato de API — N/A
+- [x] Sem chave de API/secret exposto — N/A, nenhuma env/segredo tocado
+- [x] Documentação atualizada (`backend/README.md`, ADR-008 se a escolha divergir da recomendação) — ADR-008 atualizado (seção "Decisão do autor" + Status); README não precisa de nota, já que não há ferramenta/config externa a documentar
+- [x] Deploy/preview verificado — N/A, decisão de não mitigar não gera deploy; nenhuma evidência de produção a coletar
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | | | |
-| Tech Lead | `@tech-lead-review` | | | |
-| PO | `@product-owner` | | | |
+| QA | `@qa-engineer` | Aprovado | 2026-08-15 | Sem código/diff de app a testar (histórico é 100% documental). Verificado por leitura direta que `backend/app/main.py:61-63` (`health_check()`) retorna só `{"status": "ok"}`, sem tocar `rag`/`chat`/OpenAI — CA-004/T04 confirmados sem necessidade de teste novo. CA-002/CA-003/T02/T03 corretamente `N/A` pois não há mitigação aplicada a validar. Nenhum achado bloqueante |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-15 | Mudança 100% documental: `docs/architecture/ADR-008-mitigacao-cold-start-render.md` (Status + seção "Decisão do autor") e a própria história. Nenhum código de aplicação tocado, nenhuma lib/env/secret introduzido, nenhum monitor externo configurado — logo, os dois riscos apontados no DoD (URL com secret exposta; `/chat` sobrecarregado por ping) não se aplicam, corretamente marcados `N/A`. Raciocínio da decisão (volumetria baixa → custo de manter keep-alive 24h/dia desproporcional ao benefício raro) é consistente com o trade-off já mapeado no ADR-008 original. Reversibilidade explícita (reabrir se tráfego crescer) documentada. Sem achado Critical/High |
+| PO | `@product-owner` | Done | 2026-08-15 | CA-001, CA-004 e CA-005 fechados com evidência real (decisão explícita do autor + leitura do código atual do `/health`); CA-002/CA-003 corretamente `N/A` por decorrência direta de CA-005 (aceitar risco exclui a necessidade de configurar/medir mitigação). Tasks T01/T04 `[x]`, T02/T03 `N/A` pela mesma razão. DoD 100% fechado — itens de teste/build/deploy `N/A` justificados por ser história sem diff de código. QA e Tech Lead sem achado bloqueante. Done genuíno: não há pendência de ação humana nesta história (diferente de US-08-02/06/07/08/09, que dependem de deploy) |
 
-**Status:** Ready for Agent
+**Status:** Done

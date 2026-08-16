@@ -213,7 +213,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.55 }}
           >
-            <Link
+            <a
               href={contact.resumePdfUrl}
               download
               className="group relative flex min-h-12 w-full items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 p-1.5 shadow-[0_12px_32px_rgba(56,189,248,0.28)] transition-[transform,box-shadow] duration-300 hover:scale-[1.015] hover:shadow-[0_16px_40px_rgba(56,189,248,0.4)] active:scale-[0.99] focus-visible:outline-offset-4"
@@ -233,7 +233,7 @@ export function ResumeSidebar({ hero, contact, skills }: ResumeSidebarProps) {
                   PDF · currículo completo
                 </span>
               </span>
-            </Link>
+            </a>
           </motion.div>
         ) : null}
       </motion.div>
