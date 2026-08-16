@@ -1,6 +1,6 @@
 # PRD-006 — Segurança & Performance
 
-**Status:** review (discover — aguardando aprovação do autor para `implement`)
+**Status:** Done — 11/11 histórias concluídas (`fase-08` arquivada em 2026-08-16)
 **Épico:** Segurança & Performance
 **Prioridade:** P1
 
@@ -40,16 +40,17 @@ Visitante/recrutador (experiência de carregamento) e o próprio autor (superfí
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Auditoria de segurança do frontend e backend (headers, dependências, CORS, docs) | P1 | [US-08-01](backlog/fase-08/US-08-01-auditoria-seguranca.md) |
-| Timeout e retry limitado no client de IA do `/chat` (`ADR-004`) | P2 | [US-08-02](backlog/fase-08/US-08-02-timeout-retry-openai.md) |
-| Plano de mitigação de cold start do backend gratuito (Render free tier) | P2 | [US-08-03](backlog/fase-08/US-08-03-mitigacao-cold-start-render.md) |
-| Auditoria de performance (Lighthouse Home, bundle, cache) | P2 | [US-08-04](backlog/fase-08/US-08-04-auditoria-performance.md) |
-| Atualizar `nanoid` transitivo (`npm audit fix`) | P1 | [US-08-05](backlog/fase-08/US-08-05-atualizar-nanoid-transitivo.md) |
-| Desativar documentação OpenAPI em produção | P1 | [US-08-06](backlog/fase-08/US-08-06-desativar-docs-openapi-producao.md) |
-| Headers de segurança HTTP (frontend e backend) | P1 | [US-08-07](backlog/fase-08/US-08-07-headers-seguranca-http.md) |
-| Atualizar FastAPI/Starlette (e deps de dev com CVE) | P2 | [US-08-08](backlog/fase-08/US-08-08-atualizar-fastapi-starlette.md) |
-| Reduzir payload de JS client-side da Home | P2 | [US-08-10](backlog/fase-08/US-08-10-reduzir-payload-js-home.md) |
-| Corrigir prefetch indevido do botão de download do CV | P3 | [US-08-11](backlog/fase-08/US-08-11-fix-prefetch-download-cv.md) |
+| Auditoria de segurança do frontend e backend (headers, dependências, CORS, docs) | P1 | [US-08-01](backlog/archive/fase-08/US-08-01-auditoria-seguranca.md) |
+| Timeout e retry limitado no client de IA do `/chat` (`ADR-004`) | P2 | [US-08-02](backlog/archive/fase-08/US-08-02-timeout-retry-openai.md) |
+| Plano de mitigação de cold start do backend gratuito (Render free tier) | P2 | [US-08-03](backlog/archive/fase-08/US-08-03-mitigacao-cold-start-render.md) |
+| Auditoria de performance (Lighthouse Home, bundle, cache) | P2 | [US-08-04](backlog/archive/fase-08/US-08-04-auditoria-performance.md) |
+| Atualizar `nanoid` transitivo (`npm audit fix`) | P1 | [US-08-05](backlog/archive/fase-08/US-08-05-atualizar-nanoid-transitivo.md) |
+| Desativar documentação OpenAPI em produção | P1 | [US-08-06](backlog/archive/fase-08/US-08-06-desativar-docs-openapi-producao.md) |
+| Headers de segurança HTTP (frontend e backend) | P1 | [US-08-07](backlog/archive/fase-08/US-08-07-headers-seguranca-http.md) |
+| Atualizar FastAPI/Starlette (e deps de dev com CVE) | P2 | [US-08-08](backlog/archive/fase-08/US-08-08-atualizar-fastapi-starlette.md) |
+| Corrigir CSP que bloqueava hidratação do Next.js em produção (incidente pós-deploy da US-08-07) | P0 | [US-08-09](backlog/archive/fase-08/US-08-09-fix-csp-bloqueava-hidratacao.md) |
+| Reduzir payload de JS client-side da Home | P2 | [US-08-10](backlog/archive/fase-08/US-08-10-reduzir-payload-js-home.md) |
+| Corrigir prefetch indevido do botão de download do CV | P3 | [US-08-11](backlog/archive/fase-08/US-08-11-fix-prefetch-download-cv.md) |
 
 Nota: US-08-01 e US-08-04 são spikes — o resultado decide se nascem histórias de correção específica (achado por achado). US-08-02 pode rodar em paralelo aos spikes (lacuna já decidida no ADR-004). US-08-03 depende da escolha de custo do autor (A/B/C ou aceitar risco — ADR-008). US-08-05 a US-08-08 nasceram dos achados da auditoria US-08-01 (ver nota abaixo). US-08-10 e US-08-11 nasceram dos achados da auditoria US-08-04 (ver nota abaixo).
 

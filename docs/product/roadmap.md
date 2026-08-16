@@ -106,15 +106,22 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 8 — Segurança & Performance
 
-**Status:** Em andamento (discover — backlog criado; aguarda aprovação para `implement`)
+**Status:** Concluída e arquivada (2026-08-16) — 11/11 histórias Done
 **PRD:** [`PRD-006-seguranca-performance.md`](PRD-006-seguranca-performance.md)
-**Backlog:** [`docs/product/backlog/fase-08/`](backlog/fase-08/) (US-08-01 a US-08-04)
+**Backlog:** [`docs/product/backlog/archive/fase-08/`](backlog/archive/fase-08/) (US-08-01 a US-08-11)
 **ADR:** [`ADR-008`](../architecture/ADR-008-mitigacao-cold-start-render.md) (cold start); timeout/retry já em [`ADR-004`](../architecture/ADR-004-resiliencia-backend-chat.md)
 
-- [ ] Auditoria de segurança (headers, CORS, dependências, docs) — [US-08-01](backlog/fase-08/US-08-01-auditoria-seguranca.md)
-- [ ] Timeout e retry limitado no client de IA do `/chat` (`ADR-004`) — [US-08-02](backlog/fase-08/US-08-02-timeout-retry-openai.md)
-- [ ] Mitigação de cold start do backend no Render free tier (`ADR-008`) — [US-08-03](backlog/fase-08/US-08-03-mitigacao-cold-start-render.md)
-- [ ] Auditoria de performance (Lighthouse Home, bundle, cache) — [US-08-04](backlog/fase-08/US-08-04-auditoria-performance.md)
+- [x] Auditoria de segurança (headers, CORS, dependências, docs) — [US-08-01](backlog/archive/fase-08/US-08-01-auditoria-seguranca.md) (`Done`)
+- [x] Timeout e retry limitado no client de IA do `/chat` (`ADR-004`) — [US-08-02](backlog/archive/fase-08/US-08-02-timeout-retry-openai.md) (`Done`)
+- [x] Mitigação de cold start do backend no Render free tier (`ADR-008`) — [US-08-03](backlog/archive/fase-08/US-08-03-mitigacao-cold-start-render.md) (`Done`)
+- [x] Auditoria de performance (Lighthouse Home, bundle, cache) — [US-08-04](backlog/archive/fase-08/US-08-04-auditoria-performance.md) (`Done`)
+- [x] Atualizar `nanoid` transitivo — [US-08-05](backlog/archive/fase-08/US-08-05-atualizar-nanoid-transitivo.md) (`Done`)
+- [x] Desativar documentação OpenAPI em produção — [US-08-06](backlog/archive/fase-08/US-08-06-desativar-docs-openapi-producao.md) (`Done`)
+- [x] Headers de segurança HTTP (frontend e backend) — [US-08-07](backlog/archive/fase-08/US-08-07-headers-seguranca-http.md) (`Done`)
+- [x] Atualizar FastAPI/Starlette (e deps de dev com CVE) — [US-08-08](backlog/archive/fase-08/US-08-08-atualizar-fastapi-starlette.md) (`Done`)
+- [x] Corrigir CSP que bloqueava hidratação do Next.js em produção — [US-08-09](backlog/archive/fase-08/US-08-09-fix-csp-bloqueava-hidratacao.md), P0 (`Done`)
+- [x] Reduzir payload de JS client-side da Home — [US-08-10](backlog/archive/fase-08/US-08-10-reduzir-payload-js-home.md) (`Done`; CA-002/CA-003 por risco aceito)
+- [x] Corrigir prefetch indevido do botão de download do CV — [US-08-11](backlog/archive/fase-08/US-08-11-fix-prefetch-download-cv.md) (`Done`)
 
 ## Fase 9 — Qualidade de Engenharia
 
