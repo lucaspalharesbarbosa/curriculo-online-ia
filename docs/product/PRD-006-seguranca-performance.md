@@ -48,14 +48,22 @@ Visitante/recrutador (experiência de carregamento) e o próprio autor (superfí
 | Desativar documentação OpenAPI em produção | P1 | [US-08-06](backlog/fase-08/US-08-06-desativar-docs-openapi-producao.md) |
 | Headers de segurança HTTP (frontend e backend) | P1 | [US-08-07](backlog/fase-08/US-08-07-headers-seguranca-http.md) |
 | Atualizar FastAPI/Starlette (e deps de dev com CVE) | P2 | [US-08-08](backlog/fase-08/US-08-08-atualizar-fastapi-starlette.md) |
+| Reduzir payload de JS client-side da Home | P2 | [US-08-10](backlog/fase-08/US-08-10-reduzir-payload-js-home.md) |
+| Corrigir prefetch indevido do botão de download do CV | P3 | [US-08-11](backlog/fase-08/US-08-11-fix-prefetch-download-cv.md) |
 
-Nota: US-08-01 e US-08-04 são spikes — o resultado decide se nascem histórias de correção específica (achado por achado). US-08-02 pode rodar em paralelo aos spikes (lacuna já decidida no ADR-004). US-08-03 depende da escolha de custo do autor (A/B/C ou aceitar risco — ADR-008). US-08-05 a US-08-08 nasceram dos achados da auditoria US-08-01 (ver nota abaixo).
+Nota: US-08-01 e US-08-04 são spikes — o resultado decide se nascem histórias de correção específica (achado por achado). US-08-02 pode rodar em paralelo aos spikes (lacuna já decidida no ADR-004). US-08-03 depende da escolha de custo do autor (A/B/C ou aceitar risco — ADR-008). US-08-05 a US-08-08 nasceram dos achados da auditoria US-08-01 (ver nota abaixo). US-08-10 e US-08-11 nasceram dos achados da auditoria US-08-04 (ver nota abaixo).
 
 ### Histórias filhas propostas (achados de US-08-01)
 
 Origem: `docs/qa/QA-005-auditoria-seguranca.md`. Formalizadas em **US-08-05 a US-08-08** em 2026-08-15, cada uma com DoR próprio fechado — ver arquivos linkados na tabela "Histórias" acima.
 
 Achado Low L1 (`python-dotenv`/`pytest`/`black`, uso local/dev) — agrupado na US-08-08 junto com o bump de Starlette (achado L2), conforme sugerido no relatório do QA.
+
+### Histórias filhas propostas (achados de US-08-04)
+
+Origem: `docs/qa/QA-006-auditoria-performance.md`. Formalizadas em **US-08-10 e US-08-11** em 2026-08-16, cada uma com DoR próprio fechado — ver arquivos linkados na tabela "Histórias" acima.
+
+Achado Medium M1 (LCP mobile 2,9s / TBT / FID por JS pesado no chunk da Home) → US-08-10 (agrupa também o achado Low L2, polyfills legados, mesma causa raiz). Achado Low L1 (404 de console por prefetch do `next/link` no botão de download do CV) → US-08-11. Achado Low L3 (CSS render-blocking, 150 ms mobile) — aceitar risco, sem história filha (ganho pequeno, desproporcional para o tamanho do projeto).
 
 ## Ordem sugerida de implementação (após aprovação do discover)
 
@@ -74,4 +82,4 @@ Achado Low L1 (`python-dotenv`/`pytest`/`black`, uso local/dev) — agrupado na 
 
 - [x] Toda história do épico tem seu próprio DoR fechado
 - [x] Tasks decompostas (`references/task-breakdown-guide.md`)
-- [ ] Auditoria (spike) rodada antes de criar histórias de correção específicas — US-08-01 (segurança) Done, histórias filhas formalizadas (US-08-05 a US-08-08); US-08-04 (performance) ainda pendente, gate segue aberto até esse spike rodar
+- [x] Auditoria (spike) rodada antes de criar histórias de correção específicas — US-08-01 (segurança) Done, histórias filhas formalizadas (US-08-05 a US-08-08); US-08-04 (performance) Done, histórias filhas formalizadas (US-08-10 e US-08-11)
