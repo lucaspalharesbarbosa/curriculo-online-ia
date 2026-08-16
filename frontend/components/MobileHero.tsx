@@ -158,7 +158,7 @@ export function MobileHero({ hero, contact, skills }: MobileHeroProps) {
           className="mt-3 flex flex-col gap-2.5"
         >
           {contact.resumePdfUrl ? (
-            <Link
+            <a
               href={contact.resumePdfUrl}
               download
               className="tap-target group relative flex min-h-12 w-full items-center gap-3 overflow-hidden rounded-2xl bg-gradient-to-br from-accent-300 via-accent-500 to-accent-600 p-1.5 shadow-[0_12px_32px_rgba(56,189,248,0.28)] active:scale-[0.98]"
@@ -179,7 +179,7 @@ export function MobileHero({ hero, contact, skills }: MobileHeroProps) {
                   Currículo completo
                 </span>
               </span>
-            </Link>
+            </a>
           ) : null}
 
           <button
