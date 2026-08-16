@@ -78,7 +78,7 @@ Segurança & Performance — P2
 - [x] Contrato de API implementado bate com o documentado (shape público inalterado)
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada se o valor de timeout for fixado formalmente — `backend/README.md` (`timeout=20s`, `max_retries=1`)
-- [ ] Deploy/preview verificado — smoke `/chat` em produção/preview após merge + deploy do backend — **pendente de ação humana** (branch ainda não mergeada)
+- [x] Deploy/preview verificado — smoke `/chat` real em produção em 2026-08-16, pós-merge `develop`→`main` (PR #44): `curl -X POST https://curriculo-online-backend.onrender.com/chat -d '{"question":"Onde Lucas trabalha hoje?"}'` → `200`, resposta coerente em 12,5s (dentro do timeout de 20s configurado), sem erro/timeout
 - [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [x] Status da história atualizado no próprio arquivo
 
@@ -88,6 +88,6 @@ Segurança & Performance — P2
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado | 2026-08-15 | `pytest -q` → 34 passed (32 existentes + 2 novos); `pytest --cov=app.rag --cov=app.chat` → rag 96% / chat 97%; `ruff check .` e `black --check .` limpos. Novos: `test_get_client_configura_timeout_e_max_retries` (timeout=20, max_retries=1, faixa 15–30) e `test_chat_retorna_500_generico_quando_openai_timeout` (`APITimeoutError` → 500 genérico sem vazar "timeout"/"OpenAI"). Shape público `/chat` inalterado. Sem achado bloqueante |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-15 | Diff mínimo: `rag.get_client()` ganha `timeout=OPENAI_TIMEOUT_SECONDS` (20.0) e `max_retries=OPENAI_MAX_RETRIES` (1), constantes nomeadas com comentário ADR-004; sem lib nova, sem env nova, sem mudança em `chat.py` (fallback 500 já existente cobre CA-003). Contrato público inalterado. Nit (não bloqueante): o SDK OpenAI aplica um backoff curto interno no retry — a tarefa pediu `max_retries` no client (não retry custom), alinhado ao DoR; não é retry agressivo com múltiplas tentativas. Sem Critical/High |
-| PO | `@product-owner` | Quase lá | 2026-08-15 | CA-001 a CA-005 e tasks T01–T03 fechados com evidência. DoD quase completo — falta só smoke `/chat` pós-merge/deploy do backend no Render. Falta para Done: (1) merge da branch `feature/US-08-02-timeout-retry-openai`; (2) deploy do backend; (3) smoke `/chat` em produção; (4) marcar Deploy/preview e promover Status para Done |
+| PO | `@product-owner` | **Aceite (Done)** | 2026-08-16 | CA-001 a CA-005 e tasks T01–T03 fechados com evidência. Smoke real de `/chat` em produção pós-deploy: `200`, resposta correta, 12,5s de latência (sob o timeout de 20s). DoD 100% fechado |
 
-**Status:** Quase lá
+**Status:** Done — smoke `/chat` confirmado em produção real em 2026-08-16.
