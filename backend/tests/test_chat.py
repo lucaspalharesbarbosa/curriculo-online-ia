@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from openai import OpenAIError
+from openai import APITimeoutError, OpenAIError
 
 from app import chat, rag
 from app.main import app
@@ -235,6 +235,29 @@ def test_chat_retorna_500_generico_quando_quota_esgotada(
     assert response.status_code == 500
     assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
     assert "quota" not in response.text.lower()
+    assert "OpenAI" not in response.text
+
+
+def test_chat_retorna_500_generico_quando_openai_timeout(
+    stub_index: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CA-003: timeout do provider → fallback genérico, sem vazar detalhe interno."""
+
+    class _TimeoutEmbeddings:
+        def create(self, model: str, input: str):  # noqa: A002, ANN001
+            raise APITimeoutError(request=None)
+
+    class _TimeoutClient:
+        def __init__(self) -> None:
+            self.embeddings = _TimeoutEmbeddings()
+
+    monkeypatch.setattr(rag, "get_client", lambda: _TimeoutClient())
+
+    response = client.post("/chat", json={"question": "Onde você trabalha?"})
+
+    assert response.status_code == 500
+    assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
+    assert "timeout" not in response.text.lower()
     assert "OpenAI" not in response.text
 
 

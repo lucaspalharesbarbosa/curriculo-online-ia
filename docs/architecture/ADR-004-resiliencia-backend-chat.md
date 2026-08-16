@@ -38,7 +38,7 @@ Padrão a padrão:
 
 ## Consequências
 
-- `backend/app/rag.py` (`get_client()`) e `backend/app/chat.py` passam a configurar timeout explícito e retry único quando a implementação for priorizada — ainda **não** decomposta em história de backlog; nasce como item novo em `PRD-006-seguranca-performance.md` (Fase 8)
+- `backend/app/rag.py` (`get_client()`) configura timeout explícito (`20s`) e `max_retries=1` — implementado em [US-08-02](../product/backlog/fase-08/US-08-02-timeout-retry-openai.md)
 - `ai-architecture-patterns.md` (seção 5, `@arquiteto-ia-senior`) atualizada para refletir timeout/retry como decisão concreta desta ADR, não só recomendação genérica
 - `PRD-006-seguranca-performance.md` ganha história nova para a implementação e passa a listar circuit breaker/bulkhead como excluídos explicitamente, com o motivo desta ADR, para não serem repropostos sem sinal novo
 - Cache de resposta (cache-aside de conversas do `/chat`) fica registrado aqui como ideia futura, não história ativa — só vira história se o volume de perguntas repetidas justificar

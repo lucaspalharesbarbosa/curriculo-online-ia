@@ -190,6 +190,24 @@ class _FakeOpenAIClient:
         self.embeddings = _FakeEmbeddingsResource(embedding_by_text)
 
 
+def test_get_client_configura_timeout_e_max_retries(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-001/CA-002: timeout explícito e no máximo 1 retry (ADR-004)."""
+    monkeypatch.setenv("LLM_API_KEY", "test-key-not-real")
+    rag.get_client.cache_clear()
+
+    client = rag.get_client()
+
+    assert client.timeout == rag.OPENAI_TIMEOUT_SECONDS
+    assert client.timeout == 20.0
+    assert 15.0 <= client.timeout <= 30.0
+    assert client.max_retries == rag.OPENAI_MAX_RETRIES
+    assert client.max_retries == 1
+
+    rag.get_client.cache_clear()
+
+
 def test_embed_text_retorna_vetor_do_client_mockado(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
