@@ -12,18 +12,27 @@ import type { NextConfig } from "next";
 //
 // script-src ganha 'unsafe-eval' so fora de producao: o dev server (webpack
 // eval devtool / HMR do Turbopack) depende disso para hot reload; producao
-// (Vercel) fica estrita, sem 'unsafe-eval'.
+// (Vercel) fica estrita quanto a isso, sem 'unsafe-eval'.
 //
-// style-src mantem 'unsafe-inline': framer-motion anima via manipulacao
-// direta do atributo style do elemento (whileHover/whileInView usados em
-// varios componentes desde a Fase 07) — sem 'unsafe-inline' as animacoes
-// quebrariam sob CSP. Risco aceito: injecao de estilo tem impacto bem menor
-// que injecao de script, que continua bloqueada.
+// script-src mantem 'unsafe-inline' (incidente pos-deploy da US-08-07,
+// corrigido na US-08-09): o proprio Next.js App Router injeta scripts
+// inline na pagina para o payload de streaming/hidratacao RSC
+// (`self.__next_f.push(...)`). Sem 'unsafe-inline' esses scripts sao
+// bloqueados pela CSP, a hidratacao nunca completa e o React quebra com
+// "Minified React error #412" (stream fechada) — tela em branco em
+// producao real, so detectavel com navegacao real (CA-003), que ficou
+// pendente na US-08-07. Alternativa mais estrita (nonce por requisicao via
+// proxy.ts + 'strict-dynamic') exige renderizacao dinamica em todas as
+// paginas, perdendo o SSG deste site — trade-off arquitetural que
+// mereceria ADR proprio, desproporcional para um portfolio estatico sem
+// dangerouslySetInnerHTML em nenhum componente (sem vetor de HTML/script
+// nao confiavel injetado no DOM). Mesmo padrao de risco aceito ja usado em
+// style-src abaixo.
 const isProduction = process.env.NODE_ENV === "production";
 
 const contentSecurityPolicy = [
   "default-src 'self'",
-  `script-src 'self'${isProduction ? "" : " 'unsafe-eval'"}`,
+  `script-src 'self' 'unsafe-inline'${isProduction ? "" : " 'unsafe-eval'"}`,
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data:",
   "font-src 'self' data:",
