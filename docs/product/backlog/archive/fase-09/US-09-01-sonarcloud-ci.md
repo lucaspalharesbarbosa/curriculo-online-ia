@@ -15,7 +15,7 @@
 - [x] Modelagem de dados documentada — `N/A`, sem entidade nova
 - [x] Plano de testes definido — ver subseção "Plano de testes"
 - [x] Épico e dependências identificados — épico Qualidade de Engenharia (`PRD-007`); sem dependência de história anterior (primeira história da Fase 9)
-- [x] ADR registrado se envolve decisão de stack nova — [`ADR-009`](../../../architecture/ADR-009-sonarcloud-ci.md) (Aceita): dois projetos SonarCloud, um por serviço, espelhando o CI existente
+- [x] ADR registrado se envolve decisão de stack nova — [`ADR-009`](../../../../architecture/ADR-009-sonarcloud-ci.md) (Aceita): dois projetos SonarCloud, um por serviço, espelhando o CI existente
 - [x] Variáveis de ambiente/segredos necessários identificados — `SONAR_TOKEN` (gerado pelo autor em sonarcloud.io, configurado como secret do repositório no GitHub — nunca no client bundle nem hardcoded no workflow)
 - [x] Referência visual definida — `N/A`, sem UI nova
 - [x] Protótipo solicitado pelo autor — `N/A`, sem pedido
@@ -58,7 +58,7 @@ Fonte: API pública do SonarCloud (`project_branches/list` para bugs/vulnerabili
 
 ### Dependências
 
-- [`ADR-009`](../../../architecture/ADR-009-sonarcloud-ci.md) — dois projetos SonarCloud, um por serviço (registrado)
+- [`ADR-009`](../../../../architecture/ADR-009-sonarcloud-ci.md) — dois projetos SonarCloud, um por serviço (registrado)
 
 ### Épico / Prioridade
 

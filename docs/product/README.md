@@ -15,7 +15,7 @@ Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
 ### Evolução pós-lançamento
 - [PRD-005 — Frontend & UX v2](PRD-005-frontend-ux-v2.md) — Done (15/15; histórias em `backlog/archive/fase-07/`)
 - [PRD-006 — Segurança & Performance](PRD-006-seguranca-performance.md) — Done (11/11; histórias em `backlog/archive/fase-08/`)
-- [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — draft, sem histórias
+- [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — em andamento (1/4 frentes; `US-09-01` Done, arquivada)
 - [PRD-008 — Observabilidade](PRD-008-observabilidade.md) — draft, sem histórias
 - [PRD-009 — Chat v2](PRD-009-chat-v2.md) — draft, sem histórias
 - [PRD-010 — Área Administrativa](PRD-010-area-administrativa.md) — draft; escopo redefinido (só métricas — ver PRD)
@@ -24,7 +24,7 @@ Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
 
 Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por história, com ID `US-<fase>-<sequência>` (ex.: `US-03-10`) e um slug descritivo no nome do arquivo. O ID já carrega o número da fase, então não há ambiguidade entre `US-03-01` (fase 03) e `US-05-01` (fase 05). A tabela "Histórias" de cada PRD linka para o arquivo correspondente.
 
-Nenhuma fase ativa no momento — Fase 08 concluída e arquivada (ver abaixo). Fases 09–12 seguem em `draft`, sem histórias ainda.
+Nenhuma fase ativa no momento — Fase 09 concluída (1ª frente do `PRD-007`) e arquivada (ver abaixo). Fases 10–12 seguem em `draft`, sem histórias ainda; demais frentes do `PRD-007` aguardam nova fase quando entrarem em execução.
 
 ### Fases arquivadas
 
@@ -37,15 +37,15 @@ Nenhuma fase ativa no momento — Fase 08 concluída e arquivada (ver abaixo). F
 - [Fase 06 — Divulgação](backlog/archive/fase-06/) (US-06-01–02 Done; US-06-03 Cancelada) — arquivada 2026-08-11
 - [Fase 07 — Frontend & UX v2](backlog/archive/fase-07/) (US-07-01 a US-07-15 — 15/15 Done) — arquivada 2026-08-11; referência [personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice
 - [Fase 08 — Segurança & Performance](backlog/archive/fase-08/) (US-08-01 a US-08-11 — 11/11 Done) — arquivada 2026-08-16; `PRD-006`, `ADR-008`
+- [Fase 09 — Qualidade de Engenharia](backlog/archive/fase-09/) (US-09-01 — 1/1 Done) — arquivada 2026-08-16; `PRD-007`, `ADR-009`. Demais frentes do `PRD-007` (gate de cobertura, boas práticas REST, refactor guiado pelo Sonar) seguem sem história — entram em nova fase quando priorizadas
 
 ### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
 
-- Fase 09 — Qualidade de Engenharia (`PRD-007`)
 - Fase 10 — Observabilidade (`PRD-008`)
 - Fase 11 — Chat v2 (`PRD-009`)
 - Fase 12 — Área Administrativa (`PRD-010`)
 
-Histórias das fases 09–12 são criadas pelo `@product-owner` quando cada fase entrar em execução (DoR completo, contrato de API + mapeamento de erros quando aplicável) — os PRDs acima têm só a lista de frentes e riscos conhecidos até aqui.
+Histórias das fases 10–12 (e das frentes restantes do `PRD-007`, que herdam um novo número de fase — `09` não é reaproveitado) são criadas pelo `@product-owner` quando cada fase entrar em execução (DoR completo, contrato de API + mapeamento de erros quando aplicável) — os PRDs acima têm só a lista de frentes e riscos conhecidos até aqui.
 
 ## Convenção de nomenclatura
 - PRD (por épico): `PRD-NNN-<epico>.md`
