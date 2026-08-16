@@ -13,6 +13,8 @@ jobs:
         working-directory: frontend
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -36,7 +38,14 @@ jobs:
         run: npm run format
       - name: Test
         if: steps.filter.outputs.frontend == 'true'
-        run: npm test -- --run
+        run: npm test -- --run --coverage
+      - name: SonarQube Cloud Scan
+        if: steps.filter.outputs.frontend == 'true'
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: frontend
       - name: Build
         if: steps.filter.outputs.frontend == 'true'
         run: npm run build
