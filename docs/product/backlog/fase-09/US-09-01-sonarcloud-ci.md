@@ -82,15 +82,15 @@ Qualidade de Engenharia — P1
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
 - [x] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado pela história — `N/A`: história de infraestrutura de CI, sem lógica de produção nova
+- [x] Cobertura de testes ≥ 70% no código tocado pela história — `N/A`: história de infraestrutura de CI, sem lógica de produção nova
 - [x] Build/lint limpo (`npm run build`, `ruff check`, type checking estrito) — verde em CI real no PR #46 (`lint-and-build`, `lint-and-test`) e localmente (frontend 65/65 testes, backend 34/34 testes)
 - [x] Review do `@tech-lead-review` sem Critical/High em aberto — Aprovado, ver tabela Vereditos
-- [ ] Contrato de API implementado bate com o documentado no DoR — `N/A`
+- [x] Contrato de API implementado bate com o documentado no DoR — `N/A`
 - [x] Sem chave de API/secret exposto (client bundle ou repo) — `SONAR_TOKEN` só via `secrets.SONAR_TOKEN` no workflow, confirmado no diff e no log de CI (mascarado)
 - [x] Documentação atualizada — `ADR-009` registrado e linkado; `CONTEXTO-PROJETO.md` atualizado (linha "Análise estática" na tabela de stack + status da Fase 9 na tabela de roadmap)
-- [ ] Deploy/preview verificado — `N/A`, sem UI
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Deploy/preview verificado — `N/A`, sem UI
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
@@ -98,6 +98,6 @@ Qualidade de Engenharia — P1
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-16 | Suítes locais verdes (frontend 65/65, cobertura 82,18%; backend 34/34, cobertura 96%); CA-001/002/003/005 validados com evidência real no [PR #46](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/46) e no push de merge em `develop`. Ressalva: branch principal dos projetos SonarCloud ainda aponta para `master` (inexistente neste repo) — ver "Gap conhecido" na subseção Baseline; não bloqueia CI/Quality Gate, mas limita leitura histórica agregada da `develop` até o autor corrigir em Administration → Branches no sonarcloud.io |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-16 | Diff enxuto (`.github/workflows/*.yml`, `sonar-project.properties`, `vitest.config.ts`, `requirements.txt`, `.prettierignore`/`eslint.config.mjs`); sem Critical/High. `SONAR_TOKEN` só via `secrets.*`, sem exposição; escopo do PR respeitado (só CI/config, sem código de produção); ADR-009 seguido (dois projetos, um por serviço). Nit: chaves reais dos projetos SonarCloud (`lucaspalharesbarbosa_curriculo-online-*`) diferem do nome ilustrativo em ADR-009 (`curriculo-online-ia-*`) — esperado, SonarCloud prefixa com a org no onboarding via GitHub Actions; não requer mudança |
-| PO | `@product-owner` | — | — | — |
+| PO | `@product-owner` | Done | 2026-08-16 | 5/5 CA fechados com evidência real (PR #46 + push de merge em `develop`); DoD 100% fechado (itens `N/A` justificados); QA e Tech Lead aprovaram sem Critical/High. Gap de config de branch no SonarCloud (main branch = `master` inexistente) aceito como follow-up de baixo risco — não bloqueia CI nem Quality Gate, só limita leitura histórica agregada por ora |
 
-**Status:** Quase lá (QA e Tech Lead aprovados — falta aceite do PO; ressalva de config de branch no SonarCloud fica como follow-up, não bloqueia)
+**Status:** Done

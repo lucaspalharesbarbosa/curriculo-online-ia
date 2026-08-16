@@ -125,10 +125,10 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 9 — Qualidade de Engenharia
 
-**Status:** Em andamento — 1ª história com DoR fechado, pronta para Dev
+**Status:** Em andamento — 1ª história Done, demais itens sem história ainda
 **PRD:** [`PRD-007-qualidade-engenharia.md`](PRD-007-qualidade-engenharia.md)
 
-- [ ] SonarCloud no CI (frontend e backend) — [US-09-01](backlog/fase-09/US-09-01-sonarcloud-ci.md) (`Ready for Agent`)
+- [x] SonarCloud no CI (frontend e backend) — [US-09-01](backlog/fase-09/US-09-01-sonarcloud-ci.md) (`Done`)
 - [ ] Gate de cobertura mínima automatizado no CI
 - [ ] Boas práticas REST no backend (status codes, shape de erro padronizado)
 - [ ] Refactor/modularização guiado pelos achados do SonarCloud
