@@ -19,6 +19,7 @@ Site pessoal de currículo (projeto #1 do portfólio) com um assistente de chat 
 | Lint/format frontend | ESLint + Prettier |
 | Lint/format backend | ruff (ou flake8) + black |
 | CI | GitHub Actions — `frontend-ci.yml` (lint + build) e `backend-ci.yml` (lint + testes), um workflow por serviço |
+| Análise estática | SonarCloud — dois projetos (um por serviço), rodando em `pull_request` e push `main`/`develop`, condicionado ao `paths-filter` de cada workflow (`ADR-009`) |
 
 ## Estrutura — monorepo
 
@@ -190,7 +191,7 @@ Fase 8 (Segurança & Performance) **concluída e arquivada** (2026-08-16) — 11
 | Fase 6 — Divulgação | README, LinkedIn, feedback | `docs/product/backlog/archive/fase-06/` (US-06-01–02 Done; US-06-03 Cancelada) — Arquivada |
 | Fase 7 — Frontend & UX v2 | Contato (WhatsApp), responsividade, redesign, conteúdo, polimentos UX, mobile-first | `docs/product/backlog/archive/fase-07/` (US-07-01 a US-07-15) — Arquivada |
 | Fase 8 — Segurança & Performance | Auditoria de segurança e performance, cold start do Render free tier, timeout OpenAI | `docs/product/backlog/archive/fase-08/` (US-08-01 a US-08-11 — 11/11 Done) — Arquivada |
-| Fase 9 — Qualidade de Engenharia | SonarCloud, gate de cobertura no CI, boas práticas REST, refactor guiado por achados | `PRD-007` — draft, sem histórias ainda |
+| Fase 9 — Qualidade de Engenharia | SonarCloud, gate de cobertura no CI, boas práticas REST, refactor guiado por achados | `docs/product/backlog/fase-09/` — US-09-01 em andamento (QA e Tech Lead aprovados, aguardando aceite do PO); demais itens do `PRD-007` sem história ainda |
 | Fase 10 — Observabilidade | Dashboard Grafana + logs centralizados | `PRD-008` — draft, sem histórias ainda; depende de ADR de stack |
 | Fase 11 — Chat v2 | Redesign e novas funcionalidades do `ChatWidget` | `PRD-009` — draft, sem histórias ainda |
 | Fase 12 — Área Administrativa | Login + dashboard de métricas (sem lista de contatos — decisão 2026-08-06) | `PRD-010` — draft; bloqueada até ADRs de auth/persistência |
