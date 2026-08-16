@@ -175,7 +175,7 @@ Fase 6 (divulgação) **concluída e arquivada** (2026-08-11) — [US-06-01](../
 
 Fase 7 (Frontend & UX v2) **concluída e arquivada** (2026-08-11) — 15/15 histórias Done em `docs/product/backlog/archive/fase-07/` (`PRD-005`). Referência visual **personal-resume** ([repo](https://github.com/giasinguyen/personal-resume)); paleta **D1 Deep Ice**; deps em `ADR-005`/`ADR-006`/`ADR-007`.
 
-Fase 8 (Segurança & Performance) **em execução** — backlog em `docs/product/backlog/fase-08/` (US-08-01 a US-08-11); Done: US-08-01, 03, 04, 05, 10 (US-08-10 fechada em 2026-08-16 com CA-002/CA-003 por risco aceito — decisão do autor, sem alavanca de código disponível, ver conclusão da investigação na própria história); Quase lá (código pronto, pendente de merge `develop`→`main` e verificação manual pós-deploy): US-08-02, 06, 07, 08, 09, 11. `PRD-006` em review; cold start em [`ADR-008`](../architecture/ADR-008-mitigacao-cold-start-render.md); timeout/retry em `ADR-004`. Fases 9 a 12 seguem em `draft` (`PRD-007` a `PRD-010`).
+Fase 8 (Segurança & Performance) **concluída e arquivada** (2026-08-16) — 11/11 histórias Done em `docs/product/backlog/archive/fase-08/` (US-08-01 a US-08-11); todas verificadas com evidência real de produção (`curl -I`, Lighthouse mobile+desktop real, smoke `/health`/`/chat`, CI real do GitHub Actions) após merge `develop`→`main` (PR #44) e configuração de `ENVIRONMENT=production` no Render; US-08-10 fechada com CA-002/CA-003 por risco aceito (decisão do autor — sem alavanca de código disponível, ver investigação na própria história). `PRD-006` Done; cold start em [`ADR-008`](../architecture/ADR-008-mitigacao-cold-start-render.md); timeout/retry em `ADR-004`. Fases 9 a 12 seguem em `draft` (`PRD-007` a `PRD-010`).
 
 ## Fases do roadmap e backlog correspondente
 
@@ -189,7 +189,7 @@ Fase 8 (Segurança & Performance) **em execução** — backlog em `docs/product
 | Fase 5 — Feature de IA (RAG) | ADR de RAG, chunking, embeddings, `/chat`, `ChatWidget`, deploy do backend | `docs/product/backlog/archive/fase-05/` (US-05-01 a US-05-09) — Arquivada |
 | Fase 6 — Divulgação | README, LinkedIn, feedback | `docs/product/backlog/archive/fase-06/` (US-06-01–02 Done; US-06-03 Cancelada) — Arquivada |
 | Fase 7 — Frontend & UX v2 | Contato (WhatsApp), responsividade, redesign, conteúdo, polimentos UX, mobile-first | `docs/product/backlog/archive/fase-07/` (US-07-01 a US-07-15) — Arquivada |
-| Fase 8 — Segurança & Performance | Auditoria de segurança e performance, cold start do Render free tier, timeout OpenAI | `docs/product/backlog/fase-08/` (US-08-01 a US-08-08) — discover / US-08-01 Done, demais Ready for Agent |
+| Fase 8 — Segurança & Performance | Auditoria de segurança e performance, cold start do Render free tier, timeout OpenAI | `docs/product/backlog/archive/fase-08/` (US-08-01 a US-08-11 — 11/11 Done) — Arquivada |
 | Fase 9 — Qualidade de Engenharia | SonarCloud, gate de cobertura no CI, boas práticas REST, refactor guiado por achados | `PRD-007` — draft, sem histórias ainda |
 | Fase 10 — Observabilidade | Dashboard Grafana + logs centralizados | `PRD-008` — draft, sem histórias ainda; depende de ADR de stack |
 | Fase 11 — Chat v2 | Redesign e novas funcionalidades do `ChatWidget` | `PRD-009` — draft, sem histórias ainda |

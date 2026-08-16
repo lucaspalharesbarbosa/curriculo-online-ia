@@ -81,6 +81,10 @@ A hipótese de causa raiz do `QA-006` (import não tree-shakeable / `browserslis
 
 **Nenhuma alteração de código foi aplicada** (`git diff` vazio em `frontend/`, só esta história atualizada). Diferente de US-08-02/06/07/08/09/11, o bloqueio aqui não é falta de acesso à produção — é a ausência de um fix de código viável dentro do escopo proposto pela `QA-006`.
 
+#### Addendum — medição real em produção pós-deploy (2026-08-16)
+
+Após o merge `develop`→`main` (PR #44, inclui também US-08-11), rodei Lighthouse mobile real contra `https://lucas-palhares-cv.vercel.app` (Chrome headless local): Performance **92** (CA-001 confirmado, sem regressão) e `unused-javascript` **53.032 bytes (~51,8 KiB)** — abaixo do baseline de 69 KiB de `QA-006`, satisfazendo CA-002 na prática. Atribuição incerta: nenhuma mudança de código desta história poderia causar isso (nenhum código mudou aqui); mais provável é efeito cumulativo de US-08-11 (remoção da requisição de prefetch que falhava) ou variação normal de execução do Lighthouse — mesma cautela de atribuição já usada em `QA-006` para o salto de Performance 66→92. `legacy-javascript-insight` confirmado com o mesmo achado (14.013 bytes, chunk `polyfillFiles` do Next.js, sinais `Array.prototype.at`/`flat`/`flatMap`/`Object.fromEntries`/`Object.hasOwn`) — reforça a conclusão de CA-003 (overhead fixo do framework, risco aceito mantido).
+
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
