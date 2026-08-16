@@ -41,5 +41,5 @@ Cada workflow (`frontend-ci.yml`/`backend-ci.yml`) roda a análise do seu própr
 ## Referências
 - `docs/agents/CONTEXTO-PROJETO.md`
 - `docs/product/PRD-007-qualidade-engenharia.md`
-- `docs/product/backlog/fase-09/US-09-01-sonarcloud-ci.md`
+- `docs/product/backlog/archive/fase-09/US-09-01-sonarcloud-ci.md`
 - `ADR-002` (hospedagem free-tier)
