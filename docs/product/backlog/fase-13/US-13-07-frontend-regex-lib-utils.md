@@ -35,10 +35,10 @@ As 3 regex tratam `resume.about` — conteúdo estático do autor em `content/re
 
 ### Critérios de aceite
 
-- [ ] CA-001: as 3 regex reescritas sem o padrão de backtracking exponencial apontado (ex.: trocar quantificadores aninhados/greedy por alternativas lineares ou parsing manual do trecho entre travessões)
-- [ ] CA-002: `splitAboutNarrative` produz o mesmo resultado para o `about` real de `content/resume.json` antes e depois da mudança (teste de regressão)
-- [ ] CA-003: nova análise do Sonar em `main` não reporta mais os 3 achados
-- [ ] CA-004: suíte do frontend continua verde
+- [x] CA-001: as 3 regex reescritas sem o padrão de backtracking exponencial apontado — `\s*` adjacente a `[^—]+?` removido (limpeza de espaço passa para `.trim()`/`trimStart()`/`trimEnd()` determinístico) e `.+?[.!?]` trocado por busca direta do primeiro terminador via `/[.!?](?=\s|$)/` + `slice()`
+- [x] CA-002: `splitAboutNarrative` produz o mesmo resultado para o `about` real de `content/resume.json` — teste de regressão em `lib/utils.test.ts` valida `lead`/`body`/`accents` exatos contra o `about` real
+- [ ] CA-003: nova análise do Sonar em `main` não reporta mais os 3 achados — só verificável após o merge desta entrega e nova análise rodar; não bloqueia Done (achados corrigidos na origem)
+- [x] CA-004: suíte do frontend continua verde — 71/71 testes (4 novos casos de borda em `splitAboutNarrative`: sem travessão, sem terminador de frase, múltiplos travessões, `about` real), `utils.ts` 100% stmts/lines
 
 ### Fora de escopo
 - Mudar o formato/conteúdo do `about` no `resume.json`
@@ -51,9 +51,9 @@ As 3 regex tratam `resume.about` — conteúdo estático do autor em `content/re
 Qualidade de Engenharia — P2
 
 ### Tasks
-- [ ] T01 Reescrever as 3 regex em `frontend/lib/utils.ts` (`splitAboutNarrative`)
-- [ ] T02 [P] Teste unitário cobrindo `splitAboutNarrative` com o `about` real e casos de borda (sem travessão, múltiplos travessões)
-- [ ] T03 Rodar `npm test -- --run --coverage`
+- [x] T01 Reescrever as 3 regex em `frontend/lib/utils.ts` (`splitAboutNarrative`)
+- [x] T02 [P] Teste unitário cobrindo `splitAboutNarrative` com o `about` real e casos de borda (sem travessão, múltiplos travessões, sem terminador de frase)
+- [x] T03 Rodar `npm test -- --run --coverage` — 71/71 verde
 
 ### DoD
 - [ ] Todos os critérios de aceite acima `[x]`

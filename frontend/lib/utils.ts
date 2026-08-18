@@ -147,26 +147,38 @@ export type AboutNarrative = {
  */
 export function splitAboutNarrative(about: string): AboutNarrative {
   const accents: string[] = [];
-  const accentMatch = about.match(/—\s*([^—]+?)\s*—/);
+  // Sem `\s*` colado a `[^—]+` (S8786: risco de backtracking super-linear já
+  // que espaço é um caractere aceito por `[^—]`) — a limpeza de espaço fica
+  // por conta de `.trim()`/`trimStart()`/`trimEnd()`, determinístico.
+  const accentMatch = about.match(/—([^—]+)—/);
   let narrative = about;
-  if (accentMatch?.[1]) {
+  if (accentMatch) {
     accents.push(
       ...accentMatch[1]
+        .trim()
         .split(/,| e /)
         .map((part) => part.trim())
         .filter(Boolean),
     );
     // Remove o trecho entre travessões do corpo — as ênfases vão para chips
-    narrative = about.replace(/\s*—\s*[^—]+?\s*—/, "");
+    const start = accentMatch.index ?? 0;
+    const end = start + accentMatch[0].length;
+    const before = about.slice(0, start).trimEnd();
+    const after = about.slice(end).trimStart();
+    narrative = after.length > 0 ? `${before} ${after}` : before;
   }
 
-  const sentenceMatch = narrative.match(/^(.+?[.!?])(?:\s+|$)([\s\S]*)$/);
-  if (!sentenceMatch) {
+  // Mesmo motivo: troca `.+?[.!?]` (lazy contra classe que também casa
+  // espaço) por uma busca direta do primeiro terminador de frase seguido de
+  // espaço/fim, sem quantificador aninhado ambíguo.
+  const terminatorMatch = narrative.match(/[.!?](?=\s|$)/);
+  if (!terminatorMatch || terminatorMatch.index === undefined) {
     return { lead: narrative.trim(), body: null, accents };
   }
 
-  const lead = sentenceMatch[1].trim();
-  const body = sentenceMatch[2].trim() || null;
+  const splitIndex = terminatorMatch.index + 1;
+  const lead = narrative.slice(0, splitIndex).trim();
+  const body = narrative.slice(splitIndex).trim() || null;
   return { lead, body, accents };
 }
 
