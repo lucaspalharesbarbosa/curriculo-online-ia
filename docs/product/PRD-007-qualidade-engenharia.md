@@ -1,6 +1,6 @@
 # PRD-007 — Qualidade de Engenharia
 
-**Status:** draft
+**Status:** em andamento — `US-09-01` Done (Fase 9 arquivada); demais frentes ainda em draft, sem história (herdam novo número de fase quando priorizadas — `09` não é reaproveitado)
 **Épico:** Qualidade de Engenharia
 **Prioridade:** P2
 
@@ -32,7 +32,7 @@ O próprio autor, como mantenedor do código a médio prazo.
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Adicionar SonarCloud ao CI (frontend e backend) | P1 | — |
+| Adicionar SonarCloud ao CI (frontend e backend) | P1 | [US-09-01](backlog/archive/fase-09/US-09-01-sonarcloud-ci.md) (Done) |
 | Gate de cobertura mínima automatizado no CI (frontend e backend) | P1 | — |
 | Revisão de boas práticas REST no backend (status codes, shape de erro padronizado) | P2 | — |
 | Refactor/modularização guiado pelos achados do SonarCloud | P3 | — |

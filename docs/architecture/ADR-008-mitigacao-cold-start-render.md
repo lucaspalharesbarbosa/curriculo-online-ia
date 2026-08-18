@@ -2,7 +2,7 @@
 
 ## Status
 
-Aceita — decisão final do autor em [US-08-03](../product/backlog/fase-08/US-08-03-mitigacao-cold-start-render.md) (2026-08-15): **aceitar risco**, sem mitigação ativa (ver seção "Decisão do autor" abaixo)
+Aceita — decisão final do autor em [US-08-03](../product/backlog/archive/fase-08/US-08-03-mitigacao-cold-start-render.md) (2026-08-15): **aceitar risco**, sem mitigação ativa (ver seção "Decisão do autor" abaixo)
 
 ## Contexto
 
@@ -10,7 +10,7 @@ O backend FastAPI roda no **Render free** ([ADR-002](ADR-002-hospedagem-gratuita
 
 Já existe `GET /health` (`backend/app/main.py`) e `healthCheckPath: /health` no `render.yaml` — suficiente para readiness do deploy, **insuficiente** para impedir hibernação (o health check da plataforma não substitui tráfego periódico externo no free tier).
 
-`PRD-006` / [US-08-03](../product/backlog/fase-08/US-08-03-mitigacao-cold-start-render.md) pedem plano de mitigação sem reabrir hospedagem “por gosto” — só com trade-off explícito de custo.
+`PRD-006` / [US-08-03](../product/backlog/archive/fase-08/US-08-03-mitigacao-cold-start-render.md) pedem plano de mitigação sem reabrir hospedagem “por gosto” — só com trade-off explícito de custo.
 
 ## Decisão
 
@@ -56,5 +56,5 @@ Reabrir esta ADR se o volume de acesso crescer de forma sustentada (ex.: divulga
 - [ADR-002](ADR-002-hospedagem-gratuita.md)
 - [ADR-004](ADR-004-resiliencia-backend-chat.md) (timeout — complementar, não substitui cold start)
 - `docs/product/PRD-006-seguranca-performance.md`
-- [US-08-03](../product/backlog/fase-08/US-08-03-mitigacao-cold-start-render.md)
+- [US-08-03](../product/backlog/archive/fase-08/US-08-03-mitigacao-cold-start-render.md)
 - `backend/app/main.py` (`/health`), `render.yaml`

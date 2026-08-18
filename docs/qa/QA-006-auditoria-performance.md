@@ -1,6 +1,6 @@
 # QA-006 — Auditoria de performance (US-08-04)
 
-**História:** [US-08-04](../product/backlog/fase-08/US-08-04-auditoria-performance.md)
+**História:** [US-08-04](../product/backlog/archive/fase-08/US-08-04-auditoria-performance.md)
 **Épico:** Segurança & Performance (`PRD-006`)
 **Data:** 2026-08-15/16
 **Agente:** `@qa-engineer` (spike executado como Dev, validado como QA/Tech Lead/PO no mesmo pipeline)

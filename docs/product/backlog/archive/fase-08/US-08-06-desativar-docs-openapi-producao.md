@@ -47,7 +47,7 @@ Mapeamento de erros:
 - [x] CA-002: dado `ENVIRONMENT=production`, `GET /redoc` retorna 404
 - [x] CA-003: dado `ENVIRONMENT=production`, `GET /openapi.json` retorna 404
 - [x] CA-004: dado `ENVIRONMENT` ausente ou diferente de `production` (dev/local), os três endpoints continuam respondendo 200 como hoje
-- [ ] CA-005: `ENVIRONMENT=production` configurado no painel do Render (produção real) e comportamento confirmado via `curl -I` pós-deploy — **pendente de ação humana**: exige acesso ao painel do Render em produção real, fora do alcance do agente. Falta configurar a env var no serviço `curriculo-online-backend` (Environment) e rodar `curl -I https://<url-do-backend>.onrender.com/docs` (e `/redoc`, `/openapi.json`) pós-deploy para confirmar 404
+- [x] CA-005: `ENVIRONMENT=production` configurado no painel do Render (produção real) e comportamento confirmado via `curl -I` pós-deploy — confirmado em 2026-08-16, após o autor configurar a env var no Web Service `curriculo-online-backend`: `curl -sI https://curriculo-online-backend.onrender.com/docs` → 404; `/redoc` → 404; `/openapi.json` → 404; corpo `{"detail":"Not Found"}` batendo com o mapeamento de erros do DoR; `/health` confirmado ainda em 200 (`{"status":"ok"}`) — serviço no ar normalmente
 - [x] CA-006: `backend/README.md` (com referência no `README.md` raiz) documenta como acessar Swagger/ReDoc/OpenAPI **localmente** (rodar o backend sem `ENVIRONMENT=production` → `http://localhost:8000/docs`) — a documentação da API continua disponível para o autor, só não fica exposta publicamente em produção
 
 ### Fora de escopo
@@ -72,20 +72,20 @@ Segurança & Performance — P1
 - [X] T01 Ler `ENVIRONMENT` em `backend/app/main.py` e condicionar `docs_url`/`redoc_url`/`openapi_url` a `None` quando `production`
 - [X] T02 [P] Atualizar `backend/.env.example` com a nova variável `ENVIRONMENT` (comentário explicando valores esperados e default)
 - [X] T03 [P] Teste em `backend/tests/test_main.py` cobrindo os dois cenários (produção bloqueado / dev liberado)
-- [ ] T04 Configurar `ENVIRONMENT=production` no painel do Render (produção) e validar com `curl -I` pós-deploy nos três endpoints — **pendente**: ação manual no painel do Render em produção real, sem acesso do agente a esse painel
+- [x] T04 Configurar `ENVIRONMENT=production` no painel do Render (produção) e validar com `curl -I` pós-deploy nos três endpoints — feito pelo autor em 2026-08-16; validado com `curl -I` real (ver CA-005)
 - [X] T05 Atualizar `backend/README.md` (seção de variáveis de ambiente) documentando `ENVIRONMENT`
 - [X] T06 Adicionar em `backend/README.md` uma seção curta "Documentação da API" explicando que Swagger/ReDoc/OpenAPI ficam em `http://localhost:8000/docs` (`/redoc`, `/openapi.json`) ao rodar local (sem `ENVIRONMENT=production`), e por que ficam fechados em produção; linkar essa seção a partir do `README.md` raiz
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]` — CA-005 em aberto (ver justificativa)
+- [x] Todos os critérios de aceite acima `[x]` — CA-001 a CA-006 fechados com evidência real
 - [x] Cobertura de testes ≥ 70% no código tocado (`pytest --cov` no trecho alterado de `backend/app/main.py`) — 100% (`pytest --cov=app.main`, 15/15 statements, ver Vereditos)
 - [x] Build/lint limpo (`ruff check`, `black --check`)
 - [x] Review do `@tech-lead-review` sem Critical/High em aberto
 - [x] Contrato de API implementado bate com o documentado acima (404 condicional aos três endpoints de docs)
 - [x] Sem chave de API/secret exposto (client bundle ou repo) — `ENVIRONMENT` não é segredo; nenhuma outra variável vazou no diff
 - [x] Documentação atualizada — `backend/.env.example` e `backend/README.md` (variável `ENVIRONMENT` + seção "Documentação da API" de como acessar Swagger localmente); `README.md` raiz linkando essa seção
-- [ ] Deploy/preview verificado — `curl -I` real em produção (Render) pós-deploy, nos três endpoints — **pendente**: exige configurar `ENVIRONMENT=production` no painel do Render (ação humana, agente não tem acesso) e então rodar o `curl -I`
+- [x] Deploy/preview verificado — `curl -I` real em produção (Render) pós-deploy, nos três endpoints, confirmando 404 (ver CA-005)
 - [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [x] Status da história atualizado no próprio arquivo
 
@@ -95,6 +95,6 @@ Segurança & Performance — P1
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado | 2026-08-15 | `pytest -q` → 31 passed (29 existentes + 2 novos, nenhum quebrado); `pytest --cov=app.main --cov-report=term-missing` → 100% (15/15 statements) no trecho tocado de `backend/app/main.py`; `ruff check .` e `black --check .` limpos; os 2 testes novos (`test_docs_endpoints_desativados_quando_environment_production`, `test_docs_endpoints_disponiveis_quando_environment_ausente_ou_dev`) cobrem exatamente CA-001 a CA-004 — 3 endpoints (`/docs`, `/redoc`, `/openapi.json`) em 404 com `ENVIRONMENT=production` e em 200 sem a env var; corpo do 404 conferido manualmente (`{"detail": "Not Found"}`), batendo com o mapeamento de erros do DoR |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-15 | `backend/app/main.py:15-26` implementa exatamente o contrato do DoR (`docs_url`/`redoc_url`/`openapi_url` → `None` só quando `ENVIRONMENT == "production"`, default `"development"` preserva comportamento atual); sem introdução de autenticação/whitelist de IP nem outra env var (escopo respeitado); testes usam `importlib.reload` para exercitar os dois valores de `ENVIRONMENT` no mesmo processo de teste, com `finally` restaurando o módulo — sem vazamento de estado entre testes (suite completa permanece verde); nenhuma chave de API tocada; documentação (`backend/README.md`, `README.md` raiz, `.env.example`) consistente com o código. Sem achados Critical/High |
-| PO | `@product-owner` | Quase lá | 2026-08-15 | CA-001 a CA-004 e CA-006 genuinamente cumpridos, com evidência de teste real. CA-005 e o item de DoD "Deploy/preview verificado" ficam em aberto — dependem de configurar `ENVIRONMENT=production` no painel do Render (produção real) e confirmar com `curl -I` pós-deploy, ação humana fora do alcance do agente. Restante do DoD fechado. Falta, para Done: (1) configurar `ENVIRONMENT=production` no Web Service `curriculo-online-backend` → Environment, no painel do Render; (2) após o próximo deploy, rodar `curl -I` nos três endpoints (`/docs`, `/redoc`, `/openapi.json`) na URL de produção e confirmar 404; (3) marcar CA-005 e o item de DoD correspondente como concluídos com essa evidência |
+| PO | `@product-owner` | **Aceite (Done)** | 2026-08-16 | CA-001 a CA-006 fechados com evidência real. Autor configurou `ENVIRONMENT=production` no Web Service `curriculo-online-backend` no painel do Render; confirmei via `curl -I` real que `/docs`, `/redoc` e `/openapi.json` retornam 404 (`{"detail":"Not Found"}`) e `/health` segue 200. DoD 100% fechado |
 
-**Status:** Quase lá
+**Status:** Done — CA-005 confirmado em produção real em 2026-08-16 (autor configurou `ENVIRONMENT=production` no Render).

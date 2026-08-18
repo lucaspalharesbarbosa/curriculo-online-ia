@@ -1,6 +1,6 @@
 # QA-005 — Auditoria de segurança (US-08-01)
 
-**História:** [US-08-01](../product/backlog/fase-08/US-08-01-auditoria-seguranca.md)
+**História:** [US-08-01](../product/backlog/archive/fase-08/US-08-01-auditoria-seguranca.md)
 **Épico:** Segurança & Performance (`PRD-006`)
 **Data:** 2026-08-15
 **Agente:** `@qa-engineer` (spike executado como Dev, validado como QA/Tech Lead/PO no mesmo pipeline)

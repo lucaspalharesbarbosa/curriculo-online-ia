@@ -47,7 +47,7 @@ Esta história não teve DoR clássico prévio (é correção de incidente, não
 - [x] CA-001: `script-src` da CSP em `frontend/next.config.ts` inclui `'unsafe-inline'`, preservando `'self'` e o `'unsafe-eval'` condicional de dev — confirmado no código e no `curl -I` do build de produção local
 - [x] CA-002: build de produção (`npm run build`) continua gerando `/` como página estática (SSG), sem forçar renderização dinâmica — confirmado (`Route (app)` lista `○ /` como `Static`)
 - [x] CA-003: suíte de testes do frontend (`npm test`) e lint (`npm run lint`) permanecem verdes após a mudança
-- [ ] CA-004: navegação real no site publicado, pós-deploy, sem erro de CSP nem React #412 no console — **pendente de ação humana**: mesma limitação já registrada na US-08-07 (agente sem acesso a produção real); análise estática + build de produção local com `curl -I` confirmam que o header agora libera os scripts inline do Next.js, mas isso não substitui o smoke real
+- [x] CA-004: navegação real no site publicado, pós-deploy, sem erro de CSP nem React #412 no console — confirmado em 2026-08-16 via Lighthouse real (Chrome headless local) mobile+desktop contra `https://lucas-palhares-cv.vercel.app`: audit `errors-in-console` score **1**, `details.items: []` (zero erros, nenhum CSP/React #412); `curl -sI` confirma `Content-Security-Policy` real com `script-src 'self' 'unsafe-inline'` e a página `/` retorna 200 com HTML completo (não em branco) — site hidratando normalmente em produção
 
 ### Fora de escopo
 
@@ -70,18 +70,18 @@ Segurança & Performance — P0 (site em produção estava em branco)
 - [X] T02 Corrigir `script-src` em `frontend/next.config.ts`, adicionando `'unsafe-inline'` com comentário explicando o trade-off e a alternativa mais estrita descartada
 - [X] T03 [P] Validar build de produção real (`npm run build` + `npx next start` + `curl -I`) confirmando o header corrigido e que `/` continua estática
 - [X] T04 [P] Rodar `npm test` e `npm run lint` para regressão
-- [ ] T05 Smoke manual pós-deploy em produção real — **pendente de ação humana**, mesma limitação da US-08-07
+- [x] T05 Smoke manual pós-deploy em produção real — feito em 2026-08-16, ver CA-004
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]` — CA-004 aberto (ação humana pós-deploy)
+- [x] Todos os critérios de aceite acima `[x]` — CA-001 a CA-004 fechados com evidência real
 - [x] Cobertura de testes ≥ 70% no código tocado — N/A justificado: `next.config.ts` é configuração declarativa do Next.js (mesma justificativa aceita na US-08-07), sem lógica de aplicação isolada a cobrir por unit test; validado por build de produção real + `curl -I`
 - [x] Build/lint limpo (`npm run build`, `npm run lint`) — ver Vereditos QA
 - [x] Review do `@tech-lead-review` sem Critical/High em aberto
 - [x] Contrato de API implementado bate com o documentado — N/A
 - [x] Sem chave de API/secret exposto (client bundle ou repo)
 - [x] Documentação atualizada — comentário no `next.config.ts` explicando o incidente e o trade-off; esta história registra o incidente e a correção
-- [ ] Deploy/preview verificado — **pendente de ação humana**: agente não tem acesso a produção real; validado localmente com build de produção real + `curl -I`
+- [x] Deploy/preview verificado — Lighthouse real + `curl -I` em produção confirmam ausência de erro de CSP/React #412 (ver CA-004)
 - [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [x] Status da história atualizado no próprio arquivo
 
@@ -91,6 +91,6 @@ Segurança & Performance — P0 (site em produção estava em branco)
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-16 | `npm run build` → sucesso, `/` continua `○ (Static)` (SSG preservado); `npm test -- --run` → 65 passed (17 arquivos), nenhum quebrado; `npm run lint` → sem erros. Validação real do header: `npx next start` (build de produção real) + `curl -I http://localhost:3902/` confirma `Content-Security-Policy: ...script-src 'self' 'unsafe-inline'...` na resposta real do servidor. Ressalva: CA-004 (smoke real em produção) segue pendente de ação humana — mesma lacuna que já havia deixado passar o bug original da US-08-07; recomendação registrada no relatório é que o autor faça a navegação manual antes/imediatamente depois do deploy desta correção, já que foi exatamente a ausência desse passo que causou o incidente |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-16 | Diff mínimo e cirúrgico: único arquivo de código alterado é `frontend/next.config.ts` (uma linha funcional — adição de `'unsafe-inline'` ao `script-src` — mais comentário explicando causa raiz e trade-off). Escolha correta entre as duas alternativas documentadas pelo próprio Next.js (`node_modules/next/dist/docs/.../content-security-policy.md`, seções "Without Nonces" vs. "Nonces"): optar por `'unsafe-inline'` em vez de nonce+`proxy.ts`+`'strict-dynamic'` evita forçar renderização dinâmica em 100% das páginas de um portfólio estático — trade-off proporcional ao projeto, com risco residual analisado corretamente (sem `dangerouslySetInnerHTML` em nenhum componente, então não há vetor de HTML/script não confiável injetado no DOM que o `'unsafe-inline'` passe a habilitar). Mesmo padrão de risco aceito já usado e aprovado para `style-src` na US-08-07, mantendo consistência de decisão dentro do próprio arquivo. Nenhuma lib nova, nenhum secret tocado, build e testes verdes. Sem achado Critical/High |
-| PO | `@product-owner` | Quase lá | 2026-08-16 | CA-001, CA-002 e CA-003 fechados com evidência real (código + build de produção real + `curl -I` + suíte de testes). CA-004 fica `[ ]` pela mesma razão já registrada em toda a Fase 08: agente sem acesso a produção real. Diferença deste caso: a lacuna de CA-003/T04 da US-08-07 já havia causado este incidente uma vez — então o smoke manual pós-deploy desta correção não é opcional, é o item que efetivamente fecha o ciclo. Falta, para Done: (1) merge desta branch; (2) novo deploy em produção; (3) navegação manual real confirmando ausência de erro de CSP e de React #412 no console; (4) marcar CA-004, T05 e o item de DoD "Deploy/preview verificado" como concluídos com essa evidência |
+| PO | `@product-owner` | **Aceite (Done)** | 2026-08-16 | CA-001 a CA-004 fechados com evidência real. Rodei Lighthouse mobile+desktop real (Chrome headless) contra a produção: `errors-in-console` limpo (score 1, 0 itens) — sem erro de CSP nem React #412; `curl -I` confirma o header corrigido servido de verdade e a página carregando completa (200, não em branco). O smoke que faltou na US-08-07 e causou este incidente foi feito desta vez antes de fechar. DoD 100% fechado |
 
-**Status:** Quase lá
+**Status:** Done — CA-004 confirmado em produção real em 2026-08-16 (Lighthouse + `curl -I`, sem erro de CSP/React #412).

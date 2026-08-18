@@ -13,6 +13,8 @@ jobs:
         working-directory: backend
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dorny/paths-filter@v3
         id: filter
         with:
@@ -34,4 +36,11 @@ jobs:
         run: black --check .
       - name: Test
         if: steps.filter.outputs.backend == 'true'
-        run: pytest
+        run: pytest --cov=app --cov-report=xml --cov-report=term-missing
+      - name: SonarQube Cloud Scan
+        if: steps.filter.outputs.backend == 'true'
+        uses: SonarSource/sonarqube-scan-action@v7
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          projectBaseDir: backend
