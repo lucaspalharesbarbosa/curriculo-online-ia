@@ -36,7 +36,7 @@ jobs:
         run: black --check .
       - name: Test
         if: steps.filter.outputs.backend == 'true'
-        run: pytest --cov=app --cov-report=xml --cov-report=term-missing
+        run: pytest --cov=app --cov-report=xml --cov-report=term-missing --cov-fail-under=70
       - name: SonarQube Cloud Scan
         if: steps.filter.outputs.backend == 'true'
         uses: SonarSource/sonarqube-scan-action@v7
