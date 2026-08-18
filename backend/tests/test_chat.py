@@ -1,6 +1,7 @@
+import httpx
 import pytest
 from fastapi.testclient import TestClient
-from openai import APITimeoutError, OpenAIError
+from openai import APITimeoutError, AuthenticationError, OpenAIError, RateLimitError
 
 from app import chat, rag
 from app.main import app
@@ -104,6 +105,12 @@ FIXTURE_INDEX = [
 ]
 
 
+def _fake_openai_response(status_code: int) -> httpx.Response:
+    """Response mínima exigida pelos construtores de erro do SDK da OpenAI."""
+    request = httpx.Request("POST", "https://api.openai.com/v1/chat/completions")
+    return httpx.Response(status_code=status_code, request=request)
+
+
 @pytest.fixture(autouse=True)
 def _reset_rate_limit() -> None:
     """Evita que o rate limit (estado em memória, módulo `chat`) vaze entre testes."""
@@ -162,19 +169,22 @@ def test_chat_retorna_422_para_campo_ausente() -> None:
     assert response.status_code == 422
 
 
-def test_chat_retorna_500_generico_sem_vazar_detalhe_interno(
+def test_chat_retorna_503_quando_embeddings_falham_sem_vazar_detalhe_interno(
     stub_index: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """Falha genérica (não auth/rate-limit) do provider → 503, shape padrão de erro."""
     monkeypatch.setattr(rag, "get_client", lambda: _RaisingOpenAIClient())
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
-    assert response.status_code == 500
-    assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
+    assert response.status_code == 503
+    assert response.json() == {
+        "error": {"code": "llm_unavailable", "message": chat.GENERIC_ERROR_MESSAGE}
+    }
     assert "falha simulada" not in response.text
 
 
-def test_chat_retorna_500_generico_quando_geracao_falha(
+def test_chat_retorna_503_quando_geracao_falha(
     stub_index: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fake_client = _EmbeddingOkGenerationFailsClient(question_embedding=[1.0, 0.0])
@@ -182,8 +192,10 @@ def test_chat_retorna_500_generico_quando_geracao_falha(
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
-    assert response.status_code == 500
-    assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
+    assert response.status_code == 503
+    assert response.json() == {
+        "error": {"code": "llm_unavailable", "message": chat.GENERIC_ERROR_MESSAGE}
+    }
     assert "falha simulada" not in response.text
 
 
@@ -200,7 +212,9 @@ def test_chat_retorna_429_apos_exceder_rate_limit(
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
     assert response.status_code == 429
-    assert response.json() == {"detail": chat.RATE_LIMIT_MESSAGE}
+    assert response.json() == {
+        "error": {"code": "rate_limited", "message": chat.RATE_LIMIT_MESSAGE}
+    }
 
 
 def test_chat_retorna_500_generico_quando_chave_ausente(
@@ -212,17 +226,25 @@ def test_chat_retorna_500_generico_quando_chave_ausente(
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
     assert response.status_code == 500
-    assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
+    assert response.json() == {
+        "error": {"code": "internal_error", "message": chat.GENERIC_ERROR_MESSAGE}
+    }
     assert "LLM_API_KEY" not in response.text
     assert "OpenAI" not in response.text
 
 
-def test_chat_retorna_500_generico_quando_quota_esgotada(
+def test_chat_retorna_500_quando_quota_do_provider_esgotada(
     stub_index: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
+    """RateLimitError real do provider (quota/cota) → 500 (falha de config/conta)."""
+
     class _QuotaFailEmbeddings:
         def create(self, model: str, input: str):  # noqa: A002, ANN001
-            raise OpenAIError("Error code: 429 - insufficient_quota")
+            raise RateLimitError(
+                "insufficient_quota",
+                response=_fake_openai_response(429),
+                body=None,
+            )
 
     class _QuotaClient:
         def __init__(self) -> None:
@@ -233,15 +255,45 @@ def test_chat_retorna_500_generico_quando_quota_esgotada(
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
     assert response.status_code == 500
-    assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
+    assert response.json() == {
+        "error": {"code": "internal_error", "message": chat.GENERIC_ERROR_MESSAGE}
+    }
     assert "quota" not in response.text.lower()
     assert "OpenAI" not in response.text
 
 
-def test_chat_retorna_500_generico_quando_openai_timeout(
+def test_chat_retorna_500_quando_autenticacao_do_provider_falha(
     stub_index: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    """CA-003: timeout do provider → fallback genérico, sem vazar detalhe interno."""
+    """AuthenticationError real do provider (chave inválida) → 500 (falha nossa)."""
+
+    class _AuthFailEmbeddings:
+        def create(self, model: str, input: str):  # noqa: A002, ANN001
+            raise AuthenticationError(
+                "invalid api key",
+                response=_fake_openai_response(401),
+                body=None,
+            )
+
+    class _AuthFailClient:
+        def __init__(self) -> None:
+            self.embeddings = _AuthFailEmbeddings()
+
+    monkeypatch.setattr(rag, "get_client", lambda: _AuthFailClient())
+
+    response = client.post("/chat", json={"question": "Onde você trabalha?"})
+
+    assert response.status_code == 500
+    assert response.json() == {
+        "error": {"code": "internal_error", "message": chat.GENERIC_ERROR_MESSAGE}
+    }
+    assert "OpenAI" not in response.text
+
+
+def test_chat_retorna_503_quando_openai_timeout(
+    stub_index: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Timeout do provider (não auth/rate-limit) → 503, sem vazar detalhe interno."""
 
     class _TimeoutEmbeddings:
         def create(self, model: str, input: str):  # noqa: A002, ANN001
@@ -255,10 +307,24 @@ def test_chat_retorna_500_generico_quando_openai_timeout(
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
-    assert response.status_code == 500
-    assert response.json() == {"detail": chat.GENERIC_ERROR_MESSAGE}
+    assert response.status_code == 503
+    assert response.json() == {
+        "error": {"code": "llm_unavailable", "message": chat.GENERIC_ERROR_MESSAGE}
+    }
     assert "timeout" not in response.text.lower()
     assert "OpenAI" not in response.text
+
+
+def test_chat_retorna_422_com_shape_de_erro_padrao_e_detalhes_preservados() -> None:
+    """Validação do Pydantic segue o mesmo envelope, com os detalhes originais."""
+    response = client.post("/chat", json={"question": ""})
+
+    assert response.status_code == 422
+    body = response.json()
+    assert body["error"]["code"] == "validation_error"
+    assert body["error"]["message"] == "Dados inválidos."
+    assert isinstance(body["error"]["details"], list)
+    assert len(body["error"]["details"]) >= 1
 
 
 def test_get_index_carrega_uma_vez_e_reaproveita_cache_em_memoria(

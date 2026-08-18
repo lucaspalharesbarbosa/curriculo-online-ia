@@ -31,11 +31,11 @@
 
 ### Critérios de aceite
 
-- [ ] CA-001: rota `/chat` documenta a resposta 429 no `responses=` do decorator, com o schema/mensagem já existente
-- [ ] CA-002: rota `/chat` documenta a resposta 500 no `responses=` do decorator
-- [ ] CA-003: parâmetro `response_model` removido do decorator de `/chat` (o tipo de retorno da função já é `ChatResponse`, suficiente para o FastAPI inferir o schema)
-- [ ] CA-004: nova análise do Sonar em `main` não reporta mais esses 3 achados (verificado via API após merge)
-- [ ] CA-005: suíte `backend/tests/test_chat.py` continua verde sem alteração de comportamento
+- [x] CA-001: rota `/chat` documenta a resposta 429 no `responses=` do decorator, com o schema/mensagem já existente
+- [x] CA-002: rota `/chat` documenta a resposta 500 no `responses=` do decorator
+- [x] CA-003: parâmetro `response_model` removido do decorator de `/chat` (o tipo de retorno da função já é `ChatResponse`, suficiente para o FastAPI inferir o schema)
+- [ ] CA-004: nova análise do Sonar em `main` não reporta mais esses 3 achados — só verificável após o merge desta entrega em `main` e nova análise do SonarCloud rodar; não bloqueia Done desta história (achados eram os únicos gatilhos, corrigidos na origem)
+- [x] CA-005: suíte `backend/tests/test_chat.py` continua verde sem alteração de comportamento — `pytest -q` → 34/34 passando
 
 ### Fora de escopo
 - Qualquer outro achado do backend (tratados em `US-13-04`)

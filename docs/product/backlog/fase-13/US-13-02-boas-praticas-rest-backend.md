@@ -60,20 +60,20 @@ Qualidade de Engenharia — P2
 
 ### Critérios de aceite — precisam estar 100% fechados para Done
 
-- [ ] CA-001: toda resposta de erro do FastAPI (`HTTPException` levantada pelo código do projeto) segue `{"error": {"code": string, "message": string}}` — validado por teste de integração cobrindo os cenários da tabela de mapeamento de erros
-- [ ] CA-002: erro de validação do Pydantic (422) segue o mesmo envelope, com os detalhes originais preservados em `error.details` — teste de integração enviando `question` vazia/ausente para `/chat`
-- [ ] CA-003: falha do provider de LLM (exceto autenticação/rate limit, já tratados como 500) retorna **503** em vez de 500 — teste com mock do client OpenAI lançando um erro de conexão/indisponibilidade genérico
-- [ ] CA-004: `/health` continua respondendo 200 com o mesmo body `{"status": "ok"}` — sem regressão (teste existente continua passando)
-- [ ] CA-005: suíte de testes do frontend (`ChatWidget.test.tsx`, `useResumeChat`) continua verde sem nenhuma alteração de código frontend — confirma que o novo shape de erro não quebra o client, já que ele decide a mensagem só pelo `status`
+- [x] CA-001: toda resposta de erro do FastAPI (`HTTPException` levantada pelo código do projeto) segue `{"error": {"code": string, "message": string}}` — `app/errors.py` (`http_exception_handler`), validado em `test_chat.py` para 429/500/503
+- [x] CA-002: erro de validação do Pydantic (422) segue o mesmo envelope, com os detalhes originais preservados em `error.details` — `test_chat_retorna_422_com_shape_de_erro_padrao_e_detalhes_preservados`
+- [x] CA-003: falha do provider de LLM (exceto autenticação/rate limit, já tratados como 500) retorna **503** em vez de 500 — `_http_error_from_openai` em `chat.py`; `test_chat_retorna_503_quando_embeddings_falham_sem_vazar_detalhe_interno`, `test_chat_retorna_503_quando_geracao_falha`, `test_chat_retorna_503_quando_openai_timeout`
+- [x] CA-004: `/health` continua respondendo 200 com o mesmo body `{"status": "ok"}` — sem regressão (`test_health_check_returns_ok` continua verde; `/health` não levanta `HTTPException`, não passa pelo handler novo)
+- [ ] CA-005: suíte de testes do frontend (`ChatWidget.test.tsx`, `useResumeChat`) continua verde sem nenhuma alteração de código frontend — confirma que o novo shape de erro não quebra o client, já que ele decide a mensagem só pelo `status`; validação roda depois que as demais histórias de frontend da Fase 13 (`US-13-06/07/08`) também estiverem prontas, para rodar a suíte completa de uma vez
 
 ### Tasks
 
-- [ ] T01 Definir os modelos de erro (`ErrorBody`/`ErrorDetail` Pydantic, ou dict tipado) em `backend/app/main.py` ou módulo novo `backend/app/errors.py`, se ficar mais limpo que inline
-- [ ] T02 [P] `@app.exception_handler(HTTPException)` em `backend/app/main.py` — converte toda `HTTPException` levantada no projeto para o shape `{"error": {...}}`
-- [ ] T03 [P] `@app.exception_handler(RequestValidationError)` em `backend/app/main.py` — shape `{"error": {"code": "validation_error", ...}}` com `details` preservado
-- [ ] T04 Em `backend/app/chat.py`, trocar o status code de `_http_error_from_openai` de 500 para 503 no ramo de falha genérica do provider (mantendo 500 para os ramos de auth/config já existentes)
-- [ ] T05 [P] Testes novos/atualizados em `backend/tests/test_chat.py` cobrindo os 5 CAs
-- [ ] T06 Rodar a suíte do frontend (`npm test`) sem alterar código, só para confirmar CA-005 (evidência, não mudança)
+- [x] T01 Modelos/handlers de erro em módulo novo `backend/app/errors.py` (dict tipado via `_error_response`, mais simples que Pydantic dedicado para o volume de campos)
+- [x] T02 [P] `app.add_exception_handler(HTTPException, ...)` registrado via `register_exception_handlers(app)` em `backend/app/main.py` — converte toda `HTTPException` levantada no projeto para o shape `{"error": {...}}`
+- [x] T03 [P] `app.add_exception_handler(RequestValidationError, ...)` no mesmo módulo — shape `{"error": {"code": "validation_error", ...}}` com `details` preservado
+- [x] T04 Em `backend/app/chat.py`, `_http_error_from_openai` agora retorna 503 no ramo de falha genérica do provider (mantendo 500 para os ramos de auth/rate-limit já existentes)
+- [x] T05 [P] Testes novos/atualizados em `backend/tests/test_chat.py` cobrindo os 5 CAs (36 testes, incluindo cenários novos com `AuthenticationError`/`RateLimitError` reais do SDK da OpenAI)
+- [ ] T06 Rodar a suíte do frontend (`npm test`) sem alterar código, só para confirmar CA-005 (evidência, não mudança) — pendente até as demais histórias de frontend da fase estarem prontas
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
