@@ -64,7 +64,7 @@ Qualidade de Engenharia — P2
 - [x] CA-002: erro de validação do Pydantic (422) segue o mesmo envelope, com os detalhes originais preservados em `error.details` — `test_chat_retorna_422_com_shape_de_erro_padrao_e_detalhes_preservados`
 - [x] CA-003: falha do provider de LLM (exceto autenticação/rate limit, já tratados como 500) retorna **503** em vez de 500 — `_http_error_from_openai` em `chat.py`; `test_chat_retorna_503_quando_embeddings_falham_sem_vazar_detalhe_interno`, `test_chat_retorna_503_quando_geracao_falha`, `test_chat_retorna_503_quando_openai_timeout`
 - [x] CA-004: `/health` continua respondendo 200 com o mesmo body `{"status": "ok"}` — sem regressão (`test_health_check_returns_ok` continua verde; `/health` não levanta `HTTPException`, não passa pelo handler novo)
-- [ ] CA-005: suíte de testes do frontend (`ChatWidget.test.tsx`, `useResumeChat`) continua verde sem nenhuma alteração de código frontend — confirma que o novo shape de erro não quebra o client, já que ele decide a mensagem só pelo `status`; validação roda depois que as demais histórias de frontend da Fase 13 (`US-13-06/07/08`) também estiverem prontas, para rodar a suíte completa de uma vez
+- [x] CA-005: suíte de testes do frontend continua verde sem nenhuma alteração relacionada ao consumo do shape de erro — confirma que o novo shape não quebra o client, já que ele decide a mensagem só pelo `status` (`useResumeChat.ts`, inalterado por esta história); `npm test -- --run --coverage` → 71/71 (`ChatWidget.test.tsx` foi removido por decisão própria da `US-13-06`, não por esta história — sua cobertura de `useResumeChat` foi realocada para `hooks/useResumeChat.test.ts`, que já exercita 429/5xx/erro de rede contra o client real)
 
 ### Tasks
 
@@ -73,7 +73,7 @@ Qualidade de Engenharia — P2
 - [x] T03 [P] `app.add_exception_handler(RequestValidationError, ...)` no mesmo módulo — shape `{"error": {"code": "validation_error", ...}}` com `details` preservado
 - [x] T04 Em `backend/app/chat.py`, `_http_error_from_openai` agora retorna 503 no ramo de falha genérica do provider (mantendo 500 para os ramos de auth/rate-limit já existentes)
 - [x] T05 [P] Testes novos/atualizados em `backend/tests/test_chat.py` cobrindo os 5 CAs (36 testes, incluindo cenários novos com `AuthenticationError`/`RateLimitError` reais do SDK da OpenAI)
-- [ ] T06 Rodar a suíte do frontend (`npm test`) sem alterar código, só para confirmar CA-005 (evidência, não mudança) — pendente até as demais histórias de frontend da fase estarem prontas
+- [x] T06 Rodar a suíte do frontend (`npm test`) sem alterar código, só para confirmar CA-005 (evidência, não mudança) — 71/71 verde
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 

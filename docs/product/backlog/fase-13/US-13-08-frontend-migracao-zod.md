@@ -27,10 +27,10 @@ Assinatura antiga de validador de string do Zod (`z.string().email(...)`/`.url()
 
 ### Critérios de aceite
 
-- [ ] CA-001: as 13 ocorrências usam a API atual (não-depreciada) do Zod, mantendo a mesma semântica de validação (mesmas mensagens de erro e mesmos campos aceitos/rejeitados)
-- [ ] CA-002: `resume.json` real continua validando sem erro contra o schema atualizado (mesmo resultado de antes)
-- [ ] CA-003: nova análise do Sonar em `main` não reporta mais os 13 achados
-- [ ] CA-004: `npm run build` e suíte de testes do frontend continuam verdes
+- [x] CA-001: as 13 ocorrências usam a API atual (não-depreciada) do Zod — `z.string().url()`→`z.url()`, `z.string().email()`→`z.email()`; mesma semântica (as versões `.url()`/`.email()` deprecadas são wrappers finos das versões top-level no Zod 4.4.3, mesmas mensagens/validação)
+- [x] CA-002: `resume.json` real continua validando sem erro contra o schema atualizado — `npm run build` roda `validate:resume` (`content/resume.schema.test.ts`) antes do `next build`: 6/6 testes verdes
+- [ ] CA-003: nova análise do Sonar em `main` não reporta mais os 13 achados — só verificável após o merge desta entrega e nova análise rodar; não bloqueia Done (achados corrigidos na origem)
+- [x] CA-004: `npm run build` e suíte de testes do frontend continuam verdes — build compila e type-checka limpo; 71/71 testes
 
 ### Fora de escopo
 - Mudar a forma/campos do schema (só a sintaxe de chamada da API do Zod)
@@ -43,9 +43,9 @@ Assinatura antiga de validador de string do Zod (`z.string().email(...)`/`.url()
 Qualidade de Engenharia — P2
 
 ### Tasks
-- [ ] T01 Atualizar as 13 chamadas em `frontend/content/resume.schema.ts` para a API não-depreciada do Zod (checar a versão instalada em `package.json` para a sintaxe exata)
-- [ ] T02 Validar `resume.json` real contra o schema atualizado (teste existente ou `next build`)
-- [ ] T03 Rodar `npm test -- --run` e `npm run build`
+- [x] T01 Atualizar as 13 chamadas em `frontend/content/resume.schema.ts` para a API não-depreciada do Zod (`^4.4.3` — `z.url()`/`z.email()` top-level)
+- [x] T02 Validar `resume.json` real contra o schema atualizado (`npm run build`, que roda `validate:resume` antes do `next build`)
+- [x] T03 Rodar `npm test -- --run` e `npm run build` — 71/71 testes, build limpo
 
 ### DoD
 - [ ] Todos os critérios de aceite acima `[x]`
