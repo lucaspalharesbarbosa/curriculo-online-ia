@@ -6,7 +6,6 @@ description: >
   diagramas C4 e estratégia de deploy (Vercel/Render). Use em design de sistema,
   trade-offs, decisão de nova lib/serviço ou ADR do fluxo de RAG. Acione com
   @arquiteto-ia-senior ou pedidos de arquitetura/ADR/diagrama/stack.
-disable-model-invocation: true
 ---
 
 # Arquiteto Sênior — Currículo Online

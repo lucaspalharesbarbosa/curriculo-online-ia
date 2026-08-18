@@ -8,7 +8,6 @@ description: >
   Acione com @orquestrador. Lê e aplica @product-owner, @arquiteto-ia-senior,
   @ux-designer (só se o autor pedir protótipo), @senior-developer,
   @qa-engineer e @tech-lead-review em cada fase.
-disable-model-invocation: true
 ---
 
 # Orquestrador — Pipeline de Agentes (Currículo Online)

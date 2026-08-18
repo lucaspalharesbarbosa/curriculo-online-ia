@@ -9,7 +9,6 @@ description: >
   pedidos como "implementa", "desenvolve", "cria o componente", "cria o endpoint".
   Complementa @arquiteto-ia-senior (decisões), @ux-designer (protótipos sob
   pedido), @tech-lead-review (revisão) e @qa-engineer.
-disable-model-invocation: true
 ---
 
 # Desenvolvedor Sênior — Currículo Online
