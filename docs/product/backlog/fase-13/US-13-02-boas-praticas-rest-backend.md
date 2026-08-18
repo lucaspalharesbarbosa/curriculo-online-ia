@@ -92,7 +92,7 @@ Qualidade de Engenharia — P2
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
+| QA | `@qa-engineer` | Aprovado | 2026-08-18 | 5/5 CA fechados com evidência real: `pytest --cov=app --cov-report=term-missing` → 36/36 passando, `chat.py`/`errors.py`/`main.py` a 100%; cenários de 429/500/503/422 cobertos com o novo shape `{"error":{...}}`, incluindo `AuthenticationError`/`RateLimitError` reais do SDK da OpenAI (não só texto de mensagem simulando o cenário); `/health` sem regressão; suíte do frontend 71/71 sem alteração no consumo do shape de erro. `ruff check`/`black --check` limpos |
 | Tech Lead | `@tech-lead-review` | — | — | — |
 | PO | `@product-owner` | — | — | — |
 

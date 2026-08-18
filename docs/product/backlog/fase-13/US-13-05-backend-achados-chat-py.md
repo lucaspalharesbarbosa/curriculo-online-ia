@@ -68,7 +68,7 @@ Qualidade de Engenharia — P2
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
+| QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/003/005 fechados: `responses={429,500,503}` documentado, `response_model` removido, `pytest -q` 36/36 sem regressão de comportamento. Ressalva: CA-004 (nova análise do Sonar sem os 3 achados) só é verificável após o merge desta entrega e nova análise rodar em `main` — não bloqueia, achados corrigidos na origem (decorator sem `response_model`, `responses=` documentando 429/500) |
 | Tech Lead | `@tech-lead-review` | — | — | — |
 | PO | `@product-owner` | — | — | — |
 
