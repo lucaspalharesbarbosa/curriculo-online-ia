@@ -3,9 +3,9 @@ import os
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.chat import router as chat_router
-from app.env_bootstrap import ensure_local_env
-from app.errors import register_exception_handlers
+from app.chat.router import router as chat_router
+from app.shared.env_bootstrap import ensure_local_env
+from app.shared.errors import register_exception_handlers
 
 ensure_local_env()
 

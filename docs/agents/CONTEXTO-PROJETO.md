@@ -37,11 +37,16 @@ curriculo-online-ia/
 │   └── public/         # PDF e assets
 ├── backend/            # Python + FastAPI
 │   ├── app/
-│   │   ├── main.py
-│   │   ├── models/
-│   │   │   └── resume.py   # Pydantic (espelha Zod)
-│   │   ├── rag.py      # embeddings + busca por similaridade (Fase 05)
-│   │   └── chat.py     # endpoint /chat (Fase 05)
+│   │   ├── main.py         # composition root: FastAPI, CORS, /health
+│   │   ├── shared/          # cross-cutting, sem regra de negócio de domínio
+│   │   │   ├── errors.py
+│   │   │   └── env_bootstrap.py
+│   │   ├── resume/           # domínio "currículo"
+│   │   │   └── models.py     # Pydantic (espelha Zod)
+│   │   └── chat/              # domínio "chat/RAG" (Fase 05; modularizado na Fase 14)
+│   │       ├── router.py       # endpoint /chat
+│   │       ├── rag.py          # embeddings + busca por similaridade
+│   │       └── web_search.py   # fallback de busca web (Tavily)
 │   └── requirements.txt
 ├── e2e/                # Playwright — testa frontend + backend juntos
 │   └── playwright.config.ts

@@ -12,7 +12,7 @@ from pathlib import Path
 
 from openai import OpenAI
 
-from app.models.resume import (
+from app.resume.models import (
     Article,
     Certification,
     Education,
@@ -24,7 +24,7 @@ from app.models.resume import (
 )
 
 RESUME_JSON_PATH = (
-    Path(__file__).resolve().parents[2] / "frontend" / "content" / "resume.json"
+    Path(__file__).resolve().parents[3] / "frontend" / "content" / "resume.json"
 )
 INDEX_CACHE_PATH = Path(__file__).resolve().parent / "rag_index.json"
 
