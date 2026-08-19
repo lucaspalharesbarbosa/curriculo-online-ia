@@ -28,8 +28,15 @@ curriculo-online-ia/
 ├── frontend/           # Next.js + TS + Tailwind
 │   ├── app/
 │   │   └── prototipo/  # rotas temporárias de exploração visual (@ux-designer) — limpar após decisão
-│   ├── components/     # Hero, Experience, Skills, Contact, ChatWidget...
+│   ├── modules/         # organização por domínio de negócio (ADR-011, DDD-lite)
+│   │   ├── resume/       # domínio "currículo"
+│   │   │   ├── components/ # ExperienceSection, EducationSection, Skills...
+│   │   │   └── lib/         # skill-icons.ts, skill-blocks.tsx, mobile-nav.ts
+│   │   └── chat/          # domínio "chat/RAG"
+│   │       └── components/ # ProfileAssistChat, RagChatPanel
+│   ├── components/     # só protótipos (ver abaixo) — sem componente de domínio
 │   │   └── prototypes/ # UI descartável de protótipo — não acumular após promover/descartar
+│   ├── lib/             # só utilitário genérico de verdade (utils.ts) — nada de domínio aqui
 │   ├── content/
 │   │   ├── resume.json
 │   │   ├── resume.schema.ts   # Zod

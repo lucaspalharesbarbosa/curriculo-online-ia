@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import type { SkillGroup, SkillItem } from "@/content/resume.schema";
-import { getSkillIcon } from "@/lib/skill-icons";
+import { getSkillIcon } from "@/modules/resume/lib/skill-icons";
 import { formatSkillLevel } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 

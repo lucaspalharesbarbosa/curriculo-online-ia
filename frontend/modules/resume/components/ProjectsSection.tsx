@@ -3,8 +3,8 @@
 import { ExternalLink, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 
-import { CollapsibleSection } from "@/components/CollapsibleSection";
-import { LinkButton } from "@/components/LinkButton";
+import { CollapsibleSection } from "@/modules/resume/components/CollapsibleSection";
+import { LinkButton } from "@/modules/resume/components/LinkButton";
 import type { Article, Project } from "@/content/resume.schema";
 
 type ProjectsSectionProps = {

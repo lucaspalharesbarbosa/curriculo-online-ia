@@ -1,12 +1,12 @@
-import { Certifications } from "@/components/Certifications";
-import { EducationSection } from "@/components/EducationSection";
-import { ExperienceSection } from "@/components/ExperienceSection";
-import { MobileBottomNav } from "@/components/MobileBottomNav";
-import { MobileHero } from "@/components/MobileHero";
-import { ProjectsSection } from "@/components/ProjectsSection";
-import { Recognitions } from "@/components/Recognitions";
-import { ResumeSidebar } from "@/components/ResumeSidebar";
-import { SummarySection } from "@/components/SummarySection";
+import { Certifications } from "@/modules/resume/components/Certifications";
+import { EducationSection } from "@/modules/resume/components/EducationSection";
+import { ExperienceSection } from "@/modules/resume/components/ExperienceSection";
+import { MobileBottomNav } from "@/modules/resume/components/MobileBottomNav";
+import { MobileHero } from "@/modules/resume/components/MobileHero";
+import { ProjectsSection } from "@/modules/resume/components/ProjectsSection";
+import { Recognitions } from "@/modules/resume/components/Recognitions";
+import { ResumeSidebar } from "@/modules/resume/components/ResumeSidebar";
+import { SummarySection } from "@/modules/resume/components/SummarySection";
 import { resume } from "@/content/resume";
 
 export default function Home() {

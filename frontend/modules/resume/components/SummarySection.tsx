@@ -3,8 +3,8 @@
 import { motion } from "framer-motion";
 import { ScanFace } from "lucide-react";
 
-import { ProfileAssistChat } from "@/components/ProfileAssistChat";
-import { SectionHeading } from "@/components/SectionHeading";
+import { ProfileAssistChat } from "@/modules/chat/components/ProfileAssistChat";
+import { SectionHeading } from "@/modules/resume/components/SectionHeading";
 import { splitAboutNarrative } from "@/lib/utils";
 
 type SummarySectionProps = {

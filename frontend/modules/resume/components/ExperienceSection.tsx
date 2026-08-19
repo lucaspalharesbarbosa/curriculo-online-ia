@@ -11,7 +11,7 @@ import {
 import Image from "next/image";
 import { motion } from "framer-motion";
 
-import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { CollapsibleSection } from "@/modules/resume/components/CollapsibleSection";
 import type { Experience } from "@/content/resume.schema";
 import {
   cn,
