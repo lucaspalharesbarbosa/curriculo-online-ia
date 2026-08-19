@@ -134,6 +134,88 @@ describe("useResumeChat", () => {
     expect(result.current.messages).toHaveLength(1);
   });
 
+  it("captura o campo source da resposta (US-11-07)", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ answer: "Resposta pública.", source: "web" }),
+    } as Response);
+
+    const { result } = renderHook(() => useResumeChat());
+
+    await act(async () => {
+      await result.current.sendQuestion("O que a empresa faz?");
+    });
+
+    expect(result.current.messages[0]).toMatchObject({
+      answer: "Resposta pública.",
+      source: "web",
+    });
+  });
+
+  it("sendFeedback envia question/answer/rating para /api/chat/feedback e marca o voto", async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ answer: "Resposta real.", source: "resume" }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true }),
+      } as Response);
+
+    const { result } = renderHook(() => useResumeChat());
+
+    await act(async () => {
+      await result.current.sendQuestion("Onde você trabalha?");
+    });
+    const messageId = result.current.messages[0].id;
+
+    act(() => {
+      result.current.sendFeedback(messageId, "down");
+    });
+
+    expect(result.current.messages[0]).toMatchObject({ feedback: "down" });
+    expect(fetch).toHaveBeenLastCalledWith(
+      "/api/chat/feedback",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          question: "Onde você trabalha?",
+          answer: "Resposta real.",
+          rating: "down",
+        }),
+      }),
+    );
+  });
+
+  it("sendFeedback não quebra quando a chamada de rede falha (fire-and-forget)", async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ answer: "Resposta real.", source: "resume" }),
+      } as Response)
+      .mockRejectedValueOnce(new Error("network error"));
+
+    const { result } = renderHook(() => useResumeChat());
+
+    await act(async () => {
+      await result.current.sendQuestion("Onde você trabalha?");
+    });
+    const messageId = result.current.messages[0].id;
+
+    act(() => {
+      result.current.sendFeedback(messageId, "up");
+    });
+
+    await waitFor(() => {
+      expect(result.current.messages[0]).toMatchObject({ feedback: "up" });
+    });
+  });
+
   it("reset limpa mensagens, pergunta em andamento e estado de envio", () => {
     const { result } = renderHook(() => useResumeChat());
 

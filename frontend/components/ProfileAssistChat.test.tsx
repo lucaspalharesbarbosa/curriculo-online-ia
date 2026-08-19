@@ -93,6 +93,183 @@ describe("ProfileAssistChat", () => {
     });
   });
 
+  it("permite avaliar a resposta com like/dislike e envia para POST /api/chat/feedback", async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          answer: "Trabalho com Next.js e FastAPI.",
+          source: "resume",
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true }),
+      } as Response);
+
+    render(<ProfileAssistChat role="Tech Lead | Senior" />);
+
+    fireEvent.change(screen.getByLabelText("Sua pergunta"), {
+      target: { value: "Qual sua stack?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Trabalho com Next.js e FastAPI."),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /resposta útil/i }));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/chat/feedback",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({
+            question: "Qual sua stack?",
+            answer: "Trabalho com Next.js e FastAPI.",
+            rating: "up",
+          }),
+        }),
+      );
+    });
+
+    expect(
+      screen.getByRole("button", { name: /resposta útil/i }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("permite avaliar a resposta como não útil (dislike)", async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          answer: "Trabalho com Next.js e FastAPI.",
+          source: "resume",
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true }),
+      } as Response);
+
+    render(<ProfileAssistChat role="Tech Lead | Senior" />);
+
+    fireEvent.change(screen.getByLabelText("Sua pergunta"), {
+      target: { value: "Qual sua stack?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Trabalho com Next.js e FastAPI."),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /resposta não útil/i }));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/chat/feedback",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({
+            question: "Qual sua stack?",
+            answer: "Trabalho com Next.js e FastAPI.",
+            rating: "down",
+          }),
+        }),
+      );
+    });
+
+    expect(
+      screen.getByRole("button", { name: /resposta não útil/i }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
+  it("some com as sugestões após a primeira pergunta enviada (US-11-02 CA-003)", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ answer: "Trabalho remoto.", source: "resume" }),
+    } as Response);
+
+    render(<ProfileAssistChat role="Tech Lead | Senior" />);
+
+    expect(
+      screen.getByRole("button", { name: /onde lucas trabalha hoje/i }),
+    ).toBeInTheDocument();
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /onde lucas trabalha hoje/i }),
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText("Trabalho remoto.")).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByRole("button", { name: /onde lucas trabalha hoje/i }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("mostra o indicador de digitando ao enviar e some ao chegar a resposta (US-11-03)", async () => {
+    let resolveFetch!: (value: Response) => void;
+    vi.mocked(fetch).mockReturnValueOnce(
+      new Promise((resolve) => {
+        resolveFetch = resolve;
+      }),
+    );
+
+    render(<ProfileAssistChat role="Tech Lead | Senior" />);
+
+    fireEvent.change(screen.getByLabelText("Sua pergunta"), {
+      target: { value: "Qual sua stack?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await waitFor(() => {
+      expect(screen.getByText("Buscando contexto…")).toBeInTheDocument();
+    });
+
+    resolveFetch({
+      ok: true,
+      status: 200,
+      json: async () => ({ answer: "Next.js e FastAPI.", source: "resume" }),
+    } as Response);
+
+    await waitFor(() => {
+      expect(screen.getByText("Next.js e FastAPI.")).toBeInTheDocument();
+    });
+    expect(screen.queryByText("Buscando contexto…")).not.toBeInTheDocument();
+  });
+
+  it("exibe atribuição de fonte quando a resposta vem da busca web (US-11-07)", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ answer: "A empresa atua com IA.", source: "web" }),
+    } as Response);
+
+    render(<ProfileAssistChat role="Tech Lead | Senior" />);
+
+    fireEvent.change(screen.getByLabelText("Sua pergunta"), {
+      target: { value: "O que a empresa faz?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(/informação pública da web/i),
+      ).toBeInTheDocument();
+    });
+  });
+
   it("ao sair da viewport mostra o painel sticky/dock", () => {
     render(<ProfileAssistChat role="Tech Lead" />);
 

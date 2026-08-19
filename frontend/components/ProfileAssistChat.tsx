@@ -28,6 +28,7 @@ type ChatPanelSharedProps = Pick<
   | "setQuestion"
   | "isSubmitting"
   | "onSend"
+  | "onFeedback"
   | "onSuggestion"
   | "suggestions"
   | "skin"
@@ -147,8 +148,14 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
   const anchorRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
   const viewportOffset = useVisualViewportOffset();
-  const { messages, question, setQuestion, isSubmitting, sendQuestion } =
-    useResumeChat();
+  const {
+    messages,
+    question,
+    setQuestion,
+    isSubmitting,
+    sendQuestion,
+    sendFeedback,
+  } = useResumeChat();
 
   const docked = transformed || forceOpen;
 
@@ -192,6 +199,7 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
     onSend: () => {
       void sendQuestion();
     },
+    onFeedback: sendFeedback,
     onSuggestion: (text: string) => {
       void sendQuestion(text);
     },

@@ -6,12 +6,13 @@ import logging
 import os
 import time
 from collections import defaultdict
+from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
 from openai import AuthenticationError, OpenAIError, RateLimitError
 from pydantic import BaseModel, Field
 
-from app import rag
+from app import rag, web_search
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -38,8 +39,20 @@ SYSTEM_PROMPT = (
     "Responda em português, de forma direta, usando só as informações do "
     "contexto abaixo. Nunca invente informação que não esteja no contexto."
 )
+# ADR-010 seção 2 (T03): prompt usado quando a resposta vem da busca web, não
+# do currículo — instrui o modelo a deixar a fonte explícita na resposta.
+WEB_SYSTEM_PROMPT = (
+    "Você é o assistente do currículo online de Lucas Palhares Barbosa. "
+    "A pergunta é sobre uma entidade citada no currículo (empresa, "
+    "instituição, curso, certificação ou habilidade), mas o currículo "
+    "sozinho não tem esse detalhe. Responda em português, de forma direta, "
+    "usando só o contexto de busca pública abaixo. Deixe claro que essa "
+    "informação é pública, encontrada na web, e não faz parte do currículo. "
+    "Nunca invente informação que não esteja no contexto."
+)
 
 _index_cache: list[rag.EmbeddedChunk] | None = None
+_entities_cache: list[str] | None = None
 
 
 def get_index() -> list[rag.EmbeddedChunk]:
@@ -50,12 +63,40 @@ def get_index() -> list[rag.EmbeddedChunk]:
     return _index_cache
 
 
+def get_known_entities() -> list[str]:
+    """Entidades do currículo cacheadas em memória (US-11-07) — carregado 1x."""
+    global _entities_cache
+    if _entities_cache is None:
+        _entities_cache = rag.extract_known_entities(rag.load_resume())
+    return _entities_cache
+
+
+def _mentions_known_entity(question: str, entities: list[str]) -> bool:
+    """Substring case-insensitive — gatilho objetivo de busca web (ADR-010)."""
+    normalized_question = question.lower()
+    return any(entity.lower() in normalized_question for entity in entities if entity)
+
+
 class ChatRequest(BaseModel):
     question: str = Field(min_length=1)
 
 
 class ChatResponse(BaseModel):
     answer: str
+    # ADR-010 seção 2: campo aditivo — "web" só quando a resposta usa
+    # contexto da busca externa; "resume" em todos os outros casos (default),
+    # preservando compatibilidade com clientes que ignoram o campo.
+    source: Literal["resume", "web"] = "resume"
+
+
+class ChatFeedbackRequest(BaseModel):
+    question: str = Field(min_length=1)
+    answer: str = Field(min_length=1)
+    rating: Literal["up", "down"]
+
+
+class ChatFeedbackResponse(BaseModel):
+    ok: bool = True
 
 
 def _is_rate_limited(client_id: str) -> bool:
@@ -78,6 +119,21 @@ def _generate_answer(question: str, chunks: list[rag.Chunk]) -> str:
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": _build_user_prompt(question, chunks)},
+        ],
+    )
+    return response.choices[0].message.content or FALLBACK_ANSWER
+
+
+def _generate_web_answer(question: str, web_context: str) -> str:
+    user_prompt = (
+        f"Informação pública encontrada na web:\n{web_context}\n\n"
+        f"Pergunta: {question}"
+    )
+    response = rag.get_client().chat.completions.create(
+        model=GENERATION_MODEL,
+        messages=[
+            {"role": "system", "content": WEB_SYSTEM_PROMPT},
+            {"role": "user", "content": user_prompt},
         ],
     )
     return response.choices[0].message.content or FALLBACK_ANSWER
@@ -118,12 +174,25 @@ def chat(request: ChatRequest, http_request: Request) -> ChatResponse:
         raise HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE)
 
     try:
-        results = rag.search(request.question, get_index(), top_k=TOP_K)
+        results = rag.search_with_routing(request.question, get_index(), top_k=TOP_K)
     except OpenAIError as exc:
         raise _http_error_from_openai(exc) from exc
 
     if not results or results[0][1] < SIMILARITY_THRESHOLD:
-        return ChatResponse(answer=FALLBACK_ANSWER)
+        # ADR-010 seção 2: RAG local insuficiente — tenta busca web só se a
+        # pergunta citar uma entidade que já existe no currículo.
+        web_context = None
+        if _mentions_known_entity(request.question, get_known_entities()):
+            web_context = web_search.search_web(request.question)
+
+        if web_context:
+            try:
+                answer = _generate_web_answer(request.question, web_context)
+            except OpenAIError as exc:
+                raise _http_error_from_openai(exc) from exc
+            return ChatResponse(answer=answer, source="web")
+
+        return ChatResponse(answer=FALLBACK_ANSWER, source="resume")
 
     relevant_chunks = [chunk for chunk, _score in results]
 
@@ -132,4 +201,24 @@ def chat(request: ChatRequest, http_request: Request) -> ChatResponse:
     except OpenAIError as exc:
         raise _http_error_from_openai(exc) from exc
 
-    return ChatResponse(answer=answer)
+    return ChatResponse(answer=answer, source="resume")
+
+
+@router.post("/chat/feedback")
+def chat_feedback(request: ChatFeedbackRequest) -> ChatFeedbackResponse:
+    """Log estruturado do feedback (US-11-04) — sem persistência em banco/arquivo.
+
+    Sempre 200 para request válido (contrato fire-and-forget): falha ao
+    registrar o log nunca deve quebrar a UX do chat, só fica no log do
+    servidor.
+    """
+    try:
+        logger.info(
+            "chat_feedback rating=%s question_length=%d answer_length=%d",
+            request.rating,
+            len(request.question),
+            len(request.answer),
+        )
+    except Exception:  # noqa: BLE001 — logging nunca pode derrubar o request
+        logger.error("Falha ao registrar log de feedback do chat.")
+    return ChatFeedbackResponse(ok=True)

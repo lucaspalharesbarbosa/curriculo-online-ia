@@ -39,6 +39,7 @@ uvicorn app.main:app --reload   # servidor local (a partir de backend/)
 ruff check .                    # lint
 black --check .                 # format check
 pytest                          # testes
+pytest -v                       # testes com display em PT-BR (docstring de cada teste, via tests/conftest.py)
 ```
 
 ## Variáveis de ambiente
@@ -48,6 +49,7 @@ Definidas em `backend/.env` local (a partir de `.env.example`) e no painel do Re
 | Variável | Valores esperados | Default | Efeito |
 |---|---|---|---|
 | `ENVIRONMENT` | `development` \| `production` | `development` (quando ausente) | Em `production`, desativa `/docs`, `/redoc` e `/openapi.json` (404) — ver [Documentação da API](#documentacao-da-api). Não é segredo; configurar `ENVIRONMENT=production` no painel do Render (produção). |
+| `WEB_SEARCH_API_KEY` | Chave da [Tavily](https://app.tavily.com) | Ausente (feature desativada) | Fallback de busca web do `/chat` para dados externos ao `resume.json` ([ADR-010](../docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md)) — opcional, sem ela o chat funciona normalmente só com o currículo. |
 
 ## OpenAPI (contrato da API)
 
@@ -89,7 +91,7 @@ Em **produção** (`ENVIRONMENT=production`, configurado no painel do Render), o
 
 ## Headers de segurança HTTP (US-08-07)
 
-Middleware custom (`add_security_headers` em `app/main.py`, sem lib externa) injeta em toda resposta: `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'` (API só serve JSON, nenhum recurso próprio para permitir), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` e `Permissions-Policy` desativando `camera`/`microphone`/`geolocation`/`payment`/`usb`. Sem `Strict-Transport-Security` próprio — a API roda sempre atrás de HTTPS (Render/Cloudflare). Teste de regressão: `backend/tests/test_main.py::test_health_check_retorna_headers_de_seguranca`.
+Middleware custom (`add_security_headers` em `app/main.py`, sem lib externa) injeta em toda resposta: `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'` (API só serve JSON, nenhum recurso próprio para permitir), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` e `Permissions-Policy` desativando `camera`/`microphone`/`geolocation`/`payment`/`usb`. Sem `Strict-Transport-Security` próprio — a API roda sempre atrás de HTTPS (Render/Cloudflare). Teste de regressão: `backend/tests/test_main.py::test_health_check_returns_security_headers`.
 
 ## Deploy
 
