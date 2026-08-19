@@ -3,11 +3,14 @@
 import {
   ArrowUpRight,
   Bot,
+  Globe,
   MessageCircle,
   Minimize2,
   Send,
   Sparkles,
   Terminal,
+  ThumbsDown,
+  ThumbsUp,
 } from "lucide-react";
 import {
   useEffect,
@@ -20,6 +23,7 @@ import {
 
 import {
   RESUME_CHAT_ERROR_MESSAGE,
+  type ResumeChatFeedback,
   type ResumeChatMessage,
 } from "@/hooks/useResumeChat";
 
@@ -31,6 +35,8 @@ type RagChatPanelProps = {
   setQuestion: (value: string) => void;
   isSubmitting: boolean;
   onSend: () => void;
+  /** US-11-04: ausente = sem UI de feedback (ex.: telas que ainda não precisam). */
+  onFeedback?: (messageId: string, rating: ResumeChatFeedback) => void;
   onMinimize?: () => void;
   title?: string;
   subtitle?: string;
@@ -154,6 +160,7 @@ export function RagChatPanel({
   setQuestion,
   isSubmitting,
   onSend,
+  onFeedback,
   onMinimize,
   title,
   subtitle,
@@ -300,6 +307,44 @@ export function RagChatPanel({
                 <p className="text-xs leading-relaxed text-neutral-100 sm:text-sm">
                   {message.answer}
                 </p>
+                {message.source === "web" ? (
+                  <p className="mt-2 flex items-center gap-1 font-mono text-[11px] text-neutral-400">
+                    <Globe className="h-3 w-3 text-accent-400" aria-hidden />
+                    Informação pública da web, não do currículo
+                  </p>
+                ) : null}
+                {onFeedback ? (
+                  <div className="mt-2 flex items-center gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => onFeedback(message.id, "up")}
+                      aria-pressed={message.feedback === "up"}
+                      aria-label="Resposta útil"
+                      title="Resposta útil"
+                      className={`tap-target inline-flex h-7 w-7 items-center justify-center rounded-lg border transition-colors ${
+                        message.feedback === "up"
+                          ? "border-accent-500/60 bg-accent-500/15 text-accent-300"
+                          : "border-transparent text-neutral-500 hover:border-[var(--assist-line)] hover:text-accent-300"
+                      }`}
+                    >
+                      <ThumbsUp className="h-3.5 w-3.5" aria-hidden />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onFeedback(message.id, "down")}
+                      aria-pressed={message.feedback === "down"}
+                      aria-label="Resposta não útil"
+                      title="Resposta não útil"
+                      className={`tap-target inline-flex h-7 w-7 items-center justify-center rounded-lg border transition-colors ${
+                        message.feedback === "down"
+                          ? "border-red-500/60 bg-red-500/15 text-red-300"
+                          : "border-transparent text-neutral-500 hover:border-[var(--assist-line)] hover:text-red-300"
+                      }`}
+                    >
+                      <ThumbsDown className="h-3.5 w-3.5" aria-hidden />
+                    </button>
+                  </div>
+                ) : null}
               </div>
             ) : null}
 
