@@ -56,16 +56,16 @@ Qualidade de Engenharia — P2
 - [x] T03 Rodar `npm test -- --run --coverage` — 71/71 verde
 
 ### DoD
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado
-- [ ] Build/lint limpo
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API — `N/A`
-- [ ] Sem chave/secret exposto
-- [ ] Documentação atualizada — `N/A`
-- [ ] Deploy/preview verificado
-- [ ] Vereditos de QA, Tech Lead e PO documentados abaixo
-- [ ] Status atualizado no arquivo
+- [ ] Todos os critérios de aceite acima `[x]` — falta CA-003 (nova análise do Sonar pós-merge)
+- [x] Cobertura de testes ≥ 70% no código tocado — `utils.ts` 100% stmts/lines
+- [x] Build/lint limpo
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto — Aprovar
+- [x] Contrato de API — `N/A`
+- [x] Sem chave/secret exposto
+- [x] Documentação atualizada — `N/A`
+- [x] Deploy/preview verificado — `N/A`, sem mudança visível
+- [x] Vereditos de QA, Tech Lead e PO documentados abaixo
+- [x] Status atualizado no arquivo
 
 ### Vereditos
 
@@ -73,6 +73,6 @@ Qualidade de Engenharia — P2
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/004 fechados: 3 regex reescritas sem `\s*` colado a `[^—]+?` nem `.+?[.!?]` ambíguo; 4 testes novos de borda (sem travessão, sem terminador, múltiplos travessões, `about` real de `content/resume.json`) + o teste de regressão original, todos verdes; `utils.ts` 100% stmts/lines. Ressalva: CA-003 (nova análise do Sonar sem os 3 achados) só é verificável após o merge e nova análise rodar |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Reescrita elimina de fato o padrão ambíguo (`\s*` colado a `[^—]+?`), não só mascara o achado; comentário explica o porquê (não óbvio pelo código). Comportamento validado com o `about` real e casos de borda relevantes (múltiplos travessões é o caso mais fácil de quebrar numa reescrita manual, e está coberto) |
-| PO | `@product-owner` | — | — | — |
+| PO | `@product-owner` | Quase lá | 2026-08-18 | 3/4 CA fechados com evidência real; CA-003 (nova análise do Sonar sem os 3 achados) só é verificável após o merge desta entrega em `main`. QA e Tech Lead aprovaram sem Critical/High. Fecha para Done no follow-up |
 
-**Status:** Ready for Agent
+**Status:** Quase lá — código, QA e Tech Lead completos; falta CA-003 (Sonar pós-merge)

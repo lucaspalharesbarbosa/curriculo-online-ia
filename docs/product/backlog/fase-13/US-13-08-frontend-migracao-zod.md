@@ -48,16 +48,16 @@ Qualidade de Engenharia — P2
 - [x] T03 Rodar `npm test -- --run` e `npm run build` — 71/71 testes, build limpo
 
 ### DoD
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado — `N/A` se não houver lógica nova, só troca de API com mesma semântica
-- [ ] Build/lint limpo
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API — `N/A`
-- [ ] Sem chave/secret exposto
-- [ ] Documentação atualizada — `N/A`
-- [ ] Deploy/preview verificado
-- [ ] Vereditos de QA, Tech Lead e PO documentados abaixo
-- [ ] Status atualizado no arquivo
+- [ ] Todos os critérios de aceite acima `[x]` — falta CA-003 (nova análise do Sonar pós-merge)
+- [x] Cobertura de testes ≥ 70% no código tocado — `N/A`, só troca de API com mesma semântica, sem lógica nova
+- [x] Build/lint limpo
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto — Aprovar
+- [x] Contrato de API — `N/A`
+- [x] Sem chave/secret exposto
+- [x] Documentação atualizada — `N/A`
+- [x] Deploy/preview verificado — `N/A`, sem mudança visível
+- [x] Vereditos de QA, Tech Lead e PO documentados abaixo
+- [x] Status atualizado no arquivo
 
 ### Vereditos
 
@@ -65,6 +65,6 @@ Qualidade de Engenharia — P2
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/004 fechados: as 13 ocorrências migradas para `z.url()`/`z.email()`; `resume.json` real validado (`validate:resume` → 6/6, rodado antes de todo `next build`); `npm run build` compila e type-checka limpo; suíte completa 71/71. Ressalva: CA-003 (nova análise do Sonar sem os 13 achados) só é verificável após o merge e nova análise rodar |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Troca mecânica e completa (13/13), sem mudança de forma do schema; `resume.json` real validado no próprio `build` |
-| PO | `@product-owner` | — | — | — |
+| PO | `@product-owner` | Quase lá | 2026-08-18 | 3/4 CA fechados com evidência real; CA-003 (nova análise do Sonar sem os 13 achados) só é verificável após o merge desta entrega em `main`. QA e Tech Lead aprovaram sem Critical/High. Fecha para Done no follow-up |
 
-**Status:** Ready for Agent
+**Status:** Quase lá — código, QA e Tech Lead completos; falta CA-003 (Sonar pós-merge)

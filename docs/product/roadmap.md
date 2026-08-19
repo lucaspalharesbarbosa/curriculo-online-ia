@@ -163,17 +163,17 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 13 — Qualidade de Engenharia (continuação)
 
-**Status:** Em andamento — 7 histórias `Ready for Agent`, 1 `Cancelada` (decomposta)
+**Status:** Em andamento — 2 histórias `Done`, 5 `Quase lá` (código/QA/Tech Lead completos, falta CI real e/ou reanálise do Sonar pós-merge), 1 `Cancelada` (decomposta)
 **PRD:** [`PRD-007-qualidade-engenharia.md`](PRD-007-qualidade-engenharia.md)
 **Backlog:** [`docs/product/backlog/fase-13/`](backlog/fase-13/) (US-13-01 a US-13-08)
 
 Continuação das frentes do `PRD-007` que não entraram na Fase 9 (número `09` não reaproveitado, ver `docs/product/README.md`). `main` recebeu a primeira análise real do Sonar em 2026-08-18 (PR #48) — achados reais triados e decompostos.
 
-- [ ] Gate de cobertura mínima automatizado no CI — [US-13-01](backlog/fase-13/US-13-01-gate-cobertura-ci.md), P1 (`Ready for Agent`)
-- [ ] Padronizar shape de erro e status codes REST no backend — [US-13-02](backlog/fase-13/US-13-02-boas-praticas-rest-backend.md), P2 (`Ready for Agent`)
+- [ ] Gate de cobertura mínima automatizado no CI — [US-13-01](backlog/fase-13/US-13-01-gate-cobertura-ci.md), P1 (`Quase lá`)
+- [x] Padronizar shape de erro e status codes REST no backend — [US-13-02](backlog/fase-13/US-13-02-boas-praticas-rest-backend.md), P2 (`Done`)
 - [x] ~~Refactor/modularização guiado pelos achados do SonarCloud~~ — [US-13-03](backlog/fase-13/US-13-03-refactor-modularizacao-sonarcloud.md), P3 (`Cancelada` — decomposta em US-13-04 a US-13-08)
-- [ ] Triagem de falsos positivos do Sonar (ação do autor) — [US-13-04](backlog/fase-13/US-13-04-triagem-falsos-positivos-sonar.md), P1 (`Ready for Agent`)
-- [ ] Backend: achados reais em `chat.py` — [US-13-05](backlog/fase-13/US-13-05-backend-achados-chat-py.md), P2 (`Ready for Agent`)
-- [ ] Frontend: remover `ChatWidget` morto + achados reais nos componentes de chat — [US-13-06](backlog/fase-13/US-13-06-frontend-chat-widget-morto-achados.md), P2 (`Ready for Agent`)
-- [ ] Frontend: regex com risco de performance em `lib/utils.ts` — [US-13-07](backlog/fase-13/US-13-07-frontend-regex-lib-utils.md), P2 (`Ready for Agent`)
-- [ ] Frontend: migrar API depreciada do Zod em `resume.schema.ts` — [US-13-08](backlog/fase-13/US-13-08-frontend-migracao-zod.md), P2 (`Ready for Agent`)
+- [x] Triagem de falsos positivos do Sonar (ação do autor) — [US-13-04](backlog/fase-13/US-13-04-triagem-falsos-positivos-sonar.md), P1 (`Done`)
+- [ ] Backend: achados reais em `chat.py` — [US-13-05](backlog/fase-13/US-13-05-backend-achados-chat-py.md), P2 (`Quase lá`)
+- [ ] Frontend: remover `ChatWidget` morto + achados reais nos componentes de chat — [US-13-06](backlog/fase-13/US-13-06-frontend-chat-widget-morto-achados.md), P2 (`Quase lá`)
+- [ ] Frontend: regex com risco de performance em `lib/utils.ts` — [US-13-07](backlog/fase-13/US-13-07-frontend-regex-lib-utils.md), P2 (`Quase lá`)
+- [ ] Frontend: migrar API depreciada do Zod em `resume.schema.ts` — [US-13-08](backlog/fase-13/US-13-08-frontend-migracao-zod.md), P2 (`Quase lá`)

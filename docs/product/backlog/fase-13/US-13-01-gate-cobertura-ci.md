@@ -59,16 +59,16 @@ Qualidade de Engenharia — P1
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado pela história — `N/A`: história de config de CI/testes, sem lógica de produção nova
-- [ ] Build/lint limpo (`npm run build`, `ruff check`, type checking estrito)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API implementado bate com o documentado no DoR — `N/A`
-- [ ] Sem chave de API/secret exposto (client bundle ou repo)
-- [ ] Documentação atualizada (ADR/contrato/diagrama ER) se algo mudou de fato durante a implementação
-- [ ] Deploy/preview verificado — `N/A`, sem UI
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
-- [ ] Status da história atualizado no próprio arquivo
+- [ ] Todos os critérios de aceite acima `[x]` — falta CA-005 (execução real de CI pós-PR)
+- [x] Cobertura de testes ≥ 70% no código tocado pela história — `N/A`: história de config de CI/testes, sem lógica de produção nova
+- [x] Build/lint limpo (`npm run build`, `ruff check`, type checking estrito)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto — Aprovar
+- [x] Contrato de API implementado bate com o documentado no DoR — `N/A`
+- [x] Sem chave de API/secret exposto (client bundle ou repo)
+- [x] Documentação atualizada (ADR/contrato/diagrama ER) se algo mudou de fato durante a implementação — `N/A`, sem mudança de arquitetura
+- [x] Deploy/preview verificado — `N/A`, sem UI
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
@@ -76,6 +76,6 @@ Qualidade de Engenharia — P1
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/003/004 fechados com evidência local real (backend `pytest --cov=app --cov-fail-under=99` → FAIL exit 1; frontend `coverage.thresholds=99` → ERROR exit 1; revertidos). Ressalva: CA-005 só é confirmável em execução real do GitHub Actions (SonarCloud Quality Gate incluso) — localmente `ruff`/`black`/`npm run lint`/`npm run format`/`npm run build` e as duas suítes passam limpos, mesma checagem que os steps de CI fazem |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Diff enxuto (`backend-ci.yml`, `vitest.config.ts`), sem lógica de produção tocada. Threshold coerente com o baseline medido; sem secret exposto |
-| PO | `@product-owner` | — | — | — |
+| PO | `@product-owner` | Quase lá | 2026-08-18 | 4/5 CA fechados com evidência real; CA-005 (CI existente sem regressão) só é verificável em execução real do GitHub Actions, que só roda após o PR ser aberto. QA e Tech Lead aprovaram sem Critical/High. Fecha para Done no follow-up após o merge, com o link do run real do CI (mesmo padrão usado em `US-09-01`) |
 
-**Status:** Ready for Agent
+**Status:** Quase lá — código, QA e Tech Lead completos; falta CA-005 (execução real de CI pós-PR)

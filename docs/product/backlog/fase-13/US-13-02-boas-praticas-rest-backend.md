@@ -77,16 +77,16 @@ Qualidade de Engenharia — P2
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado pela história (`pytest --cov=app`)
-- [ ] Build/lint limpo (`ruff check`, `black --check`, type checking estrito)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API implementado bate com o documentado no DoR (tabela de mapeamento de erros acima)
-- [ ] Sem chave de API/secret exposto (client bundle ou repo)
-- [ ] Documentação atualizada (`backend/README.md`, se descrever o shape de erro hoje; senão registrar o contrato nesta própria história)
-- [ ] Deploy/preview verificado — `N/A`, sem UI
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
-- [ ] Status da história atualizado no próprio arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado pela história (`pytest --cov=app`) — `chat.py`/`errors.py`/`main.py` a 100%
+- [x] Build/lint limpo (`ruff check`, `black --check`, type checking estrito)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto — Aprovar
+- [x] Contrato de API implementado bate com o documentado no DoR (tabela de mapeamento de erros acima)
+- [x] Sem chave de API/secret exposto (client bundle ou repo)
+- [x] Documentação atualizada — `backend/README.md` não descreve o shape de erro hoje; contrato registrado na subseção "Contrato de API" desta própria história
+- [x] Deploy/preview verificado — `N/A`, sem UI
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
+- [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
@@ -94,6 +94,6 @@ Qualidade de Engenharia — P2
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado | 2026-08-18 | 5/5 CA fechados com evidência real: `pytest --cov=app --cov-report=term-missing` → 36/36 passando, `chat.py`/`errors.py`/`main.py` a 100%; cenários de 429/500/503/422 cobertos com o novo shape `{"error":{...}}`, incluindo `AuthenticationError`/`RateLimitError` reais do SDK da OpenAI (não só texto de mensagem simulando o cenário); `/health` sem regressão; suíte do frontend 71/71 sem alteração no consumo do shape de erro. `ruff check`/`black --check` limpos |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | `errors.py` isolado e enxuto (dict tipado em vez de Pydantic para o volume de campos — proporcional); handler de `HTTPException` registrado na classe base do Starlette funciona para as instâncias `fastapi.HTTPException` levantadas em `chat.py` (comprovado pelos 36 testes verdes, não só teoria de herança). Mensagens públicas continuam genéricas, sem vazar stack/config. Sem secret exposto |
-| PO | `@product-owner` | — | — | — |
+| PO | `@product-owner` | Done | 2026-08-18 | 5/5 CA fechados com evidência real (`pytest --cov=app` 36/36, `chat.py`/`errors.py`/`main.py` a 100%); DoD 100% fechado (contrato de erro registrado nesta própria história, sem `backend/README.md` dedicado a atualizar); QA e Tech Lead aprovaram sem Critical/High |
 
-**Status:** Ready for Agent
+**Status:** Done
