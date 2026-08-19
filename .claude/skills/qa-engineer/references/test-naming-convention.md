@@ -48,6 +48,7 @@ def test_chat_returns_fallback_on_llm_error():
 
 - Docstring de **uma linha**, presente do indicativo, descreve o cenário testado — não repete o nome da função, complementa
 - Sem docstring multi-linha (mesma regra geral de comentário do projeto: só o necessário)
+- O display realmente aparece no terminal: `backend/tests/conftest.py` tem um hook (`pytest_collection_modifyitems`) que anexa a docstring ao node id de cada teste — rode `pytest -v` para ver. Sem esse hook, `pytest` mostraria só o nome da função (inglês); não depende de nenhum plugin externo (avaliado `pytest-testdox`, descartado — não lê `__doc__`, só nome humanizado ou marker `@pytest.mark.it(...)`)
 
 ## Ao revisar (`@tech-lead-review` / `@qa-engineer`)
 

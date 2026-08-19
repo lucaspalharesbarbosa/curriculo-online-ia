@@ -51,14 +51,20 @@ História de backlog: [US-03-17](../docs/product/backlog/archive/fase-03/US-03-1
 
 ```
 frontend/
-├── app/                 # layout, page, globals
-├── components/          # Hero, ExperienceCard, Education, SkillBadge,
-│                        # Certifications, ProjectCard, Contact, SiteHeader
+├── app/
+│   ├── layout.tsx, page.tsx, globals.css
+│   └── api/chat/            # route handlers — proxy para o backend (POST /chat, POST /chat/feedback)
+├── components/               # ResumeSidebar, ExperienceSection, EducationSection, Certifications,
+│                              # Recognitions, ProjectsSection, ProfileAssistChat (chat), MobileHero,
+│                              # MobileBottomNav, RoleTypewriter, CollapsibleSection, LinkButton...
+│                              # teste em colocation: Componente.tsx + Componente.test.tsx lado a lado
 ├── content/
-│   ├── resume.json      # fonte da verdade dos dados do currículo
-│   ├── resume.schema.ts # schema Zod
-│   └── resume.ts        # parse tipado usado pela UI
-└── public/              # PDF do currículo e assets estáticos
+│   ├── resume.json          # fonte da verdade dos dados do currículo
+│   ├── resume.schema.ts     # schema Zod
+│   └── resume.ts            # parse tipado usado pela UI
+├── hooks/                    # useResumeChat (estado do chat), useVisualViewportOffset
+├── lib/                       # utils (formatação/agrupamento de dados), skill-icons, skill-blocks, mobile-nav
+└── public/                   # PDF do currículo e assets estáticos
 ```
 
 Convenções completas em [`docs/agents/CONTEXTO-PROJETO.md`](../docs/agents/CONTEXTO-PROJETO.md).

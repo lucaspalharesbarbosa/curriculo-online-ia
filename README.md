@@ -196,6 +196,7 @@ Nenhum valor real é commitado no repositório — cada serviço tem seu `.env.e
 | `NEXT_PUBLIC_API_URL` | Frontend | `frontend/.env.local` local (dev) / painel da **Vercel** → Project Settings → Environment Variables (produção) | Não — URL pública do backend, embutida no bundle do client |
 | `NEXT_PUBLIC_SITE_URL` | Frontend | `frontend/.env.local` local (dev) / painel da **Vercel** → Project Settings → Environment Variables (produção) | Não — URL pública do site, usada em metadata/Open Graph |
 | `ENVIRONMENT` | Backend | `backend/.env` local (dev) / Render → `curriculo-online-backend` → Environment (produção) | Não — rótulo de ambiente (`development`/`production`); em `production` desativa `/docs`, `/redoc` e `/openapi.json` — detalhes em [`backend/README.md`](backend/README.md#documentacao-da-api) |
+| `WEB_SEARCH_API_KEY` | Backend | **Dev:** `backend/.env`. **Produção / fonte do valor:** [Tavily](https://app.tavily.com) → API Keys → gerar/copiar → colar no Render → Web Service **`curriculo-online-backend`** → **Environment** → variável **`WEB_SEARCH_API_KEY`** | Sim, mas **opcional** — sem ela o `/chat` simplesmente não aciona busca web (cai no fallback do currículo), sem quebrar a requisição ([ADR-010](docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md) seção 2) |
 
 Setup local: o backend cria `backend/.env` a partir de `.env.example` na primeira subida. Preencha `LLM_API_KEY` com o valor da secret no Render (caminho acima) ou com uma chave nova da [OpenAI Platform](https://platform.openai.com/api-keys). Detalhes: [`backend/README.md`](backend/README.md#setup-local-obrigatório-para-o-chat).
 
@@ -245,7 +246,12 @@ Status de execução por fase, do início do projeto até a evolução pós-lan�
 | 4 | Polimento (SEO, acessibilidade) | ✅ Done (2/2) |
 | 5 | Feature de IA (RAG) | ✅ Done (9/9) |
 | 6 | Divulgação | ✅ Done |
-| 7 | Frontend & UX v2 | 🚧 Em andamento |
+| 7 | Frontend & UX v2 | ✅ Done (15/15) |
+| 8 | Segurança & Performance | ✅ Done (11/11) |
+| 9 / 13 | Qualidade de Engenharia | ✅ Done |
+| 10 | Observabilidade | ⏳ Draft |
+| 11 | Chat v2 + RAG Inteligente | 🚧 Em andamento (3/7 — backend Done) |
+| 12 | Área Administrativa | ⏳ Bloqueada (ADRs de auth/persistência) |
 
 Detalhes de cada fase, com links para as histórias: [`docs/product/roadmap.md`](docs/product/roadmap.md).
 
@@ -257,14 +263,11 @@ Detalhes de cada fase, com links para as histórias: [`docs/product/roadmap.md`]
 
 **Planejamento**
 - Roadmap e status por fase: [`docs/product/roadmap.md`](docs/product/roadmap.md)
-- PRDs (épicos): [PRD-001 Conteúdo](docs/product/PRD-001-conteudo.md) · [PRD-003 RAG](docs/product/PRD-003-rag.md) · [PRD-004 Deploy](docs/product/PRD-004-deploy.md) · [índice completo](docs/product/)
-- Backlog por fase: [`docs/product/backlog/`](docs/product/backlog/)
+- PRDs (11 épicos, `PRD-001` a `PRD-011`) e backlog por fase: índice em [`docs/product/README.md`](docs/product/README.md)
 
 **Arquitetura**
-- [ADR-001 — Stack inicial (monorepo Next.js + FastAPI)](docs/architecture/ADR-001-stack-inicial-monorepo.md)
-- [ADR-002 — Hospedagem gratuita (Vercel + Render)](docs/architecture/ADR-002-hospedagem-gratuita.md)
-- [ADR-003 — Fluxo de RAG](docs/architecture/ADR-003-fluxo-rag.md)
-- Índice completo (incl. ADR-004 a ADR-007): [`docs/architecture/`](docs/architecture/)
+- ADRs (`ADR-001` a `ADR-010`) e diagramas C4 — índice em [`docs/architecture/README.md`](docs/architecture/README.md)
+- Destaques: [ADR-003 — Fluxo de RAG](docs/architecture/ADR-003-fluxo-rag.md) · [ADR-010 — RAG v2 (precisão + busca web)](docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md)
 
 <br/>
 
