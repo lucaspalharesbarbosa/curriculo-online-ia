@@ -4,8 +4,8 @@ import { BookMarked, Calendar, ExternalLink } from "lucide-react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 
-import { CollapsibleSection } from "@/components/CollapsibleSection";
-import { LinkButton } from "@/components/LinkButton";
+import { CollapsibleSection } from "@/modules/resume/components/CollapsibleSection";
+import { LinkButton } from "@/modules/resume/components/LinkButton";
 import type { Education } from "@/content/resume.schema";
 
 type EducationSectionProps = {

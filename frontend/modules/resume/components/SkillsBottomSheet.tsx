@@ -5,7 +5,7 @@ import { X } from "lucide-react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
-import { buildSkillBlocks } from "@/lib/skill-blocks";
+import { buildSkillBlocks } from "@/modules/resume/lib/skill-blocks";
 import type { SkillGroup } from "@/content/resume.schema";
 import { useVisualViewportOffset } from "@/hooks/useVisualViewportOffset";
 

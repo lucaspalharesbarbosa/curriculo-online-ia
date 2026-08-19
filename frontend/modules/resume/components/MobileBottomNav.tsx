@@ -11,7 +11,10 @@ import {
 } from "lucide-react";
 import { useEffect, useState, type ComponentType } from "react";
 
-import { MOBILE_NAV_SECTIONS, type MobileNavSectionId } from "@/lib/mobile-nav";
+import {
+  MOBILE_NAV_SECTIONS,
+  type MobileNavSectionId,
+} from "@/modules/resume/lib/mobile-nav";
 import { cn } from "@/lib/utils";
 
 const ICONS: Record<

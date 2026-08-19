@@ -29,14 +29,14 @@
 
 ### Critérios de aceite
 
-- [ ] CA-001: `frontend/modules/resume/components/` criado com as seções de currículo (`ExperienceSection`, `EducationSection`, `ProjectsSection`, `Certifications`, `Recognitions`, `SummarySection`, `ResumeSidebar`, `MobileHero`, `RoleTypewriter`, `SectionHeading`, `CollapsibleSection`, `MobileBottomNav`, `SkillsBottomSheet`, `LinkButton`) + seus testes colocados, movidos de `components/`
-- [ ] CA-002: `frontend/modules/resume/lib/` criado com `skill-icons.ts`, `skill-blocks.tsx`, `mobile-nav.ts`, movidos de `lib/`
-- [ ] CA-003: `frontend/modules/chat/components/` criado com `ProfileAssistChat.tsx` e `RagChatPanel.tsx` + seus testes colocados, movidos de `components/`
-- [ ] CA-004: `frontend/lib/` mantém só utilitário genérico de verdade (`utils.ts`) — nada específico de domínio sobra ali
-- [ ] CA-005: imports atualizados em todos os consumidores (`app/page.tsx`, `app/layout.tsx`, `app/api/chat/**` se aplicável, e entre os próprios componentes movidos)
-- [ ] CA-006: `npm test` roda 100% verde, com o mesmo número de testes de antes do refactor
-- [ ] CA-007: `npm run build` e `npm run lint` limpos após a reorganização
-- [ ] CA-008: `docs/agents/CONTEXTO-PROJETO.md` (seção "Estrutura — monorepo") atualizado com a árvore nova do frontend
+- [x] CA-001: `frontend/modules/resume/components/` criado com as seções de currículo (`ExperienceSection`, `EducationSection`, `ProjectsSection`, `Certifications`, `Recognitions`, `SummarySection`, `ResumeSidebar`, `MobileHero`, `RoleTypewriter`, `SectionHeading`, `CollapsibleSection`, `MobileBottomNav`, `SkillsBottomSheet`, `LinkButton`) + seus testes colocados, movidos de `components/`
+- [x] CA-002: `frontend/modules/resume/lib/` criado com `skill-icons.ts`, `skill-blocks.tsx`, `mobile-nav.ts`, movidos de `lib/`
+- [x] CA-003: `frontend/modules/chat/components/` criado com `ProfileAssistChat.tsx` e `RagChatPanel.tsx` + seus testes colocados, movidos de `components/`
+- [x] CA-004: `frontend/lib/` mantém só utilitário genérico de verdade (`utils.ts`) — nada específico de domínio sobra ali
+- [x] CA-005: imports atualizados em todos os consumidores (`app/page.tsx`, `app/layout.tsx`, `app/api/chat/**` se aplicável, e entre os próprios componentes movidos) — `app/layout.tsx` e `app/api/chat/**` não referenciavam paths movidos, confirmado por busca em todo o repo
+- [x] CA-006: `npm test` roda 100% verde, com o mesmo número de testes de antes do refactor (18 arquivos / 82 testes, baseline igual ao pós-refactor)
+- [x] CA-007: `npm run build` e `npm run lint` limpos após a reorganização (lint com os 2 warnings pré-existentes, 0 erros, idêntico ao baseline)
+- [x] CA-008: `docs/agents/CONTEXTO-PROJETO.md` (seção "Estrutura — monorepo") atualizado com a árvore nova do frontend
 
 ### Fora de escopo
 - Qualquer padrão tático de DDD — ver `ADR-011`
@@ -52,12 +52,12 @@
 Arquitetura & Modularização — P2
 
 ### Tasks
-- [ ] T01 Criar `frontend/modules/resume/components/`, mover as ~13 seções de currículo + testes colocados
-- [ ] T02 [P] Criar `frontend/modules/resume/lib/`, mover `skill-icons.ts`, `skill-blocks.tsx`, `mobile-nav.ts`
-- [ ] T03 [P] Criar `frontend/modules/chat/components/`, mover `ProfileAssistChat.tsx`, `RagChatPanel.tsx` + testes colocados
-- [ ] T04 Atualizar imports em `app/page.tsx`, `app/layout.tsx` e demais consumidores dos paths antigos
-- [ ] T05 Rodar `npm test`, `npm run build` e `npm run lint` confirmando sem regressão
-- [ ] T06 Atualizar `docs/agents/CONTEXTO-PROJETO.md` (estrutura do frontend)
+- [x] T01 Criar `frontend/modules/resume/components/`, mover as ~13 seções de currículo + testes colocados
+- [x] T02 [P] Criar `frontend/modules/resume/lib/`, mover `skill-icons.ts`, `skill-blocks.tsx`, `mobile-nav.ts`
+- [x] T03 [P] Criar `frontend/modules/chat/components/`, mover `ProfileAssistChat.tsx`, `RagChatPanel.tsx` + testes colocados
+- [x] T04 Atualizar imports em `app/page.tsx`, `app/layout.tsx` e demais consumidores dos paths antigos
+- [x] T05 Rodar `npm test`, `npm run build` e `npm run lint` confirmando sem regressão
+- [x] T06 Atualizar `docs/agents/CONTEXTO-PROJETO.md` (estrutura do frontend)
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 - [ ] Todos os critérios de aceite acima `[x]`

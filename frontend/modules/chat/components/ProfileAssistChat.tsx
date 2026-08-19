@@ -11,10 +11,10 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 
-import { RagChatPanel } from "@/components/RagChatPanel";
+import { RagChatPanel } from "@/modules/chat/components/RagChatPanel";
 import { useResumeChat } from "@/hooks/useResumeChat";
 import { useVisualViewportOffset } from "@/hooks/useVisualViewportOffset";
-import { OPEN_ASSIST_CHAT_EVENT } from "@/lib/mobile-nav";
+import { OPEN_ASSIST_CHAT_EVENT } from "@/modules/resume/lib/mobile-nav";
 
 type ProfileAssistChatProps = {
   /** Aceito pelo Perfil; o copy do assistente é fixo (Assistente RAG). */

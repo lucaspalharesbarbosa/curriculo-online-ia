@@ -14,8 +14,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
-import { RoleTypewriter } from "@/components/RoleTypewriter";
-import { SkillsBottomSheet } from "@/components/SkillsBottomSheet";
+import { RoleTypewriter } from "@/modules/resume/components/RoleTypewriter";
+import { SkillsBottomSheet } from "@/modules/resume/components/SkillsBottomSheet";
 import type { Contact, Hero, SkillGroup } from "@/content/resume.schema";
 import { parseHeroTitle } from "@/lib/utils";
 

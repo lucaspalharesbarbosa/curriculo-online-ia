@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 import { useId, useState, type ReactNode } from "react";
 
-import { SectionHeading } from "@/components/SectionHeading";
+import { SectionHeading } from "@/modules/resume/components/SectionHeading";
 import { cn } from "@/lib/utils";
 
 type CollapsibleSectionProps = {

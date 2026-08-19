@@ -14,9 +14,9 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 
-import { RoleTypewriter } from "@/components/RoleTypewriter";
+import { RoleTypewriter } from "@/modules/resume/components/RoleTypewriter";
 import type { Contact, Hero, SkillGroup } from "@/content/resume.schema";
-import { buildSkillBlocks } from "@/lib/skill-blocks";
+import { buildSkillBlocks } from "@/modules/resume/lib/skill-blocks";
 import { buildGoogleMapsUrl, parseHeroTitle } from "@/lib/utils";
 
 type ResumeSidebarProps = {

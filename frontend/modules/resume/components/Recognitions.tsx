@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 
-import { CollapsibleSection } from "@/components/CollapsibleSection";
+import { CollapsibleSection } from "@/modules/resume/components/CollapsibleSection";
 import type { Recognition } from "@/content/resume.schema";
 
 type RecognitionsProps = {
