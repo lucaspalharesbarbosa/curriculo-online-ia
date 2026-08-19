@@ -6,7 +6,16 @@
       "Bash(npm run lint *)",
       "Bash(git fetch *)",
       "Bash(cygpath *)",
-      "Bash(tasklist *)"
+      "Bash(tasklist *)",
+      "Bash(npm run build *)",
+      "Bash(npx vitest run *)",
+      "Bash(gh pr view *)",
+      "Bash(python -m pytest *)",
+      "Bash(gh auth status)",
+      "Bash(gh pr list *)",
+      "Bash(python -m ruff check *)",
+      "Bash(gh pr checks *)",
+      "Bash(python -m black --check *)"
     ]
   }
 }
