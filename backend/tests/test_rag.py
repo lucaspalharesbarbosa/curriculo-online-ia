@@ -7,8 +7,12 @@ from app.rag import (
     EmbeddedChunk,
     build_chunks,
     cosine_similarity,
+    detect_section_intent,
     embed_text,
+    extract_known_entities,
     search,
+    search_with_routing,
+    wants_recency,
 )
 
 FIXTURE_RESUME = Resume.model_validate(
@@ -146,6 +150,17 @@ def test_chunk_de_experiencia_contem_empresa_e_tecnologias() -> None:
     experience_chunk = next(c for c in chunks if c.id == "experience-0")
     assert "Empresa A" in experience_chunk.text
     assert "Python" in experience_chunk.text
+
+
+def test_chunk_de_experiencia_sem_end_date_recebe_sentinela_de_recencia_alta() -> None:
+    """CA-002 (US-11-06): cargo atual (sem end_date) deve ordenar primeiro."""
+    chunks = build_chunks(FIXTURE_RESUME)
+
+    current_role = next(c for c in chunks if c.id == "experience-0")
+    past_role = next(c for c in chunks if c.id == "experience-1")
+    assert current_role.recency_key == rag.EXPERIENCE_ONGOING_RECENCY_KEY
+    assert past_role.recency_key == "2021-12"
+    assert current_role.recency_key > past_role.recency_key
 
 
 def test_chunk_de_certificacao_contem_nome_e_emissor() -> None:
@@ -318,3 +333,183 @@ def test_load_or_build_index_gera_e_cacheia_quando_nao_existe(
 
 def test_cosine_similarity_com_vetor_nulo_retorna_zero() -> None:
     assert cosine_similarity([0.0, 0.0], [1.0, 0.0]) == 0.0
+
+
+# --- US-11-06: roteamento por seção/recência (ADR-010 seção 1) ---------------
+
+
+def test_detect_section_intent_reconhece_pergunta_de_formacao() -> None:
+    assert detect_section_intent("Onde você estudou?") == "education"
+    assert detect_section_intent("Qual foi sua faculdade?") == "education"
+
+
+def test_detect_section_intent_reconhece_pergunta_de_experiencia() -> None:
+    assert detect_section_intent("Qual a última empresa que trabalhei?") == "experience"
+    assert detect_section_intent("Onde você trabalha atualmente?") == "experience"
+
+
+def test_detect_section_intent_retorna_none_sem_palavra_chave_reconhecida() -> None:
+    assert detect_section_intent("Já trabalhou com Kubernetes?") is None
+
+
+def test_wants_recency_reconhece_termos_de_atualidade() -> None:
+    assert wants_recency("Qual a última empresa que trabalhei?") is True
+    assert wants_recency("Onde você trabalha atualmente?") is True
+    assert wants_recency("Já trabalhou com Kubernetes?") is False
+
+
+def test_search_com_secao_restringe_candidatos_a_secao(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Sem `section`, o chunk fora da seção venceria por similaridade pura."""
+    index = [
+        EmbeddedChunk(
+            chunk=Chunk(id="education-0", section="education", text="Formação X"),
+            embedding=[0.0, 1.0],
+        ),
+        EmbeddedChunk(
+            chunk=Chunk(id="experience-0", section="experience", text="Empresa X"),
+            embedding=[1.0, 0.0],
+        ),
+    ]
+    fake_client = _FakeOpenAIClient({"onde estudei?": [0.9, 0.1]})
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    unrestricted = search("onde estudei?", index, top_k=1)
+    restricted = search("onde estudei?", index, top_k=1, section="education")
+
+    assert unrestricted[0][0].id == "experience-0"
+    assert restricted[0][0].id == "education-0"
+
+
+def test_search_com_sort_by_recency_reordena_chunks_por_recencia(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    index = [
+        EmbeddedChunk(
+            chunk=Chunk(
+                id="experience-0",
+                section="experience",
+                text="Cargo atual",
+                recency_key=rag.EXPERIENCE_ONGOING_RECENCY_KEY,
+            ),
+            embedding=[0.5, 0.5],
+        ),
+        EmbeddedChunk(
+            chunk=Chunk(
+                id="experience-1",
+                section="experience",
+                text="Cargo antigo",
+                recency_key="2019-12",
+            ),
+            embedding=[1.0, 0.0],
+        ),
+    ]
+    fake_client = _FakeOpenAIClient({"pergunta": [1.0, 0.0]})
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    by_similarity = search("pergunta", index, top_k=2)
+    by_recency = search("pergunta", index, top_k=2, sort_by_recency=True)
+
+    # Sem recência: o cargo antigo vence por similaridade pura de embedding.
+    assert [chunk.id for chunk, _score in by_similarity] == [
+        "experience-1",
+        "experience-0",
+    ]
+    # Com recência: o cargo atual (sentinela mais alta) vem primeiro.
+    assert [chunk.id for chunk, _score in by_recency] == [
+        "experience-0",
+        "experience-1",
+    ]
+
+
+def test_search_with_routing_prioriza_educacao_para_pergunta_de_formacao(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-001 (US-11-06): "onde estudei?" retorna o chunk de education."""
+    index = [
+        EmbeddedChunk(
+            chunk=Chunk(id="education-0", section="education", text="Formação X"),
+            embedding=[0.0, 1.0],
+        ),
+        EmbeddedChunk(
+            chunk=Chunk(id="skill-0", section="skill", text="Skills"),
+            embedding=[1.0, 0.0],
+        ),
+    ]
+    fake_client = _FakeOpenAIClient({"onde estudei?": [0.9, 0.1]})
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    results = search_with_routing("onde estudei?", index, top_k=1)
+
+    assert results[0][0].id == "education-0"
+
+
+def test_search_with_routing_prioriza_experiencia_recente_para_ultima_empresa(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-002 (US-11-06): "última empresa" retorna experiência mais recente primeiro."""
+    index = [
+        EmbeddedChunk(
+            chunk=Chunk(
+                id="experience-0",
+                section="experience",
+                text="Cargo atual na Empresa A",
+                recency_key=rag.EXPERIENCE_ONGOING_RECENCY_KEY,
+            ),
+            embedding=[0.5, 0.5],
+        ),
+        EmbeddedChunk(
+            chunk=Chunk(
+                id="experience-1",
+                section="experience",
+                text="Cargo antigo na Empresa B",
+                recency_key="2019-12",
+            ),
+            embedding=[1.0, 0.0],
+        ),
+    ]
+    fake_client = _FakeOpenAIClient(
+        {"qual a última empresa que trabalhei?": [1.0, 0.0]}
+    )
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    results = search_with_routing(
+        "qual a última empresa que trabalhei?", index, top_k=2
+    )
+
+    assert results[0][0].id == "experience-0"
+
+
+def test_search_with_routing_sem_palavra_chave_busca_sem_restricao(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-003 (US-11-06): sem regressão — pergunta específica busca o índice todo."""
+    index = [
+        EmbeddedChunk(
+            chunk=Chunk(id="skill-0", section="skill", text="Python"),
+            embedding=[1.0, 0.0],
+        ),
+        EmbeddedChunk(
+            chunk=Chunk(id="skill-1", section="skill", text="Java"),
+            embedding=[0.0, 1.0],
+        ),
+    ]
+    fake_client = _FakeOpenAIClient({"já trabalhou com kubernetes?": [1.0, 0.0]})
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    routed = search_with_routing("já trabalhou com kubernetes?", index, top_k=1)
+    plain = search("já trabalhou com kubernetes?", index, top_k=1)
+
+    assert routed == plain
+
+
+def test_extract_known_entities_retorna_nomes_citaveis_do_curriculo() -> None:
+    entities = extract_known_entities(FIXTURE_RESUME)
+
+    assert "Empresa A" in entities
+    assert "Faculdade X" in entities
+    assert "Certificação Exemplo" in entities
+    assert "Instituto Exemplo" in entities
+    assert "Python" in entities
+    assert "Projeto X" in entities

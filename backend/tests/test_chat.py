@@ -28,9 +28,11 @@ class _FakeCompletionsResource:
     def __init__(self, answer: str) -> None:
         self._answer = answer
         self.call_count = 0
+        self.last_messages: list[dict[str, str]] | None = None
 
     def create(self, model: str, messages: list[dict[str, str]]):  # noqa: ANN001
         self.call_count += 1
+        self.last_messages = messages
         return _FakeCompletion(self._answer)
 
 
@@ -104,6 +106,37 @@ FIXTURE_INDEX = [
     ),
 ]
 
+# US-11-06: índice com seções que competem por similaridade, usado para provar
+# que o roteamento por seção/recência muda o contexto selecionado.
+ROUTING_FIXTURE_INDEX = [
+    rag.EmbeddedChunk(
+        chunk=rag.Chunk(
+            id="education-0",
+            section="education",
+            text="Formação: Bacharelado em Ciência da Computação em Universidade X.",
+        ),
+        embedding=[0.0, 1.0],
+    ),
+    rag.EmbeddedChunk(
+        chunk=rag.Chunk(
+            id="experience-0",
+            section="experience",
+            text="Cargo atual na Empresa Atual.",
+            recency_key=rag.EXPERIENCE_ONGOING_RECENCY_KEY,
+        ),
+        embedding=[0.6, 0.4],
+    ),
+    rag.EmbeddedChunk(
+        chunk=rag.Chunk(
+            id="experience-1",
+            section="experience",
+            text="Cargo antigo na Empresa Antiga.",
+            recency_key="2019-12",
+        ),
+        embedding=[1.0, 0.0],
+    ),
+]
+
 
 def _fake_openai_response(status_code: int) -> httpx.Response:
     """Response mínima exigida pelos construtores de erro do SDK da OpenAI."""
@@ -129,6 +162,22 @@ def stub_index(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(chat, "get_index", lambda: FIXTURE_INDEX)
 
 
+@pytest.fixture
+def stub_entities(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Entidades conhecidas fixas — sem depender do resume.json real (US-11-07)."""
+    monkeypatch.setattr(chat, "get_known_entities", lambda: ["Engineering Brasil"])
+
+
+@pytest.fixture(autouse=True)
+def _no_web_search_key_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Sem WEB_SEARCH_API_KEY por padrão — nunca bate na API real do Tavily.
+
+    Testes que precisam simular a chave configurada usam `monkeypatch.setenv`
+    explicitamente (ver testes de US-11-07 abaixo).
+    """
+    monkeypatch.delenv("WEB_SEARCH_API_KEY", raising=False)
+
+
 def test_chat_retorna_resposta_com_contexto_relevante(
     stub_index: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -140,12 +189,15 @@ def test_chat_retorna_resposta_com_contexto_relevante(
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
     assert response.status_code == 200
-    assert response.json() == {"answer": "Você trabalha na Engineering Brasil."}
+    assert response.json() == {
+        "answer": "Você trabalha na Engineering Brasil.",
+        "source": "resume",
+    }
     assert fake_client.chat.completions.call_count == 1
 
 
 def test_chat_retorna_fallback_para_pergunta_fora_do_escopo(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
+    stub_index: None, stub_entities: None, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     fake_client = _FakeOpenAIClient(question_embedding=[-1.0, -1.0])
     monkeypatch.setattr(rag, "get_client", lambda: fake_client)
@@ -153,7 +205,7 @@ def test_chat_retorna_fallback_para_pergunta_fora_do_escopo(
     response = client.post("/chat", json={"question": "Qual a previsão do tempo?"})
 
     assert response.status_code == 200
-    assert response.json() == {"answer": chat.FALLBACK_ANSWER}
+    assert response.json() == {"answer": chat.FALLBACK_ANSWER, "source": "resume"}
     assert fake_client.chat.completions.call_count == 0
 
 
@@ -345,3 +397,244 @@ def test_get_index_carrega_uma_vez_e_reaproveita_cache_em_memoria(
     assert first is FIXTURE_INDEX
     assert second is FIXTURE_INDEX
     assert calls["count"] == 1
+
+
+# --- US-11-06: regressão de precisão de recuperação (roteamento por seção/recência) --
+
+
+def test_chat_prioriza_formacao_para_pergunta_onde_estudei(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-001: "onde você estudou?" usa o chunk de education no contexto."""
+    monkeypatch.setattr(chat, "get_index", lambda: ROUTING_FIXTURE_INDEX)
+    fake_client = _FakeOpenAIClient(
+        question_embedding=[0.5, 0.5], answer="Você estudou na Universidade X."
+    )
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    response = client.post("/chat", json={"question": "Onde você estudou?"})
+
+    assert response.status_code == 200
+    assert response.json()["source"] == "resume"
+    sent_prompt = fake_client.chat.completions.last_messages[1]["content"]
+    assert "Formação" in sent_prompt
+
+
+def test_chat_prioriza_experiencia_recente_para_ultima_empresa(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-002: "última empresa" traz o cargo atual antes do cargo antigo no prompt."""
+    monkeypatch.setattr(chat, "get_index", lambda: ROUTING_FIXTURE_INDEX)
+    fake_client = _FakeOpenAIClient(
+        question_embedding=[1.0, 0.0], answer="Sua última empresa é a Empresa Atual."
+    )
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    response = client.post(
+        "/chat", json={"question": "Qual a última empresa que trabalhei?"}
+    )
+
+    assert response.status_code == 200
+    sent_prompt = fake_client.chat.completions.last_messages[1]["content"]
+    assert sent_prompt.index("Empresa Atual") < sent_prompt.index("Empresa Antiga")
+
+
+def test_chat_sem_palavra_chave_mantem_comportamento_atual_por_similaridade(
+    stub_index: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CA-003: pergunta específica (skills) já coberta hoje não regride."""
+    fake_client = _FakeOpenAIClient(
+        question_embedding=[1.0, 0.0], answer="Sim, já trabalhei com Python."
+    )
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    response = client.post("/chat", json={"question": "Já trabalhou com Python?"})
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "answer": "Sim, já trabalhei com Python.",
+        "source": "resume",
+    }
+
+
+# --- US-11-07: web search fallback para entidades externas (ADR-010 seção 2) --------
+
+
+def test_chat_aciona_busca_web_quando_similaridade_baixa_e_entidade_conhecida(
+    stub_index: None, stub_entities: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CA-001: score local abaixo do threshold + entidade citada aciona a busca web."""
+    fake_client = _FakeOpenAIClient(
+        question_embedding=[-1.0, -1.0], answer="A Engineering Brasil atua com IA."
+    )
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    monkeypatch.setattr(
+        chat.web_search, "search_web", lambda query: "Contexto público da web."
+    )
+
+    response = client.post(
+        "/chat", json={"question": "O que a Engineering Brasil faz?"}
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "answer": "A Engineering Brasil atua com IA.",
+        "source": "web",
+    }
+    sent_messages = fake_client.chat.completions.last_messages
+    assert sent_messages[0]["content"] == chat.WEB_SYSTEM_PROMPT
+    assert "Contexto público da web." in sent_messages[1]["content"]
+
+
+def test_chat_fallback_gracioso_quando_busca_web_falha(
+    stub_index: None, stub_entities: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CA-002: busca web indisponível (retorna None) não gera erro 5xx."""
+    fake_client = _FakeOpenAIClient(question_embedding=[-1.0, -1.0])
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    monkeypatch.setattr(chat.web_search, "search_web", lambda query: None)
+
+    response = client.post(
+        "/chat", json={"question": "O que a Engineering Brasil faz?"}
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"answer": chat.FALLBACK_ANSWER, "source": "resume"}
+    assert fake_client.chat.completions.call_count == 0
+
+
+def test_chat_nao_aciona_busca_web_sem_entidade_conhecida(
+    stub_index: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """CA-004: pergunta genérica sem entidade do currículo não vira agente de busca."""
+    monkeypatch.setattr(chat, "get_known_entities", lambda: ["Engineering Brasil"])
+    fake_client = _FakeOpenAIClient(question_embedding=[-1.0, -1.0])
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+
+    def _fail_if_called(query: str) -> str | None:
+        raise AssertionError("search_web não deveria ser chamado sem entidade citada")
+
+    monkeypatch.setattr(chat.web_search, "search_web", _fail_if_called)
+
+    response = client.post("/chat", json={"question": "Qual a previsão do tempo?"})
+
+    assert response.status_code == 200
+    assert response.json() == {"answer": chat.FALLBACK_ANSWER, "source": "resume"}
+
+
+def test_chat_retorna_503_quando_geracao_falha_apos_busca_web(
+    stub_index: None, stub_entities: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Falha do LLM ao gerar a resposta com contexto web segue o mapeamento padrão."""
+    fake_client = _EmbeddingOkGenerationFailsClient(question_embedding=[-1.0, -1.0])
+    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    monkeypatch.setattr(
+        chat.web_search, "search_web", lambda query: "Contexto público da web."
+    )
+
+    response = client.post(
+        "/chat", json={"question": "O que a Engineering Brasil faz?"}
+    )
+
+    assert response.status_code == 503
+    assert response.json() == {
+        "error": {"code": "llm_unavailable", "message": chat.GENERIC_ERROR_MESSAGE}
+    }
+
+
+def test_get_known_entities_carrega_uma_vez_e_reaproveita_cache_em_memoria(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(chat, "_entities_cache", None)
+    calls = {"count": 0}
+
+    def _fake_extract_known_entities(resume: object) -> list[str]:
+        calls["count"] += 1
+        return ["Engineering Brasil"]
+
+    monkeypatch.setattr(rag, "load_resume", lambda: object())
+    monkeypatch.setattr(rag, "extract_known_entities", _fake_extract_known_entities)
+
+    first = chat.get_known_entities()
+    second = chat.get_known_entities()
+
+    assert first == ["Engineering Brasil"]
+    assert second == ["Engineering Brasil"]
+    assert calls["count"] == 1
+
+
+# --- US-11-04: feedback do usuário na resposta (log estruturado) --------------------
+
+
+def test_chat_feedback_retorna_ok_para_request_valido() -> None:
+    """CA-001/CA-002: request válido é logado e retorna 200 { ok: true }."""
+    response = client.post(
+        "/chat/feedback",
+        json={
+            "question": "Onde você trabalha?",
+            "answer": "Na Engineering Brasil.",
+            "rating": "up",
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"ok": True}
+
+
+def test_chat_feedback_retorna_422_para_rating_invalido() -> None:
+    response = client.post(
+        "/chat/feedback",
+        json={"question": "Pergunta", "answer": "Resposta", "rating": "invalido"},
+    )
+
+    assert response.status_code == 422
+
+
+def test_chat_feedback_retorna_422_para_campo_ausente() -> None:
+    response = client.post("/chat/feedback", json={"question": "Pergunta"})
+
+    assert response.status_code == 422
+
+
+def test_chat_feedback_nao_expoe_pergunta_e_resposta_completas_no_log(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-002: log estruturado sem persistência nem dado sensível exposto."""
+    logged: list[str] = []
+    monkeypatch.setattr(
+        chat.logger, "info", lambda msg, *args: logged.append(msg % args)
+    )
+
+    response = client.post(
+        "/chat/feedback",
+        json={
+            "question": "Pergunta sensível qualquer",
+            "answer": "Resposta qualquer",
+            "rating": "down",
+        },
+    )
+
+    assert response.status_code == 200
+    assert len(logged) == 1
+    assert "Pergunta sensível qualquer" not in logged[0]
+    assert "Resposta qualquer" not in logged[0]
+    assert "rating=down" in logged[0]
+
+
+def test_chat_feedback_falha_ao_logar_nao_quebra_a_resposta(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-003: falha ao registrar log nunca propaga erro ao client (fire-and-forget)."""
+
+    def _raise(*args: object, **kwargs: object) -> None:
+        raise RuntimeError("falha simulada no logger")
+
+    monkeypatch.setattr(chat.logger, "info", _raise)
+
+    response = client.post(
+        "/chat/feedback",
+        json={"question": "Pergunta", "answer": "Resposta", "rating": "up"},
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {"ok": True}
