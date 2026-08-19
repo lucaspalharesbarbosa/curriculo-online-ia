@@ -60,23 +60,23 @@ Arquitetura & Modularização — P2
 - [x] T06 Atualizar `docs/agents/CONTEXTO-PROJETO.md` (estrutura do frontend)
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado — sem lógica nova, mantém a cobertura já existente (baseline frontend: 82,18%/74,39%/84,72%/83,18%, `US-13-01`)
-- [ ] Build/lint limpo (`npm run build`, `npm run lint`, type checking estrito)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API bate com o documentado — `N/A`
-- [ ] Sem chave/secret exposto
-- [ ] Documentação atualizada — `CONTEXTO-PROJETO.md` (CA-008)
-- [ ] Deploy/preview verificado — sim, preview da Vercel confirmando que o site renderiza igual ao de produção
-- [ ] Vereditos de QA, Tech Lead e PO documentados abaixo
-- [ ] Status atualizado no arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado — sem lógica nova, mantém a cobertura já existente (baseline frontend: 82,18%/74,39%/84,72%/83,18%, `US-13-01`; medido pós-refactor: 85,39%/74,26%/88,88%/86,59%)
+- [x] Build/lint limpo (`npm run build`, `npm run lint`, type checking estrito)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto
+- [x] Contrato de API bate com o documentado — `N/A`
+- [x] Sem chave/secret exposto
+- [x] Documentação atualizada — `CONTEXTO-PROJETO.md` (CA-008)
+- [ ] Deploy/preview verificado — **pendente**: depende do preview real da Vercel gerado a partir do PR, que só existe após o push/abertura do PR; conferir a URL que a Vercel comenta automaticamente no PR assim que aberto
+- [x] Vereditos de QA e Tech Lead documentados abaixo (PO não fez parte deste pipeline — pipeline executado: Dev → QA → Tech Lead)
+- [x] Status atualizado no arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| QA | `@qa-engineer` | Aprovado — `npm test` 18 arquivos/82 testes verdes (igual ao baseline pré-refactor), `npm run build` limpo, `npm run lint` com os mesmos 2 warnings pré-existentes (0 erros), cobertura 85,39%/74,26%/88,88%/86,59% (stmts/branch/funcs/lines, acima do piso de 70% e em linha com baseline `US-13-01`), testes continuam colocados junto do componente movido, nenhum teste perdido/pulado | 2026-08-19 | commit `9c2505b` |
+| Tech Lead | `@tech-lead-review` | Aprovar — diff (`git diff feature/fase-14-arquitetura-modularizacao...HEAD`) revisado: 35 arquivos, mudança restrita a `git mv` + linha de import (nenhum trecho de lógica/JSX/markup alterado), nenhum componente/lib esquecido em `components/`/`lib/` antigo (confirmado por busca de `@/components/` e paths antigos de `@/lib/*` em todo o repo — zero ocorrências), sem chave/secret exposto, sem CORS tocado (fora de escopo). Sem achado Critical/High | 2026-08-19 | commit `9c2505b` |
 | PO | `@product-owner` | — | — | — |
 
-**Status:** Ready for Agent
+**Status:** Aguardando validação de preview
