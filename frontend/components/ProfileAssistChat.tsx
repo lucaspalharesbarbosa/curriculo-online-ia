@@ -2,7 +2,13 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { MessageSquare, Radio } from "lucide-react";
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import {
+  type ComponentProps,
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
 import { createPortal } from "react-dom";
 
 import { RagChatPanel } from "@/components/RagChatPanel";
@@ -15,6 +21,26 @@ type ProfileAssistChatProps = {
   role?: string;
 };
 
+type ChatPanelSharedProps = Pick<
+  ComponentProps<typeof RagChatPanel>,
+  | "messages"
+  | "question"
+  | "setQuestion"
+  | "isSubmitting"
+  | "onSend"
+  | "onSuggestion"
+  | "suggestions"
+  | "skin"
+  | "title"
+  | "subtitle"
+  | "emptyHint"
+>;
+
+type PanelMotion = Pick<
+  ComponentProps<typeof motion.div>,
+  "initial" | "animate" | "exit"
+>;
+
 const PROBES = [
   "Onde Lucas trabalha hoje?",
   "Quais tecnologias ele usa?",
@@ -22,6 +48,91 @@ const PROBES = [
 ];
 
 const emptySubscribe = () => () => {};
+
+/** Painéis flutuantes (desktop dock + sheet mobile) e os botões de reabrir quando minimizado. */
+function AssistFloatingPanels({
+  minimized,
+  onMinimize,
+  onExpand,
+  chatProps,
+  panelMotion,
+  reduceMotion,
+  viewportOffset,
+}: {
+  minimized: boolean;
+  onMinimize: () => void;
+  onExpand: () => void;
+  chatProps: ChatPanelSharedProps;
+  panelMotion: PanelMotion;
+  reduceMotion: boolean | null;
+  viewportOffset: number;
+}) {
+  return (
+    <>
+      <AnimatePresence>
+        {!minimized ? (
+          <>
+            <motion.div
+              key="assist-desktop"
+              {...panelMotion}
+              className="pointer-events-auto fixed top-24 right-4 z-[200] hidden w-[360px] origin-top xl:block"
+            >
+              <RagChatPanel
+                {...chatProps}
+                onMinimize={onMinimize}
+                listClassName="max-h-[50vh] min-h-[12rem]"
+              />
+            </motion.div>
+
+            <motion.div
+              key="assist-mobile-sheet"
+              initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 28 }}
+              transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+              style={{ bottom: `calc(${viewportOffset}px + 4.75rem)` }}
+              className="pointer-events-auto fixed inset-x-0 z-[200] px-3 xl:hidden"
+            >
+              <div className="mx-auto max-w-lg overflow-hidden rounded-t-[1.5rem] rounded-b-2xl border border-[#16324a] shadow-[0_-16px_48px_rgba(0,0,0,0.5)]">
+                <RagChatPanel
+                  {...chatProps}
+                  sheet
+                  onMinimize={onMinimize}
+                  listClassName="max-h-[min(42dvh,20rem)] min-h-[9rem]"
+                  className="max-h-[min(72dvh,560px)]"
+                />
+              </div>
+            </motion.div>
+          </>
+        ) : null}
+      </AnimatePresence>
+
+      {minimized ? (
+        <>
+          <button
+            type="button"
+            onClick={onExpand}
+            style={{ bottom: `calc(${viewportOffset}px + 4.75rem)` }}
+            className="tap-target fixed right-4 z-[200] inline-flex min-h-12 items-center gap-2 rounded-2xl border border-[#16324a] bg-[#03070d] px-4 py-3 text-sm font-semibold text-accent-200 shadow-[0_12px_40px_rgba(0,0,0,0.55)] xl:hidden"
+          >
+            <span className="assist-signal-dot" aria-hidden />
+            <MessageSquare className="h-4 w-4" />
+            Abrir Assistente
+          </button>
+          <button
+            type="button"
+            onClick={onExpand}
+            className="tap-target fixed right-4 bottom-4 z-[200] hidden min-h-12 items-center gap-2 rounded-2xl border border-[#16324a] bg-[#03070d] px-4 py-3 text-sm font-semibold text-accent-200 shadow-[0_12px_40px_rgba(0,0,0,0.55)] xl:inline-flex"
+          >
+            <span className="assist-signal-dot" aria-hidden />
+            <MessageSquare className="h-4 w-4" />
+            Abrir Assistente RAG
+          </button>
+        </>
+      ) : null}
+    </>
+  );
+}
 
 /** Assistente no Perfil: console de sinal; ao rolar vira sticky/dock / bottom sheet. */
 export function ProfileAssistChat({}: ProfileAssistChatProps) {
@@ -102,69 +213,15 @@ export function ProfileAssistChat({}: ProfileAssistChatProps) {
 
   const floatingUi =
     portalReady && docked ? (
-      <>
-        <AnimatePresence>
-          {!minimized ? (
-            <>
-              <motion.div
-                key="assist-desktop"
-                {...panelMotion}
-                className="pointer-events-auto fixed top-24 right-4 z-[200] hidden w-[360px] origin-top xl:block"
-              >
-                <RagChatPanel
-                  {...chatProps}
-                  onMinimize={() => setMinimized(true)}
-                  listClassName="max-h-[50vh] min-h-[12rem]"
-                />
-              </motion.div>
-
-              <motion.div
-                key="assist-mobile-sheet"
-                initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 40 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 28 }}
-                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                style={{ bottom: `calc(${viewportOffset}px + 4.75rem)` }}
-                className="pointer-events-auto fixed inset-x-0 z-[200] px-3 xl:hidden"
-              >
-                <div className="mx-auto max-w-lg overflow-hidden rounded-t-[1.5rem] rounded-b-2xl border border-[#16324a] shadow-[0_-16px_48px_rgba(0,0,0,0.5)]">
-                  <RagChatPanel
-                    {...chatProps}
-                    sheet
-                    onMinimize={() => setMinimized(true)}
-                    listClassName="max-h-[min(42dvh,20rem)] min-h-[9rem]"
-                    className="max-h-[min(72dvh,560px)]"
-                  />
-                </div>
-              </motion.div>
-            </>
-          ) : null}
-        </AnimatePresence>
-
-        {minimized ? (
-          <>
-            <button
-              type="button"
-              onClick={() => setMinimized(false)}
-              style={{ bottom: `calc(${viewportOffset}px + 4.75rem)` }}
-              className="tap-target fixed right-4 z-[200] inline-flex min-h-12 items-center gap-2 rounded-2xl border border-[#16324a] bg-[#03070d] px-4 py-3 text-sm font-semibold text-accent-200 shadow-[0_12px_40px_rgba(0,0,0,0.55)] xl:hidden"
-            >
-              <span className="assist-signal-dot" aria-hidden />
-              <MessageSquare className="h-4 w-4" />
-              Abrir Assistente
-            </button>
-            <button
-              type="button"
-              onClick={() => setMinimized(false)}
-              className="tap-target fixed right-4 bottom-4 z-[200] hidden min-h-12 items-center gap-2 rounded-2xl border border-[#16324a] bg-[#03070d] px-4 py-3 text-sm font-semibold text-accent-200 shadow-[0_12px_40px_rgba(0,0,0,0.55)] xl:inline-flex"
-            >
-              <span className="assist-signal-dot" aria-hidden />
-              <MessageSquare className="h-4 w-4" />
-              Abrir Assistente RAG
-            </button>
-          </>
-        ) : null}
-      </>
+      <AssistFloatingPanels
+        minimized={minimized}
+        onMinimize={() => setMinimized(true)}
+        onExpand={() => setMinimized(false)}
+        chatProps={chatProps}
+        panelMotion={panelMotion}
+        reduceMotion={reduceMotion ?? false}
+        viewportOffset={viewportOffset}
+      />
     ) : null;
 
   return (

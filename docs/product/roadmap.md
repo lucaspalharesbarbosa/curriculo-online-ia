@@ -125,13 +125,10 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 9 — Qualidade de Engenharia
 
-**Status:** 1ª história Done — fase arquivada 2026-08-16; demais itens sem história ainda, entram em nova fase quando priorizados
+**Status:** 1ª história Done — fase arquivada 2026-08-16; demais frentes decompostas na Fase 13 (`09` não reaproveitado)
 **PRD:** [`PRD-007-qualidade-engenharia.md`](PRD-007-qualidade-engenharia.md)
 
 - [x] SonarCloud no CI (frontend e backend) — [US-09-01](backlog/archive/fase-09/US-09-01-sonarcloud-ci.md) (`Done`)
-- [ ] Gate de cobertura mínima automatizado no CI
-- [ ] Boas práticas REST no backend (status codes, shape de erro padronizado)
-- [ ] Refactor/modularização guiado pelos achados do SonarCloud
 
 ## Fase 10 — Observabilidade
 
@@ -163,3 +160,20 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 - [ ] Dashboard: métricas de acesso e de uso do chat
 - [ ] ADR: estratégia de autenticação single-user
 - [ ] ADR: onde persistir métricas
+
+## Fase 13 — Qualidade de Engenharia (continuação)
+
+**Status:** Completa — 7 histórias `Done`, 1 `Cancelada` (decomposta); candidata a arquivamento
+**PRD:** [`PRD-007-qualidade-engenharia.md`](PRD-007-qualidade-engenharia.md)
+**Backlog:** [`docs/product/backlog/fase-13/`](backlog/fase-13/) (US-13-01 a US-13-08)
+
+Continuação das frentes do `PRD-007` que não entraram na Fase 9 (número `09` não reaproveitado, ver `docs/product/README.md`). `main` recebeu a primeira análise real do Sonar em 2026-08-18 (PR #48) — achados reais triados e decompostos; implementação entregue no [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49).
+
+- [x] Gate de cobertura mínima automatizado no CI — [US-13-01](backlog/fase-13/US-13-01-gate-cobertura-ci.md), P1 (`Done`)
+- [x] Padronizar shape de erro e status codes REST no backend — [US-13-02](backlog/fase-13/US-13-02-boas-praticas-rest-backend.md), P2 (`Done`)
+- [x] ~~Refactor/modularização guiado pelos achados do SonarCloud~~ — [US-13-03](backlog/fase-13/US-13-03-refactor-modularizacao-sonarcloud.md), P3 (`Cancelada` — decomposta em US-13-04 a US-13-08)
+- [x] Triagem de falsos positivos do Sonar (ação do autor) — [US-13-04](backlog/fase-13/US-13-04-triagem-falsos-positivos-sonar.md), P1 (`Done`)
+- [x] Backend: achados reais em `chat.py` — [US-13-05](backlog/fase-13/US-13-05-backend-achados-chat-py.md), P2 (`Done`)
+- [x] Frontend: remover `ChatWidget` morto + achados reais nos componentes de chat — [US-13-06](backlog/fase-13/US-13-06-frontend-chat-widget-morto-achados.md), P2 (`Done`)
+- [x] Frontend: regex com risco de performance em `lib/utils.ts` — [US-13-07](backlog/fase-13/US-13-07-frontend-regex-lib-utils.md), P2 (`Done`)
+- [x] Frontend: migrar API depreciada do Zod em `resume.schema.ts` — [US-13-08](backlog/fase-13/US-13-08-frontend-migracao-zod.md), P2 (`Done`)

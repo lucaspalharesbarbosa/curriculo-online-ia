@@ -184,7 +184,7 @@ export function RagChatPanel({
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    void onSend();
+    onSend();
   }
 
   const resolvedTitle = title ?? defaults.title;

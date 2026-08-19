@@ -6,7 +6,6 @@ description: >
   medir progresso (%), critérios de aceite ou "quanto falta". Acione com
   @product-owner. Complementa @arquiteto-ia-senior, @ux-designer (protótipos sob
   pedido), @senior-developer e @qa-engineer.
-disable-model-invocation: true
 ---
 
 # Gestor & Product Owner — Currículo Online

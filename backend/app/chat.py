@@ -84,17 +84,30 @@ def _generate_answer(question: str, chunks: list[rag.Chunk]) -> str:
 
 
 def _http_error_from_openai(exc: OpenAIError) -> HTTPException:
-    """Falha do provider → resposta genérica ao client; detalhe só no log."""
+    """Falha do provider → resposta genérica ao client; detalhe só no log.
+
+    Auth/quota (falha nossa: chave inválida ou cota) mantém 500. Qualquer
+    outra falha do provider (indisponibilidade, erro de conexão) vira 503 —
+    reflete que a causa é dependência externa fora do ar, não bug interno.
+    """
     if isinstance(exc, AuthenticationError):
         logger.error("Falha de autenticação no provider de LLM.")
-    elif isinstance(exc, RateLimitError):
+        return HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE)
+    if isinstance(exc, RateLimitError):
         logger.error("Rate limit / quota do provider de LLM.")
-    else:
-        logger.error("Falha no provider de LLM: %s", type(exc).__name__)
-    return HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE)
+        return HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE)
+    logger.error("Falha no provider de LLM: %s", type(exc).__name__)
+    return HTTPException(status_code=503, detail=GENERIC_ERROR_MESSAGE)
 
 
-@router.post("/chat", response_model=ChatResponse)
+@router.post(
+    "/chat",
+    responses={
+        429: {"description": RATE_LIMIT_MESSAGE},
+        500: {"description": GENERIC_ERROR_MESSAGE},
+        503: {"description": GENERIC_ERROR_MESSAGE},
+    },
+)
 def chat(request: ChatRequest, http_request: Request) -> ChatResponse:
     client_id = http_request.client.host if http_request.client else "unknown"
     if _is_rate_limited(client_id):

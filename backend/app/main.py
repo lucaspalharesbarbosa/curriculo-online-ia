@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.chat import router as chat_router
 from app.env_bootstrap import ensure_local_env
+from app.errors import register_exception_handlers
 
 ensure_local_env()
 
@@ -31,6 +32,7 @@ app.add_middleware(
     allow_headers=["Content-Type"],
 )
 app.include_router(chat_router)
+register_exception_handlers(app)
 
 # US-08-07 (achado M2 de QA-005): mesmo conjunto de headers de seguranca do
 # frontend (frontend/next.config.ts), aplicado a toda resposta da API. Como o

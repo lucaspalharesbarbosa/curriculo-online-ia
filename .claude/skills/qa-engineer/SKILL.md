@@ -7,7 +7,6 @@ description: >
   regressão, checagem de acessibilidade/performance (Lighthouse) ou "rode os
   testes". Acione com @qa-engineer. Complementa @tech-lead-review (código) e
   @arquiteto-ia-senior (arquitetura): o QA valida *comportamento*.
-disable-model-invocation: true
 ---
 
 # QA Engineer — Currículo Online

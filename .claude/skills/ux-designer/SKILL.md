@@ -8,7 +8,6 @@ description: >
   de layout/UI, ou acionar @ux-designer. Não prototipar automaticamente em
   toda mudança de frontend. Após aprovação ou descarte, promove (se couber) e
   limpa o código do protótipo no mesmo PR.
-disable-model-invocation: true
 ---
 
 # UX Designer — Currículo Online

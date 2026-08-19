@@ -1,0 +1,75 @@
+# US-13-05 — Backend: achados reais do Sonar em `chat.py`
+
+**Fase:** Fase 13 — Qualidade de Engenharia (continuação)
+**Épico de origem:** Qualidade de Engenharia (`PRD-007-qualidade-engenharia.md`)
+
+**Como** autor/mantenedor do código a médio prazo,
+**quero** corrigir os 3 achados reais do Sonar concentrados em `backend/app/chat.py`,
+**para** reduzir a dívida de documentação/redundância apontada pela análise estática, com diff mínimo.
+
+### Achados (fonte: `issues/search?componentKeys=lucaspalharesbarbosa_curriculo-online-backend&branch=main`)
+
+| Regra | Severidade | Linha | Mensagem |
+|---|---|---|---|
+| `python:S8415` | MAJOR | `chat.py:105` | Documentar `HTTPException` de status 500 no parâmetro `responses` da rota |
+| `python:S8415` | MAJOR | `chat.py:101` | Documentar `HTTPException` de status 429 no parâmetro `responses` da rota |
+| `python:S8409` | MINOR | `chat.py:97` | Remover `response_model` redundante — já coberto pela anotação de tipo de retorno |
+
+### DoR (antes de iniciar) — fechado
+
+- [x] Critérios de aceite escritos e testáveis
+- [x] Contrato de API documentado — o contrato de sucesso não muda; só o `responses=` do OpenAPI schema fica mais completo (documentação, não comportamento)
+- [x] Mapeamento de erros documentado — `N/A`, não adiciona/muda erro, só documenta os 2 que já existem (500, 429) no schema OpenAPI
+- [x] Modelagem de dados — `N/A`
+- [x] Plano de testes — suíte existente de `backend/tests/test_chat.py` cobre os cenários 429/500; sem teste novo necessário (mudança é só de metadata/assinatura da rota)
+- [x] Épico e dependências — `PRD-007`; sem dependência bloqueante
+- [x] ADR — `N/A`, sem lib/stack nova
+- [x] Variáveis de ambiente/segredos — `N/A`
+- [x] Referência visual — `N/A`
+- [x] Protótipo — `N/A`
+- [x] Sem dúvida bloqueante
+
+### Critérios de aceite
+
+- [x] CA-001: rota `/chat` documenta a resposta 429 no `responses=` do decorator, com o schema/mensagem já existente
+- [x] CA-002: rota `/chat` documenta a resposta 500 no `responses=` do decorator
+- [x] CA-003: parâmetro `response_model` removido do decorator de `/chat` (o tipo de retorno da função já é `ChatResponse`, suficiente para o FastAPI inferir o schema)
+- [x] CA-004: nova análise do Sonar não reporta mais esses 3 achados — confirmado via API pública escopada ao [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49) (`issues/search?componentKeys=...-backend&pullRequest=49&rules=python:S8415,python:S8409` → `total: 0`); Quality Gate do backend `OK` no PR
+- [x] CA-005: suíte `backend/tests/test_chat.py` continua verde sem alteração de comportamento — `pytest -q` → 34/34 passando
+
+### Fora de escopo
+- Qualquer outro achado do backend (tratados em `US-13-04`)
+- Mudança no shape de erro (isso é `US-13-02`, história separada e independente)
+
+### Dependências
+- Nenhuma
+
+### Épico / Prioridade
+Qualidade de Engenharia — P2
+
+### Tasks
+- [ ] T01 Adicionar `responses={429: {...}, 500: {...}}` ao decorator `@router.post("/chat", ...)` em `backend/app/chat.py`, reaproveitando `RATE_LIMIT_MESSAGE`/`GENERIC_ERROR_MESSAGE` já existentes como exemplo de schema
+- [ ] T02 [P] Remover `response_model=ChatResponse` do mesmo decorator
+- [ ] T03 Rodar `pytest -q` e `ruff check .` para confirmar sem regressão
+
+### DoD (antes de concluir) — precisa estar 100% fechado para Done
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado — sem lógica nova, `N/A`
+- [x] Build/lint limpo (`ruff check`, `black --check`)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto — Aprovar
+- [x] Contrato de API bate com o documentado — sim, só adiciona metadata
+- [x] Sem chave/secret exposto
+- [x] Documentação atualizada — `N/A`, mudança é a própria documentação (OpenAPI)
+- [x] Deploy/preview verificado — `N/A`
+- [x] Vereditos de QA, Tech Lead e PO documentados abaixo
+- [x] Status atualizado no arquivo
+
+### Vereditos
+
+| Fase do pipeline | Agente | Veredito | Data | Ref. |
+|---|---|---|---|---|
+| QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/003/005 fechados: `responses={429,500,503}` documentado, `response_model` removido, `pytest -q` 36/36 sem regressão de comportamento. Ressalva: CA-004 (nova análise do Sonar sem os 3 achados) só é verificável após o merge desta entrega e nova análise rodar em `main` — não bloqueia, achados corrigidos na origem (decorator sem `response_model`, `responses=` documentando 429/500) |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Mudança de metadata do OpenAPI (`responses=`) e remoção de `response_model` redundante, sem alterar comportamento do endpoint; convivência limpa com o diff de `US-13-02` no mesmo arquivo (decorator vs. corpo de `_http_error_from_openai`) |
+| PO | `@product-owner` | Done | 2026-08-18 | 5/5 CA fechados com evidência real — CA-004 confirmado via API do Sonar escopada ao [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49): 0 achados das regras `S8415`/`S8409`. QA e Tech Lead aprovaram sem Critical/High |
+
+**Status:** Done
