@@ -72,7 +72,7 @@ Qualidade de Engenharia — P2
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/004 fechados: 3 regex reescritas sem `\s*` colado a `[^—]+?` nem `.+?[.!?]` ambíguo; 4 testes novos de borda (sem travessão, sem terminador, múltiplos travessões, `about` real de `content/resume.json`) + o teste de regressão original, todos verdes; `utils.ts` 100% stmts/lines. Ressalva: CA-003 (nova análise do Sonar sem os 3 achados) só é verificável após o merge e nova análise rodar |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Reescrita elimina de fato o padrão ambíguo (`\s*` colado a `[^—]+?`), não só mascara o achado; comentário explica o porquê (não óbvio pelo código). Comportamento validado com o `about` real e casos de borda relevantes (múltiplos travessões é o caso mais fácil de quebrar numa reescrita manual, e está coberto) |
 | PO | `@product-owner` | — | — | — |
 
 **Status:** Ready for Agent

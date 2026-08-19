@@ -76,7 +76,7 @@ Qualidade de Engenharia — P2
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/003/005 fechados: `ChatWidget` morto removido sem referência residual em código, `AssistFloatingPanels` extraído (mesmos 4 testes de `ProfileAssistChat.test.tsx` verdes sem alteração), `void` removido em `RagChatPanel.tsx:187`, `npm test -- --run --coverage` → 71/71, `npm run build` limpo. Cobertura de `useResumeChat.ts` recuperada (100% stmts/funcs/lines, 87,5% branches) via `hooks/useResumeChat.test.ts` novo, decolado do componente morto — sem essa adição a cobertura global de branches teria caído de 74,39% para 71,51%, perto demais do piso de 70% do gate da `US-13-01`. Ressalva: CA-004 (nova análise do Sonar sem os achados) só é verificável após o merge e nova análise rodar |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Extração de `AssistFloatingPanels` é fiel (mesmo JSX, sem mudança de comportamento), reduz responsabilidade do componente principal; tipos derivados via `ComponentProps<typeof X>` em vez de duplicar props manualmente — boa prática, evita drift. Nit (não bloqueia): `AssistFloatingPanels` usa um tipo de props inline em vez de um `type` nomeado como o resto do arquivo — aceitável por ser sub-componente privado do módulo. Adição de `hooks/useResumeChat.test.ts` foi a chamada certa: sem ela, a remoção do `ChatWidget` teria deixado o hook compartilhado com cobertura de branch abaixo do padrão anterior, sem ninguém testar os caminhos de erro reais |
 | PO | `@product-owner` | — | — | — |
 
 **Status:** Ready for Agent

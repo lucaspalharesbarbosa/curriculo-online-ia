@@ -93,7 +93,7 @@ Qualidade de Engenharia — P2
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado | 2026-08-18 | 5/5 CA fechados com evidência real: `pytest --cov=app --cov-report=term-missing` → 36/36 passando, `chat.py`/`errors.py`/`main.py` a 100%; cenários de 429/500/503/422 cobertos com o novo shape `{"error":{...}}`, incluindo `AuthenticationError`/`RateLimitError` reais do SDK da OpenAI (não só texto de mensagem simulando o cenário); `/health` sem regressão; suíte do frontend 71/71 sem alteração no consumo do shape de erro. `ruff check`/`black --check` limpos |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | `errors.py` isolado e enxuto (dict tipado em vez de Pydantic para o volume de campos — proporcional); handler de `HTTPException` registrado na classe base do Starlette funciona para as instâncias `fastapi.HTTPException` levantadas em `chat.py` (comprovado pelos 36 testes verdes, não só teoria de herança). Mensagens públicas continuam genéricas, sem vazar stack/config. Sem secret exposto |
 | PO | `@product-owner` | — | — | — |
 
 **Status:** Ready for Agent

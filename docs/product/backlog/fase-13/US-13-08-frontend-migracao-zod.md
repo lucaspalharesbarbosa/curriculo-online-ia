@@ -64,7 +64,7 @@ Qualidade de Engenharia — P2
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/004 fechados: as 13 ocorrências migradas para `z.url()`/`z.email()`; `resume.json` real validado (`validate:resume` → 6/6, rodado antes de todo `next build`); `npm run build` compila e type-checka limpo; suíte completa 71/71. Ressalva: CA-003 (nova análise do Sonar sem os 13 achados) só é verificável após o merge e nova análise rodar |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Troca mecânica e completa (13/13), sem mudança de forma do schema; `resume.json` real validado no próprio `build` |
 | PO | `@product-owner` | — | — | — |
 
 **Status:** Ready for Agent

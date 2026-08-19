@@ -69,7 +69,7 @@ Qualidade de Engenharia — P2
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/003/005 fechados: `responses={429,500,503}` documentado, `response_model` removido, `pytest -q` 36/36 sem regressão de comportamento. Ressalva: CA-004 (nova análise do Sonar sem os 3 achados) só é verificável após o merge desta entrega e nova análise rodar em `main` — não bloqueia, achados corrigidos na origem (decorator sem `response_model`, `responses=` documentando 429/500) |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Mudança de metadata do OpenAPI (`responses=`) e remoção de `response_model` redundante, sem alterar comportamento do endpoint; convivência limpa com o diff de `US-13-02` no mesmo arquivo (decorator vs. corpo de `_http_error_from_openai`) |
 | PO | `@product-owner` | — | — | — |
 
 **Status:** Ready for Agent

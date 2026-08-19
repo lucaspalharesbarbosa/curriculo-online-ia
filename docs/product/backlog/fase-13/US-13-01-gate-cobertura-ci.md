@@ -75,7 +75,7 @@ Qualidade de Engenharia — P1
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/003/004 fechados com evidência local real (backend `pytest --cov=app --cov-fail-under=99` → FAIL exit 1; frontend `coverage.thresholds=99` → ERROR exit 1; revertidos). Ressalva: CA-005 só é confirmável em execução real do GitHub Actions (SonarCloud Quality Gate incluso) — localmente `ruff`/`black`/`npm run lint`/`npm run format`/`npm run build` e as duas suítes passam limpos, mesma checagem que os steps de CI fazem |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Diff enxuto (`backend-ci.yml`, `vitest.config.ts`), sem lógica de produção tocada. Threshold coerente com o baseline medido; sem secret exposto |
 | PO | `@product-owner` | — | — | — |
 
 **Status:** Ready for Agent
