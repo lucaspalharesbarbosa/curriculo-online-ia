@@ -15,7 +15,7 @@ Status de execução por fase (0 a 13): [`roadmap.md`](roadmap.md).
 ### Evolução pós-lançamento
 - [PRD-005 — Frontend & UX v2](PRD-005-frontend-ux-v2.md) — Done (15/15; histórias em `backlog/archive/fase-07/`)
 - [PRD-006 — Segurança & Performance](PRD-006-seguranca-performance.md) — Done (11/11; histórias em `backlog/archive/fase-08/`)
-- [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — em andamento (1/4 frentes Done — `US-09-01`, arquivada; 3 restantes na Fase 13, `backlog/fase-13/`)
+- [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — Done (histórias em `backlog/archive/fase-09/` e `backlog/archive/fase-13/`)
 - [PRD-008 — Observabilidade](PRD-008-observabilidade.md) — draft, sem histórias
 - [PRD-009 — Chat v2](PRD-009-chat-v2.md) — draft, sem histórias
 - [PRD-010 — Área Administrativa](PRD-010-area-administrativa.md) — draft; escopo redefinido (só métricas — ver PRD)
@@ -24,7 +24,7 @@ Status de execução por fase (0 a 13): [`roadmap.md`](roadmap.md).
 
 Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por história, com ID `US-<fase>-<sequência>` (ex.: `US-03-10`) e um slug descritivo no nome do arquivo. O ID já carrega o número da fase, então não há ambiguidade entre `US-03-01` (fase 03) e `US-05-01` (fase 05). A tabela "Histórias" de cada PRD linka para o arquivo correspondente.
 
-**Fase ativa:** Fase 13 — Qualidade de Engenharia (continuação), em [`docs/product/backlog/fase-13/`](backlog/fase-13/) (US-13-01 a US-13-08) — decompõe as 3 frentes restantes do `PRD-007` que não entraram na Fase 09 (número `09` não reaproveitado). `main` recebeu a primeira análise real do Sonar em 2026-08-18 (PR #48); achados triados e `US-13-03` (placeholder) decomposta em `US-13-04` a `US-13-08`. 7 histórias `Ready for Agent`, 1 `Cancelada`. Fases 10–12 seguem em `draft`, sem histórias ainda.
+**Nenhuma fase ativa no momento** — Fases 0 a 13 concluídas (arquivadas ou candidatas a arquivamento); Fases 10–12 seguem em `draft`, sem histórias ainda.
 
 ### Fases arquivadas
 
@@ -38,6 +38,7 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 - [Fase 07 — Frontend & UX v2](backlog/archive/fase-07/) (US-07-01 a US-07-15 — 15/15 Done) — arquivada 2026-08-11; referência [personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice
 - [Fase 08 — Segurança & Performance](backlog/archive/fase-08/) (US-08-01 a US-08-11 — 11/11 Done) — arquivada 2026-08-16; `PRD-006`, `ADR-008`
 - [Fase 09 — Qualidade de Engenharia](backlog/archive/fase-09/) (US-09-01 — 1/1 Done) — arquivada 2026-08-16; `PRD-007`, `ADR-009`. Demais frentes do `PRD-007` seguiram para a Fase 13 (número `09` não reaproveitado)
+- [Fase 13 — Qualidade de Engenharia (continuação)](backlog/archive/fase-13/) (US-13-01 a US-13-08 — 7/7 histórias ativas Done, `US-13-03` Cancelada) — arquivada 2026-08-18; `PRD-007` Done, entregue no [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49)
 
 ### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
 
@@ -57,9 +58,11 @@ Protótipos visuais (sob pedido, `@ux-designer`): [`docs/agents/PROCESSO-PROTOTI
 
 ## Pendências para o autor
 
-- **SonarCloud — marcar falsos positivos ([US-13-04](backlog/fase-13/US-13-04-triagem-falsos-positivos-sonar.md)):** 4 achados (1 backend, 3 frontend) precisam ser marcados como "False Positive" no dashboard do sonarcloud.io, com a justificativa já escrita na história — ação que só o autor consegue fazer (login necessário, sem token de admin de issues disponível para automação).
+Nenhuma pendência ativa. Resolvidas:
 
-Nenhuma outra pendência ativa de conteúdo. Resolvidas na Fase 03:
+- ~~SonarCloud — marcar falsos positivos~~ — [US-13-04](backlog/archive/fase-13/US-13-04-triagem-falsos-positivos-sonar.md), Done 2026-08-18
+
+Resolvidas na Fase 03:
 
 - ~~Repositórios extras para Projetos~~ — autor confirmou único projeto (`curriculo-online-ia`) — [US-03-07](backlog/archive/fase-03/US-03-07-dados-projetos.md)
 - ~~E-mail público e GitHub~~ — [US-03-08](backlog/archive/fase-03/US-03-08-dados-contato.md)

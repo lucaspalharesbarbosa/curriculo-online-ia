@@ -14,7 +14,7 @@
 - [x] Mapeamento de erros documentado — mesmo critério acima, `N/A` a priori
 - [x] Modelagem de dados documentada — `N/A`, sem entidade nova esperada
 - [ ] Plano de testes definido — depende de saber que código será tocado (achados ainda não listados)
-- [x] Épico e dependências identificados — épico Qualidade de Engenharia (`PRD-007`); depende de [US-09-01](../archive/fase-09/US-09-01-sonarcloud-ci.md) (Done — gerou a análise) e do gap registrado nela
+- [x] Épico e dependências identificados — épico Qualidade de Engenharia (`PRD-007`); depende de [US-09-01](../fase-09/US-09-01-sonarcloud-ci.md) (Done — gerou a análise) e do gap registrado nela
 - [x] ADR registrado se envolve decisão de stack nova — avaliar caso a caso por achado quando a lista existir; nenhum ADR necessário só para *triar* achados
 - [x] Variáveis de ambiente/segredos necessários identificados — `N/A`
 - [x] Referência visual definida — `N/A`, sem UI nova esperada
@@ -50,7 +50,7 @@ Não decompostos ainda — dependem da lista real de achados (ver "Dúvida bloqu
 
 ### Dependências
 
-- [US-09-01](../archive/fase-09/US-09-01-sonarcloud-ci.md) (Done) — gerou a análise; causa raiz do gap corrigida (ver "Dúvida bloqueante")
+- [US-09-01](../fase-09/US-09-01-sonarcloud-ci.md) (Done) — gerou a análise; causa raiz do gap corrigida (ver "Dúvida bloqueante")
 - PR de release `develop → main` (aberto na Fase 13) — precisa mergear para `main` receber a primeira análise real do Sonar pós-rename
 
 ### Épico / Prioridade
