@@ -187,12 +187,14 @@ Continuação das frentes do `PRD-007` que não entraram na Fase 9 (número `09`
 
 ## Fase 14 — Arquitetura & Modularização
 
-**Status:** Ready for Agent — 0/2 histórias
+**Status:** Em revisão — Dev/QA/Tech Lead aprovados em 3/4 histórias; aceite do PO e merge para `main` pendentes
 **PRD:** [`PRD-012-arquitetura-modularizacao.md`](PRD-012-arquitetura-modularizacao.md)
-**Backlog:** [`docs/product/backlog/fase-14/`](backlog/fase-14/) (US-14-01 a US-14-02)
-**ADR:** [`ADR-011`](../architecture/ADR-011-modularizacao-ddd-lite.md) (modularização por domínio, DDD-lite — sem padrões táticos completos)
+**Backlog:** [`docs/product/backlog/fase-14/`](backlog/fase-14/) (US-14-01 a US-14-04)
+**ADR:** [`ADR-011`](../architecture/ADR-011-modularizacao-ddd-lite.md) (modularização por domínio, DDD-lite) e [`ADR-012`](../architecture/ADR-012-clean-architecture-chat.md) (Ports & Adapters no domínio `chat`)
 
-Reorganização de backend e frontend por domínio de negócio (`resume`, `chat`, preparado para `admin`), sem mudança de comportamento observável — prepara terreno para a Fase 12 (Área Administrativa) e a Fase 10 (Observabilidade), que hoje não teriam lugar natural na estrutura flat atual.
+Reorganização de backend e frontend por domínio de negócio (`resume`, `chat`, preparado para `admin`), sem mudança de comportamento observável — prepara terreno para a Fase 12 (Área Administrativa) e a Fase 10 (Observabilidade), que hoje não teriam lugar natural na estrutura flat atual. Ampliada em 2026-08-19 com Ports & Adapters no domínio `chat` (`ADR-012`), para desacoplar backend e frontend dos SDKs/`fetch` externos.
 
-- [ ] Modularização do backend por domínio (`resume`/`chat`/`shared`) — [US-14-01](backlog/fase-14/US-14-01-modularizacao-backend-dominio.md), P2
-- [ ] Modularização do frontend por domínio (`modules/resume`/`modules/chat`) — [US-14-02](backlog/fase-14/US-14-02-modularizacao-frontend-dominio.md), P2
+- [ ] Modularização do backend por domínio (`resume`/`chat`/`shared`) — [US-14-01](backlog/fase-14/US-14-01-modularizacao-backend-dominio.md), P2 — Dev/QA/Tech Lead aprovados, merge `develop`→`main` e aceite do PO pendentes
+- [ ] Modularização do frontend por domínio (`modules/resume`/`modules/chat`) — [US-14-02](backlog/fase-14/US-14-02-modularizacao-frontend-dominio.md), P2 — Dev/QA/Tech Lead aprovados, validação de preview e aceite do PO pendentes
+- [ ] Ports & Adapters no domínio chat do backend — [US-14-03](backlog/fase-14/US-14-03-ports-adapters-chat-backend.md), P2 — Dev/QA/Tech Lead aprovados, PR para `develop` e aceite do PO pendentes
+- [ ] Port `ChatClient` no domínio chat do frontend — [US-14-04](backlog/fase-14/US-14-04-chat-client-frontend.md), P2 — em implementação
