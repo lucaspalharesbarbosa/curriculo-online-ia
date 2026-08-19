@@ -32,10 +32,10 @@ Visitante/recrutador conversando com o assistente de chat.
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Redesign visual do ChatWidget | P2 | [US-11-01](backlog/fase-11/US-11-01-redesign-visual-chatwidget.md) |
-| Perguntas sugeridas (quick replies) no ChatWidget | P2 | [US-11-02](backlog/fase-11/US-11-02-quick-replies.md) |
-| Indicador de digitando | P3 | [US-11-03](backlog/fase-11/US-11-03-indicador-digitando.md) |
-| Feedback do usuário na resposta (útil / não útil) | P3 | [US-11-04](backlog/fase-11/US-11-04-feedback-resposta.md) |
+| Redesign visual do ChatWidget | P2 | [US-11-01](backlog/archive/fase-11/US-11-01-redesign-visual-chatwidget.md) |
+| Perguntas sugeridas (quick replies) no ChatWidget | P2 | [US-11-02](backlog/archive/fase-11/US-11-02-quick-replies.md) |
+| Indicador de digitando | P3 | [US-11-03](backlog/archive/fase-11/US-11-03-indicador-digitando.md) |
+| Feedback do usuário na resposta (útil / não útil) | P3 | [US-11-04](backlog/archive/fase-11/US-11-04-feedback-resposta.md) |
 
 ## Riscos
 

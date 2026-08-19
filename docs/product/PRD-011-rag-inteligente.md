@@ -37,9 +37,9 @@ Visitante/recrutador conversando com o assistente de chat.
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| ADR: fluxo de RAG v2 (precisão de recuperação + acesso à web) | P1 | [US-11-05](backlog/fase-11/US-11-05-adr-rag-v2-precisao-web.md) |
-| Melhorar precisão de recuperação do RAG (roteamento por seção/recência) | P1 | [US-11-06](backlog/fase-11/US-11-06-precisao-recuperacao-rag.md) |
-| Web search fallback para dados externos (empresas, instituições, cursos, certificados, habilidades) | P2 | [US-11-07](backlog/fase-11/US-11-07-web-search-fallback.md) |
+| ADR: fluxo de RAG v2 (precisão de recuperação + acesso à web) | P1 | [US-11-05](backlog/archive/fase-11/US-11-05-adr-rag-v2-precisao-web.md) |
+| Melhorar precisão de recuperação do RAG (roteamento por seção/recência) | P1 | [US-11-06](backlog/archive/fase-11/US-11-06-precisao-recuperacao-rag.md) |
+| Web search fallback para dados externos (empresas, instituições, cursos, certificados, habilidades) | P2 | [US-11-07](backlog/archive/fase-11/US-11-07-web-search-fallback.md) |
 
 ## Riscos
 

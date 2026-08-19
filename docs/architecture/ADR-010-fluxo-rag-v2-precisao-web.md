@@ -96,8 +96,8 @@ Response 200: { answer: string, source: "resume" | "web" }
 
 ## Consequências
 
-- [US-11-06](../product/backlog/fase-11/US-11-06-precisao-recuperacao-rag.md) implementa o roteamento por seção/recência descrito na seção 1, em `backend/app/rag.py`/`backend/app/chat.py`
-- [US-11-07](../product/backlog/fase-11/US-11-07-web-search-fallback.md) implementa o cliente Tavily (`backend/app/web_search.py`) e o acionamento condicional descrito na seção 2, incluindo o campo `source` na resposta do `/chat`
+- [US-11-06](../product/backlog/archive/fase-11/US-11-06-precisao-recuperacao-rag.md) implementa o roteamento por seção/recência descrito na seção 1, em `backend/app/rag.py`/`backend/app/chat.py`
+- [US-11-07](../product/backlog/archive/fase-11/US-11-07-web-search-fallback.md) implementa o cliente Tavily (`backend/app/web_search.py`) e o acionamento condicional descrito na seção 2, incluindo o campo `source` na resposta do `/chat`
 - `WEB_SEARCH_API_KEY` precisa ser gerada no painel do Tavily e configurada no Render (produção) e em `.env.example`/`.env` local (US-11-07) — mesmo processo já documentado para `LLM_API_KEY` em `US-05-09`
 - `references/ai-architecture-patterns.md` (seção 1, diagrama do fluxo) deve ganhar uma nota sobre o roteamento por seção e o fallback de busca web quando `US-11-06`/`US-11-07` forem implementadas, para não ficar desatualizado
 - Nenhuma mudança em `docs/agents/CONTEXTO-PROJETO.md` — a stack decidida (Next.js/FastAPI/OpenAI) não muda; Tavily é uma dependência de escopo estritamente do fluxo de RAG, não uma mudança de stack do projeto
@@ -110,5 +110,5 @@ Response 200: { answer: string, source: "resume" | "web" }
 - [ADR-003](ADR-003-fluxo-rag.md) (fluxo de RAG original — chunking, embeddings, provider)
 - [ADR-004](ADR-004-resiliencia-backend-chat.md) (padrão de timeout/retry/fallback reaproveitado aqui)
 - `docs/product/PRD-011-rag-inteligente.md`
-- [US-11-05](../product/backlog/fase-11/US-11-05-adr-rag-v2-precisao-web.md), [US-11-06](../product/backlog/fase-11/US-11-06-precisao-recuperacao-rag.md), [US-11-07](../product/backlog/fase-11/US-11-07-web-search-fallback.md)
+- [US-11-05](../product/backlog/archive/fase-11/US-11-05-adr-rag-v2-precisao-web.md), [US-11-06](../product/backlog/archive/fase-11/US-11-06-precisao-recuperacao-rag.md), [US-11-07](../product/backlog/archive/fase-11/US-11-07-web-search-fallback.md)
 - `backend/app/rag.py`, `backend/app/chat.py`, `backend/app/models/resume.py`

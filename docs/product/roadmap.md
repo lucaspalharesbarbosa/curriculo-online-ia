@@ -142,20 +142,20 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 
 ## Fase 11 — Chat v2 + RAG Inteligente
 
-**Status:** Completa — 7/7 histórias `Done` — [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51) aberto, CI verde (SonarCloud OK nos dois projetos, `lint-and-build`, `lint-and-test`, Vercel), aguardando merge; candidata a arquivamento
+**Status:** Concluída e arquivada (2026-08-18) — 7/7 histórias `Done` — [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51) aberto, CI verde (SonarCloud OK nos dois projetos, `lint-and-build`, `lint-and-test`, Vercel), aguardando merge do autor
 **PRD:** [`PRD-009-chat-v2.md`](PRD-009-chat-v2.md) (UX do `ChatWidget`) + [`PRD-011-rag-inteligente.md`](PRD-011-rag-inteligente.md) (precisão de recuperação + acesso à web, novo — épico RAG)
-**Backlog:** [`docs/product/backlog/fase-11/`](backlog/fase-11/) (US-11-01 a US-11-07)
+**Backlog:** [`docs/product/backlog/archive/fase-11/`](backlog/archive/fase-11/) (US-11-01 a US-11-07)
 **ADR:** [`ADR-010`](../architecture/ADR-010-fluxo-rag-v2-precisao-web.md) (roteamento por seção/recência + busca web via Tavily)
 
 Escopo ampliado a pedido do autor: além do redesign do `ChatWidget` já previsto no `PRD-009`, o assistente errava perguntas básicas ("onde estudei?", "qual a última empresa que trabalhei?") por falta de roteamento por seção/recência na busca por similaridade — e não tinha acesso a dados externos sobre empresas/instituições/cursos/certificados/habilidades citados no currículo. O gate de `new_coverage` do SonarCloud no PR pegou um gap real (proxy de feedback sem teste, clique de dislike não exercitado) — corrigido antes do aceite; Quality Gate `OK` nos dois projetos (frontend 90,2%, backend 98,3%).
 
-- [x] ADR: fluxo de RAG v2 (precisão de recuperação + acesso à web) — [US-11-05](backlog/fase-11/US-11-05-adr-rag-v2-precisao-web.md), P1 (`Done`)
-- [x] Melhorar precisão de recuperação do RAG (roteamento por seção/recência) — [US-11-06](backlog/fase-11/US-11-06-precisao-recuperacao-rag.md), P1 (`Done`)
-- [x] Web search fallback para dados externos (empresas, instituições, cursos, certificados, habilidades) — [US-11-07](backlog/fase-11/US-11-07-web-search-fallback.md), P2 (`Done`)
-- [x] Redesign visual do `ChatWidget` — [US-11-01](backlog/fase-11/US-11-01-redesign-visual-chatwidget.md), P2 (`Done`)
-- [x] Perguntas sugeridas (quick replies) — [US-11-02](backlog/fase-11/US-11-02-quick-replies.md), P2 (`Done`)
-- [x] Indicador de digitando (simulado, sem streaming real — decisão de escopo do PO) — [US-11-03](backlog/fase-11/US-11-03-indicador-digitando.md), P3 (`Done`)
-- [x] Feedback do usuário na resposta (log estruturado, sem persistência — decisão de escopo do PO) — [US-11-04](backlog/fase-11/US-11-04-feedback-resposta.md), P3 (`Done`)
+- [x] ADR: fluxo de RAG v2 (precisão de recuperação + acesso à web) — [US-11-05](backlog/archive/fase-11/US-11-05-adr-rag-v2-precisao-web.md), P1 (`Done`)
+- [x] Melhorar precisão de recuperação do RAG (roteamento por seção/recência) — [US-11-06](backlog/archive/fase-11/US-11-06-precisao-recuperacao-rag.md), P1 (`Done`)
+- [x] Web search fallback para dados externos (empresas, instituições, cursos, certificados, habilidades) — [US-11-07](backlog/archive/fase-11/US-11-07-web-search-fallback.md), P2 (`Done`)
+- [x] Redesign visual do `ChatWidget` — [US-11-01](backlog/archive/fase-11/US-11-01-redesign-visual-chatwidget.md), P2 (`Done`)
+- [x] Perguntas sugeridas (quick replies) — [US-11-02](backlog/archive/fase-11/US-11-02-quick-replies.md), P2 (`Done`)
+- [x] Indicador de digitando (simulado, sem streaming real — decisão de escopo do PO) — [US-11-03](backlog/archive/fase-11/US-11-03-indicador-digitando.md), P3 (`Done`)
+- [x] Feedback do usuário na resposta (log estruturado, sem persistência — decisão de escopo do PO) — [US-11-04](backlog/archive/fase-11/US-11-04-feedback-resposta.md), P3 (`Done`)
 
 ## Fase 12 — Área Administrativa
 
