@@ -32,8 +32,8 @@
 - [x] CA-001: `backend-ci.yml` falha (exit code ≠ 0) quando a cobertura de `backend/app/` cai abaixo de 70% — `pytest --cov-fail-under=70` adicionado ao step de teste
 - [x] CA-002: `frontend-ci.yml` falha quando a cobertura do frontend cai abaixo de 70% — `coverage.thresholds` (`lines`/`branches`/`functions`/`statements` ≥ 70) configurado em `vitest.config.ts`
 - [x] CA-003: cobertura atual dos dois serviços medida e documentada nesta história **antes** do gate virar bloqueante, confirmando que nenhum dos dois está abaixo de 70% hoje — remedida em 2026-08-18 (backend: `pytest --cov=app` → 34/34 testes, 96,05%; frontend: `npm test -- --run --coverage` → 65/65 testes, statements 82,18%/branches 74,39%/functions 84,72%/lines 83,18%), consistente com o baseline de `US-09-01` (2026-08-16) — nenhum dos dois abaixo de 70% em nenhuma métrica
-- [x] CA-004: validado localmente que o step de testes quebra quando a cobertura é forçada abaixo do piso e volta a passar depois de revertido — backend: `pytest --cov=app --cov-fail-under=99` → `FAIL Required test coverage of 99% not reached. Total coverage: 96.05%`, exit code 1; frontend: `coverage.thresholds` temporariamente elevado a 99 em `vitest.config.ts` → `ERROR: Coverage for lines/functions/statements/branches does not meet global threshold (99%)`, exit code 1; ambos revertidos ao piso real de 70 em seguida. Execução real em CI (PR desta própria entrega) valida o mesmo comportamento no pipeline do GitHub Actions
-- [ ] CA-005: CI existente (lint, format, build, SonarCloud Quality Gate) continua passando sem regressão — só verificável em execução real de CI (GitHub Actions) no PR desta entrega; localmente `ruff check`/`black --check`/`npm run lint`/`npm run format`/`npm run build` e as suítes de teste dos dois serviços passam limpos, mesma verificação que os steps de CI fazem
+- [x] CA-004: validado localmente que o step de testes quebra quando a cobertura é forçada abaixo do piso e volta a passar depois de revertido — backend: `pytest --cov=app --cov-fail-under=99` → `FAIL Required test coverage of 99% not reached. Total coverage: 96.05%`, exit code 1; frontend: `coverage.thresholds` temporariamente elevado a 99 em `vitest.config.ts` → `ERROR: Coverage for lines/functions/statements/branches does not meet global threshold (99%)`, exit code 1; ambos revertidos ao piso real de 70 em seguida
+- [x] CA-005: CI existente (lint, format, build, SonarCloud Quality Gate) continua passando sem regressão — confirmado em execução real no [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49): `lint-and-build` (1m47s), `lint-and-test` (1m6s) e `SonarCloud Code Analysis` (34s) todos `pass` (`gh pr checks 49`, 2026-08-18)
 
 ### Fora de escopo
 
@@ -59,7 +59,7 @@ Qualidade de Engenharia — P1
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]` — falta CA-005 (execução real de CI pós-PR)
+- [x] Todos os critérios de aceite acima `[x]`
 - [x] Cobertura de testes ≥ 70% no código tocado pela história — `N/A`: história de config de CI/testes, sem lógica de produção nova
 - [x] Build/lint limpo (`npm run build`, `ruff check`, type checking estrito)
 - [x] Review do `@tech-lead-review` sem Critical/High em aberto — Aprovar
@@ -76,6 +76,6 @@ Qualidade de Engenharia — P1
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-08-18 | CA-001/002/003/004 fechados com evidência local real (backend `pytest --cov=app --cov-fail-under=99` → FAIL exit 1; frontend `coverage.thresholds=99` → ERROR exit 1; revertidos). Ressalva: CA-005 só é confirmável em execução real do GitHub Actions (SonarCloud Quality Gate incluso) — localmente `ruff`/`black`/`npm run lint`/`npm run format`/`npm run build` e as duas suítes passam limpos, mesma checagem que os steps de CI fazem |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | Diff enxuto (`backend-ci.yml`, `vitest.config.ts`), sem lógica de produção tocada. Threshold coerente com o baseline medido; sem secret exposto |
-| PO | `@product-owner` | Quase lá | 2026-08-18 | 4/5 CA fechados com evidência real; CA-005 (CI existente sem regressão) só é verificável em execução real do GitHub Actions, que só roda após o PR ser aberto. QA e Tech Lead aprovaram sem Critical/High. Fecha para Done no follow-up após o merge, com o link do run real do CI (mesmo padrão usado em `US-09-01`) |
+| PO | `@product-owner` | Done | 2026-08-18 | 5/5 CA fechados com evidência real — CA-005 confirmado no [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49): `lint-and-build`/`lint-and-test`/`SonarCloud Code Analysis` todos `pass`. QA e Tech Lead aprovaram sem Critical/High |
 
-**Status:** Quase lá — código, QA e Tech Lead completos; falta CA-005 (execução real de CI pós-PR)
+**Status:** Done
