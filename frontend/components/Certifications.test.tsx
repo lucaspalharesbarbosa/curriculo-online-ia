@@ -8,7 +8,7 @@ describe("Certifications", () => {
     cleanup();
   });
 
-  it("renders certification details", () => {
+  it("exibe os detalhes da certificação", () => {
     render(
       <Certifications
         items={[
