@@ -27,7 +27,7 @@ def _web_search_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("WEB_SEARCH_API_KEY", "test-key-not-real")
 
 
-def test_search_web_sem_api_key_retorna_none_sem_chamar_http(
+def test_search_web_without_api_key_returns_none_without_calling_http(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Sem WEB_SEARCH_API_KEY, nunca deve haver chamada de rede."""
@@ -41,9 +41,10 @@ def test_search_web_sem_api_key_retorna_none_sem_chamar_http(
     assert search_web("Empresa X") is None
 
 
-def test_search_web_retorna_answer_quando_disponivel(
+def test_search_web_returns_answer_when_available(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Retorna o answer quando disponível na resposta."""
     monkeypatch.setattr(
         web_search.httpx,
         "post",
@@ -55,9 +56,10 @@ def test_search_web_retorna_answer_quando_disponivel(
     assert result == "Resposta resumida."
 
 
-def test_search_web_usa_results_quando_sem_answer(
+def test_search_web_uses_results_when_no_answer(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Usa os results concatenados quando não há answer."""
     monkeypatch.setattr(
         web_search.httpx,
         "post",
@@ -76,9 +78,10 @@ def test_search_web_usa_results_quando_sem_answer(
     assert result == "Trecho um. Trecho dois."
 
 
-def test_search_web_sem_answer_e_sem_results_retorna_none(
+def test_search_web_without_answer_and_without_results_returns_none(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Retorna None quando não há answer nem results."""
     monkeypatch.setattr(
         web_search.httpx, "post", lambda *args, **kwargs: _FakeResponse({})
     )
@@ -86,7 +89,7 @@ def test_search_web_sem_answer_e_sem_results_retorna_none(
     assert search_web("Empresa X") is None
 
 
-def test_search_web_timeout_retorna_none_sem_levantar_excecao(
+def test_search_web_timeout_returns_none_without_raising_exception(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """CA-005: timeout do provedor nunca vira erro para o chamador."""
@@ -99,9 +102,10 @@ def test_search_web_timeout_retorna_none_sem_levantar_excecao(
     assert search_web("Empresa X") is None
 
 
-def test_search_web_erro_http_retorna_none_sem_levantar_excecao(
+def test_search_web_http_error_returns_none_without_raising_exception(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """Retorna None quando a API responde com erro HTTP."""
     monkeypatch.setattr(
         web_search.httpx,
         "post",
@@ -111,7 +115,9 @@ def test_search_web_erro_http_retorna_none_sem_levantar_excecao(
     assert search_web("Empresa X") is None
 
 
-def test_search_web_json_invalido_retorna_none(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_search_web_invalid_json_returns_none(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Retorna None quando o corpo da resposta não é JSON válido."""
+
     class _BadJsonResponse:
         status_code = 200
 
@@ -128,7 +134,7 @@ def test_search_web_json_invalido_retorna_none(monkeypatch: pytest.MonkeyPatch) 
     assert search_web("Empresa X") is None
 
 
-def test_search_web_usa_timeout_curto_documentado(
+def test_search_web_uses_short_documented_timeout(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """CA-005: timeout explícito e curto (8s), não o default do cliente HTTP."""

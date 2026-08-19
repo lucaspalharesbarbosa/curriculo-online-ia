@@ -9,13 +9,15 @@ client = TestClient(app)
 
 
 def test_health_check_returns_ok() -> None:
+    """Retorna status ok no health check."""
     response = client.get("/health")
 
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
 
 
-def test_cors_preflight_aceita_origem_permitida() -> None:
+def test_cors_preflight_accepts_allowed_origin() -> None:
+    """Aceita a origem permitida no preflight de CORS."""
     response = client.options(
         "/chat",
         headers={
@@ -28,7 +30,8 @@ def test_cors_preflight_aceita_origem_permitida() -> None:
     assert response.headers["access-control-allow-origin"] == ALLOWED_ORIGIN
 
 
-def test_cors_preflight_rejeita_origem_nao_permitida() -> None:
+def test_cors_preflight_rejects_disallowed_origin() -> None:
+    """Rejeita origem não permitida no preflight de CORS."""
     response = client.options(
         "/chat",
         headers={
@@ -40,7 +43,7 @@ def test_cors_preflight_rejeita_origem_nao_permitida() -> None:
     assert response.status_code == 400
 
 
-def test_docs_endpoints_desativados_quando_environment_production(
+def test_docs_endpoints_disabled_when_environment_production(
     monkeypatch,
 ) -> None:
     """Com ENVIRONMENT=production, /docs, /redoc e /openapi.json retornam 404."""
@@ -59,7 +62,7 @@ def test_docs_endpoints_desativados_quando_environment_production(
         importlib.reload(main)
 
 
-def test_health_check_retorna_headers_de_seguranca() -> None:
+def test_health_check_returns_security_headers() -> None:
     """Resposta de /health inclui os headers de seguranca do middleware (US-08-07)."""
     response = client.get("/health")
 
@@ -78,7 +81,7 @@ def test_health_check_retorna_headers_de_seguranca() -> None:
     assert "strict-transport-security" not in response.headers
 
 
-def test_docs_endpoints_disponiveis_quando_environment_ausente_ou_dev(
+def test_docs_endpoints_available_when_environment_missing_or_dev(
     monkeypatch,
 ) -> None:
     """Sem ENVIRONMENT (ou != production), os três endpoints continuam 200."""

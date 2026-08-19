@@ -12,6 +12,7 @@ RESUME_JSON_PATH = (
 
 
 def test_resume_json_matches_schema() -> None:
+    """Valida que o resume.json real é compatível com o schema."""
     data = json.loads(RESUME_JSON_PATH.read_text(encoding="utf-8"))
     resume = Resume.model_validate(data)
 
@@ -24,5 +25,6 @@ def test_resume_json_matches_schema() -> None:
 
 
 def test_resume_schema_rejects_invalid_data() -> None:
+    """Rejeita dados de currículo inválidos conforme o schema."""
     with pytest.raises(ValidationError):
         Resume.model_validate({"hero": {}})
