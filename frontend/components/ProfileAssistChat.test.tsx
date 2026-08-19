@@ -143,6 +143,56 @@ describe("ProfileAssistChat", () => {
     ).toHaveAttribute("aria-pressed", "true");
   });
 
+  it("permite avaliar a resposta como não útil (dislike)", async () => {
+    vi.mocked(fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          answer: "Trabalho com Next.js e FastAPI.",
+          source: "resume",
+        }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ ok: true }),
+      } as Response);
+
+    render(<ProfileAssistChat role="Tech Lead | Senior" />);
+
+    fireEvent.change(screen.getByLabelText("Sua pergunta"), {
+      target: { value: "Qual sua stack?" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Enviar" }));
+
+    await waitFor(() => {
+      expect(
+        screen.getByText("Trabalho com Next.js e FastAPI."),
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /resposta não útil/i }));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        "/api/chat/feedback",
+        expect.objectContaining({
+          method: "POST",
+          body: JSON.stringify({
+            question: "Qual sua stack?",
+            answer: "Trabalho com Next.js e FastAPI.",
+            rating: "down",
+          }),
+        }),
+      );
+    });
+
+    expect(
+      screen.getByRole("button", { name: /resposta não útil/i }),
+    ).toHaveAttribute("aria-pressed", "true");
+  });
+
   it("some com as sugestões após a primeira pergunta enviada (US-11-02 CA-003)", async () => {
     vi.mocked(fetch).mockResolvedValueOnce({
       ok: true,
