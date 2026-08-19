@@ -75,16 +75,16 @@ Implementação: `ChatFeedbackRequest`/`ChatFeedbackResponse` (Pydantic) + `POST
 - [x] Contrato de API implementado bate com o documentado no DoR
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — N/A
-- [ ] Deploy/preview verificado (Vercel preview + backend do PR) — pendente do merge/PR (Fase 6)
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — falta linha do PO (Fase 6)
+- [x] Deploy/preview verificado (Vercel preview + backend do PR) — [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51), deploy da Vercel `Deployment has completed`
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | Aprovado | 2026-08-18 | `POST /chat/feedback` revisado: loga só `rating`+tamanhos (nunca texto completo), sempre 200 mesmo com falha de log (`try/except`), `rating` fora de `up`/`down` rejeitado pelo Pydantic (422). Frontend: `sendFeedback` otimista + fire-and-forget, botões 👍/👎 com `aria-pressed` refletindo o voto. Nenhuma persistência em banco/arquivo confirmada — escopo respeitado |
+| QA | `@qa-engineer` | Aprovado | 2026-08-18 | `POST /chat/feedback` revisado: loga só `rating`+tamanhos (nunca texto completo), sempre 200 mesmo com falha de log (`try/except`), `rating` fora de `up`/`down` rejeitado pelo Pydantic (422). Frontend: `sendFeedback` otimista + fire-and-forget, botões 👍/👎 com `aria-pressed` refletindo o voto. Nenhuma persistência em banco/arquivo confirmada — escopo respeitado. **Achado real do gate de CI (PR #51):** SonarCloud reprovou `new_coverage` do frontend (59,5% < 80%) — `frontend/app/api/chat/feedback/route.ts` (100% novo) sem nenhum teste, e o clique no botão de dislike nunca exercitado via componente (só no nível do hook). Corrigido: `route.test.ts` criado (100% cobertura) + teste de clique no botão "não útil" em `ProfileAssistChat.test.tsx`. Gate agora `OK` (frontend 90,2%, backend 98,3%) |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | `POST /chat/feedback` herda o shape de erro padrão (`errors.py`/US-13-02) automaticamente via `register_exception_handlers`, sem código extra; `frontend/app/api/chat/feedback/route.ts` replica exatamente o padrão de proxy same-origin do `/api/chat` existente. Sem Critical/High |
-| PO | `@product-owner` | Quase lá | 2026-08-18 | CA 100% fechados, QA/Tech Lead aprovaram; falta só "Deploy/preview verificado" — sem commit/PR aberto ainda nesta fase. Fecha Done assim que o preview da Vercel existir |
+| PO | `@product-owner` | Done | 2026-08-18 | CA 100% fechados, DoD 100% fechado — preview confirmado no [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51); gap de cobertura do gate SonarCloud corrigido antes do aceite |
 
-**Status:** Quase lá — falta preview real do PR para fechar Done
+**Status:** Done

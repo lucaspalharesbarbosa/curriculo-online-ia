@@ -59,8 +59,8 @@ Chat v2 (`PRD-009`) — P2
 - [x] Contrato de API implementado bate com o documentado no DoR — N/A
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — N/A, sem mudança de fato
-- [ ] Deploy/preview verificado (Vercel preview do PR) — pendente do merge/PR (Fase 6)
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — falta linha do PO (Fase 6)
+- [x] Deploy/preview verificado (Vercel preview do PR) — [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51), deploy da Vercel `Deployment has completed`
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
@@ -69,6 +69,6 @@ Chat v2 (`PRD-009`) — P2
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado | 2026-08-18 | `RagChatPanel.tsx` revisado: bolhas de usuário/assistente visualmente distintas (gradiente à direita, painel com borda à esquerda), paleta D1 Deep Ice via `--assist-*` (sem paleta nova), loading visível (`TypingDots` + `RagLoadingStatus`), `aria-live`/`role=dialog|region` mantidos — sem regressão de acessibilidade. 78/78 testes de frontend passando |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | `RagChatPanel.tsx` mantém responsabilidade única (apresentação); estados de loading/erro/done bem isolados por `message.status`. Sem Critical/High |
-| PO | `@product-owner` | Quase lá | 2026-08-18 | CA 100% fechados, QA/Tech Lead aprovaram; falta só "Deploy/preview verificado" — sem commit/PR aberto ainda nesta fase. Fecha Done assim que o preview da Vercel existir |
+| PO | `@product-owner` | Done | 2026-08-18 | CA 100% fechados, DoD 100% fechado — preview confirmado no [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51) |
 
-**Status:** Quase lá — falta preview real do PR para fechar Done
+**Status:** Done

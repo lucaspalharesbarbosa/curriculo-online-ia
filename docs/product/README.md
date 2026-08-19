@@ -25,7 +25,7 @@ Status de execução por fase (0 a 13): [`roadmap.md`](roadmap.md).
 
 Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por história, com ID `US-<fase>-<sequência>` (ex.: `US-03-10`) e um slug descritivo no nome do arquivo. O ID já carrega o número da fase, então não há ambiguidade entre `US-03-01` (fase 03) e `US-05-01` (fase 05). A tabela "Histórias" de cada PRD linka para o arquivo correspondente.
 
-**Fase 11 ativa** — Chat v2 + RAG Inteligente (`PRD-009` + `PRD-011`), 7 histórias em `backlog/fase-11/`: 3/7 `Done` (RAG/backend — `US-11-05`, `06`, `07`), 4/7 `Quase lá` (UI — `US-11-01` a `04`, aguardando preview do PR). Fases 10 e 12 seguem em `draft`, sem histórias ainda.
+**Fase 11 completa** — Chat v2 + RAG Inteligente (`PRD-009` + `PRD-011`), 7/7 histórias `Done` em `backlog/fase-11/` — [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51) aberto, CI verde, aguardando merge; candidata a arquivamento. Fases 10 e 12 seguem em `draft`, sem histórias ainda.
 
 ### Fases arquivadas
 

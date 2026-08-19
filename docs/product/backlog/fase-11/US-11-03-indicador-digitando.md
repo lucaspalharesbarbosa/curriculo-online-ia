@@ -60,8 +60,8 @@ Chat v2 (`PRD-009`) — P3
 - [x] Contrato de API implementado bate com o documentado no DoR (sem mudança)
 - [x] Sem chave de API/secret exposto
 - [x] Documentação atualizada — N/A
-- [ ] Deploy/preview verificado (Vercel preview do PR) — pendente do merge/PR (Fase 6)
-- [ ] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — falta linha do PO (Fase 6)
+- [x] Deploy/preview verificado (Vercel preview do PR) — [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51), deploy da Vercel `Deployment has completed`
+- [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo
 - [x] Status da história atualizado no próprio arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
@@ -70,6 +70,6 @@ Chat v2 (`PRD-009`) — P3
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado | 2026-08-18 | Indicador (`TypingDots`/`RagLoadingStatus`) aparece no envio (`status === "loading"`) e some ao concluir; contrato do `/chat` confirmado inalterado (`source` é aditivo, `answer` segue igual) — sem streaming real implementado, conforme decisão de escopo. Teste com Promise controlada comprova aparecer/sumir |
 | Tech Lead | `@tech-lead-review` | Aprovar | 2026-08-18 | `RagLoadingStatus`/`TypingDots` isolados, sem side-effect fora do próprio `useEffect` de estágio; confirmado que não introduziu streaming real nem mudou o contrato do `/chat`. Sem Critical/High |
-| PO | `@product-owner` | Quase lá | 2026-08-18 | CA 100% fechados, QA/Tech Lead aprovaram; falta só "Deploy/preview verificado" — sem commit/PR aberto ainda nesta fase. Fecha Done assim que o preview da Vercel existir |
+| PO | `@product-owner` | Done | 2026-08-18 | CA 100% fechados, DoD 100% fechado — preview confirmado no [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51) |
 
-**Status:** Quase lá — falta preview real do PR para fechar Done
+**Status:** Done
