@@ -1,17 +1,19 @@
-"""Chunking, embeddings e busca por similaridade do fluxo de RAG (ADR-003, ADR-010)."""
+"""Chunking, ranking e roteamento do fluxo de RAG (ADR-003, ADR-010, ADR-012).
+
+Domínio puro: recebe `EmbeddingProvider` (`ports.py`) por parâmetro em vez de
+instanciar `openai.OpenAI` direto — a implementação real do provider vive em
+`adapters/openai_adapter.py`.
+"""
 
 from __future__ import annotations
 
 import json
 import math
-import os
 import unicodedata
 from dataclasses import dataclass, field
-from functools import lru_cache
 from pathlib import Path
 
-from openai import OpenAI
-
+from app.chat.ports import EmbeddingProvider
 from app.resume.models import (
     Article,
     Certification,
@@ -27,13 +29,6 @@ RESUME_JSON_PATH = (
     Path(__file__).resolve().parents[3] / "frontend" / "content" / "resume.json"
 )
 INDEX_CACHE_PATH = Path(__file__).resolve().parent / "rag_index.json"
-
-EMBEDDING_MODEL = "text-embedding-3-small"
-# ADR-004 / US-08-02: timeout curto (faixa 15–30s) + no máximo 1 retry (SDK só
-# reenvia em erros transitórios tipicamente 429/5xx). Evita o default de minutos
-# do SDK, que trava o único worker do Render free tier.
-OPENAI_TIMEOUT_SECONDS = 20.0
-OPENAI_MAX_RETRIES = 1
 
 
 @dataclass(frozen=True)
@@ -170,23 +165,12 @@ def build_chunks(resume: Resume) -> list[Chunk]:
     return chunks
 
 
-@lru_cache(maxsize=1)
-def get_client() -> OpenAI:
-    return OpenAI(
-        api_key=os.environ.get("LLM_API_KEY"),
-        timeout=OPENAI_TIMEOUT_SECONDS,
-        max_retries=OPENAI_MAX_RETRIES,
-    )
-
-
-def embed_text(text: str) -> list[float]:
-    response = get_client().embeddings.create(model=EMBEDDING_MODEL, input=text)
-    return list(response.data[0].embedding)
-
-
-def embed_chunks(chunks: list[Chunk]) -> list[EmbeddedChunk]:
+def embed_chunks(
+    chunks: list[Chunk], embedding_provider: EmbeddingProvider
+) -> list[EmbeddedChunk]:
     return [
-        EmbeddedChunk(chunk=chunk, embedding=embed_text(chunk.text)) for chunk in chunks
+        EmbeddedChunk(chunk=chunk, embedding=embedding_provider.embed_text(chunk.text))
+        for chunk in chunks
     ]
 
 
@@ -223,17 +207,21 @@ def load_index(path: Path = INDEX_CACHE_PATH) -> list[EmbeddedChunk]:
     ]
 
 
-def build_index(resume: Resume | None = None) -> list[EmbeddedChunk]:
+def build_index(
+    embedding_provider: EmbeddingProvider, resume: Resume | None = None
+) -> list[EmbeddedChunk]:
     """Gera embeddings dos chunks do currículo (chamado 1x, nunca por request)."""
     resume = resume if resume is not None else load_resume()
-    return embed_chunks(build_chunks(resume))
+    return embed_chunks(build_chunks(resume), embedding_provider)
 
 
-def load_or_build_index(path: Path = INDEX_CACHE_PATH) -> list[EmbeddedChunk]:
+def load_or_build_index(
+    embedding_provider: EmbeddingProvider, path: Path = INDEX_CACHE_PATH
+) -> list[EmbeddedChunk]:
     """Carrega o índice cacheado em JSON; gera e cacheia se não existir (ADR-003 §3)."""
     if path.exists():
         return load_index(path)
-    index = build_index()
+    index = build_index(embedding_provider)
     save_index(index, path)
     return index
 
@@ -250,6 +238,7 @@ def cosine_similarity(a: list[float], b: list[float]) -> float:
 def search(
     question: str,
     index: list[EmbeddedChunk],
+    embedding_provider: EmbeddingProvider,
     top_k: int = 3,
     section: str | None = None,
     sort_by_recency: bool = False,
@@ -262,7 +251,7 @@ def search(
     `Chunk.recency_key` (mais recente/atual primeiro), sem mudar quais chunks
     foram selecionados — só a ordem em que entram no prompt.
     """
-    question_embedding = embed_text(question)
+    question_embedding = embedding_provider.embed_text(question)
     candidates = (
         [item for item in index if item.chunk.section == section]
         if section is not None
@@ -339,7 +328,10 @@ def wants_recency(question: str) -> bool:
 
 
 def search_with_routing(
-    question: str, index: list[EmbeddedChunk], top_k: int = 3
+    question: str,
+    index: list[EmbeddedChunk],
+    embedding_provider: EmbeddingProvider,
+    top_k: int = 3,
 ) -> list[tuple[Chunk, float]]:
     """`search()` com roteamento por seção/recência (ADR-010); fallback = busca atual.
 
@@ -349,7 +341,12 @@ def search_with_routing(
     section = detect_section_intent(question)
     sort_by_recency = section == "experience" and wants_recency(question)
     return search(
-        question, index, top_k=top_k, section=section, sort_by_recency=sort_by_recency
+        question,
+        index,
+        embedding_provider,
+        top_k=top_k,
+        section=section,
+        sort_by_recency=sort_by_recency,
     )
 
 

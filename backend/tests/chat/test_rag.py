@@ -7,13 +7,13 @@ from app.chat.rag import (
     build_chunks,
     cosine_similarity,
     detect_section_intent,
-    embed_text,
     extract_known_entities,
     search,
     search_with_routing,
     wants_recency,
 )
 from app.resume.models import Resume
+from tests.chat.fakes import FakeEmbeddingProviderByText
 
 FIXTURE_RESUME = Resume.model_validate(
     {
@@ -186,71 +186,17 @@ def test_chunk_recognition_contains_title_issuer_and_description() -> None:
     assert "Descrição do reconhecimento exemplo." in recognition_chunk.text
 
 
-class _FakeEmbeddingData:
-    def __init__(self, embedding: list[float]) -> None:
-        self.embedding = embedding
-
-
-class _FakeEmbeddingResponse:
-    def __init__(self, embedding: list[float]) -> None:
-        self.data = [_FakeEmbeddingData(embedding)]
-
-
-class _FakeEmbeddingsResource:
-    def __init__(self, embedding_by_text: dict[str, list[float]]) -> None:
-        self._embedding_by_text = embedding_by_text
-
-    def create(self, model: str, input: str) -> _FakeEmbeddingResponse:  # noqa: A002
-        return _FakeEmbeddingResponse(self._embedding_by_text[input])
-
-
-class _FakeOpenAIClient:
-    def __init__(self, embedding_by_text: dict[str, list[float]]) -> None:
-        self.embeddings = _FakeEmbeddingsResource(embedding_by_text)
-
-
-def test_get_client_configures_timeout_and_max_retries(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """CA-001/CA-002: timeout explícito e no máximo 1 retry (ADR-004)."""
-    monkeypatch.setenv("LLM_API_KEY", "test-key-not-real")
-    rag.get_client.cache_clear()
-
-    client = rag.get_client()
-
-    assert client.timeout == rag.OPENAI_TIMEOUT_SECONDS
-    assert client.timeout == 20.0
-    assert 15.0 <= client.timeout <= 30.0
-    assert client.max_retries == rag.OPENAI_MAX_RETRIES
-    assert client.max_retries == 1
-
-    rag.get_client.cache_clear()
-
-
-def test_embed_text_returns_vector_from_mocked_client(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Retorna o vetor de embedding do client mockado."""
-    fake_client = _FakeOpenAIClient({"pergunta": [0.1, 0.2, 0.3]})
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
-
-    embedding = embed_text("pergunta")
-
-    assert embedding == [0.1, 0.2, 0.3]
-
-
-def test_embed_chunks_associates_each_chunk_with_its_embedding(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Associa cada chunk ao seu respectivo embedding."""
+def test_embed_chunks_associates_each_chunk_with_its_embedding() -> None:
+    """Associa cada chunk ao seu respectivo embedding, via `EmbeddingProvider`."""
     chunks = [
         Chunk(id="a", section="skill", text="texto a"),
         Chunk(id="b", section="skill", text="texto b"),
     ]
-    fake_client = _FakeOpenAIClient({"texto a": [1.0, 0.0], "texto b": [0.0, 1.0]})
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    embedding_provider = FakeEmbeddingProviderByText(
+        {"texto a": [1.0, 0.0], "texto b": [0.0, 1.0]}
+    )
 
-    embedded = rag.embed_chunks(chunks)
+    embedded = rag.embed_chunks(chunks, embedding_provider)
 
     assert [item.chunk.id for item in embedded] == ["a", "b"]
     assert embedded[0].embedding == [1.0, 0.0]
@@ -263,9 +209,7 @@ def test_cosine_similarity_identical_and_orthogonal_vectors() -> None:
     assert cosine_similarity([1.0, 0.0], [0.0, 1.0]) == pytest.approx(0.0)
 
 
-def test_search_returns_most_similar_chunk_first(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_search_returns_most_similar_chunk_first() -> None:
     """Retorna o chunk mais similar primeiro."""
     index = [
         EmbeddedChunk(
@@ -275,10 +219,11 @@ def test_search_returns_most_similar_chunk_first(
             chunk=Chunk(id="b", section="skill", text="Java"), embedding=[0.0, 1.0]
         ),
     ]
-    fake_client = _FakeOpenAIClient({"pergunta sobre python": [1.0, 0.0]})
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    embedding_provider = FakeEmbeddingProviderByText(
+        {"pergunta sobre python": [1.0, 0.0]}
+    )
 
-    results = search("pergunta sobre python", index, top_k=1)
+    results = search("pergunta sobre python", index, embedding_provider, top_k=1)
 
     assert len(results) == 1
     assert results[0][0].id == "a"
@@ -301,10 +246,10 @@ def test_save_and_load_index_round_trips_via_json(tmp_path) -> None:  # noqa: AN
     assert loaded == embedded_chunks
 
 
-def test_load_or_build_index_reuses_existing_cache_without_calling_client(
+def test_load_or_build_index_reuses_existing_cache_without_calling_provider(
     tmp_path, monkeypatch: pytest.MonkeyPatch  # noqa: ANN001
 ) -> None:
-    """Reaproveita o cache existente do índice sem chamar o client."""
+    """Reaproveita o cache existente do índice sem chamar o `EmbeddingProvider`."""
     path = tmp_path / "rag_index.json"
     cached = [
         EmbeddedChunk(
@@ -313,12 +258,12 @@ def test_load_or_build_index_reuses_existing_cache_without_calling_client(
     ]
     rag.save_index(cached, path)
 
-    def _fail_if_called() -> None:
+    def _fail_if_called(*args: object, **kwargs: object) -> None:
         raise AssertionError("build_index não deveria ser chamado com cache existente")
 
-    monkeypatch.setattr(rag, "build_index", lambda *a, **k: _fail_if_called())
+    monkeypatch.setattr(rag, "build_index", _fail_if_called)
 
-    loaded = rag.load_or_build_index(path)
+    loaded = rag.load_or_build_index(FakeEmbeddingProviderByText({}), path)
 
     assert loaded == cached
 
@@ -335,7 +280,7 @@ def test_load_or_build_index_generates_and_caches_when_missing(
     ]
     monkeypatch.setattr(rag, "build_index", lambda *a, **k: built)
 
-    loaded = rag.load_or_build_index(path)
+    loaded = rag.load_or_build_index(FakeEmbeddingProviderByText({}), path)
 
     assert loaded == built
     assert path.exists()
@@ -374,9 +319,7 @@ def test_wants_recency_recognizes_recency_terms() -> None:
     assert wants_recency("Já trabalhou com Kubernetes?") is False
 
 
-def test_search_with_section_restricts_candidates_to_section(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_search_with_section_restricts_candidates_to_section() -> None:
     """Sem `section`, o chunk fora da seção venceria por similaridade pura."""
     index = [
         EmbeddedChunk(
@@ -388,19 +331,18 @@ def test_search_with_section_restricts_candidates_to_section(
             embedding=[1.0, 0.0],
         ),
     ]
-    fake_client = _FakeOpenAIClient({"onde estudei?": [0.9, 0.1]})
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    embedding_provider = FakeEmbeddingProviderByText({"onde estudei?": [0.9, 0.1]})
 
-    unrestricted = search("onde estudei?", index, top_k=1)
-    restricted = search("onde estudei?", index, top_k=1, section="education")
+    unrestricted = search("onde estudei?", index, embedding_provider, top_k=1)
+    restricted = search(
+        "onde estudei?", index, embedding_provider, top_k=1, section="education"
+    )
 
     assert unrestricted[0][0].id == "experience-0"
     assert restricted[0][0].id == "education-0"
 
 
-def test_search_with_sort_by_recency_reorders_chunks_by_recency(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_search_with_sort_by_recency_reorders_chunks_by_recency() -> None:
     """Reordena os chunks por recência quando sort_by_recency é usado."""
     index = [
         EmbeddedChunk(
@@ -422,11 +364,12 @@ def test_search_with_sort_by_recency_reorders_chunks_by_recency(
             embedding=[1.0, 0.0],
         ),
     ]
-    fake_client = _FakeOpenAIClient({"pergunta": [1.0, 0.0]})
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    embedding_provider = FakeEmbeddingProviderByText({"pergunta": [1.0, 0.0]})
 
-    by_similarity = search("pergunta", index, top_k=2)
-    by_recency = search("pergunta", index, top_k=2, sort_by_recency=True)
+    by_similarity = search("pergunta", index, embedding_provider, top_k=2)
+    by_recency = search(
+        "pergunta", index, embedding_provider, top_k=2, sort_by_recency=True
+    )
 
     # Sem recência: o cargo antigo vence por similaridade pura de embedding.
     assert [chunk.id for chunk, _score in by_similarity] == [
@@ -440,9 +383,7 @@ def test_search_with_sort_by_recency_reorders_chunks_by_recency(
     ]
 
 
-def test_search_with_routing_prioritizes_education_for_education_question(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_search_with_routing_prioritizes_education_for_education_question() -> None:
     """CA-001 (US-11-06): "onde estudei?" retorna o chunk de education."""
     index = [
         EmbeddedChunk(
@@ -454,17 +395,14 @@ def test_search_with_routing_prioritizes_education_for_education_question(
             embedding=[1.0, 0.0],
         ),
     ]
-    fake_client = _FakeOpenAIClient({"onde estudei?": [0.9, 0.1]})
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    embedding_provider = FakeEmbeddingProviderByText({"onde estudei?": [0.9, 0.1]})
 
-    results = search_with_routing("onde estudei?", index, top_k=1)
+    results = search_with_routing("onde estudei?", index, embedding_provider, top_k=1)
 
     assert results[0][0].id == "education-0"
 
 
-def test_search_with_routing_prioritizes_recent_experience_for_last_company(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_search_with_routing_prioritizes_recent_experience_for_last_company() -> None:
     """CA-002 (US-11-06): "última empresa" retorna experiência mais recente primeiro."""
     index = [
         EmbeddedChunk(
@@ -486,21 +424,18 @@ def test_search_with_routing_prioritizes_recent_experience_for_last_company(
             embedding=[1.0, 0.0],
         ),
     ]
-    fake_client = _FakeOpenAIClient(
+    embedding_provider = FakeEmbeddingProviderByText(
         {"qual a última empresa que trabalhei?": [1.0, 0.0]}
     )
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
 
     results = search_with_routing(
-        "qual a última empresa que trabalhei?", index, top_k=2
+        "qual a última empresa que trabalhei?", index, embedding_provider, top_k=2
     )
 
     assert results[0][0].id == "experience-0"
 
 
-def test_search_with_routing_without_keyword_searches_without_restriction(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
+def test_search_with_routing_without_keyword_searches_without_restriction() -> None:
     """CA-003 (US-11-06): sem regressão — pergunta específica busca o índice todo."""
     index = [
         EmbeddedChunk(
@@ -512,11 +447,14 @@ def test_search_with_routing_without_keyword_searches_without_restriction(
             embedding=[0.0, 1.0],
         ),
     ]
-    fake_client = _FakeOpenAIClient({"já trabalhou com kubernetes?": [1.0, 0.0]})
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    embedding_provider = FakeEmbeddingProviderByText(
+        {"já trabalhou com kubernetes?": [1.0, 0.0]}
+    )
 
-    routed = search_with_routing("já trabalhou com kubernetes?", index, top_k=1)
-    plain = search("já trabalhou com kubernetes?", index, top_k=1)
+    routed = search_with_routing(
+        "já trabalhou com kubernetes?", index, embedding_provider, top_k=1
+    )
+    plain = search("já trabalhou com kubernetes?", index, embedding_provider, top_k=1)
 
     assert routed == plain
 

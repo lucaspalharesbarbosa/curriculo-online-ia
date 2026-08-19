@@ -1,96 +1,29 @@
+"""Testes de integração de /chat e /chat/feedback via `TestClient` (ADR-012, US-14-03).
+
+Adapters reais substituídos por fakes de port via override do `Depends()` do
+FastAPI (`app.dependency_overrides`) — nunca toca `openai`/`httpx` de verdade.
+"""
+
+from __future__ import annotations
+
 import httpx
 import pytest
 from fastapi.testclient import TestClient
 from openai import APITimeoutError, AuthenticationError, OpenAIError, RateLimitError
 
-from app.chat import rag
+from app.chat import rag, service
 from app.chat import router as chat
 from app.main import app
+from tests.chat.fakes import (
+    FailIfCalledWebSearchProvider,
+    FakeChatCompletionProvider,
+    FakeEmbeddingProvider,
+    FakeWebSearchProvider,
+    RaisingChatCompletionProvider,
+    RaisingEmbeddingProvider,
+)
 
 client = TestClient(app)
-
-
-class _FakeMessage:
-    def __init__(self, content: str) -> None:
-        self.content = content
-
-
-class _FakeChoice:
-    def __init__(self, content: str) -> None:
-        self.message = _FakeMessage(content)
-
-
-class _FakeCompletion:
-    def __init__(self, content: str) -> None:
-        self.choices = [_FakeChoice(content)]
-
-
-class _FakeCompletionsResource:
-    def __init__(self, answer: str) -> None:
-        self._answer = answer
-        self.call_count = 0
-        self.last_messages: list[dict[str, str]] | None = None
-
-    def create(self, model: str, messages: list[dict[str, str]]):  # noqa: ANN001
-        self.call_count += 1
-        self.last_messages = messages
-        return _FakeCompletion(self._answer)
-
-
-class _FakeChatResource:
-    def __init__(self, answer: str) -> None:
-        self.completions = _FakeCompletionsResource(answer)
-
-
-class _FakeEmbeddingData:
-    def __init__(self, embedding: list[float]) -> None:
-        self.embedding = embedding
-
-
-class _FakeEmbeddingResponse:
-    def __init__(self, embedding: list[float]) -> None:
-        self.data = [_FakeEmbeddingData(embedding)]
-
-
-class _FakeEmbeddingsResource:
-    def __init__(self, question_embedding: list[float]) -> None:
-        self._question_embedding = question_embedding
-
-    def create(self, model: str, input: str):  # noqa: A002, ANN001
-        return _FakeEmbeddingResponse(self._question_embedding)
-
-
-class _FakeOpenAIClient:
-    def __init__(self, question_embedding: list[float], answer: str = "") -> None:
-        self.embeddings = _FakeEmbeddingsResource(question_embedding)
-        self.chat = _FakeChatResource(answer)
-
-
-class _RaisingEmbeddingsResource:
-    def create(self, model: str, input: str):  # noqa: A002, ANN001
-        raise OpenAIError("falha simulada de embeddings")
-
-
-class _RaisingOpenAIClient:
-    def __init__(self) -> None:
-        self.embeddings = _RaisingEmbeddingsResource()
-
-
-class _RaisingCompletionsResource:
-    def create(self, model: str, messages: list[dict[str, str]]):  # noqa: ANN001
-        raise OpenAIError("falha simulada de geração")
-
-
-class _RaisingChatResource:
-    def __init__(self) -> None:
-        self.completions = _RaisingCompletionsResource()
-
-
-class _EmbeddingOkGenerationFailsClient:
-    def __init__(self, question_embedding: list[float]) -> None:
-        self.embeddings = _FakeEmbeddingsResource(question_embedding)
-        self.chat = _RaisingChatResource()
-
 
 FIXTURE_INDEX = [
     rag.EmbeddedChunk(
@@ -139,54 +72,67 @@ ROUTING_FIXTURE_INDEX = [
 ]
 
 
-def _fake_openai_response(status_code: int) -> httpx.Response:
-    """Response mínima exigida pelos construtores de erro do SDK da OpenAI."""
-    request = httpx.Request("POST", "https://api.openai.com/v1/chat/completions")
-    return httpx.Response(status_code=status_code, request=request)
-
-
 @pytest.fixture(autouse=True)
 def _reset_rate_limit() -> None:
-    """Evita que o rate limit (estado em memória, módulo `chat`) vaze entre testes."""
+    """Evita que o rate limit (estado em memória, módulo `router`) vaze entre testes."""
     chat._request_log.clear()
 
 
 @pytest.fixture(autouse=True)
 def _llm_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Garante LLM_API_KEY nos testes — o client OpenAI é sempre mockado."""
+    """Garante LLM_API_KEY nos testes — adapters reais sempre viram fakes."""
     monkeypatch.setenv("LLM_API_KEY", "test-key-not-real")
+
+
+@pytest.fixture(autouse=True)
+def _reset_dependency_overrides() -> None:
+    """Limpa os overrides de `Depends()` entre testes (fake não vaza p/ outro)."""
+    yield
+    app.dependency_overrides.clear()
+
+
+def _override_providers(
+    embedding_provider: object = None,
+    chat_completion_provider: object = None,
+    web_search_provider: object = None,
+) -> None:
+    """Substitui os adapters reais pelos fakes informados via `Depends()` override."""
+    if embedding_provider is not None:
+        app.dependency_overrides[chat.get_embedding_provider] = (
+            lambda: embedding_provider
+        )
+    if chat_completion_provider is not None:
+        app.dependency_overrides[chat.get_chat_completion_provider] = (
+            lambda: chat_completion_provider
+        )
+    if web_search_provider is not None:
+        app.dependency_overrides[chat.get_web_search_provider] = (
+            lambda: web_search_provider
+        )
 
 
 @pytest.fixture
 def stub_index(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Substitui o índice real por um fixo e determinístico, sem chamar OpenAI."""
-    monkeypatch.setattr(chat, "get_index", lambda: FIXTURE_INDEX)
+    """Substitui o índice real por um fixo e determinístico, sem tocar OpenAI."""
+    monkeypatch.setattr(service, "_index_cache", FIXTURE_INDEX)
 
 
 @pytest.fixture
 def stub_entities(monkeypatch: pytest.MonkeyPatch) -> None:
     """Entidades conhecidas fixas — sem depender do resume.json real (US-11-07)."""
-    monkeypatch.setattr(chat, "get_known_entities", lambda: ["Engineering Brasil"])
+    monkeypatch.setattr(service, "_entities_cache", ["Engineering Brasil"])
 
 
-@pytest.fixture(autouse=True)
-def _no_web_search_key_by_default(monkeypatch: pytest.MonkeyPatch) -> None:
-    """Sem WEB_SEARCH_API_KEY por padrão — nunca bate na API real do Tavily.
-
-    Testes que precisam simular a chave configurada usam `monkeypatch.setenv`
-    explicitamente (ver testes de US-11-07 abaixo).
-    """
-    monkeypatch.delenv("WEB_SEARCH_API_KEY", raising=False)
-
-
-def test_chat_returns_response_with_relevant_context(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_chat_returns_response_with_relevant_context(stub_index: None) -> None:
     """Retorna resposta com contexto relevante do currículo."""
-    fake_client = _FakeOpenAIClient(
-        question_embedding=[1.0, 0.0], answer="Você trabalha na Engineering Brasil."
+    chat_completion_provider = FakeChatCompletionProvider(
+        answer="Você trabalha na Engineering Brasil."
     )
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[1.0, 0.0]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
@@ -195,21 +141,25 @@ def test_chat_returns_response_with_relevant_context(
         "answer": "Você trabalha na Engineering Brasil.",
         "source": "resume",
     }
-    assert fake_client.chat.completions.call_count == 1
+    assert chat_completion_provider.call_count == 1
 
 
 def test_chat_returns_fallback_for_out_of_scope_question(
-    stub_index: None, stub_entities: None, monkeypatch: pytest.MonkeyPatch
+    stub_index: None, stub_entities: None
 ) -> None:
     """Retorna fallback para pergunta fora do escopo do currículo."""
-    fake_client = _FakeOpenAIClient(question_embedding=[-1.0, -1.0])
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    chat_completion_provider = FakeChatCompletionProvider()
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[-1.0, -1.0]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Qual a previsão do tempo?"})
 
     assert response.status_code == 200
-    assert response.json() == {"answer": chat.FALLBACK_ANSWER, "source": "resume"}
-    assert fake_client.chat.completions.call_count == 0
+    assert response.json() == {"answer": service.FALLBACK_ANSWER, "source": "resume"}
+    assert chat_completion_provider.call_count == 0
 
 
 def test_chat_returns_422_for_empty_question() -> None:
@@ -227,10 +177,16 @@ def test_chat_returns_422_for_missing_field() -> None:
 
 
 def test_chat_returns_503_when_embeddings_fail_without_leaking_internal_detail(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
+    stub_index: None,
 ) -> None:
     """Falha genérica (não auth/rate-limit) do provider → 503, shape padrão de erro."""
-    monkeypatch.setattr(rag, "get_client", lambda: _RaisingOpenAIClient())
+    _override_providers(
+        embedding_provider=RaisingEmbeddingProvider(
+            OpenAIError("falha simulada de embeddings")
+        ),
+        chat_completion_provider=FakeChatCompletionProvider(),
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
@@ -241,12 +197,15 @@ def test_chat_returns_503_when_embeddings_fail_without_leaking_internal_detail(
     assert "falha simulada" not in response.text
 
 
-def test_chat_returns_503_when_generation_fails(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_chat_returns_503_when_generation_fails(stub_index: None) -> None:
     """Retorna 503 quando a geração da resposta falha."""
-    fake_client = _EmbeddingOkGenerationFailsClient(question_embedding=[1.0, 0.0])
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[1.0, 0.0]),
+        chat_completion_provider=RaisingChatCompletionProvider(
+            OpenAIError("falha simulada de geração")
+        ),
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
@@ -257,12 +216,13 @@ def test_chat_returns_503_when_generation_fails(
     assert "falha simulada" not in response.text
 
 
-def test_chat_returns_429_after_exceeding_rate_limit(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_chat_returns_429_after_exceeding_rate_limit(stub_index: None) -> None:
     """Retorna 429 após exceder o limite de requisições."""
-    fake_client = _FakeOpenAIClient(question_embedding=[1.0, 0.0], answer="resposta")
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[1.0, 0.0]),
+        chat_completion_provider=FakeChatCompletionProvider(answer="resposta"),
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     for _ in range(chat.RATE_LIMIT_MAX_REQUESTS):
         response = client.post("/chat", json={"question": "Onde você trabalha?"})
@@ -292,24 +252,17 @@ def test_chat_returns_500_generic_when_key_missing(
     assert "OpenAI" not in response.text
 
 
-def test_chat_returns_500_when_provider_quota_exhausted(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_chat_returns_500_when_provider_quota_exhausted(stub_index: None) -> None:
     """RateLimitError real do provider (quota/cota) → 500 (falha de config/conta)."""
-
-    class _QuotaFailEmbeddings:
-        def create(self, model: str, input: str):  # noqa: A002, ANN001
-            raise RateLimitError(
-                "insufficient_quota",
-                response=_fake_openai_response(429),
-                body=None,
-            )
-
-    class _QuotaClient:
-        def __init__(self) -> None:
-            self.embeddings = _QuotaFailEmbeddings()
-
-    monkeypatch.setattr(rag, "get_client", lambda: _QuotaClient())
+    request = httpx.Request("POST", "https://api.openai.com/v1/embeddings")
+    response_obj = httpx.Response(429, request=request)
+    _override_providers(
+        embedding_provider=RaisingEmbeddingProvider(
+            RateLimitError("insufficient_quota", response=response_obj, body=None)
+        ),
+        chat_completion_provider=FakeChatCompletionProvider(),
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
@@ -321,24 +274,17 @@ def test_chat_returns_500_when_provider_quota_exhausted(
     assert "OpenAI" not in response.text
 
 
-def test_chat_returns_500_when_provider_authentication_fails(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_chat_returns_500_when_provider_authentication_fails(stub_index: None) -> None:
     """AuthenticationError real do provider (chave inválida) → 500 (falha nossa)."""
-
-    class _AuthFailEmbeddings:
-        def create(self, model: str, input: str):  # noqa: A002, ANN001
-            raise AuthenticationError(
-                "invalid api key",
-                response=_fake_openai_response(401),
-                body=None,
-            )
-
-    class _AuthFailClient:
-        def __init__(self) -> None:
-            self.embeddings = _AuthFailEmbeddings()
-
-    monkeypatch.setattr(rag, "get_client", lambda: _AuthFailClient())
+    request = httpx.Request("POST", "https://api.openai.com/v1/embeddings")
+    response_obj = httpx.Response(401, request=request)
+    _override_providers(
+        embedding_provider=RaisingEmbeddingProvider(
+            AuthenticationError("invalid api key", response=response_obj, body=None)
+        ),
+        chat_completion_provider=FakeChatCompletionProvider(),
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
@@ -349,20 +295,13 @@ def test_chat_returns_500_when_provider_authentication_fails(
     assert "OpenAI" not in response.text
 
 
-def test_chat_returns_503_when_openai_timeout(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
-) -> None:
+def test_chat_returns_503_when_openai_timeout(stub_index: None) -> None:
     """Timeout do provider (não auth/rate-limit) → 503, sem vazar detalhe interno."""
-
-    class _TimeoutEmbeddings:
-        def create(self, model: str, input: str):  # noqa: A002, ANN001
-            raise APITimeoutError(request=None)
-
-    class _TimeoutClient:
-        def __init__(self) -> None:
-            self.embeddings = _TimeoutEmbeddings()
-
-    monkeypatch.setattr(rag, "get_client", lambda: _TimeoutClient())
+    _override_providers(
+        embedding_provider=RaisingEmbeddingProvider(APITimeoutError(request=None)),
+        chat_completion_provider=FakeChatCompletionProvider(),
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Onde você trabalha?"})
 
@@ -386,27 +325,6 @@ def test_chat_returns_422_with_standard_error_shape_and_preserved_details() -> N
     assert len(body["error"]["details"]) >= 1
 
 
-def test_get_index_loads_once_and_reuses_in_memory_cache(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Carrega o índice uma vez e reaproveita o cache em memória."""
-    monkeypatch.setattr(chat, "_index_cache", None)
-    calls = {"count": 0}
-
-    def _fake_load_or_build_index() -> list[rag.EmbeddedChunk]:
-        calls["count"] += 1
-        return FIXTURE_INDEX
-
-    monkeypatch.setattr(rag, "load_or_build_index", _fake_load_or_build_index)
-
-    first = chat.get_index()
-    second = chat.get_index()
-
-    assert first is FIXTURE_INDEX
-    assert second is FIXTURE_INDEX
-    assert calls["count"] == 1
-
-
 # --- US-11-06: regressão de precisão de recuperação (roteamento por seção/recência) --
 
 
@@ -414,17 +332,21 @@ def test_chat_prioritizes_education_for_where_did_you_study_question(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """CA-001: "onde você estudou?" usa o chunk de education no contexto."""
-    monkeypatch.setattr(chat, "get_index", lambda: ROUTING_FIXTURE_INDEX)
-    fake_client = _FakeOpenAIClient(
-        question_embedding=[0.5, 0.5], answer="Você estudou na Universidade X."
+    monkeypatch.setattr(service, "_index_cache", ROUTING_FIXTURE_INDEX)
+    chat_completion_provider = FakeChatCompletionProvider(
+        answer="Você estudou na Universidade X."
     )
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[0.5, 0.5]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Onde você estudou?"})
 
     assert response.status_code == 200
     assert response.json()["source"] == "resume"
-    sent_prompt = fake_client.chat.completions.last_messages[1]["content"]
+    sent_prompt = chat_completion_provider.last_messages[1]["content"]
     assert "Formação" in sent_prompt
 
 
@@ -432,29 +354,37 @@ def test_chat_prioritizes_recent_experience_for_last_company(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """CA-002: "última empresa" traz o cargo atual antes do cargo antigo no prompt."""
-    monkeypatch.setattr(chat, "get_index", lambda: ROUTING_FIXTURE_INDEX)
-    fake_client = _FakeOpenAIClient(
-        question_embedding=[1.0, 0.0], answer="Sua última empresa é a Empresa Atual."
+    monkeypatch.setattr(service, "_index_cache", ROUTING_FIXTURE_INDEX)
+    chat_completion_provider = FakeChatCompletionProvider(
+        answer="Sua última empresa é a Empresa Atual."
     )
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[1.0, 0.0]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post(
         "/chat", json={"question": "Qual a última empresa que trabalhei?"}
     )
 
     assert response.status_code == 200
-    sent_prompt = fake_client.chat.completions.last_messages[1]["content"]
+    sent_prompt = chat_completion_provider.last_messages[1]["content"]
     assert sent_prompt.index("Empresa Atual") < sent_prompt.index("Empresa Antiga")
 
 
 def test_chat_without_keyword_keeps_current_similarity_behavior(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
+    stub_index: None,
 ) -> None:
     """CA-003: pergunta específica (skills) já coberta hoje não regride."""
-    fake_client = _FakeOpenAIClient(
-        question_embedding=[1.0, 0.0], answer="Sim, já trabalhei com Python."
+    chat_completion_provider = FakeChatCompletionProvider(
+        answer="Sim, já trabalhei com Python."
     )
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[1.0, 0.0]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Já trabalhou com Python?"})
 
@@ -469,15 +399,16 @@ def test_chat_without_keyword_keeps_current_similarity_behavior(
 
 
 def test_chat_triggers_web_search_when_similarity_low_and_entity_known(
-    stub_index: None, stub_entities: None, monkeypatch: pytest.MonkeyPatch
+    stub_index: None, stub_entities: None
 ) -> None:
     """CA-001: score local abaixo do threshold + entidade citada aciona a busca web."""
-    fake_client = _FakeOpenAIClient(
-        question_embedding=[-1.0, -1.0], answer="A Engineering Brasil atua com IA."
+    chat_completion_provider = FakeChatCompletionProvider(
+        answer="A Engineering Brasil atua com IA."
     )
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
-    monkeypatch.setattr(
-        chat.web_search, "search_web", lambda query: "Contexto público da web."
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[-1.0, -1.0]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FakeWebSearchProvider(result="Contexto público da web."),
     )
 
     response = client.post(
@@ -489,55 +420,58 @@ def test_chat_triggers_web_search_when_similarity_low_and_entity_known(
         "answer": "A Engineering Brasil atua com IA.",
         "source": "web",
     }
-    sent_messages = fake_client.chat.completions.last_messages
-    assert sent_messages[0]["content"] == chat.WEB_SYSTEM_PROMPT
+    sent_messages = chat_completion_provider.last_messages
+    assert sent_messages[0]["content"] == service.WEB_SYSTEM_PROMPT
     assert "Contexto público da web." in sent_messages[1]["content"]
 
 
 def test_chat_graceful_fallback_when_web_search_fails(
-    stub_index: None, stub_entities: None, monkeypatch: pytest.MonkeyPatch
+    stub_index: None, stub_entities: None
 ) -> None:
     """CA-002: busca web indisponível (retorna None) não gera erro 5xx."""
-    fake_client = _FakeOpenAIClient(question_embedding=[-1.0, -1.0])
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
-    monkeypatch.setattr(chat.web_search, "search_web", lambda query: None)
+    chat_completion_provider = FakeChatCompletionProvider()
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[-1.0, -1.0]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FakeWebSearchProvider(result=None),
+    )
 
     response = client.post(
         "/chat", json={"question": "O que a Engineering Brasil faz?"}
     )
 
     assert response.status_code == 200
-    assert response.json() == {"answer": chat.FALLBACK_ANSWER, "source": "resume"}
-    assert fake_client.chat.completions.call_count == 0
+    assert response.json() == {"answer": service.FALLBACK_ANSWER, "source": "resume"}
+    assert chat_completion_provider.call_count == 0
 
 
 def test_chat_does_not_trigger_web_search_without_known_entity(
-    stub_index: None, monkeypatch: pytest.MonkeyPatch
+    stub_index: None, stub_entities: None
 ) -> None:
     """CA-004: pergunta genérica sem entidade do currículo não vira agente de busca."""
-    monkeypatch.setattr(chat, "get_known_entities", lambda: ["Engineering Brasil"])
-    fake_client = _FakeOpenAIClient(question_embedding=[-1.0, -1.0])
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
-
-    def _fail_if_called(query: str) -> str | None:
-        raise AssertionError("search_web não deveria ser chamado sem entidade citada")
-
-    monkeypatch.setattr(chat.web_search, "search_web", _fail_if_called)
+    chat_completion_provider = FakeChatCompletionProvider()
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[-1.0, -1.0]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
 
     response = client.post("/chat", json={"question": "Qual a previsão do tempo?"})
 
     assert response.status_code == 200
-    assert response.json() == {"answer": chat.FALLBACK_ANSWER, "source": "resume"}
+    assert response.json() == {"answer": service.FALLBACK_ANSWER, "source": "resume"}
 
 
 def test_chat_returns_503_when_generation_fails_after_web_search(
-    stub_index: None, stub_entities: None, monkeypatch: pytest.MonkeyPatch
+    stub_index: None, stub_entities: None
 ) -> None:
     """Falha do LLM ao gerar a resposta com contexto web segue o mapeamento padrão."""
-    fake_client = _EmbeddingOkGenerationFailsClient(question_embedding=[-1.0, -1.0])
-    monkeypatch.setattr(rag, "get_client", lambda: fake_client)
-    monkeypatch.setattr(
-        chat.web_search, "search_web", lambda query: "Contexto público da web."
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[-1.0, -1.0]),
+        chat_completion_provider=RaisingChatCompletionProvider(
+            OpenAIError("falha simulada de geração")
+        ),
+        web_search_provider=FakeWebSearchProvider(result="Contexto público da web."),
     )
 
     response = client.post(
@@ -548,28 +482,6 @@ def test_chat_returns_503_when_generation_fails_after_web_search(
     assert response.json() == {
         "error": {"code": "llm_unavailable", "message": chat.GENERIC_ERROR_MESSAGE}
     }
-
-
-def test_get_known_entities_loads_once_and_reuses_in_memory_cache(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Carrega as entidades conhecidas uma vez e reaproveita o cache em memória."""
-    monkeypatch.setattr(chat, "_entities_cache", None)
-    calls = {"count": 0}
-
-    def _fake_extract_known_entities(resume: object) -> list[str]:
-        calls["count"] += 1
-        return ["Engineering Brasil"]
-
-    monkeypatch.setattr(rag, "load_resume", lambda: object())
-    monkeypatch.setattr(rag, "extract_known_entities", _fake_extract_known_entities)
-
-    first = chat.get_known_entities()
-    second = chat.get_known_entities()
-
-    assert first == ["Engineering Brasil"]
-    assert second == ["Engineering Brasil"]
-    assert calls["count"] == 1
 
 
 # --- US-11-04: feedback do usuário na resposta (log estruturado) --------------------

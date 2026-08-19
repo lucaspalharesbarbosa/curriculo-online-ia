@@ -1,8 +1,8 @@
 import httpx
 import pytest
 
-from app.chat import web_search
-from app.chat.web_search import search_web
+from app.chat.adapters import tavily_adapter
+from app.chat.adapters.tavily_adapter import TavilyWebSearchProvider
 
 
 class _FakeResponse:
@@ -12,7 +12,7 @@ class _FakeResponse:
 
     def raise_for_status(self) -> None:
         if self.status_code >= 400:
-            request = httpx.Request("POST", web_search.TAVILY_API_URL)
+            request = httpx.Request("POST", tavily_adapter.TAVILY_API_URL)
             response = httpx.Response(self.status_code, request=request)
             raise httpx.HTTPStatusError(
                 "erro simulado", request=request, response=response
@@ -36,9 +36,9 @@ def test_search_web_without_api_key_returns_none_without_calling_http(
     def _fail_if_called(*args: object, **kwargs: object) -> None:
         raise AssertionError("httpx.post não deveria ser chamado sem API key")
 
-    monkeypatch.setattr(web_search.httpx, "post", _fail_if_called)
+    monkeypatch.setattr(tavily_adapter.httpx, "post", _fail_if_called)
 
-    assert search_web("Empresa X") is None
+    assert TavilyWebSearchProvider().search_web("Empresa X") is None
 
 
 def test_search_web_returns_answer_when_available(
@@ -46,12 +46,12 @@ def test_search_web_returns_answer_when_available(
 ) -> None:
     """Retorna o answer quando disponível na resposta."""
     monkeypatch.setattr(
-        web_search.httpx,
+        tavily_adapter.httpx,
         "post",
         lambda *args, **kwargs: _FakeResponse({"answer": "Resposta resumida."}),
     )
 
-    result = search_web("Empresa X")
+    result = TavilyWebSearchProvider().search_web("Empresa X")
 
     assert result == "Resposta resumida."
 
@@ -61,7 +61,7 @@ def test_search_web_uses_results_when_no_answer(
 ) -> None:
     """Usa os results concatenados quando não há answer."""
     monkeypatch.setattr(
-        web_search.httpx,
+        tavily_adapter.httpx,
         "post",
         lambda *args, **kwargs: _FakeResponse(
             {
@@ -73,7 +73,7 @@ def test_search_web_uses_results_when_no_answer(
         ),
     )
 
-    result = search_web("Empresa X")
+    result = TavilyWebSearchProvider().search_web("Empresa X")
 
     assert result == "Trecho um. Trecho dois."
 
@@ -83,10 +83,10 @@ def test_search_web_without_answer_and_without_results_returns_none(
 ) -> None:
     """Retorna None quando não há answer nem results."""
     monkeypatch.setattr(
-        web_search.httpx, "post", lambda *args, **kwargs: _FakeResponse({})
+        tavily_adapter.httpx, "post", lambda *args, **kwargs: _FakeResponse({})
     )
 
-    assert search_web("Empresa X") is None
+    assert TavilyWebSearchProvider().search_web("Empresa X") is None
 
 
 def test_search_web_timeout_returns_none_without_raising_exception(
@@ -97,9 +97,9 @@ def test_search_web_timeout_returns_none_without_raising_exception(
     def _raise_timeout(*args: object, **kwargs: object) -> None:
         raise httpx.TimeoutException("timeout simulado")
 
-    monkeypatch.setattr(web_search.httpx, "post", _raise_timeout)
+    monkeypatch.setattr(tavily_adapter.httpx, "post", _raise_timeout)
 
-    assert search_web("Empresa X") is None
+    assert TavilyWebSearchProvider().search_web("Empresa X") is None
 
 
 def test_search_web_http_error_returns_none_without_raising_exception(
@@ -107,12 +107,12 @@ def test_search_web_http_error_returns_none_without_raising_exception(
 ) -> None:
     """Retorna None quando a API responde com erro HTTP."""
     monkeypatch.setattr(
-        web_search.httpx,
+        tavily_adapter.httpx,
         "post",
         lambda *args, **kwargs: _FakeResponse({}, status_code=500),
     )
 
-    assert search_web("Empresa X") is None
+    assert TavilyWebSearchProvider().search_web("Empresa X") is None
 
 
 def test_search_web_invalid_json_returns_none(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -128,10 +128,10 @@ def test_search_web_invalid_json_returns_none(monkeypatch: pytest.MonkeyPatch) -
             raise ValueError("corpo não é JSON válido")
 
     monkeypatch.setattr(
-        web_search.httpx, "post", lambda *args, **kwargs: _BadJsonResponse()
+        tavily_adapter.httpx, "post", lambda *args, **kwargs: _BadJsonResponse()
     )
 
-    assert search_web("Empresa X") is None
+    assert TavilyWebSearchProvider().search_web("Empresa X") is None
 
 
 def test_search_web_uses_short_documented_timeout(
@@ -144,9 +144,9 @@ def test_search_web_uses_short_documented_timeout(
         captured_kwargs.update(kwargs)
         return _FakeResponse({"answer": "ok"})
 
-    monkeypatch.setattr(web_search.httpx, "post", _capture)
+    monkeypatch.setattr(tavily_adapter.httpx, "post", _capture)
 
-    search_web("Empresa X")
+    TavilyWebSearchProvider().search_web("Empresa X")
 
-    assert captured_kwargs["timeout"] == web_search.WEB_SEARCH_TIMEOUT_SECONDS
+    assert captured_kwargs["timeout"] == tavily_adapter.WEB_SEARCH_TIMEOUT_SECONDS
     assert captured_kwargs["timeout"] == 8.0

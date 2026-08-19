@@ -50,10 +50,14 @@ curriculo-online-ia/
 │   │   │   └── env_bootstrap.py
 │   │   ├── resume/           # domínio "currículo"
 │   │   │   └── models.py     # Pydantic (espelha Zod)
-│   │   └── chat/              # domínio "chat/RAG" (Fase 05; modularizado na Fase 14)
-│   │       ├── router.py       # endpoint /chat
-│   │       ├── rag.py          # embeddings + busca por similaridade
-│   │       └── web_search.py   # fallback de busca web (Tavily)
+│   │   └── chat/              # domínio "chat/RAG" (Fase 05; Ports & Adapters na Fase 14, ADR-012)
+│   │       ├── router.py       # camada HTTP: endpoint /chat, rate limit, Depends()
+│   │       ├── service.py      # use case: orquestra pergunta → resposta
+│   │       ├── ports.py        # Protocol: EmbeddingProvider, ChatCompletionProvider, WebSearchProvider
+│   │       ├── adapters/
+│   │       │   ├── openai_adapter.py  # EmbeddingProvider + ChatCompletionProvider (openai.OpenAI)
+│   │       │   └── tavily_adapter.py   # WebSearchProvider (Tavily)
+│   │       └── rag.py          # chunking, ranking, roteamento (recebe EmbeddingProvider por parâmetro)
 │   └── requirements.txt
 ├── e2e/                # Playwright — testa frontend + backend juntos
 │   └── playwright.config.ts
