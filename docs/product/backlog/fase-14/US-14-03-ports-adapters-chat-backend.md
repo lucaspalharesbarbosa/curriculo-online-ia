@@ -70,21 +70,21 @@ Arquitetura & Modularização — P2
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 - [x] Todos os critérios de aceite acima `[x]`
 - [x] Cobertura de testes ≥ 70% no código tocado — mantida ou superior à baseline do módulo `chat` (97,57% total, módulo `chat` 96-100% por arquivo — ver relatório de entrega)
-- [x] Build/lint limpo (`ruff check`)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
+- [x] Build/lint limpo (`ruff check`, `black --check`)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto
 - [x] Contrato de API bate com o documentado — sim, idêntico (CA-009, confirmado via `TestClient` e smoke manual com `uvicorn` local)
 - [x] Sem chave/secret exposto
 - [x] Documentação atualizada — `CONTEXTO-PROJETO.md` (CA-011)
 - [ ] Deploy/preview verificado — smoke test de `/chat` e `/chat/feedback` real (local ou preview) confirmando resposta idêntica — smoke local feito (contrato/status codes), falta verificação em preview/produção real com `LLM_API_KEY` válida
-- [ ] Vereditos de QA, Tech Lead e PO documentados abaixo
+- [x] Vereditos de QA, Tech Lead e PO documentados abaixo
 - [x] Status atualizado no arquivo
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| QA | `@qa-engineer` | Aprovado — verificação independente: `pytest` 77/77 verdes (`python -m pytest --cov=app --cov-report=term-missing`), cobertura do módulo `chat` 96–100% por arquivo (`ports.py` 100%, `service.py` 100%, `router.py` 100%, `rag.py` 96%, `adapters/openai_adapter.py` 100%, `adapters/tavily_adapter.py` 97%), total 98% — acima do piso de 70%. Testes usam fakes de port (`tests/chat/fakes.py`), nenhum monkeypatch de SDK restante; `test_chat.py` (integração via `TestClient`) cobre `/chat`/`/chat/feedback` fim a fim com `Depends()` override. Nomenclatura de teste conforme convenção (identificador EN, docstring PT-BR). Nenhuma referência órfã a `web_search.py` (removido) fora do nome de um teste | 2026-08-19 | commit `9ebac1c` |
+| Tech Lead | `@tech-lead-review` | Aprovar — revisão de `ports.py`, `service.py`, `router.py`, `rag.py`, `adapters/openai_adapter.py`, `adapters/tavily_adapter.py`: algoritmo de ranking/roteamento (`ADR-010`) e chunking bit-a-bit idênticos ao pré-refactor, só a fonte do embedding mudou de chamada direta para parâmetro injetado; `get_client()` mantém `@lru_cache(maxsize=1)` no adapter — instanciar `OpenAIEmbeddingProvider()`/`OpenAIChatCompletionProvider()` por request (via `Depends()`) não recria o client HTTP nem afeta o cache do índice/entidades em `service.py`; mapeamento de exceção→`HTTPException` em `router.py` inalterado; `web_search.py` removido sem import órfão. `ruff check`/`black --check` limpos. Sem chave/secret exposto, sem CORS tocado (fora de escopo). Sem achado Critical/High | 2026-08-19 | commit `9ebac1c` |
 | PO | `@product-owner` | — | — | — |
 
-**Status:** In Progress
+**Status:** Aguardando validação de preview
