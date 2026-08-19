@@ -140,15 +140,22 @@ Convenção de status: `Done` · `Em andamento` · `Não iniciada` · `Draft` (P
 - [ ] Dashboard Grafana
 - [ ] Logs estruturados + integração com ferramenta gratuita
 
-## Fase 11 — Chat v2
+## Fase 11 — Chat v2 + RAG Inteligente
 
-**Status:** Draft, sem histórias criadas
-**PRD:** [`PRD-009-chat-v2.md`](PRD-009-chat-v2.md)
+**Status:** Quase lá (3/7 histórias Done — RAG/backend; 4/7 Quase lá — UI, aguardando PR/preview) — desde 2026-08-18, branch `feature/fase-11-chat-v2-rag-inteligente`
+**PRD:** [`PRD-009-chat-v2.md`](PRD-009-chat-v2.md) (UX do `ChatWidget`) + [`PRD-011-rag-inteligente.md`](PRD-011-rag-inteligente.md) (precisão de recuperação + acesso à web, novo — épico RAG)
+**Backlog:** [`docs/product/backlog/fase-11/`](backlog/fase-11/) (US-11-01 a US-11-07)
+**ADR:** [`ADR-010`](../architecture/ADR-010-fluxo-rag-v2-precisao-web.md) (roteamento por seção/recência + busca web via Tavily)
 
-- [ ] Redesign visual do `ChatWidget`
-- [ ] Perguntas sugeridas (quick replies)
-- [ ] Indicador de digitando / streaming de resposta
-- [ ] Feedback do usuário na resposta
+Escopo ampliado a pedido do autor: além do redesign do `ChatWidget` já previsto no `PRD-009`, o assistente errava perguntas básicas ("onde estudei?", "qual a última empresa que trabalhei?") por falta de roteamento por seção/recência na busca por similaridade — e não tinha acesso a dados externos sobre empresas/instituições/cursos/certificados/habilidades citados no currículo. Backend (65+ testes novos, 97%/84.9% cobertura) já revisado por QA e Tech Lead sem Critical/High; falta commit/PR/preview para fechar as 4 histórias de UI.
+
+- [x] ADR: fluxo de RAG v2 (precisão de recuperação + acesso à web) — [US-11-05](backlog/fase-11/US-11-05-adr-rag-v2-precisao-web.md), P1 (`Done`)
+- [x] Melhorar precisão de recuperação do RAG (roteamento por seção/recência) — [US-11-06](backlog/fase-11/US-11-06-precisao-recuperacao-rag.md), P1 (`Done`)
+- [x] Web search fallback para dados externos (empresas, instituições, cursos, certificados, habilidades) — [US-11-07](backlog/fase-11/US-11-07-web-search-fallback.md), P2 (`Done`)
+- [ ] Redesign visual do `ChatWidget` — [US-11-01](backlog/fase-11/US-11-01-redesign-visual-chatwidget.md), P2 (`Quase lá` — falta preview do PR)
+- [ ] Perguntas sugeridas (quick replies) — [US-11-02](backlog/fase-11/US-11-02-quick-replies.md), P2 (`Quase lá` — falta preview do PR)
+- [ ] Indicador de digitando (simulado, sem streaming real — decisão de escopo do PO) — [US-11-03](backlog/fase-11/US-11-03-indicador-digitando.md), P3 (`Quase lá` — falta preview do PR)
+- [ ] Feedback do usuário na resposta (log estruturado, sem persistência — decisão de escopo do PO) — [US-11-04](backlog/fase-11/US-11-04-feedback-resposta.md), P3 (`Quase lá` — falta preview do PR)
 
 ## Fase 12 — Área Administrativa
 

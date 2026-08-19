@@ -17,14 +17,15 @@ Status de execução por fase (0 a 13): [`roadmap.md`](roadmap.md).
 - [PRD-006 — Segurança & Performance](PRD-006-seguranca-performance.md) — Done (11/11; histórias em `backlog/archive/fase-08/`)
 - [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — Done (histórias em `backlog/archive/fase-09/` e `backlog/archive/fase-13/`)
 - [PRD-008 — Observabilidade](PRD-008-observabilidade.md) — draft, sem histórias
-- [PRD-009 — Chat v2](PRD-009-chat-v2.md) — draft, sem histórias
+- [PRD-009 — Chat v2](PRD-009-chat-v2.md) — ready-for-agent (4 histórias em `backlog/fase-11/`)
 - [PRD-010 — Área Administrativa](PRD-010-area-administrativa.md) — draft; escopo redefinido (só métricas — ver PRD)
+- [PRD-011 — RAG Inteligente](PRD-011-rag-inteligente.md) — ready-for-agent (3 histórias em `backlog/fase-11/`)
 
 ## Backlog — organizado por fase de implementação (não por épico)
 
 Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por história, com ID `US-<fase>-<sequência>` (ex.: `US-03-10`) e um slug descritivo no nome do arquivo. O ID já carrega o número da fase, então não há ambiguidade entre `US-03-01` (fase 03) e `US-05-01` (fase 05). A tabela "Histórias" de cada PRD linka para o arquivo correspondente.
 
-**Nenhuma fase ativa no momento** — Fases 0 a 13 concluídas (arquivadas ou candidatas a arquivamento); Fases 10–12 seguem em `draft`, sem histórias ainda.
+**Fase 11 ativa** — Chat v2 + RAG Inteligente (`PRD-009` + `PRD-011`), 7 histórias em `backlog/fase-11/`: 3/7 `Done` (RAG/backend — `US-11-05`, `06`, `07`), 4/7 `Quase lá` (UI — `US-11-01` a `04`, aguardando preview do PR). Fases 10 e 12 seguem em `draft`, sem histórias ainda.
 
 ### Fases arquivadas
 
@@ -40,13 +41,16 @@ Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por hist
 - [Fase 09 — Qualidade de Engenharia](backlog/archive/fase-09/) (US-09-01 — 1/1 Done) — arquivada 2026-08-16; `PRD-007`, `ADR-009`. Demais frentes do `PRD-007` seguiram para a Fase 13 (número `09` não reaproveitado)
 - [Fase 13 — Qualidade de Engenharia (continuação)](backlog/archive/fase-13/) (US-13-01 a US-13-08 — 7/7 histórias ativas Done, `US-13-03` Cancelada) — arquivada 2026-08-18; `PRD-007` Done, entregue no [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49)
 
+### Fase ativa
+
+- [Fase 11 — Chat v2 + RAG Inteligente](backlog/fase-11/) (US-11-01 a US-11-07 — `PRD-009` + `PRD-011`) — em execução
+
 ### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
 
 - Fase 10 — Observabilidade (`PRD-008`)
-- Fase 11 — Chat v2 (`PRD-009`)
 - Fase 12 — Área Administrativa (`PRD-010`)
 
-Histórias das fases 10–12 são criadas pelo `@product-owner` quando cada fase entrar em execução (DoR completo, contrato de API + mapeamento de erros quando aplicável) — os PRDs acima têm só a lista de frentes e riscos conhecidos até aqui.
+Histórias das fases 10 e 12 são criadas pelo `@product-owner` quando cada fase entrar em execução (DoR completo, contrato de API + mapeamento de erros quando aplicável) — os PRDs acima têm só a lista de frentes e riscos conhecidos até aqui.
 
 ## Convenção de nomenclatura
 - PRD (por épico): `PRD-NNN-<epico>.md`
