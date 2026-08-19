@@ -3,7 +3,8 @@ import pytest
 from fastapi.testclient import TestClient
 from openai import APITimeoutError, AuthenticationError, OpenAIError, RateLimitError
 
-from app import chat, rag
+from app.chat import rag
+from app.chat import router as chat
 from app.main import app
 
 client = TestClient(app)

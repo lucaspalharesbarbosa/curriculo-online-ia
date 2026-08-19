@@ -4,10 +4,10 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from app.models.resume import Resume
+from app.resume.models import Resume
 
 RESUME_JSON_PATH = (
-    Path(__file__).resolve().parents[2] / "frontend" / "content" / "resume.json"
+    Path(__file__).resolve().parents[3] / "frontend" / "content" / "resume.json"
 )
 
 

@@ -12,7 +12,7 @@ from fastapi import APIRouter, HTTPException, Request
 from openai import AuthenticationError, OpenAIError, RateLimitError
 from pydantic import BaseModel, Field
 
-from app import rag, web_search
+from app.chat import rag, web_search
 
 router = APIRouter()
 logger = logging.getLogger(__name__)

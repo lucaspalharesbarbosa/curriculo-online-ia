@@ -1,8 +1,7 @@
 import pytest
 
-from app import rag
-from app.models.resume import Resume
-from app.rag import (
+from app.chat import rag
+from app.chat.rag import (
     Chunk,
     EmbeddedChunk,
     build_chunks,
@@ -14,6 +13,7 @@ from app.rag import (
     search_with_routing,
     wants_recency,
 )
+from app.resume.models import Resume
 
 FIXTURE_RESUME = Resume.model_validate(
     {

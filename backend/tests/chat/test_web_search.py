@@ -1,8 +1,8 @@
 import httpx
 import pytest
 
-from app import web_search
-from app.web_search import search_web
+from app.chat import web_search
+from app.chat.web_search import search_web
 
 
 class _FakeResponse:

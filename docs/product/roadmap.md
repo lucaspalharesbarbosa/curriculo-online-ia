@@ -184,3 +184,15 @@ Continuação das frentes do `PRD-007` que não entraram na Fase 9 (número `09`
 - [x] Frontend: remover `ChatWidget` morto + achados reais nos componentes de chat — [US-13-06](backlog/archive/fase-13/US-13-06-frontend-chat-widget-morto-achados.md), P2 (`Done`)
 - [x] Frontend: regex com risco de performance em `lib/utils.ts` — [US-13-07](backlog/archive/fase-13/US-13-07-frontend-regex-lib-utils.md), P2 (`Done`)
 - [x] Frontend: migrar API depreciada do Zod em `resume.schema.ts` — [US-13-08](backlog/archive/fase-13/US-13-08-frontend-migracao-zod.md), P2 (`Done`)
+
+## Fase 14 — Arquitetura & Modularização
+
+**Status:** Ready for Agent — 0/2 histórias
+**PRD:** [`PRD-012-arquitetura-modularizacao.md`](PRD-012-arquitetura-modularizacao.md)
+**Backlog:** [`docs/product/backlog/fase-14/`](backlog/fase-14/) (US-14-01 a US-14-02)
+**ADR:** [`ADR-011`](../architecture/ADR-011-modularizacao-ddd-lite.md) (modularização por domínio, DDD-lite — sem padrões táticos completos)
+
+Reorganização de backend e frontend por domínio de negócio (`resume`, `chat`, preparado para `admin`), sem mudança de comportamento observável — prepara terreno para a Fase 12 (Área Administrativa) e a Fase 10 (Observabilidade), que hoje não teriam lugar natural na estrutura flat atual.
+
+- [ ] Modularização do backend por domínio (`resume`/`chat`/`shared`) — [US-14-01](backlog/fase-14/US-14-01-modularizacao-backend-dominio.md), P2
+- [ ] Modularização do frontend por domínio (`modules/resume`/`modules/chat`) — [US-14-02](backlog/fase-14/US-14-02-modularizacao-frontend-dominio.md), P2
