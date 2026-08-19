@@ -14,7 +14,7 @@
 - [x] Mapeamento de erros documentado — `N/A`, mesmo motivo acima
 - [x] Modelagem de dados documentada — `N/A`, sem entidade nova
 - [x] Plano de testes definido — ver subseção "Plano de testes"
-- [x] Épico e dependências identificados — épico Qualidade de Engenharia (`PRD-007`); reaproveita os relatórios de cobertura (`lcov.info`, `coverage.xml`) já gerados desde [US-09-01](../archive/fase-09/US-09-01-sonarcloud-ci.md) — sem dependência bloqueante de história em aberto
+- [x] Épico e dependências identificados — épico Qualidade de Engenharia (`PRD-007`); reaproveita os relatórios de cobertura (`lcov.info`, `coverage.xml`) já gerados desde [US-09-01](../fase-09/US-09-01-sonarcloud-ci.md) — sem dependência bloqueante de história em aberto
 - [x] ADR registrado se envolve decisão de stack nova — `N/A`, usa flags nativas das ferramentas já em uso (`pytest-cov`, `@vitest/coverage-v8`), sem lib nova nem mudança de arquitetura
 - [x] Variáveis de ambiente/segredos necessários identificados — `N/A`, nenhum segredo novo
 - [x] Referência visual definida — `N/A`, sem UI nova
@@ -43,7 +43,7 @@
 
 ### Dependências
 
-- [US-09-01](../archive/fase-09/US-09-01-sonarcloud-ci.md) — gerou os relatórios de cobertura (`lcov.info`, `coverage.xml`) que este gate reaproveita (Done)
+- [US-09-01](../fase-09/US-09-01-sonarcloud-ci.md) — gerou os relatórios de cobertura (`lcov.info`, `coverage.xml`) que este gate reaproveita (Done)
 
 ### Épico / Prioridade
 
