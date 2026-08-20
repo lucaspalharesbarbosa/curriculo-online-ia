@@ -109,11 +109,12 @@ FIXTURE_RESUME = Resume.model_validate(
 
 
 def test_build_chunks_generates_one_chunk_per_resume_section() -> None:
-    """Gera um chunk por seção do currículo."""
+    """Gera um chunk de resumo/bio + um chunk por item de cada seção do currículo."""
     chunks = build_chunks(FIXTURE_RESUME)
 
     total_esperado = (
-        len(FIXTURE_RESUME.experiences)
+        1  # ADR-013: chunk de resumo/bio (hero.summary + about)
+        + len(FIXTURE_RESUME.experiences)
         + len(FIXTURE_RESUME.skills)
         + len(FIXTURE_RESUME.projects)
         + len(FIXTURE_RESUME.certifications)
@@ -131,12 +132,13 @@ def test_build_chunks_does_not_generate_empty_text() -> None:
     assert all(chunk.text.strip() for chunk in chunks)
 
 
-def test_build_chunks_covers_all_seven_sections() -> None:
-    """Cobre as sete seções do currículo."""
+def test_build_chunks_covers_all_eight_sections() -> None:
+    """Cobre as oito seções do currículo, incluindo o resumo/bio (ADR-013)."""
     chunks = build_chunks(FIXTURE_RESUME)
 
     sections = {chunk.section for chunk in chunks}
     assert sections == {
+        "summary",
         "experience",
         "skill",
         "project",
@@ -145,6 +147,25 @@ def test_build_chunks_covers_all_seven_sections() -> None:
         "education",
         "article",
     }
+
+
+def test_chunk_resume_summary_contains_hero_summary_and_about() -> None:
+    """Chunk de resumo/bio (ADR-013) contém hero.summary e about na íntegra."""
+    chunks = build_chunks(FIXTURE_RESUME)
+
+    summary_chunk = next(c for c in chunks if c.section == "summary")
+    assert FIXTURE_RESUME.hero.summary in summary_chunk.text
+    assert FIXTURE_RESUME.about in summary_chunk.text
+
+
+def test_chunk_experience_preserves_highlights_as_a_bulleted_list() -> None:
+    """Highlights viram lista com marcadores no texto do chunk (ADR-013), não
+    uma frase corrida — cada highlight continua identificável isoladamente."""
+    chunks = build_chunks(FIXTURE_RESUME)
+
+    experience_chunk = next(c for c in chunks if c.id == "experience-0")
+    for highlight in FIXTURE_RESUME.experiences[0].highlights:
+        assert f"- {highlight}" in experience_chunk.text
 
 
 def test_chunk_experience_contains_company_and_technologies() -> None:

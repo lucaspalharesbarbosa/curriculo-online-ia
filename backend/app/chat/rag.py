@@ -58,13 +58,24 @@ def load_resume(path: Path = RESUME_JSON_PATH) -> Resume:
 EXPERIENCE_ONGOING_RECENCY_KEY = "9999-99"
 
 
+def _chunk_resume_summary(resume: Resume) -> Chunk:
+    # ADR-013: chunk dedicado ao resumo/bio (hero.summary + about) — texto
+    # livre que já descreve a atuação atual em prosa, como sinal redundante
+    # ao roteamento por seção/recência para perguntas gerais ("o que você
+    # faz hoje?").
+    text = f"{resume.hero.summary} {resume.about}"
+    return Chunk(id="summary-0", section="summary", text=text)
+
+
 def _chunk_experience(index: int, experience: Experience) -> Chunk:
     period = f"{experience.start_date} a {experience.end_date or 'o momento'}"
-    highlights = " ".join(experience.highlights)
+    # ADR-013: highlights como lista com marcadores, não uma frase corrida —
+    # preserva a estrutura que ajuda o modelo a "ler" itens distintos.
+    highlights = "\n".join(f"- {highlight}" for highlight in experience.highlights)
     technologies = ", ".join(experience.technologies)
     text = (
         f"{experience.role} na {experience.company}, {period}, "
-        f"{experience.location} ({experience.modality}). {highlights} "
+        f"{experience.location} ({experience.modality}).\n{highlights}\n"
         f"Tecnologias: {technologies}."
     )
     # Sem end_date = cargo atual → sentinela alta, ordena primeiro (ADR-010).
@@ -144,9 +155,11 @@ def _chunk_article(index: int, article: Article) -> Chunk:
 
 
 def build_chunks(resume: Resume) -> list[Chunk]:
-    """Um chunk por experiência, grupo de skills, projeto, certificação, reconhecimento,
-    formação e artigo (ADR-003 seção 1, ampliado pela ADR-006 e seu addendum)."""
-    chunks = [
+    """Um chunk de resumo/bio + um chunk por experiência, grupo de skills, projeto,
+    certificação, reconhecimento, formação e artigo (ADR-003 seção 1, ampliado
+    pela ADR-006, seu addendum e pela ADR-013)."""
+    chunks = [_chunk_resume_summary(resume)]
+    chunks += [
         _chunk_experience(i, experience)
         for i, experience in enumerate(resume.experiences)
     ]
