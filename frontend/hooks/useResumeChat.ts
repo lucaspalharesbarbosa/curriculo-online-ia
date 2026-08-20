@@ -2,7 +2,16 @@
 
 import { useCallback, useState } from "react";
 
-export type ResumeChatFeedback = "up" | "down";
+import {
+  ChatApiError,
+  RESUME_CHAT_ERROR_MESSAGE,
+  RESUME_CHAT_RATE_LIMIT_MESSAGE,
+  type ChatClient,
+  type ChatFeedbackRating,
+} from "@/modules/chat/lib/chat-client";
+import { httpChatClient } from "@/modules/chat/lib/http-chat-client";
+
+export type ResumeChatFeedback = ChatFeedbackRating;
 
 export type ResumeChatMessage = {
   id: string;
@@ -15,40 +24,15 @@ export type ResumeChatMessage = {
   feedback?: ResumeChatFeedback | null;
 };
 
-type ChatResponse = {
-  answer: string;
-  source?: "resume" | "web";
-};
+export { RESUME_CHAT_ERROR_MESSAGE, RESUME_CHAT_RATE_LIMIT_MESSAGE };
 
-/** Same-origin — Next faz proxy para o FastAPI (`app/api/chat`). */
-export const RESUME_CHAT_ENDPOINT = "/api/chat";
-
-/** Same-origin — Next faz proxy para o FastAPI (`app/api/chat/feedback`). */
-export const RESUME_CHAT_FEEDBACK_ENDPOINT = "/api/chat/feedback";
-
-export const RESUME_CHAT_ERROR_MESSAGE =
-  "Não consegui responder agora, tente de novo.";
-
-export const RESUME_CHAT_RATE_LIMIT_MESSAGE =
-  "Muitas requisições. Tente novamente em instantes.";
-
-class ChatApiError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "ChatApiError";
-  }
-}
-
-/** Nunca repassa `detail` do backend — evita vazar config/stack ao visitante. */
-function publicErrorMessage(status: number): string {
-  if (status === 429) {
-    return RESUME_CHAT_RATE_LIMIT_MESSAGE;
-  }
-  return RESUME_CHAT_ERROR_MESSAGE;
-}
-
-/** Estado + envio para o endpoint real `/chat` (RAG) via proxy Next. */
-export function useResumeChat() {
+/**
+ * Estado + envio para o chat (RAG) via `ChatClient` (ADR-012, US-14-04).
+ * Recebe o client por parâmetro — default é o adapter HTTP real
+ * (`httpChatClient`, proxy Next para `/chat`), para não quebrar quem já usa
+ * o hook sem argumento.
+ */
+export function useResumeChat(chatClient: ChatClient = httpChatClient) {
   const [messages, setMessages] = useState<ResumeChatMessage[]>([]);
   const [question, setQuestion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,17 +64,7 @@ export function useResumeChat() {
       setIsSubmitting(true);
 
       try {
-        const response = await fetch(RESUME_CHAT_ENDPOINT, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: trimmedQuestion }),
-        });
-
-        if (!response.ok) {
-          throw new ChatApiError(publicErrorMessage(response.status));
-        }
-
-        const data = (await response.json()) as ChatResponse;
+        const data = await chatClient.sendMessage(trimmedQuestion);
 
         setMessages((current) =>
           current.map((message) =>
@@ -124,7 +98,7 @@ export function useResumeChat() {
         setIsSubmitting(false);
       }
     },
-    [isSubmitting, question],
+    [chatClient, isSubmitting, question],
   );
 
   const sendFeedback = useCallback(
@@ -134,24 +108,22 @@ export function useResumeChat() {
       setMessages((current) => {
         const target = current.find((message) => message.id === messageId);
         if (target?.answer) {
-          void fetch(RESUME_CHAT_FEEDBACK_ENDPOINT, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+          void chatClient
+            .sendFeedback({
               question: target.question,
               answer: target.answer,
               rating,
-            }),
-          }).catch(() => {
-            // Fire-and-forget — falha de rede não deve afetar a UI do chat.
-          });
+            })
+            .catch(() => {
+              // Fire-and-forget — falha de rede não deve afetar a UI do chat.
+            });
         }
         return current.map((message) =>
           message.id === messageId ? { ...message, feedback: rating } : message,
         );
       });
     },
-    [],
+    [chatClient],
   );
 
   return {
