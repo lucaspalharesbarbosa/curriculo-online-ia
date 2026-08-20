@@ -1,9 +1,19 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  vi,
+  type Mock,
+} from "vitest";
 
 import {
   ChatApiError,
+  MAX_HISTORY_MESSAGES,
   RESUME_CHAT_ERROR_MESSAGE,
   RESUME_CHAT_RATE_LIMIT_MESSAGE,
+  type ChatHistoryMessage,
 } from "./chat-client";
 import {
   HttpChatClient,
@@ -41,6 +51,70 @@ describe("HttpChatClient", () => {
       }),
     );
     expect(result).toEqual({ answer: "Resposta real.", source: "resume" });
+  });
+
+  it("inclui o history no body quando informado (ADR-014)", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ answer: "Resposta real.", source: "resume" }),
+    } as Response);
+    const history = [
+      { role: "user" as const, content: "Onde Lucas trabalha?" },
+      { role: "assistant" as const, content: "Na Engineering Brasil." },
+    ];
+
+    await client.sendMessage("Onde fica a matriz da empresa?", history);
+
+    expect(fetch).toHaveBeenCalledWith(
+      RESUME_CHAT_ENDPOINT,
+      expect.objectContaining({
+        body: JSON.stringify({
+          question: "Onde fica a matriz da empresa?",
+          history,
+        }),
+      }),
+    );
+  });
+
+  it("trunca o history às últimas MAX_HISTORY_MESSAGES trocas antes de enviar", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ answer: "Resposta real." }),
+    } as Response);
+    const history = Array.from(
+      { length: 10 },
+      (_, index): ChatHistoryMessage => ({
+        role: index % 2 === 0 ? "user" : "assistant",
+        content: `turno ${index}`,
+      }),
+    );
+
+    await client.sendMessage("Pergunta atual", history);
+
+    const sentBody = JSON.parse(
+      (fetch as unknown as Mock).mock.calls[0][1].body as string,
+    );
+    expect(sentBody.history).toHaveLength(MAX_HISTORY_MESSAGES);
+    expect(sentBody.history).toEqual(history.slice(-MAX_HISTORY_MESSAGES));
+  });
+
+  it("não inclui history no body quando não informado (retrocompatibilidade)", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ answer: "Resposta real." }),
+    } as Response);
+
+    await client.sendMessage("Onde você trabalha?", []);
+
+    expect(fetch).toHaveBeenCalledWith(
+      RESUME_CHAT_ENDPOINT,
+      expect.objectContaining({
+        body: JSON.stringify({ question: "Onde você trabalha?" }),
+      }),
+    );
   });
 
   it("lança ChatApiError com aviso de rate limit em 429, sem vazar o body do backend", async () => {

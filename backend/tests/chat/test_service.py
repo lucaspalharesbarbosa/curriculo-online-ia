@@ -11,12 +11,15 @@ from openai import OpenAIError
 
 from app.chat import rag, service
 from tests.chat.fakes import (
+    FailFirstThenAnswerChatCompletionProvider,
     FailIfCalledWebSearchProvider,
     FakeChatCompletionProvider,
     FakeEmbeddingProvider,
+    FakeEmbeddingProviderByText,
     FakeWebSearchProvider,
     RaisingChatCompletionProvider,
     RaisingEmbeddingProvider,
+    SequentialChatCompletionProvider,
 )
 
 FIXTURE_INDEX = [
@@ -218,3 +221,170 @@ def test_get_known_entities_loads_once_and_reuses_in_memory_cache(
     assert first == ["Engineering Brasil"]
     assert second == ["Engineering Brasil"]
     assert calls["count"] == 1
+
+
+# --- US-15-02: memória conversacional (ADR-014) --------------------------------------
+
+
+def test_answer_question_resolves_anaphora_using_condensed_question_for_retrieval(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-001/CA-002: "onde fica a matriz da empresa?" resolve via histórico."""
+    condensed_question = "Onde fica a matriz da NA Engineering Brasil?"
+    chunk = rag.Chunk(
+        id="experience-0",
+        section="experience",
+        text="A matriz da NA Engineering Brasil fica em São Paulo, SP.",
+    )
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProviderByText(
+        {
+            condensed_question: [1.0, 0.0],
+            # pergunta crua isolada não teria como casar com o chunk certo —
+            # embedding ortogonal, prova que é a condensada quem é usada
+            "Onde fica a matriz da empresa?": [0.0, 1.0],
+        }
+    )
+    chat_completion_provider = SequentialChatCompletionProvider(
+        [condensed_question, "A matriz fica em São Paulo, SP."]
+    )
+    history = [
+        service.HistoryTurn(role="user", content="Onde Lucas trabalha?"),
+        service.HistoryTurn(
+            role="assistant", content="Você trabalha na NA Engineering Brasil."
+        ),
+    ]
+
+    answer, source = service.answer_question(
+        "Onde fica a matriz da empresa?",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+        history=history,
+    )
+
+    assert answer == "A matriz fica em São Paulo, SP."
+    assert source == "resume"
+    assert len(chat_completion_provider.calls) == 2
+
+
+def test_answer_question_includes_history_turns_between_system_and_current_question(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-002/CA-003: histórico entra nas `messages`, pergunta original mantida."""
+    chunk = rag.Chunk(id="experience-0", section="experience", text="Contexto.")
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProvider(embedding=[1.0, 0.0])
+    chat_completion_provider = SequentialChatCompletionProvider(
+        ["Onde fica a matriz da NA Engineering Brasil?", "Fica em São Paulo, SP."]
+    )
+    history = [
+        service.HistoryTurn(role="user", content="Onde Lucas trabalha?"),
+        service.HistoryTurn(
+            role="assistant", content="Você trabalha na NA Engineering Brasil."
+        ),
+    ]
+
+    service.answer_question(
+        "Onde fica a matriz da empresa?",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+        history=history,
+    )
+
+    final_messages = chat_completion_provider.calls[1]["messages"]
+    assert final_messages[0] == {"role": "system", "content": service.SYSTEM_PROMPT}
+    assert final_messages[1] == {"role": "user", "content": "Onde Lucas trabalha?"}
+    assert final_messages[2] == {
+        "role": "assistant",
+        "content": "Você trabalha na NA Engineering Brasil.",
+    }
+    assert final_messages[3]["content"] == service._build_user_prompt(
+        "Onde fica a matriz da empresa?", [chunk]
+    )
+
+
+def test_answer_question_without_history_does_not_call_condensation() -> None:
+    """CA-004: sem histórico, comportamento idêntico ao pré-US-15-02 (1 chamada só)."""
+    embedding_provider = FakeEmbeddingProvider(embedding=[1.0, 0.0])
+    chat_completion_provider = FakeChatCompletionProvider(
+        answer="Você trabalha na Engineering Brasil."
+    )
+
+    answer, source = service.answer_question(
+        "Onde você trabalha?",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+        history=None,
+    )
+
+    assert answer == "Você trabalha na Engineering Brasil."
+    assert source == "resume"
+    assert chat_completion_provider.call_count == 1
+
+
+def test_answer_question_falls_back_to_raw_question_when_condensation_fails() -> None:
+    """CA-005: falha na condensation cai para a pergunta crua, sem propagar erro."""
+    chat_completion_provider = FailFirstThenAnswerChatCompletionProvider(
+        OpenAIError("falha simulada de condensation"),
+        "Você trabalha na Engineering Brasil.",
+    )
+    embedding_provider = FakeEmbeddingProvider(embedding=[1.0, 0.0])
+    history = [
+        service.HistoryTurn(role="user", content="Onde Lucas trabalha?"),
+        service.HistoryTurn(role="assistant", content="Na Engineering Brasil."),
+    ]
+
+    answer, source = service.answer_question(
+        "E o cargo, qual é?",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+        history=history,
+    )
+
+    assert answer == "Você trabalha na Engineering Brasil."
+    assert source == "resume"
+    assert embedding_provider.calls == ["E o cargo, qual é?"]
+    assert len(chat_completion_provider.calls) == 2
+
+
+def test_answer_question_truncates_history_to_last_window() -> None:
+    """CA-006: histórico maior que `MAX_HISTORY_MESSAGES` é truncado à cauda."""
+    chat_completion_provider = SequentialChatCompletionProvider(
+        ["pergunta condensada", "resposta final"]
+    )
+    embedding_provider = FakeEmbeddingProvider(embedding=[1.0, 0.0])
+    history = [
+        service.HistoryTurn(
+            role="user" if i % 2 == 0 else "assistant", content=f"turno {i}"
+        )
+        for i in range(10)
+    ]
+    kept = history[-service.MAX_HISTORY_MESSAGES :]
+    dropped = history[: -service.MAX_HISTORY_MESSAGES]
+
+    service.answer_question(
+        "pergunta atual",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+        history=history,
+    )
+
+    condensation_prompt = chat_completion_provider.calls[0]["messages"][1]["content"]
+    final_contents = [
+        message["content"] for message in chat_completion_provider.calls[1]["messages"]
+    ]
+    for turn in kept:
+        assert turn.content in condensation_prompt
+        assert turn.content in final_contents
+    for turn in dropped:
+        assert turn.content not in condensation_prompt
+        assert turn.content not in final_contents

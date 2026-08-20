@@ -198,3 +198,16 @@ Reorganização de backend e frontend por domínio de negócio (`resume`, `chat`
 - [ ] Modularização do frontend por domínio (`modules/resume`/`modules/chat`) — [US-14-02](backlog/fase-14/US-14-02-modularizacao-frontend-dominio.md), P2 — Dev/QA/Tech Lead aprovados, validação de preview e aceite do PO pendentes
 - [ ] Ports & Adapters no domínio chat do backend — [US-14-03](backlog/fase-14/US-14-03-ports-adapters-chat-backend.md), P2 — Dev/QA/Tech Lead aprovados, PR para `develop` e aceite do PO pendentes
 - [ ] Port `ChatClient` no domínio chat do frontend — [US-14-04](backlog/fase-14/US-14-04-chat-client-frontend.md), P2 — em implementação
+
+## Fase 15 — Memória Conversacional (RAG)
+
+**Status:** Em andamento — US-15-01 (ADR) e US-15-02 (backend) `Done`; US-15-03 (frontend) Dev/QA/Tech Lead aprovados, aguardando push/PR, preview da Vercel e aceite do PO
+**PRD:** [`PRD-013-memoria-conversacional-rag.md`](PRD-013-memoria-conversacional-rag.md)
+**Backlog:** [`docs/product/backlog/fase-15/`](backlog/fase-15/) (US-15-01 a US-15-03)
+**Branch:** `feature/chat-memoria-conversacional`
+
+O `/chat` é stateless por requisição e não resolve referência anafórica entre turnos (ex.: "onde Lucas trabalha?" → "onde fica a matriz **da empresa**?" não é entendido, porque o retrieval busca só a pergunta isolada e o LLM não recebe histórico). Escopo: `ChatRequest` ganha `history` opcional (janela deslizante), reformulação da pergunta antes do retrieval quando há histórico, histórico incluído no prompt final, e o frontend passa a enviar o histórico que já mantém em `useResumeChat` — mantendo o backend sem sessão persistida em servidor (decisão do autor).
+
+- [x] ADR: memória conversacional no fluxo de RAG — [US-15-01](backlog/fase-15/US-15-01-adr-memoria-conversacional-rag.md), P1 (`Done`; `ADR-014`)
+- [x] Backend: histórico + query condensation + prompt com contexto — [US-15-02](backlog/fase-15/US-15-02-backend-memoria-conversacional.md), P1 (`Done`)
+- [ ] Frontend: enviar histórico ao backend — [US-15-03](backlog/fase-15/US-15-03-frontend-envio-historico.md), P1 — Dev/QA/Tech Lead aprovados, aguardando push/PR, preview e aceite do PO
