@@ -77,7 +77,7 @@ Arquitetura & Modularização — P2
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
-| QA | `@qa-engineer` | — | — | — |
+| QA | `@qa-engineer` | Aprovado — verificação independente: `npm test -- --run` 89/89 testes verdes em 19 arquivos (baseline pré-refactor era 82; `useResumeChat.test.ts` foi de 10 para 11 casos, `http-chat-client.test.ts` novo com 6 casos — sem teste perdido/pulado, nenhum `.skip`/`.todo` nos dois arquivos). `npm test -- --run --coverage`: `modules/chat/lib/chat-client.ts` 4/4 linhas (100%), `modules/chat/lib/http-chat-client.ts` 11/11 linhas, 100% funções, 100% branches (confirmado via `coverage/lcov.info`, não aparece na tabela-texto por quirk de largura do reporter v8), `hooks/useResumeChat.ts` 100% linhas/funções, 76,47% branches — todos acima do piso de 70%; cobertura global da suíte 85,48% stmts / 74,33% branches. Confirmado via `grep` que `hooks/useResumeChat.ts` não tem mais nenhuma chamada `fetch(` direta (CA-003). Nomenclatura de teste conforme convenção: `describe`/identificadores em inglês, título do `it()` em PT-BR nos dois arquivos tocados. `npm run build`/`npm run lint` limpos (2 warnings pré-existentes, sem regressão) | 2026-08-19 | commits `98e7644`, `9dca0ee`, `b272521` |
 | Tech Lead | `@tech-lead-review` | — | — | — |
 | PO | `@product-owner` | — | — | — |
 
