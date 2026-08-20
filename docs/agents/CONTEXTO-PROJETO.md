@@ -178,6 +178,8 @@ Decisão formal: [`ADR-002`](../architecture/ADR-002-hospedagem-gratuita.md) (**
 
 O dono técnico final é o autor (humano). Sugestões dos agentes (arquitetura, código, testes) são propostas, não aprovação automática — decisões de escopo/stack ficam registradas em ADR/PRD, inclusive quando uma sugestão é rejeitada.
 
+**Loop Engineering (`ADR-015`):** para o ciclo de execução rotineiro do pipeline — implementar, testar, corrigir, revisar, mesclar em `develop` — o `@orquestrador` roda autônomo de ponta a ponta sempre que houver sinal verificável (teste, lint, cobertura, achado de review), sem pausar para aprovação humana a cada fase. Essa autonomia **não** se aplica a decisões sem sinal objetivo (escolha de protótipo, ambiguidade de escopo/negócio, nova decisão de stack) nem ao merge em `main`, que continua gate humano único e obrigatório, sem exceção.
+
 ## Fase atual
 
 Fase 0 (preparação) **concluída e arquivada** (2026-08-15) — registrada retroativamente em `docs/product/backlog/archive/fase-00/` ([US-00-01](../product/backlog/archive/fase-00/US-00-01-customizacao-agentes-ia.md): agentes customizados; [US-00-02](../product/backlog/archive/fase-00/US-00-02-estrutura-inicial-repositorio.md): monorepo, `.gitignore`, branch protection, CI esqueleto, PR inicial).
