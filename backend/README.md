@@ -86,8 +86,8 @@ Em **produção** (`ENVIRONMENT=production`, configurado no painel do Render), o
 
 - **CORS**: restrito à origem definida em `ALLOWED_ORIGIN` (env var; default `http://localhost:3000` em dev). Em produção, configurar com a URL do frontend na Vercel — nunca `allow_origins=["*"]`. **Origem única** (`allow_origins=[ALLOWED_ORIGIN]` em `app/main.py`, sem lista) — para rodar um smoke manual do `/chat` a partir de um frontend local (`http://localhost:3000`) contra o backend real no Render, é preciso trocar `ALLOWED_ORIGIN` temporariamente no painel do Render para `http://localhost:3000` e depois reverter para a URL da Vercel; não dá para atender as duas origens ao mesmo tempo sem alterar o código.
 - **Rate limit**: contador simples em memória por IP (`app/chat/router.py`, `_request_log`) — sem lib externa (`slowapi` avaliado, mas dispensado; volume do projeto não justifica a dependência extra). Limite: 10 requisições/minuto por IP; excedente retorna `429`. Reinicia a cada deploy (estado em memória, não persistido) — aceitável para o volume de tráfego esperado (visitantes ocasionais de portfólio).
-- **Chave de API**: `LLM_API_KEY` só existe como variável de ambiente no backend (lida em `app/chat/rag.py`), nunca no client — ver [ADR-003](../docs/architecture/ADR-003-fluxo-rag.md) seção 5.
-- **Timeout e retry** ([ADR-004](../docs/architecture/ADR-004-resiliencia-backend-chat.md) / US-08-02): `get_client()` em `app/chat/rag.py` configura `timeout=20s` e `max_retries=1` (SDK retenta só erros transitórios tipicamente 429/5xx). Evita o default de minutos do SDK e limita o tempo que uma chamada lenta trava o worker do Render free tier. Timeout/falha após retry → `/chat` responde 500 com mensagem genérica (sem detalhe do provider).
+- **Chave de API**: `LLM_API_KEY` só existe como variável de ambiente no backend (lida em `app/chat/adapters/openai_adapter.py`), nunca no client — ver [ADR-003](../docs/architecture/ADR-003-fluxo-rag.md) seção 5.
+- **Timeout e retry** ([ADR-004](../docs/architecture/ADR-004-resiliencia-backend-chat.md) / US-08-02): `get_client()` em `app/chat/adapters/openai_adapter.py` configura `timeout=20s` e `max_retries=1` (SDK retenta só erros transitórios tipicamente 429/5xx). Evita o default de minutos do SDK e limita o tempo que uma chamada lenta trava o worker do Render free tier. Timeout/falha após retry → `/chat` responde 500 com mensagem genérica (sem detalhe do provider).
 
 ## Headers de segurança HTTP (US-08-07)
 
@@ -124,14 +124,18 @@ backend/
 │   │   └── env_bootstrap.py   # bootstrap de .env local
 │   ├── resume/                 # domínio "currículo"
 │   │   └── models.py           # schema Pydantic do currículo
-│   └── chat/                   # domínio "chat/RAG"
-│       ├── router.py            # endpoint /chat + /chat/feedback + rate limit
-│       ├── rag.py               # chunking + embeddings + busca por similaridade
-│       └── web_search.py        # fallback de busca web (Tavily)
-├── tests/                    # espelha backend/app/ (tests/chat/, tests/resume/)
+│   └── chat/                   # domínio "chat/RAG" — Ports & Adapters (ADR-012)
+│       ├── router.py            # camada HTTP: endpoint /chat + /chat/feedback, rate limit, Depends()
+│       ├── service.py           # use case: orquestra pergunta → resposta
+│       ├── ports.py             # Protocol: EmbeddingProvider, ChatCompletionProvider, WebSearchProvider
+│       ├── adapters/
+│       │   ├── openai_adapter.py   # EmbeddingProvider + ChatCompletionProvider (openai.OpenAI)
+│       │   └── tavily_adapter.py    # WebSearchProvider (Tavily)
+│       └── rag.py               # chunking, ranking, roteamento (recebe EmbeddingProvider por parâmetro)
+├── tests/                    # espelha backend/app/ (tests/chat/, tests/chat/adapters/, tests/resume/)
 └── requirements.txt
 ```
 
-Modularização por domínio (`resume`/`chat`/`shared`) — ver [`ADR-011`](../docs/architecture/ADR-011-modularizacao-ddd-lite.md).
+Modularização por domínio (`resume`/`chat`/`shared`) — ver [`ADR-011`](../docs/architecture/ADR-011-modularizacao-ddd-lite.md). Ports & Adapters no domínio `chat` — ver [`ADR-012`](../docs/architecture/ADR-012-clean-architecture-chat.md).
 
 Convenções completas em [`docs/agents/CONTEXTO-PROJETO.md`](../docs/agents/CONTEXTO-PROJETO.md).
