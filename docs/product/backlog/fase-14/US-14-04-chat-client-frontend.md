@@ -62,23 +62,23 @@ Arquitetura & Modularização — P2
 - [x] T06 Atualizar `docs/agents/CONTEXTO-PROJETO.md` (CA-008)
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
-- [ ] Todos os critérios de aceite acima `[x]`
-- [ ] Cobertura de testes ≥ 70% no código tocado — sem lógica nova além do adapter, mantém/supera baseline (`US-13-01`)
-- [ ] Build/lint limpo (`npm run build`, `npm run lint`, type checking estrito)
-- [ ] Review do `@tech-lead-review` sem Critical/High em aberto
-- [ ] Contrato de API bate com o documentado — `N/A`, sem mudança de contrato
-- [ ] Sem chave/secret exposto
-- [ ] Documentação atualizada — `CONTEXTO-PROJETO.md` (CA-008)
-- [ ] Deploy/preview verificado — preview da Vercel confirmando chat funcionando igual ao de produção
-- [ ] Vereditos de QA, Tech Lead e PO documentados abaixo
-- [ ] Status atualizado no arquivo
+- [x] Todos os critérios de aceite acima `[x]`
+- [x] Cobertura de testes ≥ 70% no código tocado — sem lógica nova além do adapter, mantém/supera baseline (`US-13-01`) — 100% em `chat-client.ts`/`http-chat-client.ts`, 100% linhas em `useResumeChat.ts` (ver veredito QA)
+- [x] Build/lint limpo (`npm run build`, `npm run lint`, type checking estrito)
+- [x] Review do `@tech-lead-review` sem Critical/High em aberto
+- [x] Contrato de API bate com o documentado — `N/A`, sem mudança de contrato (confirmado: nenhuma rota `app/api/chat/**` tocada)
+- [x] Sem chave/secret exposto
+- [x] Documentação atualizada — `CONTEXTO-PROJETO.md` (CA-008)
+- [ ] Deploy/preview verificado — pendente: depende de preview real gerado a partir do PR
+- [ ] Vereditos de QA, Tech Lead e PO documentados abaixo — QA e Tech Lead documentados; PO pendente (fora desta sessão)
+- [ ] Status atualizado no arquivo — pendente: fica "Ready for Agent"/status a ser decidido por quem orquestra a Fase 14 como um todo, junto do aceite do PO
 
 ### Vereditos — evidência do DoD, preenchido pelo agente de cada fase durante o pipeline
 
 | Fase do pipeline | Agente | Veredito | Data | Ref. |
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado — verificação independente: `npm test -- --run` 89/89 testes verdes em 19 arquivos (baseline pré-refactor era 82; `useResumeChat.test.ts` foi de 10 para 11 casos, `http-chat-client.test.ts` novo com 6 casos — sem teste perdido/pulado, nenhum `.skip`/`.todo` nos dois arquivos). `npm test -- --run --coverage`: `modules/chat/lib/chat-client.ts` 4/4 linhas (100%), `modules/chat/lib/http-chat-client.ts` 11/11 linhas, 100% funções, 100% branches (confirmado via `coverage/lcov.info`, não aparece na tabela-texto por quirk de largura do reporter v8), `hooks/useResumeChat.ts` 100% linhas/funções, 76,47% branches — todos acima do piso de 70%; cobertura global da suíte 85,48% stmts / 74,33% branches. Confirmado via `grep` que `hooks/useResumeChat.ts` não tem mais nenhuma chamada `fetch(` direta (CA-003). Nomenclatura de teste conforme convenção: `describe`/identificadores em inglês, título do `it()` em PT-BR nos dois arquivos tocados. `npm run build`/`npm run lint` limpos (2 warnings pré-existentes, sem regressão) | 2026-08-19 | commits `98e7644`, `9dca0ee`, `b272521` |
-| Tech Lead | `@tech-lead-review` | — | — | — |
+| Tech Lead | `@tech-lead-review` | Aprovar — revisão de `chat-client.ts`, `http-chat-client.ts`, `useResumeChat.ts` via `git diff` contra o merge-base real (`34e792a`; a branch `feature/us-14-03-ports-adapters-chat-backend` avançou em outro worktree após esta branch ser criada, então o diff foi tirado contra o ponto real de bifurcação para isolar só as mudanças desta história — confirmado que `roadmap.md`/`US-14-03.md` não foram tocados aqui). Contrato `ChatClient` (`sendMessage`/`sendFeedback`) espelha fielmente o padrão `Protocol` do backend (`ports.py`, US-14-03); `HttpChatClient` migra `fetch`/`ChatApiError`/`publicErrorMessage` de `useResumeChat.ts` sem alterar lógica (status 429 → rate limit, qualquer outro erro/exceção → mensagem genérica, nunca repassa `detail` do backend); `sendFeedback` do adapter não engole erro — o fire-and-forget (`.catch(() => {})`) continua no hook, mesmo comportamento de antes. Confirmado via `grep` que `hooks/useResumeChat.ts` não chama mais `fetch(` direto (CA-003) e que nenhuma rota `app/api/chat/**` foi tocada (contrato inalterado, CA-009 equivalente do backend). `ResumeChatFeedback` (tipo público consumido por `RagChatPanel.tsx`) preservado via alias de `ChatFeedbackRating`, sem breaking change de tipo — confirmado pelo `npm run build` (type check estrito) limpo. Sem chave/secret exposto (`grep -iE "api[_-]?key\|secret\|token\|password"` no diff, vazio). `httpChatClient` é singleton simples, sem I/O no import. Sem achado Critical/High | 2026-08-19 | commits `98e7644`, `9dca0ee`, `b272521`, `3f88a47` |
 | PO | `@product-owner` | — | — | — |
 
 **Status:** Ready for Agent
