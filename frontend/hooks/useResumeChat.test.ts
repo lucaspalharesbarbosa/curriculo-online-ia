@@ -1,34 +1,43 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { describe, expect, it, vi, type Mock } from "vitest";
 
 import {
+  ChatApiError,
   RESUME_CHAT_ERROR_MESSAGE,
   RESUME_CHAT_RATE_LIMIT_MESSAGE,
-  useResumeChat,
-} from "./useResumeChat";
+  type ChatClient,
+  type ChatResponse,
+} from "@/modules/chat/lib/chat-client";
+
+import { useResumeChat } from "./useResumeChat";
+
+type FakeChatClient = {
+  sendMessage: Mock<ChatClient["sendMessage"]>;
+  sendFeedback: Mock<ChatClient["sendFeedback"]>;
+};
+
+/** Fake de `ChatClient` (ADR-012/US-14-04) — sem `fetch`/rede, só resolve/rejeita conforme o teste. */
+function createFakeChatClient(): FakeChatClient {
+  return {
+    sendMessage: vi.fn(),
+    sendFeedback: vi.fn().mockResolvedValue(undefined),
+  };
+}
 
 describe("useResumeChat", () => {
-  beforeEach(() => {
-    vi.stubGlobal("fetch", vi.fn());
-  });
+  it("envia a pergunta e preenche a resposta ao receber sucesso do client", async () => {
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: "Resposta real.",
+    } satisfies ChatResponse);
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
-  it("envia a pergunta e preenche a resposta ao receber 200", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({ answer: "Resposta real." }),
-    } as Response);
-
-    const { result } = renderHook(() => useResumeChat());
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     await act(async () => {
       await result.current.sendQuestion("Onde você trabalha?");
     });
 
+    expect(chatClient.sendMessage).toHaveBeenCalledWith("Onde você trabalha?");
     expect(result.current.messages).toHaveLength(1);
     expect(result.current.messages[0]).toMatchObject({
       question: "Onde você trabalha?",
@@ -38,14 +47,13 @@ describe("useResumeChat", () => {
     expect(result.current.isSubmitting).toBe(false);
   });
 
-  it("marca a mensagem como erro com aviso de rate limit em 429, sem vazar o body do backend", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: false,
-      status: 429,
-      json: async () => ({ error: { code: "rate_limited" } }),
-    } as Response);
+  it("marca a mensagem como erro com aviso de rate limit quando o client rejeita com ChatApiError de 429", async () => {
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockRejectedValueOnce(
+      new ChatApiError(RESUME_CHAT_RATE_LIMIT_MESSAGE),
+    );
 
-    const { result } = renderHook(() => useResumeChat());
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     await act(async () => {
       await result.current.sendQuestion("Pergunta qualquer");
@@ -57,14 +65,13 @@ describe("useResumeChat", () => {
     });
   });
 
-  it("marca a mensagem como erro genérico em falha 5xx, sem vazar detalhe interno", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: false,
-      status: 503,
-      json: async () => ({ error: { code: "llm_unavailable" } }),
-    } as Response);
+  it("marca a mensagem como erro genérico quando o client rejeita com ChatApiError de falha 5xx", async () => {
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockRejectedValueOnce(
+      new ChatApiError(RESUME_CHAT_ERROR_MESSAGE),
+    );
 
-    const { result } = renderHook(() => useResumeChat());
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     await act(async () => {
       await result.current.sendQuestion("Pergunta qualquer");
@@ -76,10 +83,11 @@ describe("useResumeChat", () => {
     });
   });
 
-  it("marca a mensagem como erro genérico quando o fetch rejeita (falha de rede)", async () => {
-    vi.mocked(fetch).mockRejectedValueOnce(new Error("network error"));
+  it("marca a mensagem como erro genérico quando o client rejeita com erro não mapeado (falha de rede)", async () => {
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockRejectedValueOnce(new Error("network error"));
 
-    const { result } = renderHook(() => useResumeChat());
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     await act(async () => {
       await result.current.sendQuestion("Pergunta qualquer");
@@ -92,25 +100,27 @@ describe("useResumeChat", () => {
   });
 
   it("ignora envio de pergunta em branco", async () => {
-    const { result } = renderHook(() => useResumeChat());
+    const chatClient = createFakeChatClient();
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     await act(async () => {
       await result.current.sendQuestion("   ");
     });
 
     expect(result.current.messages).toHaveLength(0);
-    expect(fetch).not.toHaveBeenCalled();
+    expect(chatClient.sendMessage).not.toHaveBeenCalled();
   });
 
   it("ignora novo envio enquanto uma pergunta já está em andamento", async () => {
-    let resolveFetch!: (value: Response) => void;
-    vi.mocked(fetch).mockReturnValueOnce(
+    const chatClient = createFakeChatClient();
+    let resolveSendMessage!: (value: ChatResponse) => void;
+    chatClient.sendMessage.mockReturnValueOnce(
       new Promise((resolve) => {
-        resolveFetch = resolve;
+        resolveSendMessage = resolve;
       }),
     );
 
-    const { result } = renderHook(() => useResumeChat());
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     act(() => {
       void result.current.sendQuestion("Primeira pergunta");
@@ -121,27 +131,23 @@ describe("useResumeChat", () => {
       await result.current.sendQuestion("Segunda pergunta, deve ser ignorada");
     });
 
-    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(chatClient.sendMessage).toHaveBeenCalledTimes(1);
 
     await act(async () => {
-      resolveFetch({
-        ok: true,
-        status: 200,
-        json: async () => ({ answer: "Resposta real." }),
-      } as Response);
+      resolveSendMessage({ answer: "Resposta real." });
     });
 
     expect(result.current.messages).toHaveLength(1);
   });
 
   it("captura o campo source da resposta (US-11-07)", async () => {
-    vi.mocked(fetch).mockResolvedValueOnce({
-      ok: true,
-      status: 200,
-      json: async () => ({ answer: "Resposta pública.", source: "web" }),
-    } as Response);
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: "Resposta pública.",
+      source: "web",
+    } satisfies ChatResponse);
 
-    const { result } = renderHook(() => useResumeChat());
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     await act(async () => {
       await result.current.sendQuestion("O que a empresa faz?");
@@ -153,20 +159,14 @@ describe("useResumeChat", () => {
     });
   });
 
-  it("sendFeedback envia question/answer/rating para /api/chat/feedback e marca o voto", async () => {
-    vi.mocked(fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ answer: "Resposta real.", source: "resume" }),
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ ok: true }),
-      } as Response);
+  it("sendFeedback envia question/answer/rating pelo client e marca o voto", async () => {
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: "Resposta real.",
+      source: "resume",
+    } satisfies ChatResponse);
 
-    const { result } = renderHook(() => useResumeChat());
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     await act(async () => {
       await result.current.sendQuestion("Onde você trabalha?");
@@ -178,29 +178,22 @@ describe("useResumeChat", () => {
     });
 
     expect(result.current.messages[0]).toMatchObject({ feedback: "down" });
-    expect(fetch).toHaveBeenLastCalledWith(
-      "/api/chat/feedback",
-      expect.objectContaining({
-        method: "POST",
-        body: JSON.stringify({
-          question: "Onde você trabalha?",
-          answer: "Resposta real.",
-          rating: "down",
-        }),
-      }),
-    );
+    expect(chatClient.sendFeedback).toHaveBeenCalledWith({
+      question: "Onde você trabalha?",
+      answer: "Resposta real.",
+      rating: "down",
+    });
   });
 
-  it("sendFeedback não quebra quando a chamada de rede falha (fire-and-forget)", async () => {
-    vi.mocked(fetch)
-      .mockResolvedValueOnce({
-        ok: true,
-        status: 200,
-        json: async () => ({ answer: "Resposta real.", source: "resume" }),
-      } as Response)
-      .mockRejectedValueOnce(new Error("network error"));
+  it("sendFeedback não quebra quando o client rejeita (fire-and-forget)", async () => {
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: "Resposta real.",
+      source: "resume",
+    } satisfies ChatResponse);
+    chatClient.sendFeedback.mockRejectedValueOnce(new Error("network error"));
 
-    const { result } = renderHook(() => useResumeChat());
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     await act(async () => {
       await result.current.sendQuestion("Onde você trabalha?");
@@ -217,7 +210,8 @@ describe("useResumeChat", () => {
   });
 
   it("reset limpa mensagens, pergunta em andamento e estado de envio", () => {
-    const { result } = renderHook(() => useResumeChat());
+    const chatClient = createFakeChatClient();
+    const { result } = renderHook(() => useResumeChat(chatClient));
 
     act(() => {
       result.current.setQuestion("Rascunho de pergunta");
@@ -231,5 +225,12 @@ describe("useResumeChat", () => {
     expect(result.current.messages).toHaveLength(0);
     expect(result.current.question).toBe("");
     expect(result.current.isSubmitting).toBe(false);
+  });
+
+  it("usa o adapter HTTP como default quando nenhum ChatClient é injetado", () => {
+    const { result } = renderHook(() => useResumeChat());
+
+    expect(result.current.messages).toHaveLength(0);
+    expect(typeof result.current.sendQuestion).toBe("function");
   });
 });
