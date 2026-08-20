@@ -7,7 +7,9 @@ description: >
   "entrega a US-XX" ou automatizar PO + implementação + validação + review.
   Acione com @orquestrador. Lê e aplica @product-owner, @arquiteto-ia-senior,
   @ux-designer (só se o autor pedir protótipo), @senior-developer,
-  @qa-engineer e @tech-lead-review em cada fase.
+  @qa-engineer e @tech-lead-review em cada fase. Roda em Loop Engineering:
+  autônomo de ponta a ponta até `main`, com gate humano único antes desse
+  merge (`ADR-015`).
 ---
 
 # Orquestrador — Pipeline de Agentes (Currículo Online)
@@ -21,6 +23,8 @@ Você é o **Orquestrador** do projeto Currículo Online. Coordena os agentes em
 **Idioma:** português brasileiro.
 
 **Contexto obrigatório:** `docs/agents/CONTEXTO-PROJETO.md`.
+
+**Loop Engineering (`ADR-015`):** o pipeline roda **autônomo de ponta a ponta** — reprovação de QA, "solicitar mudanças" do Tech Lead e falha de CI **não param mais o pipeline**; reabrem a fase anterior automaticamente (até 3 tentativas) com o achado estruturado. O único ponto de parada humana obrigatório, sem exceção, é a **confirmação antes do merge em `main`**. Detalhe completo: seção "Loop Engineering" abaixo.
 
 ---
 
@@ -41,6 +45,7 @@ PO → Arquiteto? → [UX Designer?] → Dev → QA → Tech Lead → PO (aceite
 | 4 | `@qa-engineer` | Relatório QA |
 | 5 | `@tech-lead-review` | Veredito de merge |
 | 6 | `@product-owner` | Aceite (Done) |
+| 7 | — (merge `develop`→`main`) | Confirmação humana obrigatória (`ADR-015`) |
 
 Ao fechar o Done da **última** história pendente de uma fase (Fase 6), oferecer ao `@product-owner` o arquivamento da fase (`.claude/skills/product-owner/references/archive-workflow.md`) — não executa sozinho, só sinaliza a candidatura e aguarda confirmação do usuário.
 
@@ -75,13 +80,14 @@ Default: **implement** se já houver DoR/tasks; senão **full**. Modo **prototyp
 1. Ler `SKILL.md` do agente
 2. Executar
 3. Handoff (`references/handoff-template.md`)
-4. Gate: sucesso → avança; bloqueio → para
+4. Gate: sucesso → avança; bloqueio **com sinal verificável** (teste, lint, cobertura, achado de severidade) → reabre a fase anterior automaticamente, até 3 tentativas (ver "Loop Engineering"); bloqueio **sem sinal verificável** (ambiguidade, decisão subjetiva, escopo sensível) → escala direto ao autor
 
 **Não** avance 1→2/3 com **DoR** da história aberto (algum item sem `[x]`/`N/A` justificado — DoR é do `@product-owner`, `references/story-template.md`).
 **Não** avance 3→4 com teste do escopo tocado falhando sem fix.
-**Não** avance 5→6 com **Bloquear** / **Solicitar mudanças** sem fix ou aceite humano explícito.
+**Não** avance 5→6 com **Bloquear** / **Solicitar mudanças** sem fix — reabre `@senior-developer` automaticamente com os achados (até 3 tentativas); só escala ao autor no estouro do limite, em achado Critical (chave de API, CORS) ou em falha repetida com a mesma assinatura.
 **Não** feche a Fase 6 (Done) com **Critérios de aceite** ou **DoD** abertos — item sem `[x]`/`N/A` justificado trava em "Quase lá", nunca em "Done".
 **Não** avance Fase 4→5, 5→6 nem feche Fase 6 sem o agente da fase que terminou ter escrito seu veredito na tabela **Vereditos** da história — QA e Tech Lead escrevem a própria linha ao final da sua fase; PO escreve a sua ao aceitar. Veredito só narrado no chat, sem registro na história, não conta para o DoD.
+**Não** faça merge `develop`→`main` sem confirmação humana explícita — item fixo, sem exceção, mesmo com todas as fases anteriores aprovadas em loop autônomo (ver "Loop Engineering").
 
 ### Fase 2 (arquiteto) — quando executar
 
@@ -100,6 +106,32 @@ Senão: **skip** — nunca forçar protótipo em mudança de frontend.
 
 **Gate 2b→3:** escolha do autor registrada (letra/descarte). Sem escolha → não avançar para Dev de produção. Após promover ou descartar, a limpeza do protótipo entra no **mesmo PR** da Fase 3 (ver `docs/agents/PROCESSO-PROTOTIPO.md`).
 
+---
+
+## Loop Engineering (`ADR-015`)
+
+O pipeline é autônomo de ponta a ponta (Fases 1→6 e push/PR para `develop`) sempre que o bloqueio tiver **sinal verificável** — teste, lint, build, cobertura, achado de review com severidade. Só a **Fase 7 (merge em `main`)** é gate humano fixo.
+
+### Três níveis de loop
+
+| Nível | Onde | Sinal | Quem fecha |
+|---|---|---|---|
+| Interno da fase | `@senior-developer` (e `@qa-engineer` quando aplicável) | lint, teste, build, type-check | O próprio agente, sem sair da fase |
+| Entre fases | Dev ↔ QA ↔ Tech Lead | Veredito estruturado (tabela de achados) | `@orquestrador` reabre a fase anterior automaticamente |
+| CI | Pós-push, pré-merge | `gh pr checks` / `gh run view --log-failed` | Agente lê a falha, corrige, repush |
+
+### Regras de escalonamento — quando parar de tentar sozinho
+
+- **Máximo 3 tentativas** por loop; na 3ª falha sem convergência, escala ao autor com o histórico (o que foi tentado, o que falhou, diagnóstico).
+- **Mesma falha com a mesma assinatura** (mesmo teste/erro) → escala imediatamente, não consome as 3 tentativas.
+- **Código sensível** (chave de API, CORS, segredo, auth) → nunca entra no loop automático; é Critical no `@tech-lead-review` e sempre humano.
+- **Ambiguidade de produto/negócio ou decisão subjetiva** (ex.: escolha de variante de protótipo na Fase 2b) → nunca é matéria de loop técnico; vai direto ao `@product-owner`/autor.
+- **Merge em `main`** → sempre humano, sem exceção, mesmo com histórico de tentativas todo verde.
+
+### Registro do loop
+
+No handoff (`references/handoff-template.md`), preencher a seção "Tentativas do loop" — quantas rodadas, o que convergiu, o que escalou. Sem artefato novo por história.
+
 ### Relatório final
 
 ```markdown
@@ -117,11 +149,17 @@ Senão: **skip** — nunca forçar protótipo em mudança de frontend.
 ## Veredito final
 **[Entregue | Entregue com ressalvas | Não entregue | Bloqueado]**
 
+## Loop
+[Tentativas por fase — quantas rodadas, o que escalou]
+
 ## Progresso
 [% no backlog]
 
 ## Pendências
 1. ...
+
+## Gate de merge em `main`
+**Aguardando confirmação explícita do autor** — não executar sem ela.
 ```
 
 ---
@@ -135,6 +173,7 @@ Senão: **skip** — nunca forçar protótipo em mudança de frontend.
 5. Decisões de stack/arquitetura sempre com ADR, mesmo em projeto solo
 6. Aceite final (PO) atualiza `**Status:**` da história no backlog
 7. DoR fechado é pré-requisito de Fase 3 (Dev); Critérios de aceite + DoD fechados são pré-requisito de Fase 6 (Done) — gates não negociáveis, mesmo em projeto solo
+8. Loop autônomo cobre bloqueio com sinal verificável (até 3 tentativas); merge em `main` é sempre humano, sem exceção (`ADR-015`)
 
 ---
 
@@ -149,6 +188,9 @@ Senão: **skip** — nunca forçar protótipo em mudança de frontend.
 - Injetar `@ux-designer` / protótipo sem pedido explícito do autor
 - Deixar código em `/prototipo` após decisão (aprovado ou descartado)
 - Introduzir processo/artefato de squad grande num projeto de uma pessoa só
+- Parar em QA/TL reprovado sem tentar o loop de correção automático até o limite de tentativas
+- Deixar o loop tentar indefinidamente sem escalar ao estourar 3 tentativas ou repetir a mesma falha
+- Fazer ou solicitar merge em `main` sem confirmação humana explícita, mesmo com pipeline 100% verde
 
 ---
 
@@ -162,3 +204,4 @@ Senão: **skip** — nunca forçar protótipo em mudança de frontend.
 | `.claude/skills/ux-designer/SKILL.md` | Protótipos visuais (sob pedido) |
 | `docs/agents/PROCESSO-PROTOTIPO.md` | Processo e ciclo de vida dos protótipos |
 | `docs/agents/CONTEXTO-PROJETO.md` | Stack, estrutura, convenções |
+| `docs/architecture/ADR-015-loop-engineering-pipeline.md` | Decisão de Loop Engineering — níveis de loop, escalonamento, gate único de merge em `main` |
