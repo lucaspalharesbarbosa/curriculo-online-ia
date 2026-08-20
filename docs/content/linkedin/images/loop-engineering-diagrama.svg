@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 440" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="1320" height="440" fill="#ffffff"/>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#374151"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#B45309"/>
+    </marker>
+    <marker id="arrowIndigo" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4338CA"/>
+    </marker>
+  </defs>
+
+  <text x="660" y="34" text-anchor="middle" font-size="24" font-weight="700" fill="#111827">Loop Engineering no pipeline de agentes</text>
+  <text x="660" y="58" text-anchor="middle" font-size="14" fill="#6B7280">cada seta se corrige sozinha ate convergir; a unica parada obrigatoria e antes do merge em main</text>
+
+  <g>
+    <rect x="25" y="100" width="170" height="70" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text x="110" y="141" text-anchor="middle" font-size="16" font-weight="600" fill="#1E1B4B">PO</text>
+  </g>
+  <g>
+    <rect x="245" y="100" width="170" height="70" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text x="330" y="141" text-anchor="middle" font-size="16" font-weight="600" fill="#1E1B4B">Arquiteto</text>
+  </g>
+  <g>
+    <rect x="465" y="100" width="170" height="70" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text x="550" y="133" text-anchor="middle" font-size="16" font-weight="600" fill="#1E1B4B">Dev</text>
+    <text x="550" y="153" text-anchor="middle" font-size="11" fill="#4338CA">loop interno: lint / teste / build</text>
+  </g>
+  <g>
+    <rect x="685" y="100" width="170" height="70" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text x="770" y="133" text-anchor="middle" font-size="15" font-weight="600" fill="#1E1B4B">QA + Tech Lead</text>
+    <text x="770" y="153" text-anchor="middle" font-size="11" fill="#4338CA">veredito estruturado</text>
+  </g>
+  <g>
+    <rect x="905" y="100" width="170" height="70" rx="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+    <text x="990" y="133" text-anchor="middle" font-size="16" font-weight="600" fill="#78350F">CI (push)</text>
+    <text x="990" y="153" text-anchor="middle" font-size="11" fill="#B45309">GitHub Actions</text>
+  </g>
+  <g>
+    <rect x="1125" y="100" width="170" height="70" rx="10" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"/>
+    <text x="1210" y="133" text-anchor="middle" font-size="15" font-weight="700" fill="#7F1D1D">Merge em main</text>
+    <text x="1210" y="153" text-anchor="middle" font-size="11" fill="#B91C1C">gate humano</text>
+  </g>
+
+  <line x1="195" y1="135" x2="243" y2="135" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="415" y1="135" x2="463" y2="135" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="635" y1="135" x2="683" y2="135" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="855" y1="135" x2="903" y2="135" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="1075" y1="135" x2="1123" y2="135" stroke="#374151" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <path d="M770,170 C770,235 550,235 550,170" fill="none" stroke="#4338CA" stroke-width="2" marker-end="url(#arrowIndigo)"/>
+  <text x="660" y="255" text-anchor="middle" font-size="12" fill="#4338CA">achado reabre o Dev (ate 3 tentativas)</text>
+
+  <path d="M990,170 C990,305 550,305 550,170" fill="none" stroke="#B45309" stroke-width="2" marker-end="url(#arrowAmber)"/>
+  <text x="770" y="325" text-anchor="middle" font-size="12" fill="#B45309">CI falha, agente corrige e faz o repush</text>
+
+  <text x="660" y="400" text-anchor="middle" font-size="14" font-weight="700" fill="#B91C1C">unico ponto de parada humano: confirmacao antes do merge em main</text>
+</svg>

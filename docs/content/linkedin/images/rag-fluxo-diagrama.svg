@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1450 480" font-family="Segoe UI, Arial, sans-serif">
+  <rect width="1450" height="480" fill="#ffffff"/>
+  <defs>
+    <marker id="arrowG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#059669"/>
+    </marker>
+    <marker id="arrowI" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4338CA"/>
+    </marker>
+    <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6B7280"/>
+    </marker>
+  </defs>
+
+  <text x="725" y="34" text-anchor="middle" font-size="24" font-weight="700" fill="#111827">RAG do curriculo: da pergunta a resposta</text>
+  <text x="725" y="58" text-anchor="middle" font-size="14" fill="#6B7280">a indexacao roda uma vez; a segunda linha roda a cada pergunta</text>
+
+  <text x="60" y="90" font-size="12" font-weight="700" fill="#4F46E5">INDEXACAO (UMA VEZ)</text>
+
+  <g>
+    <rect x="60" y="100" width="180" height="70" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text x="150" y="141" text-anchor="middle" font-size="14" font-weight="600" fill="#1E1B4B">resume.json</text>
+  </g>
+  <g>
+    <rect x="320" y="100" width="220" height="70" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text x="430" y="141" text-anchor="middle" font-size="14" font-weight="600" fill="#1E1B4B">chunking por secao</text>
+  </g>
+  <g>
+    <rect x="620" y="100" width="220" height="70" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text x="730" y="141" text-anchor="middle" font-size="14" font-weight="600" fill="#1E1B4B">embeddings (OpenAI)</text>
+  </g>
+  <g>
+    <rect x="920" y="100" width="220" height="70" rx="10" fill="#EEF2FF" stroke="#4F46E5" stroke-width="1.5"/>
+    <text x="1030" y="141" text-anchor="middle" font-size="14" font-weight="600" fill="#1E1B4B">indice JSON (cache)</text>
+  </g>
+
+  <line x1="240" y1="135" x2="318" y2="135" stroke="#4F46E5" stroke-width="2" marker-end="url(#arrowI)"/>
+  <line x1="540" y1="135" x2="618" y2="135" stroke="#4F46E5" stroke-width="2" marker-end="url(#arrowI)"/>
+  <line x1="840" y1="135" x2="918" y2="135" stroke="#4F46E5" stroke-width="2" marker-end="url(#arrowI)"/>
+
+  <text x="40" y="240" font-size="12" font-weight="700" fill="#059669">CADA PERGUNTA</text>
+
+  <g>
+    <rect x="40" y="250" width="180" height="70" rx="10" fill="#ECFDF5" stroke="#059669" stroke-width="1.5"/>
+    <text x="130" y="291" text-anchor="middle" font-size="13" font-weight="600" fill="#064E3B">pergunta + historico</text>
+  </g>
+  <g>
+    <rect x="260" y="250" width="220" height="70" rx="10" fill="#FEF3C7" stroke="#D97706" stroke-width="1.5"/>
+    <text x="370" y="281" text-anchor="middle" font-size="12" font-weight="600" fill="#78350F">condensacao da pergunta</text>
+    <text x="370" y="298" text-anchor="middle" font-size="11" fill="#B45309">so roda se houver historico</text>
+  </g>
+  <g>
+    <rect x="520" y="250" width="200" height="70" rx="10" fill="#ECFDF5" stroke="#059669" stroke-width="1.5"/>
+    <text x="620" y="291" text-anchor="middle" font-size="13" font-weight="600" fill="#064E3B">busca por similaridade</text>
+  </g>
+  <g>
+    <rect x="760" y="250" width="240" height="70" rx="10" fill="#ECFDF5" stroke="#059669" stroke-width="1.5"/>
+    <text x="880" y="281" text-anchor="middle" font-size="12" font-weight="600" fill="#064E3B">prompt: system + historico</text>
+    <text x="880" y="298" text-anchor="middle" font-size="12" font-weight="600" fill="#064E3B">+ pergunta atual</text>
+  </g>
+  <g>
+    <rect x="1040" y="250" width="180" height="70" rx="10" fill="#ECFDF5" stroke="#059669" stroke-width="1.5"/>
+    <text x="1130" y="291" text-anchor="middle" font-size="13" font-weight="600" fill="#064E3B">LLM (gpt-4o-mini)</text>
+  </g>
+  <g>
+    <rect x="1260" y="250" width="140" height="70" rx="10" fill="#DBEAFE" stroke="#2563EB" stroke-width="2"/>
+    <text x="1330" y="291" text-anchor="middle" font-size="14" font-weight="700" fill="#1E3A8A">resposta</text>
+  </g>
+
+  <line x1="220" y1="285" x2="258" y2="285" stroke="#059669" stroke-width="2" marker-end="url(#arrowG)"/>
+  <line x1="480" y1="285" x2="518" y2="285" stroke="#059669" stroke-width="2" marker-end="url(#arrowG)"/>
+  <line x1="720" y1="285" x2="758" y2="285" stroke="#059669" stroke-width="2" marker-end="url(#arrowG)"/>
+  <line x1="1000" y1="285" x2="1038" y2="285" stroke="#059669" stroke-width="2" marker-end="url(#arrowG)"/>
+  <line x1="1220" y1="285" x2="1258" y2="285" stroke="#059669" stroke-width="2" marker-end="url(#arrowG)"/>
+
+  <path d="M1030,170 C1030,215 620,215 620,250" fill="none" stroke="#4338CA" stroke-width="2" stroke-dasharray="1,0" marker-end="url(#arrowI)"/>
+  <text x="825" y="205" text-anchor="middle" font-size="12" fill="#4338CA">alimenta a busca</text>
+
+  <path d="M130,320 C130,390 620,390 620,320" fill="none" stroke="#6B7280" stroke-width="2" stroke-dasharray="6,5" marker-end="url(#arrowGray)"/>
+  <text x="375" y="412" text-anchor="middle" font-size="12" fill="#6B7280">sem historico, ou se a condensacao falhar: pergunta crua direto pra busca</text>
+</svg>
