@@ -109,11 +109,12 @@ FIXTURE_RESUME = Resume.model_validate(
 
 
 def test_build_chunks_generates_one_chunk_per_resume_section() -> None:
-    """Gera um chunk por seção do currículo."""
+    """Gera um chunk de resumo/bio + um chunk por item de cada seção do currículo."""
     chunks = build_chunks(FIXTURE_RESUME)
 
     total_esperado = (
-        len(FIXTURE_RESUME.experiences)
+        1  # ADR-013: chunk de resumo/bio (hero.summary + about)
+        + len(FIXTURE_RESUME.experiences)
         + len(FIXTURE_RESUME.skills)
         + len(FIXTURE_RESUME.projects)
         + len(FIXTURE_RESUME.certifications)
@@ -131,12 +132,13 @@ def test_build_chunks_does_not_generate_empty_text() -> None:
     assert all(chunk.text.strip() for chunk in chunks)
 
 
-def test_build_chunks_covers_all_seven_sections() -> None:
-    """Cobre as sete seções do currículo."""
+def test_build_chunks_covers_all_eight_sections() -> None:
+    """Cobre as oito seções do currículo, incluindo o resumo/bio (ADR-013)."""
     chunks = build_chunks(FIXTURE_RESUME)
 
     sections = {chunk.section for chunk in chunks}
     assert sections == {
+        "summary",
         "experience",
         "skill",
         "project",
@@ -145,6 +147,25 @@ def test_build_chunks_covers_all_seven_sections() -> None:
         "education",
         "article",
     }
+
+
+def test_chunk_resume_summary_contains_hero_summary_and_about() -> None:
+    """Chunk de resumo/bio (ADR-013) contém hero.summary e about na íntegra."""
+    chunks = build_chunks(FIXTURE_RESUME)
+
+    summary_chunk = next(c for c in chunks if c.section == "summary")
+    assert FIXTURE_RESUME.hero.summary in summary_chunk.text
+    assert FIXTURE_RESUME.about in summary_chunk.text
+
+
+def test_chunk_experience_preserves_highlights_as_a_bulleted_list() -> None:
+    """Highlights viram lista com marcadores no texto do chunk (ADR-013), não
+    uma frase corrida — cada highlight continua identificável isoladamente."""
+    chunks = build_chunks(FIXTURE_RESUME)
+
+    experience_chunk = next(c for c in chunks if c.id == "experience-0")
+    for highlight in FIXTURE_RESUME.experiences[0].highlights:
+        assert f"- {highlight}" in experience_chunk.text
 
 
 def test_chunk_experience_contains_company_and_technologies() -> None:
@@ -256,14 +277,16 @@ def test_load_or_build_index_reuses_existing_cache_without_calling_provider(
             chunk=Chunk(id="a", section="skill", text="Python"), embedding=[1.0, 0.0]
         )
     ]
-    rag.save_index(cached, path)
+    rag.save_index(cached, path, resume_hash_value=rag.resume_hash(FIXTURE_RESUME))
 
     def _fail_if_called(*args: object, **kwargs: object) -> None:
         raise AssertionError("build_index não deveria ser chamado com cache existente")
 
     monkeypatch.setattr(rag, "build_index", _fail_if_called)
 
-    loaded = rag.load_or_build_index(FakeEmbeddingProviderByText({}), path)
+    loaded = rag.load_or_build_index(
+        FakeEmbeddingProviderByText({}), path, resume=FIXTURE_RESUME
+    )
 
     assert loaded == cached
 
@@ -280,11 +303,40 @@ def test_load_or_build_index_generates_and_caches_when_missing(
     ]
     monkeypatch.setattr(rag, "build_index", lambda *a, **k: built)
 
-    loaded = rag.load_or_build_index(FakeEmbeddingProviderByText({}), path)
+    loaded = rag.load_or_build_index(
+        FakeEmbeddingProviderByText({}), path, resume=FIXTURE_RESUME
+    )
 
     assert loaded == built
     assert path.exists()
     assert rag.load_index(path) == built
+
+
+def test_load_or_build_index_rebuilds_when_resume_changed_since_cache(
+    tmp_path, monkeypatch: pytest.MonkeyPatch  # noqa: ANN001
+) -> None:
+    """Descarta o cache e reconstrói o índice quando o `resume.json` mudou."""
+    path = tmp_path / "rag_index.json"
+    stale = [
+        EmbeddedChunk(
+            chunk=Chunk(id="a", section="skill", text="Python antigo"),
+            embedding=[1.0, 0.0],
+        )
+    ]
+    rag.save_index(stale, path, resume_hash_value="hash-de-um-resume-diferente")
+    rebuilt = [
+        EmbeddedChunk(
+            chunk=Chunk(id="a", section="skill", text="Python novo"),
+            embedding=[0.0, 1.0],
+        )
+    ]
+    monkeypatch.setattr(rag, "build_index", lambda *a, **k: rebuilt)
+
+    loaded = rag.load_or_build_index(
+        FakeEmbeddingProviderByText({}), path, resume=FIXTURE_RESUME
+    )
+
+    assert loaded == rebuilt
 
 
 def test_cosine_similarity_with_null_vector_returns_zero() -> None:
@@ -310,6 +362,18 @@ def test_detect_section_intent_recognizes_experience_question() -> None:
 def test_detect_section_intent_returns_none_without_recognized_keyword() -> None:
     """Retorna None quando não reconhece nenhuma palavra-chave."""
     assert detect_section_intent("Já trabalhou com Kubernetes?") is None
+
+
+def test_detect_section_intent_recognizes_question_with_name_between_keywords() -> None:
+    """Reconhece a seção mesmo com o nome da pessoa entre as palavras da keyword.
+
+    Regressão: "Onde Lucas trabalha hoje?" não batia com a keyword "onde
+    trabalha" porque o casamento era por substring literal, e o nome próprio
+    quebrava a adjacência entre "onde" e "trabalha" — o roteamento por seção
+    (e, em cascata, o desempate por recência) ficava desligado.
+    """
+    assert detect_section_intent("Onde Lucas trabalha hoje?") == "experience"
+    assert detect_section_intent("Onde Lucas estudou?") == "education"
 
 
 def test_wants_recency_recognizes_recency_terms() -> None:
@@ -457,6 +521,169 @@ def test_search_with_routing_without_keyword_searches_without_restriction() -> N
     plain = search("já trabalhou com kubernetes?", index, embedding_provider, top_k=1)
 
     assert routed == plain
+
+
+# --- Regressão: "Onde Lucas trabalha hoje?" respondeu com empresa antiga -----
+#
+# Causa raiz: `detect_section_intent` casava por substring literal, então
+# inserir o nome/pronome do sujeito entre as palavras da keyword (ex. "onde
+# Lucas trabalha" em vez de "onde você trabalha") fazia a seção não ser
+# detectada, desligando também o desempate por recência em cascata
+# (`search_with_routing`). Corrigido trocando substring por casamento de
+# conjunto de tokens. A bateria abaixo cobre várias formas de perguntar a
+# mesma coisa para não deixar essa classe de bug voltar despercebida.
+
+EXPERIENCE_QUESTION_VARIANTS = [
+    "Onde Lucas trabalha hoje?",
+    "Onde o Lucas trabalha atualmente?",
+    "Você sabe onde o Lucas Palhares trabalha?",
+    "Em que empresa o Lucas trabalha hoje em dia?",
+    "Qual é a última empresa do Lucas?",
+    "Qual o emprego atual do Lucas Palhares Barbosa?",
+    "Onde você trabalha atualmente?",
+    "Qual a última empresa que trabalhei?",
+    "Onde trabalho hoje?",
+]
+
+# Subconjunto de EXPERIENCE_QUESTION_VARIANTS que também pede recência
+# (contém "hoje"/"atual"/"última") — usado no teste de ponta a ponta que
+# precisa do desempate por recência, não só do roteamento de seção.
+EXPERIENCE_RECENCY_QUESTION_VARIANTS = [
+    question
+    for question in EXPERIENCE_QUESTION_VARIANTS
+    if question != "Você sabe onde o Lucas Palhares trabalha?"
+]
+
+EDUCATION_QUESTION_VARIANTS = [
+    "Onde Lucas estudou?",
+    "Qual foi a faculdade do Lucas?",
+    "Em qual universidade o Lucas se formou?",
+    "Onde você estudou?",
+    "Qual foi sua faculdade?",
+]
+
+NON_EXPERIENCE_NON_EDUCATION_QUESTIONS = [
+    "Já trabalhou com Kubernetes?",
+    "O Lucas sabe Python?",
+    "Quais certificações o Lucas tem?",
+    "Me conta sobre o projeto X do Lucas.",
+    "O Lucas escreveu algum artigo?",
+]
+
+
+@pytest.mark.parametrize("question", EXPERIENCE_QUESTION_VARIANTS)
+def test_detect_section_intent_recognizes_experience_across_phrasings(
+    question: str,
+) -> None:
+    """Roteia para "experience" em várias formas de perguntar sobre onde o
+    currículo trabalha hoje, inclusive com o nome/pronome no meio da frase."""
+    assert detect_section_intent(question) == "experience"
+
+
+@pytest.mark.parametrize("question", EDUCATION_QUESTION_VARIANTS)
+def test_detect_section_intent_recognizes_education_across_phrasings(
+    question: str,
+) -> None:
+    """Roteia para "education" em várias formas de perguntar sobre formação,
+    inclusive com o nome do currículo no meio da frase."""
+    assert detect_section_intent(question) == "education"
+
+
+@pytest.mark.parametrize("question", NON_EXPERIENCE_NON_EDUCATION_QUESTIONS)
+def test_detect_section_intent_stays_none_for_unrelated_questions(
+    question: str,
+) -> None:
+    """Não força seção para perguntas que não são sobre experiência/formação —
+    o casamento por tokens não pode virar falso positivo generalizado."""
+    assert detect_section_intent(question) is None
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Onde Lucas trabalha hoje?",
+        "Onde o Lucas trabalha atualmente?",
+        "Qual é a última empresa do Lucas?",
+        "Qual o emprego atual do Lucas Palhares Barbosa?",
+    ],
+)
+def test_wants_recency_recognizes_variants_with_subject_between_keywords(
+    question: str,
+) -> None:
+    """Reconhece pedido de recência mesmo com o nome do currículo inserido."""
+    assert wants_recency(question) is True
+
+
+def test_wants_recency_false_for_question_about_a_specific_past_company() -> None:
+    """Pergunta sobre uma empresa específica do passado não pede recência."""
+    assert wants_recency("O Lucas trabalhou na Shift?") is False
+
+
+@pytest.mark.parametrize("question", EXPERIENCE_RECENCY_QUESTION_VARIANTS)
+def test_search_with_routing_returns_current_experience_first_across_phrasings(
+    question: str,
+) -> None:
+    """Reprodução do bug relatado: mesmo quando a experiência antiga tem
+    similaridade de cosseno maior que a atual, o roteamento por seção +
+    recência garante que a experiência atual (sem `end_date`) vem primeiro,
+    para qualquer uma das formas de perguntar "onde trabalho hoje"."""
+    index = [
+        EmbeddedChunk(
+            chunk=Chunk(
+                id="experience-0",
+                section="experience",
+                text="Tech Lead na Engineering Brasil, 2026-03 a o momento.",
+                recency_key=rag.EXPERIENCE_ONGOING_RECENCY_KEY,
+            ),
+            embedding=[0.4, 0.6],
+        ),
+        EmbeddedChunk(
+            chunk=Chunk(
+                id="experience-1",
+                section="experience",
+                text="Web Developer na Shift, 2021-07 a 2022-07.",
+                # Similaridade de cosseno maior que a do chunk atual —
+                # reproduz o cenário em que a busca pura escolheria errado.
+                recency_key="2022-07",
+            ),
+            embedding=[1.0, 0.0],
+        ),
+    ]
+    embedding_provider = FakeEmbeddingProviderByText({question: [1.0, 0.0]})
+
+    results = search_with_routing(question, index, embedding_provider, top_k=2)
+
+    assert results[0][0].id == "experience-0"
+
+
+def test_search_with_routing_without_recency_word_restricts_to_section() -> None:
+    """ "Onde o Lucas trabalha?" sem palavra de recência roteia para a seção
+    "experience" (evita concorrer com skill/project/etc.), mas sem palavra
+    como "hoje"/"atual" não há desempate por recência — a ordem dentro da
+    seção continua sendo por similaridade pura. Comportamento documentado,
+    não um bug: `wants_recency` só é acionado por sinal explícito na pergunta.
+    """
+    question = "Você sabe onde o Lucas Palhares trabalha?"
+    index = [
+        EmbeddedChunk(
+            chunk=Chunk(id="experience-0", section="experience", text="Atual"),
+            embedding=[0.4, 0.6],
+        ),
+        EmbeddedChunk(
+            chunk=Chunk(id="experience-1", section="experience", text="Antigo"),
+            embedding=[1.0, 0.0],
+        ),
+        EmbeddedChunk(
+            chunk=Chunk(id="skill-0", section="skill", text="Python"),
+            embedding=[1.0, 0.0],
+        ),
+    ]
+    embedding_provider = FakeEmbeddingProviderByText({question: [1.0, 0.0]})
+
+    results = search_with_routing(question, index, embedding_provider, top_k=2)
+
+    assert wants_recency(question) is False
+    assert {chunk.id for chunk, _score in results} == {"experience-0", "experience-1"}
 
 
 def test_extract_known_entities_returns_citable_names_from_resume() -> None:
