@@ -657,7 +657,7 @@ def test_search_with_routing_returns_current_experience_first_across_phrasings(
 
 
 def test_search_with_routing_without_recency_word_restricts_to_section() -> None:
-    """"Onde o Lucas trabalha?" sem palavra de recência roteia para a seção
+    """ "Onde o Lucas trabalha?" sem palavra de recência roteia para a seção
     "experience" (evita concorrer com skill/project/etc.), mas sem palavra
     como "hoje"/"atual" não há desempate por recência — a ordem dentro da
     seção continua sendo por similaridade pura. Comportamento documentado,
