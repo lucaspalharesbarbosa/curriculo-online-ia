@@ -52,8 +52,17 @@ def get_web_search_provider() -> WebSearchProvider:
     return TavilyWebSearchProvider()
 
 
+class HistoryMessage(BaseModel):
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=4000)
+
+
 class ChatRequest(BaseModel):
     question: str = Field(min_length=1)
+    # ADR-014: teto de validação (20 mensagens) — a janela funcional usada pelo
+    # service é menor (MAX_HISTORY_MESSAGES, service.py); histórico entre os
+    # dois é truncado à cauda, não rejeitado.
+    history: list[HistoryMessage] | None = Field(default=None, max_length=20)
 
 
 class ChatResponse(BaseModel):
@@ -125,12 +134,22 @@ def chat(
         logger.error("LLM_API_KEY ausente — /chat indisponível.")
         raise HTTPException(status_code=500, detail=GENERIC_ERROR_MESSAGE)
 
+    history = (
+        [
+            service.HistoryTurn(role=message.role, content=message.content)
+            for message in request.history
+        ]
+        if request.history
+        else None
+    )
+
     try:
         answer, source = service.answer_question(
             request.question,
             embedding_provider,
             chat_completion_provider,
             web_search_provider,
+            history=history,
         )
     except OpenAIError as exc:
         raise _http_error_from_openai(exc) from exc
