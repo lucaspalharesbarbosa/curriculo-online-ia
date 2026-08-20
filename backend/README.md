@@ -5,7 +5,7 @@ Python + FastAPI (serviço de API; RAG na Fase 05).
 ## Stack
 
 - Python + FastAPI
-- Validação do currículo: Pydantic (`app/models/resume.py`), espelhando o Zod do frontend
+- Validação do currículo: Pydantic (`app/resume/models.py`), espelhando o Zod do frontend
 - Testes: pytest (AAA), `TestClient` para endpoints
 - Lint/format: ruff + black
 
@@ -29,7 +29,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --reload
 ```
 
-`python-dotenv` carrega `backend/.env` automaticamente no startup (`app/env_bootstrap.py`). Em produção as variáveis vêm do painel do Render (`override=False`) — mesmo caminho: **`curriculo-online-backend` → Environment → `LLM_API_KEY`**.
+`python-dotenv` carrega `backend/.env` automaticamente no startup (`app/shared/env_bootstrap.py`). Em produção as variáveis vêm do painel do Render (`override=False`) — mesmo caminho: **`curriculo-online-backend` → Environment → `LLM_API_KEY`**.
 
 ## Comandos
 
@@ -39,6 +39,7 @@ uvicorn app.main:app --reload   # servidor local (a partir de backend/)
 ruff check .                    # lint
 black --check .                 # format check
 pytest                          # testes
+pytest -v                       # testes com display em PT-BR (docstring de cada teste, via tests/conftest.py)
 ```
 
 ## Variáveis de ambiente
@@ -48,6 +49,7 @@ Definidas em `backend/.env` local (a partir de `.env.example`) e no painel do Re
 | Variável | Valores esperados | Default | Efeito |
 |---|---|---|---|
 | `ENVIRONMENT` | `development` \| `production` | `development` (quando ausente) | Em `production`, desativa `/docs`, `/redoc` e `/openapi.json` (404) — ver [Documentação da API](#documentacao-da-api). Não é segredo; configurar `ENVIRONMENT=production` no painel do Render (produção). |
+| `WEB_SEARCH_API_KEY` | Chave da [Tavily](https://app.tavily.com) | Ausente (feature desativada) | Fallback de busca web do `/chat` para dados externos ao `resume.json` ([ADR-010](../docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md)) — opcional, sem ela o chat funciona normalmente só com o currículo. |
 
 ## OpenAPI (contrato da API)
 
@@ -83,13 +85,13 @@ Em **produção** (`ENVIRONMENT=production`, configurado no painel do Render), o
 ## Segurança do `/chat` (US-05-07)
 
 - **CORS**: restrito à origem definida em `ALLOWED_ORIGIN` (env var; default `http://localhost:3000` em dev). Em produção, configurar com a URL do frontend na Vercel — nunca `allow_origins=["*"]`. **Origem única** (`allow_origins=[ALLOWED_ORIGIN]` em `app/main.py`, sem lista) — para rodar um smoke manual do `/chat` a partir de um frontend local (`http://localhost:3000`) contra o backend real no Render, é preciso trocar `ALLOWED_ORIGIN` temporariamente no painel do Render para `http://localhost:3000` e depois reverter para a URL da Vercel; não dá para atender as duas origens ao mesmo tempo sem alterar o código.
-- **Rate limit**: contador simples em memória por IP (`app/chat.py`, `_request_log`) — sem lib externa (`slowapi` avaliado, mas dispensado; volume do projeto não justifica a dependência extra). Limite: 10 requisições/minuto por IP; excedente retorna `429`. Reinicia a cada deploy (estado em memória, não persistido) — aceitável para o volume de tráfego esperado (visitantes ocasionais de portfólio).
-- **Chave de API**: `LLM_API_KEY` só existe como variável de ambiente no backend (lida em `app/rag.py`), nunca no client — ver [ADR-003](../docs/architecture/ADR-003-fluxo-rag.md) seção 5.
-- **Timeout e retry** ([ADR-004](../docs/architecture/ADR-004-resiliencia-backend-chat.md) / US-08-02): `get_client()` em `app/rag.py` configura `timeout=20s` e `max_retries=1` (SDK retenta só erros transitórios tipicamente 429/5xx). Evita o default de minutos do SDK e limita o tempo que uma chamada lenta trava o worker do Render free tier. Timeout/falha após retry → `/chat` responde 500 com mensagem genérica (sem detalhe do provider).
+- **Rate limit**: contador simples em memória por IP (`app/chat/router.py`, `_request_log`) — sem lib externa (`slowapi` avaliado, mas dispensado; volume do projeto não justifica a dependência extra). Limite: 10 requisições/minuto por IP; excedente retorna `429`. Reinicia a cada deploy (estado em memória, não persistido) — aceitável para o volume de tráfego esperado (visitantes ocasionais de portfólio).
+- **Chave de API**: `LLM_API_KEY` só existe como variável de ambiente no backend (lida em `app/chat/adapters/openai_adapter.py`), nunca no client — ver [ADR-003](../docs/architecture/ADR-003-fluxo-rag.md) seção 5.
+- **Timeout e retry** ([ADR-004](../docs/architecture/ADR-004-resiliencia-backend-chat.md) / US-08-02): `get_client()` em `app/chat/adapters/openai_adapter.py` configura `timeout=20s` e `max_retries=1` (SDK retenta só erros transitórios tipicamente 429/5xx). Evita o default de minutos do SDK e limita o tempo que uma chamada lenta trava o worker do Render free tier. Timeout/falha após retry → `/chat` responde 500 com mensagem genérica (sem detalhe do provider).
 
 ## Headers de segurança HTTP (US-08-07)
 
-Middleware custom (`add_security_headers` em `app/main.py`, sem lib externa) injeta em toda resposta: `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'` (API só serve JSON, nenhum recurso próprio para permitir), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` e `Permissions-Policy` desativando `camera`/`microphone`/`geolocation`/`payment`/`usb`. Sem `Strict-Transport-Security` próprio — a API roda sempre atrás de HTTPS (Render/Cloudflare). Teste de regressão: `backend/tests/test_main.py::test_health_check_retorna_headers_de_seguranca`.
+Middleware custom (`add_security_headers` em `app/main.py`, sem lib externa) injeta em toda resposta: `Content-Security-Policy: default-src 'none'; frame-ancestors 'none'` (API só serve JSON, nenhum recurso próprio para permitir), `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin` e `Permissions-Policy` desativando `camera`/`microphone`/`geolocation`/`payment`/`usb`. Sem `Strict-Transport-Security` próprio — a API roda sempre atrás de HTTPS (Render/Cloudflare). Teste de regressão: `backend/tests/test_main.py::test_health_check_returns_security_headers`.
 
 ## Deploy
 
@@ -116,13 +118,24 @@ Nenhum valor real de segredo é commitado no repositório — chaves de API semp
 ```
 backend/
 ├── app/
-│   ├── main.py              # FastAPI + CORS + /health
-│   ├── models/
-│   │   └── resume.py        # schema Pydantic do currículo
-│   ├── rag.py               # chunking + embeddings + busca por similaridade
-│   └── chat.py              # endpoint /chat + rate limit
-├── tests/                   # espelha backend/app/
+│   ├── main.py               # composition root: FastAPI, CORS, /health
+│   ├── shared/                # cross-cutting, sem regra de negócio de domínio
+│   │   ├── errors.py          # shape de erro padrão da API
+│   │   └── env_bootstrap.py   # bootstrap de .env local
+│   ├── resume/                 # domínio "currículo"
+│   │   └── models.py           # schema Pydantic do currículo
+│   └── chat/                   # domínio "chat/RAG" — Ports & Adapters (ADR-012)
+│       ├── router.py            # camada HTTP: endpoint /chat + /chat/feedback, rate limit, Depends()
+│       ├── service.py           # use case: orquestra pergunta → resposta
+│       ├── ports.py             # Protocol: EmbeddingProvider, ChatCompletionProvider, WebSearchProvider
+│       ├── adapters/
+│       │   ├── openai_adapter.py   # EmbeddingProvider + ChatCompletionProvider (openai.OpenAI)
+│       │   └── tavily_adapter.py    # WebSearchProvider (Tavily)
+│       └── rag.py               # chunking, ranking, roteamento (recebe EmbeddingProvider por parâmetro)
+├── tests/                    # espelha backend/app/ (tests/chat/, tests/chat/adapters/, tests/resume/)
 └── requirements.txt
 ```
+
+Modularização por domínio (`resume`/`chat`/`shared`) — ver [`ADR-011`](../docs/architecture/ADR-011-modularizacao-ddd-lite.md). Ports & Adapters no domínio `chat` — ver [`ADR-012`](../docs/architecture/ADR-012-clean-architecture-chat.md).
 
 Convenções completas em [`docs/agents/CONTEXTO-PROJETO.md`](../docs/agents/CONTEXTO-PROJETO.md).

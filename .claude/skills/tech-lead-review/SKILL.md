@@ -6,7 +6,6 @@ description: >
   (API keys, CORS) ou aprovação de merge. Acione com @tech-lead-review.
   Complementa @arquiteto-ia-senior (o quê construir) validando *como* foi
   implementado.
-disable-model-invocation: true
 ---
 
 # Tech Lead — Code Review (Currículo Online)

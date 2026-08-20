@@ -1,6 +1,6 @@
 # PRD-007 — Qualidade de Engenharia
 
-**Status:** em andamento — `US-09-01` Done (Fase 9 arquivada); demais frentes ainda em draft, sem história (herdam novo número de fase quando priorizadas — `09` não é reaproveitado)
+**Status:** Fase 13 completa — `US-13-01`/`02`/`04`/`05`/`06`/`07`/`08` Done, `US-13-03` `Cancelada` (achados reais triados, decomposta nas demais). Épico `PRD-007` **Done** — todas as frentes planejadas (SonarCloud no CI, gate de cobertura, boas práticas REST, achados reais) entregues entre a Fase 9 e a Fase 13
 **Épico:** Qualidade de Engenharia
 **Prioridade:** P2
 
@@ -33,9 +33,14 @@ O próprio autor, como mantenedor do código a médio prazo.
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
 | Adicionar SonarCloud ao CI (frontend e backend) | P1 | [US-09-01](backlog/archive/fase-09/US-09-01-sonarcloud-ci.md) (Done) |
-| Gate de cobertura mínima automatizado no CI (frontend e backend) | P1 | — |
-| Revisão de boas práticas REST no backend (status codes, shape de erro padronizado) | P2 | — |
-| Refactor/modularização guiado pelos achados do SonarCloud | P3 | — |
+| Gate de cobertura mínima automatizado no CI (frontend e backend) | P1 | [US-13-01](backlog/archive/fase-13/US-13-01-gate-cobertura-ci.md) (Done) |
+| Padronizar shape de erro e status codes REST no backend | P2 | [US-13-02](backlog/archive/fase-13/US-13-02-boas-praticas-rest-backend.md) (Done) |
+| Refactor/modularização guiado pelos achados do SonarCloud (placeholder) | P3 | [US-13-03](backlog/archive/fase-13/US-13-03-refactor-modularizacao-sonarcloud.md) (Cancelada — decomposta abaixo) |
+| Triagem de falsos positivos do Sonar (ação do autor) | P1 | [US-13-04](backlog/archive/fase-13/US-13-04-triagem-falsos-positivos-sonar.md) (Done) |
+| Backend: achados reais em `chat.py` | P2 | [US-13-05](backlog/archive/fase-13/US-13-05-backend-achados-chat-py.md) (Done) |
+| Frontend: remover `ChatWidget` morto + achados reais nos componentes de chat | P2 | [US-13-06](backlog/archive/fase-13/US-13-06-frontend-chat-widget-morto-achados.md) (Done) |
+| Frontend: regex com risco de performance em `lib/utils.ts` | P2 | [US-13-07](backlog/archive/fase-13/US-13-07-frontend-regex-lib-utils.md) (Done) |
+| Frontend: migrar API depreciada do Zod em `resume.schema.ts` | P2 | [US-13-08](backlog/archive/fase-13/US-13-08-frontend-migracao-zod.md) (Done) |
 
 ## Riscos
 
@@ -43,6 +48,6 @@ O próprio autor, como mantenedor do código a médio prazo.
 - SonarCloud pode acusar findings de baixo valor (nit) em massa na primeira análise — priorizar por severidade real, não tentar zerar tudo de uma vez
 
 ## DoR do épico
-- [ ] Toda história do épico tem seu próprio DoR fechado
-- [ ] Tasks decompostas (`references/task-breakdown-guide.md`)
-- [ ] Cobertura atual medida antes de tornar o gate de CI bloqueante
+- [x] Toda história do épico tem seu próprio DoR fechado — `US-13-01`/`02`/`04`/`05`/`06`/`07`/`08` fechados; `US-13-03` `Cancelada` (decomposta nas demais após a triagem real)
+- [x] Tasks decompostas (`references/task-breakdown-guide.md`) — todas as histórias ativas com tasks reais concluídas
+- [x] Cobertura atual medida antes de tornar o gate de CI bloqueante — baseline de `US-09-01` (2026-08-16), remedida em `US-13-01` (2026-08-18: backend 96%, frontend 82,18%/74,39%/84,72%/83,18%) antes do gate virar bloqueante

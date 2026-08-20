@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import resumeContent from "@/content/resume.json";
 import {
   formatResumePeriod,
   formatYear,
@@ -210,6 +211,55 @@ describe("splitAboutNarrative", () => {
       body: "Corpo com AI Engineering no ciclo.",
       accents: ["Context Engineering", "Agentic AI"],
     });
+  });
+
+  it("sem travessão: lead e corpo pela primeira sentença, sem ênfases", () => {
+    expect(
+      splitAboutNarrative("Lead sem travessão. Corpo normal aqui."),
+    ).toEqual({
+      lead: "Lead sem travessão.",
+      body: "Corpo normal aqui.",
+      accents: [],
+    });
+  });
+
+  it("sem nenhum terminador de frase: tudo vira lead, corpo nulo", () => {
+    expect(splitAboutNarrative("Só uma frase sem ponto final")).toEqual({
+      lead: "Só uma frase sem ponto final",
+      body: null,
+      accents: [],
+    });
+  });
+
+  it("múltiplos travessões: só o primeiro par vira ênfase, os demais ficam no corpo", () => {
+    expect(
+      splitAboutNarrative("Lead aqui. Primeiro — A, B — meio — C, D — fim."),
+    ).toEqual({
+      lead: "Lead aqui.",
+      body: "Primeiro meio — C, D — fim.",
+      accents: ["A", "B"],
+    });
+  });
+
+  it("produz o mesmo resultado para o about real de content/resume.json", () => {
+    const about = (resumeContent as { about: string }).about;
+
+    const result = splitAboutNarrative(about);
+
+    expect(result.accents).toEqual([
+      "Context Engineering",
+      "Prompt Engineering",
+      "Harness Engineering",
+      "Agentic AI",
+      "Spec-Driven Development (SDD)",
+    ]);
+    expect(result.lead).toBe(
+      "Tech Lead e Senior Software Engineer com mais de 10 anos de experiência desenvolvendo soluções escaláveis para grandes empresas dos setores bancário, telecomunicações e saúde.",
+    );
+    expect(result.body).toContain(
+      "aplicando práticas de AI Engineering na construção de AI Agents",
+    );
+    expect(result.body).not.toContain("—");
   });
 });
 

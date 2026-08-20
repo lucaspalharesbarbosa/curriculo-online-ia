@@ -6,7 +6,6 @@ description: >
   identifica riscos, anti-patterns, métricas ágeis (Lead Time, Cycle Time, Throughput,
   Velocity, CFD), DoR/DoD e gestão de dependências. Use quando o usuário pedir planning,
   retrospectiva, cerimônia Scrum, coaching ágil, facilitação de time, ou @scrum-master.
-disable-model-invocation: true
 ---
 
 # Scrum Master Sênior e Agile Coach

@@ -2,7 +2,7 @@
 
 Saída do `product-owner`: PRD, épicos, histórias de usuário e backlog.
 
-Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
+Status de execução por fase (0 a 13): [`roadmap.md`](roadmap.md).
 
 ## PRDs por épico
 
@@ -15,16 +15,17 @@ Status de execução por fase (0 a 12): [`roadmap.md`](roadmap.md).
 ### Evolução pós-lançamento
 - [PRD-005 — Frontend & UX v2](PRD-005-frontend-ux-v2.md) — Done (15/15; histórias em `backlog/archive/fase-07/`)
 - [PRD-006 — Segurança & Performance](PRD-006-seguranca-performance.md) — Done (11/11; histórias em `backlog/archive/fase-08/`)
-- [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — em andamento (1/4 frentes; `US-09-01` Done, arquivada)
+- [PRD-007 — Qualidade de Engenharia](PRD-007-qualidade-engenharia.md) — Done (histórias em `backlog/archive/fase-09/` e `backlog/archive/fase-13/`)
 - [PRD-008 — Observabilidade](PRD-008-observabilidade.md) — draft, sem histórias
-- [PRD-009 — Chat v2](PRD-009-chat-v2.md) — draft, sem histórias
+- [PRD-009 — Chat v2](PRD-009-chat-v2.md) — Done (4 histórias em `backlog/archive/fase-11/`)
 - [PRD-010 — Área Administrativa](PRD-010-area-administrativa.md) — draft; escopo redefinido (só métricas — ver PRD)
+- [PRD-011 — RAG Inteligente](PRD-011-rag-inteligente.md) — Done (3 histórias em `backlog/archive/fase-11/`)
 
 ## Backlog — organizado por fase de implementação (não por épico)
 
 Cada história vive em `backlog/fase-FF/US-FF-NN-<slug>.md`: um arquivo por história, com ID `US-<fase>-<sequência>` (ex.: `US-03-10`) e um slug descritivo no nome do arquivo. O ID já carrega o número da fase, então não há ambiguidade entre `US-03-01` (fase 03) e `US-05-01` (fase 05). A tabela "Histórias" de cada PRD linka para o arquivo correspondente.
 
-Nenhuma fase ativa no momento — Fase 09 concluída (1ª frente do `PRD-007`) e arquivada (ver abaixo). Fases 10–12 seguem em `draft`, sem histórias ainda; demais frentes do `PRD-007` aguardam nova fase quando entrarem em execução.
+**Nenhuma fase ativa no momento** — Fase 11 concluída e arquivada (2026-08-18); Fases 10 e 12 seguem em `draft`, sem histórias ainda.
 
 ### Fases arquivadas
 
@@ -37,15 +38,16 @@ Nenhuma fase ativa no momento — Fase 09 concluída (1ª frente do `PRD-007`) e
 - [Fase 06 — Divulgação](backlog/archive/fase-06/) (US-06-01–02 Done; US-06-03 Cancelada) — arquivada 2026-08-11
 - [Fase 07 — Frontend & UX v2](backlog/archive/fase-07/) (US-07-01 a US-07-15 — 15/15 Done) — arquivada 2026-08-11; referência [personal-resume](https://github.com/giasinguyen/personal-resume); paleta D1 Deep Ice
 - [Fase 08 — Segurança & Performance](backlog/archive/fase-08/) (US-08-01 a US-08-11 — 11/11 Done) — arquivada 2026-08-16; `PRD-006`, `ADR-008`
-- [Fase 09 — Qualidade de Engenharia](backlog/archive/fase-09/) (US-09-01 — 1/1 Done) — arquivada 2026-08-16; `PRD-007`, `ADR-009`. Demais frentes do `PRD-007` (gate de cobertura, boas práticas REST, refactor guiado pelo Sonar) seguem sem história — entram em nova fase quando priorizadas
+- [Fase 09 — Qualidade de Engenharia](backlog/archive/fase-09/) (US-09-01 — 1/1 Done) — arquivada 2026-08-16; `PRD-007`, `ADR-009`. Demais frentes do `PRD-007` seguiram para a Fase 13 (número `09` não reaproveitado)
+- [Fase 13 — Qualidade de Engenharia (continuação)](backlog/archive/fase-13/) (US-13-01 a US-13-08 — 7/7 histórias ativas Done, `US-13-03` Cancelada) — arquivada 2026-08-18; `PRD-007` Done, entregue no [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49)
+- [Fase 11 — Chat v2 + RAG Inteligente](backlog/archive/fase-11/) (US-11-01 a US-11-07 — 7/7 Done) — arquivada 2026-08-18; `PRD-009` + `PRD-011`, `ADR-010`, entregue no [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51)
 
 ### Fases planejadas (draft, sem histórias — ver PRD de cada uma)
 
 - Fase 10 — Observabilidade (`PRD-008`)
-- Fase 11 — Chat v2 (`PRD-009`)
 - Fase 12 — Área Administrativa (`PRD-010`)
 
-Histórias das fases 10–12 (e das frentes restantes do `PRD-007`, que herdam um novo número de fase — `09` não é reaproveitado) são criadas pelo `@product-owner` quando cada fase entrar em execução (DoR completo, contrato de API + mapeamento de erros quando aplicável) — os PRDs acima têm só a lista de frentes e riscos conhecidos até aqui.
+Histórias das fases 10 e 12 são criadas pelo `@product-owner` quando cada fase entrar em execução (DoR completo, contrato de API + mapeamento de erros quando aplicável) — os PRDs acima têm só a lista de frentes e riscos conhecidos até aqui.
 
 ## Convenção de nomenclatura
 - PRD (por épico): `PRD-NNN-<epico>.md`
@@ -57,7 +59,11 @@ Protótipos visuais (sob pedido, `@ux-designer`): [`docs/agents/PROCESSO-PROTOTI
 
 ## Pendências para o autor
 
-Nenhuma pendência ativa de conteúdo. Resolvidas na Fase 03:
+Nenhuma pendência ativa. Resolvidas:
+
+- ~~SonarCloud — marcar falsos positivos~~ — [US-13-04](backlog/archive/fase-13/US-13-04-triagem-falsos-positivos-sonar.md), Done 2026-08-18
+
+Resolvidas na Fase 03:
 
 - ~~Repositórios extras para Projetos~~ — autor confirmou único projeto (`curriculo-online-ia`) — [US-03-07](backlog/archive/fase-03/US-03-07-dados-projetos.md)
 - ~~E-mail público e GitHub~~ — [US-03-08](backlog/archive/fase-03/US-03-08-dados-contato.md)

@@ -4,11 +4,11 @@ import resumeData from "./resume.json";
 import { contactSchema, parseResume, resumeSchema } from "./resume.schema";
 
 describe("resume.schema", () => {
-  it("validates the committed resume.json", () => {
+  it("valida o resume.json versionado no repositório", () => {
     expect(() => parseResume(resumeData)).not.toThrow();
   });
 
-  it("covers all required sections", () => {
+  it("cobre todas as seções obrigatórias", () => {
     const resume = parseResume(resumeData);
 
     expect(resume.hero.name).toBeTruthy();
@@ -23,7 +23,7 @@ describe("resume.schema", () => {
     expect(resume.contact.whatsapp).toMatch(/^https:\/\/wa\.me\//);
   });
 
-  it("rejects invalid resume data", () => {
+  it("rejeita dados de currículo inválidos", () => {
     expect(() => resumeSchema.parse({ hero: {} })).toThrow();
   });
 });
@@ -36,7 +36,7 @@ describe("contactSchema", () => {
     resumePdfUrl: null,
   };
 
-  it("accepts a whatsapp wa.me URL", () => {
+  it("aceita uma URL de whatsapp no formato wa.me", () => {
     expect(() =>
       contactSchema.parse({
         ...baseContact,
@@ -45,13 +45,13 @@ describe("contactSchema", () => {
     ).not.toThrow();
   });
 
-  it("accepts whatsapp as null", () => {
+  it("aceita whatsapp nulo", () => {
     expect(() =>
       contactSchema.parse({ ...baseContact, whatsapp: null }),
     ).not.toThrow();
   });
 
-  it("rejects a non-URL whatsapp value", () => {
+  it("rejeita um valor de whatsapp que não é uma URL", () => {
     expect(() =>
       contactSchema.parse({ ...baseContact, whatsapp: "not-a-url" }),
     ).toThrow();

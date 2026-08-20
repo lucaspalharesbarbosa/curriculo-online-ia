@@ -28,8 +28,17 @@ curriculo-online-ia/
 ├── frontend/           # Next.js + TS + Tailwind
 │   ├── app/
 │   │   └── prototipo/  # rotas temporárias de exploração visual (@ux-designer) — limpar após decisão
-│   ├── components/     # Hero, Experience, Skills, Contact, ChatWidget...
+│   ├── modules/         # organização por domínio de negócio (ADR-011, DDD-lite)
+│   │   ├── resume/       # domínio "currículo"
+│   │   │   ├── components/ # ExperienceSection, EducationSection, Skills...
+│   │   │   └── lib/         # skill-icons.ts, skill-blocks.tsx, mobile-nav.ts
+│   │   └── chat/          # domínio "chat/RAG"
+│   │       ├── components/ # ProfileAssistChat, RagChatPanel
+│   │       └── lib/         # chat-client.ts (port ChatClient), http-chat-client.ts (adapter HTTP) — ADR-012, US-14-04
+│   ├── hooks/            # useResumeChat (recebe ChatClient por parâmetro, default = adapter HTTP — ADR-012)
+│   ├── components/     # só protótipos (ver abaixo) — sem componente de domínio
 │   │   └── prototypes/ # UI descartável de protótipo — não acumular após promover/descartar
+│   ├── lib/             # só utilitário genérico de verdade (utils.ts) — nada de domínio aqui
 │   ├── content/
 │   │   ├── resume.json
 │   │   ├── resume.schema.ts   # Zod
@@ -37,11 +46,20 @@ curriculo-online-ia/
 │   └── public/         # PDF e assets
 ├── backend/            # Python + FastAPI
 │   ├── app/
-│   │   ├── main.py
-│   │   ├── models/
-│   │   │   └── resume.py   # Pydantic (espelha Zod)
-│   │   ├── rag.py      # embeddings + busca por similaridade (Fase 05)
-│   │   └── chat.py     # endpoint /chat (Fase 05)
+│   │   ├── main.py         # composition root: FastAPI, CORS, /health
+│   │   ├── shared/          # cross-cutting, sem regra de negócio de domínio
+│   │   │   ├── errors.py
+│   │   │   └── env_bootstrap.py
+│   │   ├── resume/           # domínio "currículo"
+│   │   │   └── models.py     # Pydantic (espelha Zod)
+│   │   └── chat/              # domínio "chat/RAG" (Fase 05; Ports & Adapters na Fase 14, ADR-012)
+│   │       ├── router.py       # camada HTTP: endpoint /chat, rate limit, Depends()
+│   │       ├── service.py      # use case: orquestra pergunta → resposta
+│   │       ├── ports.py        # Protocol: EmbeddingProvider, ChatCompletionProvider, WebSearchProvider
+│   │       ├── adapters/
+│   │       │   ├── openai_adapter.py  # EmbeddingProvider + ChatCompletionProvider (openai.OpenAI)
+│   │       │   └── tavily_adapter.py   # WebSearchProvider (Tavily)
+│   │       └── rag.py          # chunking, ranking, roteamento (recebe EmbeddingProvider por parâmetro)
 │   └── requirements.txt
 ├── e2e/                # Playwright — testa frontend + backend juntos
 │   └── playwright.config.ts
@@ -88,6 +106,8 @@ Numeração de épico (PRD/Backlog) é fixa pela ordem em que cada épico foi re
 | 008 | Observabilidade |
 | 009 | Chat v2 |
 | 010 | Área Administrativa |
+| 011 | RAG Inteligente |
+| 012 | Arquitetura & Modularização |
 
 `ADR-NNN`, `C4-NNN` e `DATA-NNN` têm sequência própria, independente da numeração de épico (ex.: `ADR-001` é sobre a stack, não sobre o épico 001).
 
@@ -176,7 +196,7 @@ Fase 6 (divulgação) **concluída e arquivada** (2026-08-11) — [US-06-01](../
 
 Fase 7 (Frontend & UX v2) **concluída e arquivada** (2026-08-11) — 15/15 histórias Done em `docs/product/backlog/archive/fase-07/` (`PRD-005`). Referência visual **personal-resume** ([repo](https://github.com/giasinguyen/personal-resume)); paleta **D1 Deep Ice**; deps em `ADR-005`/`ADR-006`/`ADR-007`.
 
-Fase 8 (Segurança & Performance) **concluída e arquivada** (2026-08-16) — 11/11 histórias Done em `docs/product/backlog/archive/fase-08/` (US-08-01 a US-08-11); todas verificadas com evidência real de produção (`curl -I`, Lighthouse mobile+desktop real, smoke `/health`/`/chat`, CI real do GitHub Actions) após merge `develop`→`main` (PR #44) e configuração de `ENVIRONMENT=production` no Render; US-08-10 fechada com CA-002/CA-003 por risco aceito (decisão do autor — sem alavanca de código disponível, ver investigação na própria história). `PRD-006` Done; cold start em [`ADR-008`](../architecture/ADR-008-mitigacao-cold-start-render.md); timeout/retry em `ADR-004`. Fase 9 (Qualidade de Engenharia) **concluída e arquivada** (2026-08-16) — 1/1 história Done em `docs/product/backlog/archive/fase-09/` (US-09-01, SonarCloud no CI); demais frentes do `PRD-007` (gate de cobertura, boas práticas REST, refactor guiado pelo Sonar) seguem sem história, entram em nova fase quando priorizadas. Fases 10 a 12 seguem em `draft` (`PRD-008` a `PRD-010`).
+Fase 8 (Segurança & Performance) **concluída e arquivada** (2026-08-16) — 11/11 histórias Done em `docs/product/backlog/archive/fase-08/` (US-08-01 a US-08-11); todas verificadas com evidência real de produção (`curl -I`, Lighthouse mobile+desktop real, smoke `/health`/`/chat`, CI real do GitHub Actions) após merge `develop`→`main` (PR #44) e configuração de `ENVIRONMENT=production` no Render; US-08-10 fechada com CA-002/CA-003 por risco aceito (decisão do autor — sem alavanca de código disponível, ver investigação na própria história). `PRD-006` Done; cold start em [`ADR-008`](../architecture/ADR-008-mitigacao-cold-start-render.md); timeout/retry em `ADR-004`. Fase 9 (Qualidade de Engenharia) **concluída e arquivada** (2026-08-16) — 1/1 história Done em `docs/product/backlog/archive/fase-09/` (US-09-01, SonarCloud no CI); demais frentes do `PRD-007` decompostas na Fase 13 (número `09` não reaproveitado). Fase 13 (Qualidade de Engenharia — continuação) **concluída e arquivada** (2026-08-18) — `docs/product/backlog/archive/fase-13/`: 7/8 histórias `Done` ([US-13-01](../product/backlog/archive/fase-13/US-13-01-gate-cobertura-ci.md) gate de cobertura, [US-13-02](../product/backlog/archive/fase-13/US-13-02-boas-praticas-rest-backend.md) shape de erro/status codes REST, [US-13-04](../product/backlog/archive/fase-13/US-13-04-triagem-falsos-positivos-sonar.md) falsos positivos, [US-13-05](../product/backlog/archive/fase-13/US-13-05-backend-achados-chat-py.md) achados `chat.py`, [US-13-06](../product/backlog/archive/fase-13/US-13-06-frontend-chat-widget-morto-achados.md) `ChatWidget` morto, [US-13-07](../product/backlog/archive/fase-13/US-13-07-frontend-regex-lib-utils.md) regex `lib/utils.ts`, [US-13-08](../product/backlog/archive/fase-13/US-13-08-frontend-migracao-zod.md) migração Zod); [US-13-03](../product/backlog/archive/fase-13/US-13-03-refactor-modularizacao-sonarcloud.md) `Cancelada`, decomposta nas demais após triagem real do autor no dashboard do SonarCloud. Implementação entregue no [PR #49](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/49) — CI real e análise do Sonar escopada ao PR confirmaram todos os achados corrigidos, Quality Gate `OK` nos dois projetos. `PRD-007` (Qualidade de Engenharia) **Done**. Fase 11 (Chat v2 + RAG Inteligente) **concluída e arquivada** (2026-08-18) — 7/7 histórias `Done` em `docs/product/backlog/archive/fase-11/` (`PRD-009` + `PRD-011`, este último novo, criado para a frente de precisão de recuperação e acesso à web do RAG; `ADR-010`). Implementação (roteamento por seção/recência no RAG, busca web via Tavily, redesign do chat, feedback do usuário) entregue no [PR #51](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/51), CI verde (SonarCloud `OK` nos dois projetos após corrigir gap real de `new_coverage`), aguardando merge do autor. Fases 10 e 12 seguem em `draft` (`PRD-008`, `PRD-010`). Fase 14 (Arquitetura & Modularização) criada em 2026-08-18 a partir de `ADR-011` (Aceita) — reorganização de backend/frontend por domínio de negócio (DDD-lite, sem padrões táticos completos), preparando terreno para as Fases 12 e 10; `PRD-012`, backlog `docs/product/backlog/fase-14/`. `US-14-01` (backend) e `US-14-02` (frontend) implementadas — Dev, QA e Tech Lead aprovados, [PR #52](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/52)/[#53](https://github.com/lucaspalharesbarbosa/curriculo-online-ia/pull/53) mergeados em `develop` — aguardando merge `develop`→`main`, validação de deploy/preview real e aceite do PO para fechar `Done`. Ampliada em 2026-08-19 com `ADR-012` (Aceita): Ports & Adapters (Clean Architecture seletiva) no domínio `chat`, backend e frontend — `US-14-03` (backend) implementada, Dev/QA/Tech Lead aprovados, PR para `develop` e aceite do PO pendentes; `US-14-04` (frontend) em implementação; `resume/` fica fora dos dois lados; convenção de port/adapter registrada para quando `admin` (Fase 12) e observabilidade (Fase 10) saírem de `draft`.
 
 ## Fases do roadmap e backlog correspondente
 
@@ -191,9 +211,11 @@ Fase 8 (Segurança & Performance) **concluída e arquivada** (2026-08-16) — 11
 | Fase 6 — Divulgação | README, LinkedIn, feedback | `docs/product/backlog/archive/fase-06/` (US-06-01–02 Done; US-06-03 Cancelada) — Arquivada |
 | Fase 7 — Frontend & UX v2 | Contato (WhatsApp), responsividade, redesign, conteúdo, polimentos UX, mobile-first | `docs/product/backlog/archive/fase-07/` (US-07-01 a US-07-15) — Arquivada |
 | Fase 8 — Segurança & Performance | Auditoria de segurança e performance, cold start do Render free tier, timeout OpenAI | `docs/product/backlog/archive/fase-08/` (US-08-01 a US-08-11 — 11/11 Done) — Arquivada |
-| Fase 9 — Qualidade de Engenharia | SonarCloud, gate de cobertura no CI, boas práticas REST, refactor guiado por achados | `docs/product/backlog/archive/fase-09/` (US-09-01 — 1/1 Done) — Arquivada; demais frentes do `PRD-007` sem história ainda, entram em nova fase quando priorizadas |
+| Fase 9 — Qualidade de Engenharia | SonarCloud no CI | `docs/product/backlog/archive/fase-09/` (US-09-01 — 1/1 Done) — Arquivada; demais frentes seguiram para a Fase 13 |
 | Fase 10 — Observabilidade | Dashboard Grafana + logs centralizados | `PRD-008` — draft, sem histórias ainda; depende de ADR de stack |
-| Fase 11 — Chat v2 | Redesign e novas funcionalidades do `ChatWidget` | `PRD-009` — draft, sem histórias ainda |
+| Fase 11 — Chat v2 + RAG Inteligente | Redesign e novas funcionalidades do `ChatWidget`; precisão de recuperação e acesso à web do RAG | `docs/product/backlog/archive/fase-11/` (US-11-01 a US-11-07 — 7/7 Done) — Arquivada; `PRD-009` + `PRD-011`, `ADR-010` |
 | Fase 12 — Área Administrativa | Login + dashboard de métricas (sem lista de contatos — decisão 2026-08-06) | `PRD-010` — draft; bloqueada até ADRs de auth/persistência |
+| Fase 13 — Qualidade de Engenharia (continuação) | Gate de cobertura no CI, boas práticas REST, achados reais do Sonar (backend/frontend) | `docs/product/backlog/archive/fase-13/` (US-13-01 a US-13-08, `US-13-03` cancelada/decomposta) — 7/7 histórias ativas Done — Arquivada |
+| Fase 14 — Arquitetura & Modularização | Reorganização de backend/frontend por domínio (`resume`/`chat`, preparado para `admin`), DDD-lite; Ports & Adapters (Clean Architecture seletiva) no domínio `chat` | `docs/product/backlog/fase-14/` (US-14-01 a US-14-04) — US-14-01/02/03 com Dev/QA/Tech Lead aprovados, aguardando merge `develop`→`main`, validação de deploy/preview e aceite do PO; US-14-04 em implementação |
 
 Fases 7-12 são a evolução pós-lançamento negociada em 2026-08-05 (ideias do autor) — ordem escolhida: valor visível ao visitante primeiro (UX), depois proteção do que já está no ar (segurança/performance), depois hardening de engenharia, antes de somar a maior feature nova (área administrativa). Detalhe completo do roadmap: `docs/product/roadmap.md`.

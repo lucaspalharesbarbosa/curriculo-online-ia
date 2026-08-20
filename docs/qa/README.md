@@ -11,5 +11,6 @@ Cobertura alvo: 70% nos módulos de lógica principal (`backend/app/rag.py`, `ba
 - [QA-003 — Fase 06 divulgação](QA-003-fase-06-divulgacao.md)
 - [QA-004 — US-07-15 redesign mobile-first](QA-004-us-07-15-redesign-mobile-first.md)
 - [QA-005 — US-08-01 auditoria de segurança](QA-005-auditoria-seguranca.md)
+- [QA-006 — US-08-04 auditoria de performance](QA-006-auditoria-performance.md)
 
 Convenção: `QA-NNN-<escopo>.md` — ver [`CONTEXTO-PROJETO.md`](../agents/CONTEXTO-PROJETO.md#convenção-de-nomenclatura-de-documentos).

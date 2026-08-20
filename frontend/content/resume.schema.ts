@@ -11,7 +11,7 @@ export const heroSchema = z.object({
   summary: z.string().min(1),
   // null até o autor enviar a foto (US-07-03/T04b) — Hero.tsx usa um bloco
   // decorativo no lugar enquanto o campo estiver null
-  photoUrl: z.union([z.string().url(), publicAssetPathSchema]).nullable(),
+  photoUrl: z.union([z.url(), publicAssetPathSchema]).nullable(),
 });
 
 export const experienceSchema = z.object({
@@ -25,7 +25,7 @@ export const experienceSchema = z.object({
   technologies: z.array(z.string().min(1)).min(1),
   // null quando a empresa não tem logo disponível — ExperienceSection usa
   // um ícone decorativo no lugar (mesmo padrão do hero.photoUrl)
-  logoUrl: z.union([z.string().url(), publicAssetPathSchema]).nullable(),
+  logoUrl: z.union([z.url(), publicAssetPathSchema]).nullable(),
 });
 
 export const educationSchema = z.object({
@@ -34,13 +34,10 @@ export const educationSchema = z.object({
   startDate: z.string().min(1),
   endDate: z.string().min(1),
   // null quando a instituição não tem logo — EducationSection usa ícone decorativo
-  logoUrl: z
-    .union([z.string().url(), publicAssetPathSchema])
-    .nullable()
-    .default(null),
+  logoUrl: z.union([z.url(), publicAssetPathSchema]).nullable().default(null),
   // null quando não há site oficial cadastrado — EducationSection renderiza
   // sem o link discreto nesse caso (mesmo padrão de credentialUrl)
-  websiteUrl: z.string().url().nullable().default(null),
+  websiteUrl: z.url().nullable().default(null),
 });
 
 // `level` é a proficiência autoavaliada (1 a 5) usada no medidor de
@@ -61,13 +58,10 @@ export const certificationSchema = z.object({
   issuedAt: z.string().min(1),
   expiresAt: z.string().nullable(),
   // null quando o certificado não tem badge/logo — Certifications usa ícone decorativo
-  logoUrl: z
-    .union([z.string().url(), publicAssetPathSchema])
-    .nullable()
-    .default(null),
+  logoUrl: z.union([z.url(), publicAssetPathSchema]).nullable().default(null),
   // null quando não há link de validação do certificado — Certifications
   // renderiza sem o botão "Ver certificado" nesse caso (ADR-006)
-  credentialUrl: z.string().url().nullable().default(null),
+  credentialUrl: z.url().nullable().default(null),
 });
 
 // Reconhecimento interno de empresa (ex.: PRAD, Mérito) — diferente de
@@ -85,7 +79,7 @@ export const projectSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
   technologies: z.array(z.string().min(1)).min(1),
-  repositoryUrl: z.string().url(),
+  repositoryUrl: z.url(),
 });
 
 // Artigo autoral publicado fora do repositório (blog/Medium) — array irmão de
@@ -93,17 +87,17 @@ export const projectSchema = z.object({
 export const articleSchema = z.object({
   title: z.string().min(1),
   description: z.string().min(1),
-  url: z.string().url(),
+  url: z.url(),
   source: z.string().min(1),
   publishedAt: z.string().nullable().default(null),
 });
 
 export const contactSchema = z.object({
-  linkedin: z.string().url(),
-  email: z.string().email().nullable(),
-  github: z.string().url().nullable(),
-  whatsapp: z.string().url().nullable(),
-  resumePdfUrl: z.union([z.string().url(), publicAssetPathSchema]).nullable(),
+  linkedin: z.url(),
+  email: z.email().nullable(),
+  github: z.url().nullable(),
+  whatsapp: z.url().nullable(),
+  resumePdfUrl: z.union([z.url(), publicAssetPathSchema]).nullable(),
 });
 
 export const resumeSchema = z.object({

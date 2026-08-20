@@ -1,6 +1,6 @@
 # PRD-009 — Chat v2
 
-**Status:** draft
+**Status:** ready-for-agent
 **Épico:** Chat v2
 **Prioridade:** P3
 
@@ -32,17 +32,17 @@ Visitante/recrutador conversando com o assistente de chat.
 
 | Título | Prioridade | Backlog |
 |--------|------------|---------|
-| Redesign visual do ChatWidget | P2 | — |
-| Perguntas sugeridas (quick replies) no ChatWidget | P2 | — |
-| Indicador de digitando / streaming de resposta | P3 | — |
-| Feedback do usuário na resposta (útil / não útil) | P3 | — |
+| Redesign visual do ChatWidget | P2 | [US-11-01](backlog/archive/fase-11/US-11-01-redesign-visual-chatwidget.md) |
+| Perguntas sugeridas (quick replies) no ChatWidget | P2 | [US-11-02](backlog/archive/fase-11/US-11-02-quick-replies.md) |
+| Indicador de digitando | P3 | [US-11-03](backlog/archive/fase-11/US-11-03-indicador-digitando.md) |
+| Feedback do usuário na resposta (útil / não útil) | P3 | [US-11-04](backlog/archive/fase-11/US-11-04-feedback-resposta.md) |
 
 ## Riscos
 
-- Streaming de resposta pode exigir mudança no contrato do endpoint `/chat` (de resposta única para streaming) — se acontecer, é decisão de arquitetura e precisa de ADR, não só ajuste de UI
-- Feedback do usuário (👍/👎) introduz o primeiro dado de visitante persistido pelo backend — mesma dependência de decisão de persistência levantada no PRD-005/PRD-010 (evitar três decisões de "onde eu guardo dado de visitante" isoladas)
+- Streaming de resposta exigiria mudança no contrato do endpoint `/chat` (de resposta única para streaming) — **decisão do PO em US-11-03**: evitar essa mudança agora (indicador de digitando é simulado no frontend, não streaming real); revisar como história própria, com ADR, se o ganho justificar
+- Feedback do usuário (👍/👎) introduziria o primeiro dado de visitante persistido pelo backend — **decisão do PO em US-11-04**: escopar como log estruturado, sem persistência em banco/arquivo, evitando acoplar a `PRD-010`/Fase 12 (hoje bloqueada por ADRs de auth/persistência ainda não tomados)
 
 ## DoR do épico
-- [ ] Toda história do épico tem seu próprio DoR fechado
-- [ ] Tasks decompostas (`references/task-breakdown-guide.md`)
-- [ ] Se streaming mudar o contrato do `/chat`: ADR registrada antes de implementar
+- [x] Toda história do épico tem seu próprio DoR fechado — ver `US-11-01` a `US-11-04`
+- [x] Tasks decompostas (`references/task-breakdown-guide.md`) — dentro de cada história
+- [x] Streaming real fica fora de escopo (decisão acima) — nenhuma ADR pendente para este PRD
