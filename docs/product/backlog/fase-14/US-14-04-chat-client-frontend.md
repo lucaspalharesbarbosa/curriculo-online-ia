@@ -30,14 +30,14 @@
 
 ### Critérios de aceite
 
-- [ ] CA-001: `frontend/modules/chat/lib/chat-client.ts` criado com a interface `ChatClient` (`sendMessage(question): Promise<ChatResponse>`, `sendFeedback(payload): Promise<void>`) — `modules/chat/` já existe (`US-14-02`, mergeado), sem ambiguidade de path
-- [ ] CA-002: `frontend/modules/chat/lib/http-chat-client.ts` criado, implementando `ChatClient` com os mesmos `fetch` para `RESUME_CHAT_ENDPOINT`/`RESUME_CHAT_FEEDBACK_ENDPOINT` hoje em `useResumeChat.ts`, incluindo `publicErrorMessage`/`ChatApiError`
-- [ ] CA-003: `hooks/useResumeChat.ts` para de chamar `fetch` direto — recebe `ChatClient` (parâmetro opcional com default = instância do adapter HTTP, para não quebrar quem já usa o hook sem argumento)
-- [ ] CA-004: comportamento do hook idêntico ao atual — mensagens, loading, erro, rate limit, feedback otimista (nenhuma mudança de UX)
-- [ ] CA-005: `useResumeChat.test.ts` usando fake de `ChatClient`; novo `http-chat-client.test.ts` cobrindo o adapter isoladamente
-- [ ] CA-006: `npm test` roda 100% verde, com o mesmo número de testes de antes do refactor (mais o teste novo do adapter)
-- [ ] CA-007: `npm run build` e `npm run lint` limpos após a reorganização
-- [ ] CA-008: `docs/agents/CONTEXTO-PROJETO.md` (seção "Estrutura — monorepo") atualizado refletindo `chat-client.ts`/`http-chat-client.ts`
+- [x] CA-001: `frontend/modules/chat/lib/chat-client.ts` criado com a interface `ChatClient` (`sendMessage(question): Promise<ChatResponse>`, `sendFeedback(payload): Promise<void>`) — `modules/chat/` já existe (`US-14-02`, mergeado), sem ambiguidade de path
+- [x] CA-002: `frontend/modules/chat/lib/http-chat-client.ts` criado, implementando `ChatClient` com os mesmos `fetch` para `RESUME_CHAT_ENDPOINT`/`RESUME_CHAT_FEEDBACK_ENDPOINT` hoje em `useResumeChat.ts`, incluindo `publicErrorMessage`/`ChatApiError`
+- [x] CA-003: `hooks/useResumeChat.ts` para de chamar `fetch` direto — recebe `ChatClient` (parâmetro opcional com default = instância do adapter HTTP, para não quebrar quem já usa o hook sem argumento)
+- [x] CA-004: comportamento do hook idêntico ao atual — mensagens, loading, erro, rate limit, feedback otimista (nenhuma mudança de UX)
+- [x] CA-005: `useResumeChat.test.ts` usando fake de `ChatClient`; novo `http-chat-client.test.ts` cobrindo o adapter isoladamente
+- [x] CA-006: `npm test` roda 100% verde, com o mesmo número de testes de antes do refactor (mais o teste novo do adapter)
+- [x] CA-007: `npm run build` e `npm run lint` limpos após a reorganização
+- [x] CA-008: `docs/agents/CONTEXTO-PROJETO.md` (seção "Estrutura — monorepo") atualizado refletindo `chat-client.ts`/`http-chat-client.ts`
 
 ### Fora de escopo
 - Qualquer mudança de comportamento/UX do `ChatWidget`/`ProfileAssistChat`/`RagChatPanel`
@@ -54,12 +54,12 @@
 Arquitetura & Modularização — P2
 
 ### Tasks
-- [ ] T01 Criar `chat-client.ts` (interface) — path conforme CA-001 (T01)
-- [ ] T02 [P] Criar `http-chat-client.ts` (adapter), migrando lógica de `fetch`/erro de `useResumeChat.ts` (CA-002)
-- [ ] T03 Ajustar `useResumeChat.ts` para receber `ChatClient` com default (CA-003, CA-004)
-- [ ] T04 Reescrever `useResumeChat.test.ts` com fake de `ChatClient`; criar `http-chat-client.test.ts` (CA-005)
-- [ ] T05 Rodar `npm test`, `npm run build`, `npm run lint` confirmando sem regressão (CA-006, CA-007)
-- [ ] T06 Atualizar `docs/agents/CONTEXTO-PROJETO.md` (CA-008)
+- [x] T01 Criar `chat-client.ts` (interface) — path conforme CA-001 (T01)
+- [x] T02 [P] Criar `http-chat-client.ts` (adapter), migrando lógica de `fetch`/erro de `useResumeChat.ts` (CA-002)
+- [x] T03 Ajustar `useResumeChat.ts` para receber `ChatClient` com default (CA-003, CA-004)
+- [x] T04 Reescrever `useResumeChat.test.ts` com fake de `ChatClient`; criar `http-chat-client.test.ts` (CA-005)
+- [x] T05 Rodar `npm test`, `npm run build`, `npm run lint` confirmando sem regressão (CA-006, CA-007)
+- [x] T06 Atualizar `docs/agents/CONTEXTO-PROJETO.md` (CA-008)
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 - [ ] Todos os critérios de aceite acima `[x]`

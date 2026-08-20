@@ -33,7 +33,9 @@ curriculo-online-ia/
 │   │   │   ├── components/ # ExperienceSection, EducationSection, Skills...
 │   │   │   └── lib/         # skill-icons.ts, skill-blocks.tsx, mobile-nav.ts
 │   │   └── chat/          # domínio "chat/RAG"
-│   │       └── components/ # ProfileAssistChat, RagChatPanel
+│   │       ├── components/ # ProfileAssistChat, RagChatPanel
+│   │       └── lib/         # chat-client.ts (port ChatClient), http-chat-client.ts (adapter HTTP) — ADR-012, US-14-04
+│   ├── hooks/            # useResumeChat (recebe ChatClient por parâmetro, default = adapter HTTP — ADR-012)
 │   ├── components/     # só protótipos (ver abaixo) — sem componente de domínio
 │   │   └── prototypes/ # UI descartável de protótipo — não acumular após promover/descartar
 │   ├── lib/             # só utilitário genérico de verdade (utils.ts) — nada de domínio aqui
