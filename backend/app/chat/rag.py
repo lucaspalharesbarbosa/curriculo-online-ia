@@ -7,8 +7,10 @@ instanciar `openai.OpenAI` direto — a implementação real do provider vive em
 
 from __future__ import annotations
 
+import hashlib
 import json
 import math
+import re
 import unicodedata
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -174,10 +176,19 @@ def embed_chunks(
     ]
 
 
+def resume_hash(resume: Resume) -> str:
+    """Hash do conteúdo do currículo — usado para invalidar o cache do índice
+    quando o `resume.json` muda (ver `load_or_build_index`)."""
+    payload = resume.model_dump_json(by_alias=True).encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
 def save_index(
-    embedded_chunks: list[EmbeddedChunk], path: Path = INDEX_CACHE_PATH
+    embedded_chunks: list[EmbeddedChunk],
+    path: Path = INDEX_CACHE_PATH,
+    resume_hash_value: str | None = None,
 ) -> None:
-    payload = [
+    chunks_payload = [
         {
             "id": item.chunk.id,
             "section": item.chunk.section,
@@ -187,11 +198,14 @@ def save_index(
         }
         for item in embedded_chunks
     ]
+    payload = {"resume_hash": resume_hash_value, "chunks": chunks_payload}
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
 def load_index(path: Path = INDEX_CACHE_PATH) -> list[EmbeddedChunk]:
     payload = json.loads(path.read_text(encoding="utf-8"))
+    # Cache antigo (pré hash de invalidação) era uma lista solta de chunks.
+    chunks_payload = payload["chunks"] if isinstance(payload, dict) else payload
     return [
         EmbeddedChunk(
             chunk=Chunk(
@@ -203,8 +217,14 @@ def load_index(path: Path = INDEX_CACHE_PATH) -> list[EmbeddedChunk]:
             ),
             embedding=item["embedding"],
         )
-        for item in payload
+        for item in chunks_payload
     ]
+
+
+def load_cached_resume_hash(path: Path = INDEX_CACHE_PATH) -> str | None:
+    """Hash do currículo salvo junto com o cache; `None` se ausente/formato antigo."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    return payload.get("resume_hash") if isinstance(payload, dict) else None
 
 
 def build_index(
@@ -216,13 +236,18 @@ def build_index(
 
 
 def load_or_build_index(
-    embedding_provider: EmbeddingProvider, path: Path = INDEX_CACHE_PATH
+    embedding_provider: EmbeddingProvider,
+    path: Path = INDEX_CACHE_PATH,
+    resume: Resume | None = None,
 ) -> list[EmbeddedChunk]:
-    """Carrega o índice cacheado em JSON; gera e cacheia se não existir (ADR-003 §3)."""
-    if path.exists():
+    """Carrega o índice cacheado em JSON; gera e cacheia se não existir ou se o
+    `resume.json` tiver mudado desde que o cache foi gerado (ADR-003 §3)."""
+    resume = resume if resume is not None else load_resume()
+    current_hash = resume_hash(resume)
+    if path.exists() and load_cached_resume_hash(path) == current_hash:
         return load_index(path)
-    index = build_index(embedding_provider)
-    save_index(index, path)
+    index = build_index(embedding_provider, resume)
+    save_index(index, path, resume_hash_value=current_hash)
     return index
 
 
@@ -312,12 +337,23 @@ def _normalize(text: str) -> str:
     return "".join(char for char in decomposed if not unicodedata.combining(char))
 
 
+def _tokenize(text: str) -> set[str]:
+    return set(re.findall(r"\w+", _normalize(text)))
+
+
 def detect_section_intent(question: str) -> str | None:
-    """Seção-alvo da pergunta, por palavra-chave (ADR-010); `None` se nenhuma bater."""
-    normalized_question = _normalize(question)
+    """Seção-alvo da pergunta, por palavra-chave (ADR-010); `None` se nenhuma bater.
+
+    Casa por conjunto de tokens, não substring literal — tolera palavras
+    inseridas entre os termos da keyword (ex. "onde Lucas trabalha" ainda
+    casa com a keyword "onde trabalha", que exige só os tokens "onde" e
+    "trabalha" em qualquer posição da pergunta).
+    """
+    question_tokens = _tokenize(question)
     for section, keywords in SECTION_INTENT_KEYWORDS.items():
-        if any(keyword in normalized_question for keyword in keywords):
-            return section
+        for keyword in keywords:
+            if _tokenize(keyword) <= question_tokens:
+                return section
     return None
 
 
