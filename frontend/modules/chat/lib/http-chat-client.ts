@@ -1,9 +1,11 @@
 import {
   ChatApiError,
+  MAX_HISTORY_MESSAGES,
   RESUME_CHAT_ERROR_MESSAGE,
   RESUME_CHAT_RATE_LIMIT_MESSAGE,
   type ChatClient,
   type ChatFeedbackPayload,
+  type ChatHistoryMessage,
   type ChatResponse,
 } from "./chat-client";
 
@@ -23,11 +25,23 @@ function publicErrorMessage(status: number): string {
 
 /** Adapter HTTP (ADR-012): implementa `ChatClient` via `fetch` para os endpoints Next. */
 export class HttpChatClient implements ChatClient {
-  async sendMessage(question: string): Promise<ChatResponse> {
+  async sendMessage(
+    question: string,
+    history?: ChatHistoryMessage[],
+  ): Promise<ChatResponse> {
+    // ADR-014: janela deslizante aplicada de novo aqui — não depende só da
+    // validação do backend para a experiência normal (o backend segue sendo
+    // a fonte de verdade, truncando/validando de qualquer forma).
+    const truncatedHistory = history?.slice(-MAX_HISTORY_MESSAGES);
+    const body =
+      truncatedHistory && truncatedHistory.length > 0
+        ? { question, history: truncatedHistory }
+        : { question };
+
     const response = await fetch(RESUME_CHAT_ENDPOINT, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question }),
+      body: JSON.stringify(body),
     });
 
     if (!response.ok) {

@@ -20,6 +20,20 @@ export type ChatFeedbackPayload = {
   rating: ChatFeedbackRating;
 };
 
+export type ChatHistoryRole = "user" | "assistant";
+
+/** ADR-014: troca de conversa anterior, enviada ao backend para memória conversacional. */
+export type ChatHistoryMessage = {
+  role: ChatHistoryRole;
+  content: string;
+};
+
+/** ADR-014: janela deslizante — mesma janela funcional do backend (`MAX_HISTORY_MESSAGES`, `service.py`). */
+export const MAX_HISTORY_MESSAGES = 6;
+
+/** ADR-014: mesmo teto de `HistoryMessage.content` do backend (`router.py`) — evita 422 na troca seguinte quando a resposta anterior é longa. */
+export const MAX_HISTORY_CONTENT_LENGTH = 4000;
+
 export const RESUME_CHAT_ERROR_MESSAGE =
   "Não consegui responder agora, tente de novo.";
 
@@ -38,6 +52,9 @@ export class ChatApiError extends Error {
 }
 
 export interface ChatClient {
-  sendMessage(question: string): Promise<ChatResponse>;
+  sendMessage(
+    question: string,
+    history?: ChatHistoryMessage[],
+  ): Promise<ChatResponse>;
   sendFeedback(payload: ChatFeedbackPayload): Promise<void>;
 }

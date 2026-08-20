@@ -37,7 +37,10 @@ describe("useResumeChat", () => {
       await result.current.sendQuestion("Onde você trabalha?");
     });
 
-    expect(chatClient.sendMessage).toHaveBeenCalledWith("Onde você trabalha?");
+    expect(chatClient.sendMessage).toHaveBeenCalledWith(
+      "Onde você trabalha?",
+      [],
+    );
     expect(result.current.messages).toHaveLength(1);
     expect(result.current.messages[0]).toMatchObject({
       question: "Onde você trabalha?",
@@ -225,6 +228,88 @@ describe("useResumeChat", () => {
     expect(result.current.messages).toHaveLength(0);
     expect(result.current.question).toBe("");
     expect(result.current.isSubmitting).toBe(false);
+  });
+
+  it("envia o histórico da troca anterior na segunda pergunta (CA-003/CA-005, ADR-014)", async () => {
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: "Você trabalha na NA Engineering Brasil.",
+    } satisfies ChatResponse);
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: "A matriz fica em São Paulo, SP.",
+    } satisfies ChatResponse);
+
+    const { result } = renderHook(() => useResumeChat(chatClient));
+
+    await act(async () => {
+      await result.current.sendQuestion("Onde Lucas trabalha?");
+    });
+    await act(async () => {
+      await result.current.sendQuestion("Onde fica a matriz da empresa?");
+    });
+
+    expect(chatClient.sendMessage).toHaveBeenNthCalledWith(
+      2,
+      "Onde fica a matriz da empresa?",
+      [
+        { role: "user", content: "Onde Lucas trabalha?" },
+        {
+          role: "assistant",
+          content: "Você trabalha na NA Engineering Brasil.",
+        },
+      ],
+    );
+    expect(result.current.messages[1]).toMatchObject({
+      question: "Onde fica a matriz da empresa?",
+      answer: "A matriz fica em São Paulo, SP.",
+      status: "done",
+    });
+  });
+
+  it("trunca content do histórico a 4000 caracteres (achado do Tech Lead, ADR-014)", async () => {
+    const chatClient = createFakeChatClient();
+    const longAnswer = "a".repeat(4500);
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: longAnswer,
+    } satisfies ChatResponse);
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: "Resposta curta.",
+    } satisfies ChatResponse);
+
+    const { result } = renderHook(() => useResumeChat(chatClient));
+
+    await act(async () => {
+      await result.current.sendQuestion("Pergunta com resposta longa");
+    });
+    await act(async () => {
+      await result.current.sendQuestion("Pergunta seguinte");
+    });
+
+    const [, sentHistory] = chatClient.sendMessage.mock.calls[1];
+    expect(sentHistory?.[1].content).toHaveLength(4000);
+  });
+
+  it("não inclui turno com erro no histórico enviado na pergunta seguinte", async () => {
+    const chatClient = createFakeChatClient();
+    chatClient.sendMessage.mockRejectedValueOnce(new Error("network error"));
+    chatClient.sendMessage.mockResolvedValueOnce({
+      answer: "Resposta real.",
+    } satisfies ChatResponse);
+
+    const { result } = renderHook(() => useResumeChat(chatClient));
+
+    await act(async () => {
+      await result.current.sendQuestion("Pergunta que falha");
+    });
+    await act(async () => {
+      await result.current.sendQuestion("Pergunta seguinte");
+    });
+
+    expect(chatClient.sendMessage).toHaveBeenNthCalledWith(
+      2,
+      "Pergunta seguinte",
+      [],
+    );
   });
 
   it("usa o adapter HTTP como default quando nenhum ChatClient é injetado", () => {
