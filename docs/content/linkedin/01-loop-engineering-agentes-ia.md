@@ -13,8 +13,11 @@ Construo meu portfólio com um pipeline de agentes: PO, arquiteto, dev, QA, tech
 A virada veio quando entendi isso: se uma etapa tem sinal de feedback verificável (teste, lint, veredito de review), ela não precisa da minha aprovação pra se corrigir. Só precisa corrigir, testar de novo e seguir.
 
 Isso virou três níveis de loop:
+
 ⚙️ Interno: lint, teste, build, dentro do próprio dev
+
 🔁 Entre fases: achado do QA ou do tech lead reabre o dev sozinho
+
 🤖 CI: pipeline falha, o agente lê o log, corrige e repush
 
 Só existe um gate humano em todo o processo: a confirmação antes do merge em main, que é a ação mais difícil de desfazer. Tudo antes disso roda sozinho, com limite de 3 tentativas por loop.
