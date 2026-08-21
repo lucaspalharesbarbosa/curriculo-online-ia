@@ -58,3 +58,6 @@ desktop.ini
 
 # ---- Claude Code (config local, não portável entre máquinas) ----
 .claude/settings.local.json
+
+# ---- Conteúdo LinkedIn (rascunhos/posts pessoais, não versionados) ----
+docs/content/linkedin/
