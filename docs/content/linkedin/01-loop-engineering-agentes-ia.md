@@ -1,39 +1,37 @@
 # Loop Engineering: como fiz meus agentes de IA corrigirem os próprios erros até o merge
 
-> Artigo 1 da série. Lastro: `docs/architecture/ADR-015-loop-engineering-pipeline.md`. Publicar como artigo LinkedIn (long-form), com o diagrama abaixo inserido no corpo. Link do projeto no primeiro comentário.
+> Post 1 da série. Lastro: `docs/architecture/ADR-015-loop-engineering-pipeline.md`. Formato: **post de feed do LinkedIn** (não Artigo — a API não suporta Artigo de formato longo). Texto abaixo pronto para colar direto na caixa de post. Imagem anexada separadamente (não faz parte do texto). Link do projeto no primeiro comentário, não no corpo.
 
 ---
 
-Venho construindo meu portfólio pessoal (site de currículo com assistente de chat) usando um pipeline de agentes de IA: um Product Owner, um arquiteto, um dev, um QA, um tech lead. Eu fico no topo, como dono técnico do produto.
+## Texto do post (colar direto)
 
-O aprendizado que mais mudou a velocidade do projeto foi simples de resumir: parei de tratar cada etapa do pipeline como uma parada obrigatória e passei a tratá-la como um loop.
+🔁 Meus agentes de IA corrigem os próprios erros até o merge. Sem eu apertar botão nenhum.
 
-## O problema
+Construo meu portfólio com um pipeline de agentes: PO, arquiteto, dev, QA, tech lead. Por um tempo o gargalo fui eu. Toda reprovação parava tudo esperando minha decisão, mesmo quando era só um teste quebrado ou lint falhando. Um problema com resposta certa, não uma questão de opinião.
 
-No começo, quando o QA reprovava ou o tech lead pedia mudança, o protocolo mandava parar tudo e esperar eu decidir o próximo passo. Parecia prudente. Na prática era desperdício: a maioria das reprovações era um teste quebrado, um erro de lint, uma cobertura abaixo do piso combinado. Problema com sinal de verificação claro (o próprio `pytest`, o próprio `eslint` já diziam o que estava errado), mas o pipeline parava do mesmo jeito, esperando eu autorizar o óbvio.
+A virada veio quando entendi isso: se uma etapa tem sinal de feedback verificável (teste, lint, veredito de review), ela não precisa da minha aprovação pra se corrigir. Só precisa corrigir, testar de novo e seguir.
 
-## A virada
+Isso virou três níveis de loop:
+⚙️ Interno: lint, teste, build, dentro do próprio dev
+🔁 Entre fases: achado do QA ou do tech lead reabre o dev sozinho
+🤖 CI: pipeline falha, o agente lê o log, corrige e repush
 
-Se uma etapa produz um sinal de feedback verificável (teste, lint, cobertura, veredito estruturado de review), ela não precisa da minha aprovação para se corrigir. Precisa só corrigir, testar de novo, e seguir.
+Só existe um gate humano em todo o processo: a confirmação antes do merge em main, que é a ação mais difícil de desfazer. Tudo antes disso roda sozinho, com limite de 3 tentativas por loop.
 
-Formalizei em três níveis, mostrados no diagrama:
+✅ O ganho real não foi só velocidade. Foi onde minha atenção passou a ser gasta. Só em decisão que exige julgamento, não em lint quebrado.
 
-![Diagrama do pipeline de Loop Engineering: PO, Arquiteto, Dev, QA + Tech Lead, CI e Merge em main, com setas de retorno automático e um único gate humano antes do merge](images/loop-engineering-diagrama.svg)
+No próximo post: o que esse pipeline construiu, a estratégia de RAG por trás do assistente do meu portfólio.
 
-1. **Loop interno**: lint, teste, build, dentro do próprio dev
-2. **Loop entre fases**: achado do QA ou do tech lead reabre o dev automaticamente
-3. **Loop de CI**: falha no GitHub Actions, o agente lê o log, corrige e faz o repush sozinho
+#AIAgents #AIEngineering #SoftwareEngineering #DevOps #LLMOps
 
-## O único ponto onde fico no controle
+---
 
-Existe um único gate humano: o merge de `develop` para `main`. É onde o deploy de produção acontece de verdade, a ação mais difícil de desfazer. Só ali o orquestrador para e espera minha confirmação.
+## Imagem (anexar ao post)
 
-Tudo antes disso roda sozinho, com um limite: no máximo três tentativas por loop. Na terceira falha sem convergir, escala para mim com o histórico completo. Falha repetida com a mesma assinatura escala na hora, sem gastar tentativa. Código sensível (chave de API, CORS, segredo) nunca entra em loop automático.
+`images/loop-engineering-diagrama.svg` → exportar para PNG em alta resolução antes de subir.
 
-## O que mudou de verdade
+## Primeiro comentário sugerido
 
-O ganho não é só velocidade. É onde a minha atenção é gasta. Antes eu era interrompido tanto para decisões que exigiam julgamento real quanto para um lint quebrado, que tem resposta certa, não opinião. Hoje só sou chamado para decisão de verdade e para o merge em produção.
-
-No próximo artigo conto o que esse pipeline construiu: a estratégia de RAG do projeto, incluindo a memória conversacional que faltava para o assistente entender "onde fica a matriz da empresa?" depois de "onde você trabalha?".
-
-#AIEngineering #EngenhariaDeIA #LLM #DesenvolvimentoDeSoftware
+🔗 Meu portfólio, com assistente de IA sobre minha trajetória: https://lucas-palhares-cv.vercel.app
+💻 Código aberto: https://github.com/lucaspalharesbarbosa/curriculo-online-ia

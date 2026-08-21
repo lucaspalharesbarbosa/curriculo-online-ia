@@ -14,7 +14,11 @@ Recrutadores técnicos, engenheiros e gestores interessados em IA Engineering ap
 
 Primeira pessoa, direto, com profundidade técnica real: números, trade-offs, decisões documentadas (cada artigo é lastreado em ADR/PRD real do repositório, linkado nas notas de publicação). Sem jargão inflado, sem "10 dicas".
 
-Artigos curtos de propósito (400 a 650 palavras, 3 a 5 minutos de leitura): no feed do LinkedIn, texto longo demais não é lido até o fim. Cada artigo tem no máximo um diagrama de apoio (pasta `images/`), pensado para carregar o peso explicativo que o texto não precisa carregar sozinho.
+**Formato: Post de feed, não Artigo.** A API do LinkedIn não tem endpoint para criar Artigo de formato longo — só post normal de feed. Isso muda o alvo: enxuto, direto ao ponto, sem enrolação, mas sem perder informação relevante. Meta de 130 a 220 palavras (900 a 1400 caracteres), gancho forte na primeira linha (é o que aparece antes do "ver mais"), parágrafos curtos com quebra de linha generosa. Cada post tem no máximo um diagrama de apoio (pasta `images/`), pensado para carregar o peso explicativo que o texto não precisa carregar sozinho.
+
+**Ícones no texto:** usar emoji com função, não decoração. 1 no gancho (linha de abertura) e no máximo 3-4 ao longo do post como marcador de bullet/seção — nunca um emoji por linha, nunca emoji redundante com a palavra ao lado. Preferir ícones "neutros/técnicos" (⚙️ 🔁 📊 ✅ →) a emoji expressivos (🔥 🚀 💡 em excesso lê como spam de growth hacker).
+
+**Regra de escrita humana:** nunca usar travessão (—). É o tique mais claro de texto gerado por IA e quebra a ilusão de que foi um tech lead que escreveu. Preferir ponto final, vírgula, dois pontos ou reformular a frase em duas orações curtas. O post precisa soar como alguém falando de algo que viveu: frases diretas, variação de ritmo, pequenas imperfeições de fala natural, nunca uma cadência simétrica e "polida demais" de texto revisado por IA.
 
 ## Ordem lógica da série
 
@@ -49,10 +53,10 @@ A ordem não segue a cronologia de implementação do projeto. Segue a curva de 
 - Lição generalizável: resolver a causa raiz sem reescrever a arquitetura, refinando a função existente em vez de trocar de stack
 - Diagrama sugerido: fluxo de decisão (similaridade alta → resposta direto; similaridade baixa + entidade conhecida → busca web; similaridade baixa sem entidade → fallback padrão)
 
-## Notas gerais de publicação (para todos os artigos da série)
+## Notas gerais de publicação (para todos os posts da série)
 
-- Publicar como **artigo do LinkedIn** (long-form), curto o suficiente para ser lido inteiro sem rolagem excessiva
-- Diagrama: os arquivos em `images/` são SVG. Se o editor do LinkedIn não aceitar SVG direto, exportar para PNG antes de subir (print da imagem aberta no navegador já resolve, em resolução alta)
-- Link para o projeto: colocar no primeiro comentário, não no corpo do artigo (evita penalização de alcance por link externo)
-- Hashtags sugeridas (ajustar por artigo): `#AIEngineering #RAG #EngenhariaDeIA #LLM #DesenvolvimentoDeSoftware`
-- Cadência sugerida: 1 artigo a cada 1 ou 2 semanas, mantendo espaço para engajamento/comentários entre publicações
+- Publicar como **post de feed do LinkedIn** (não Artigo — a API não cria Artigo de formato longo, só post). Texto pronto para colar direto na caixa de post, sem markdown (LinkedIn não renderiza `##`/`**`): quebras de linha e emoji fazem o trabalho de estrutura visual
+- Diagrama: os arquivos em `images/` são SVG, exportados para PNG antes de subir como imagem do post (resolução alta; screenshot da imagem aberta no navegador resolve se o editor não aceitar SVG direto)
+- Link para o projeto: colocar no primeiro comentário, não no corpo do post (evita penalização de alcance por link externo). Sempre os dois links: o site (https://lucas-palhares-cv.vercel.app) e o repositório (https://github.com/lucaspalharesbarbosa/curriculo-online-ia)
+- Hashtags: **3 a 5, sempre em inglês**, específicas do tema técnico do post (não genéricas tipo `#Tech`/`#Programming`). Escolher por post — não reciclar a mesma lista fixa em todos
+- Cadência sugerida: 1 post a cada 1 ou 2 semanas, mantendo espaço para engajamento/comentários entre publicações
