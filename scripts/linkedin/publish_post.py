@@ -119,7 +119,17 @@ def upload_image(token: str, owner_urn: str, png_path: Path) -> str:
     req = urllib.request.Request(
         upload_url,
         data=image_bytes,
-        headers={"Authorization": f"Bearer {token}"},
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "image/png",
+            # Sem User-Agent de navegador, o edge do LinkedIn devolve uma
+            # página HTML genérica "Page not found" com status 400 em vez
+            # de processar o upload.
+            "User-Agent": (
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+            ),
+        },
         method="PUT",
     )
     with urllib.request.urlopen(req, timeout=60) as resp:
@@ -141,10 +151,19 @@ def upload_image(token: str, owner_urn: str, png_path: Path) -> str:
     return image_urn
 
 
+def escape_little_text(text: str) -> str:
+    """Escapa os caracteres reservados do "Little Text Format" da Posts API
+    do LinkedIn (usados para menções, negrito/itálico etc.). Sem isso, um
+    parêntese ou colchete literal no texto quebra o parser da API e trunca
+    o post no feed. Não escapa '#': as hashtags do post são intencionais."""
+    reserved = "\\{}@[]()<>*_~|"
+    return "".join(f"\\{ch}" if ch in reserved else ch for ch in text)
+
+
 def create_post(token: str, author_urn: str, commentary: str, image_urn: str, alt_text: str) -> tuple[str, str]:
     body = {
         "author": author_urn,
-        "commentary": commentary,
+        "commentary": escape_little_text(commentary),
         "visibility": "PUBLIC",
         "distribution": {
             "feedDistribution": "MAIN_FEED",
