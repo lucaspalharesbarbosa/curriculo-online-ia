@@ -33,6 +33,10 @@ Token configurado em `scripts/linkedin/.env` (`LINKEDIN_ACCESS_TOKEN`). Se `scri
 
 4. **Checar o tom antes de mostrar a prévia.** O post precisa soar como um tech lead humano escrevendo, não como texto gerado por IA. Conferir: nenhum travessão (—) no texto (trocar por ponto, vírgula ou dois pontos); frases diretas, sem cadência simétrica demais; nada de jargão de growth hacker. Se achar algo fora do padrão, ajustar o `.md` antes de seguir (ver `docs/content/linkedin/README.md`, seção "Regra de escrita humana").
 
+   Conferir também **título e ícones**: o título (primeira linha do `.md`) precisa ser chamativo, não um resumo técnico genérico — deve prender atenção, geralmente ancorado no gancho/conflito do post, não só listar os temas tratados. Os ícones/emojis no corpo devem ser usados com moderação, sem exagero nem aparência brega (evitar emoji em toda frase ou combinações que pareçam decoração forçada). Ajustar antes de seguir se algum dos dois estiver fora do padrão.
+
+   Conferir também **contextualização inicial**: logo após o gancho, o texto precisa situar rápido o que é o projeto (portfólio pessoal com chat de IA sobre a própria trajetória) e dar uma explicação mínima na primeira menção de sigla/termo técnico (RAG, chunking, embedding etc.). Sem isso, quem lê no feed frio (sem contexto da série) fica perdido — ver `docs/content/linkedin/README.md`, seção "Contextualização logo no início".
+
    Conferir também o **primeiro comentário sugerido**: precisa ter sempre os dois links, o site (https://lucas-palhares-cv.vercel.app) e o repositório (https://github.com/lucaspalharesbarbosa/curriculo-online-ia). Se o `.md` só tiver um dos dois, completar antes de seguir.
 
 5. **Mostrar a prévia completa na conversa**, não só rodar o comando — reproduzir para o usuário: texto exato do post (com emoji e hashtags), qual imagem vai anexada, e o primeiro comentário sugerido. O usuário precisa ver exatamente o que vai para o ar, igual está no arquivo `.md`.
@@ -57,6 +61,7 @@ Token configurado em `scripts/linkedin/.env` (`LINKEDIN_ACCESS_TOKEN`). Se `scri
 - Editar o `.env` ou expor o token no chat
 - Publicar um post cujo `.md` ainda está com status diferente de "✅ Pronto" na tabela do `docs/content/linkedin/README.md`
 - Publicar um texto com travessão (—) ou com tom que soa gerado por IA em vez de escrito por um tech lead humano
+- Publicar com título genérico/descritivo em vez de chamativo, ou com ícones em excesso/aparência brega
 
 ## Exemplo
 
