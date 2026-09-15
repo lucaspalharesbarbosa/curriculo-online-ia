@@ -1,0 +1,150 @@
+{
+  "description": "Golden-set de perguntas reais sobre o currículo do autor (US-16-03, ADR-016). Categoria 'fora_vocabulario' cobre perguntas fora do dicionário de palavras-chave do ADR-010/ADR-013 (sinônimos, perguntas compostas entre seções); categoria 'regressao' cobre perguntas que já funcionam bem hoje, para garantir não-regressão.",
+  "questions": [
+    {
+      "id": "q01",
+      "category": "fora_vocabulario",
+      "question": "Onde você se formou?",
+      "expected_facts": ["FATEC São José do Rio Preto", "Análise e Desenvolvimento de Sistemas"]
+    },
+    {
+      "id": "q02",
+      "category": "fora_vocabulario",
+      "question": "Que tecnologias usei no meu trabalho mais recente?",
+      "expected_facts": ["Python", "Java", "React", "Angular", "Kubernetes", "AWS", "Engineering Brasil"]
+    },
+    {
+      "id": "q03",
+      "category": "fora_vocabulario",
+      "question": "Que skills usei na Itaú Unibanco?",
+      "expected_facts": ["Java (Spring Boot)", "Python", "AWS", "Microsserviços", "API Rest", "BFF"]
+    },
+    {
+      "id": "q04",
+      "category": "fora_vocabulario",
+      "question": "Quais tecnologias você usou na sua experiência na Shift?",
+      "expected_facts": ["Java", "Quarkus ou COS", "JavaScript", "Angular"]
+    },
+    {
+      "id": "q05",
+      "category": "fora_vocabulario",
+      "question": "Qual empresa te reconheceu por alto desempenho?",
+      "expected_facts": ["Itaú Unibanco", "PRAD"]
+    },
+    {
+      "id": "q06",
+      "category": "fora_vocabulario",
+      "question": "Que tecnologias eu usei no Banco BV?",
+      "expected_facts": ["Java 11", "Spring Boot", "Kubernetes", "Google Cloud Platform", "Bankly", "Pismo"]
+    },
+    {
+      "id": "q07",
+      "category": "fora_vocabulario",
+      "question": "Em que cidade fica localizada a WebPic?",
+      "expected_facts": ["São José do Rio Preto, SP"]
+    },
+    {
+      "id": "q08",
+      "category": "fora_vocabulario",
+      "question": "Qual o meu nível de proficiência em Java?",
+      "expected_facts": ["avançado", "nível 4"]
+    },
+    {
+      "id": "q09",
+      "category": "fora_vocabulario",
+      "question": "Que certificações da Alura você tem?",
+      "expected_facts": ["Formação Angular", "SOLID com Java", "Design Patterns em Java"]
+    },
+    {
+      "id": "q10",
+      "category": "fora_vocabulario",
+      "question": "Qual instituição me formou como técnico?",
+      "expected_facts": ["Etec Philadelpho Gouvêa Netto", "Técnico em Informática"]
+    },
+    {
+      "id": "q11",
+      "category": "fora_vocabulario",
+      "question": "Que modalidade de trabalho eu tenho na Engineering Brasil?",
+      "expected_facts": ["Remoto"]
+    },
+    {
+      "id": "q12",
+      "category": "fora_vocabulario",
+      "question": "Quantos anos de experiência eu tenho?",
+      "expected_facts": ["mais de 10 anos"]
+    },
+    {
+      "id": "q13",
+      "category": "fora_vocabulario",
+      "question": "Que projeto pessoal você desenvolveu usando IA?",
+      "expected_facts": ["Currículo Online com IA", "Next.js", "FastAPI"]
+    },
+    {
+      "id": "q14",
+      "category": "fora_vocabulario_hard",
+      "question": "Onde você trabalhava antes da Itaú Unibanco?",
+      "expected_facts": ["Shift"],
+      "note": "Exige raciocínio temporal entre registros (ordenar experiências por data) — pode continuar falhando mesmo com auto-crítica; mantido no golden-set para reportar com honestidade, não para inflar o número."
+    },
+    {
+      "id": "q15",
+      "category": "regressao",
+      "question": "Onde você trabalha atualmente?",
+      "expected_facts": ["Engineering Brasil", "Tech Lead"]
+    },
+    {
+      "id": "q16",
+      "category": "regressao",
+      "question": "Qual a última empresa que você trabalhou?",
+      "expected_facts": ["Engineering Brasil"]
+    },
+    {
+      "id": "q17",
+      "category": "regressao",
+      "question": "Onde você estudou?",
+      "expected_facts": ["FATEC ou Senac ou Etec"]
+    },
+    {
+      "id": "q18",
+      "category": "regressao",
+      "question": "Já trabalhou com Kubernetes?",
+      "expected_facts": ["sim", "Kubernetes"]
+    },
+    {
+      "id": "q19",
+      "category": "regressao",
+      "question": "Você tem certificação AWS?",
+      "expected_facts": ["AWS Certified Cloud Practitioner"]
+    },
+    {
+      "id": "q20",
+      "category": "regressao",
+      "question": "Qual seu cargo atual?",
+      "expected_facts": ["Tech Lead", "Senior Software Engineer"]
+    },
+    {
+      "id": "q21",
+      "category": "regressao",
+      "question": "Você já trabalhou com Python?",
+      "expected_facts": ["sim", "Python"]
+    },
+    {
+      "id": "q22",
+      "category": "regressao",
+      "question": "Onde fica localizado o Itaú Unibanco em que você trabalhou?",
+      "expected_facts": ["São Paulo, SP"]
+    },
+    {
+      "id": "q23",
+      "category": "regressao",
+      "question": "Qual formação você tem em gerenciamento de projetos?",
+      "expected_facts": ["Pós-graduação em Gerenciamento de Projetos", "Centro Universitário Senac", "PMI"]
+    },
+    {
+      "id": "q24",
+      "category": "regressao",
+      "question": "Você tem experiência com Scrum?",
+      "expected_facts": ["Scrum", "nível 5"]
+    }
+  ]
+}
