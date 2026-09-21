@@ -15,7 +15,9 @@
       "Bash(gh pr list *)",
       "Bash(python -m ruff check *)",
       "Bash(gh pr checks *)",
-      "Bash(python -m black --check *)"
+      "Bash(python -m black --check *)",
+      "Bash(gh run view *)",
+      "Bash(gh run list *)"
     ]
   }
 }

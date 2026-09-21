@@ -81,6 +81,8 @@ Por falha: arquivo, assertion, classificação (bug / teste frágil / ambiente).
 | **Reprovado** | Falha no escopo, componente/endpoint principal sem nenhum teste, ou cobertura abaixo de 70% no código tocado sem justificativa aceita pelo `@product-owner` |
 | **Bloqueado** | Ambiente impede validação (ex.: dependência não instalada) |
 
+**Loop Engineering (`ADR-015`):** um veredito **Reprovado** com achado verificável (teste falhando, cobertura abaixo do piso) não é só narrado — `@orquestrador` reabre `@senior-developer` automaticamente com o achado estruturado, até 3 tentativas. Só escala ao autor no estouro do limite, em falha repetida com a mesma assinatura, ou se o motivo da reprovação não tiver sinal objetivo (ex.: risco de produto/UX subjetivo).
+
 Formato: `references/test-report-template.md`.
 
 **Registrar o veredito na história**: além do relatório, preencher a linha "QA" da tabela **Vereditos** na história correspondente (`docs/product/backlog/fase-FF/US-FF-NN-<slug>.md`, formato em `story-template.md` do `@product-owner`) — é item de DoD, não fica só narrado no chat.
@@ -126,3 +128,4 @@ Formato: `references/test-report-template.md`.
 | `references/test-report-template.md` | Relatório |
 | `references/e2e-scenarios.md` | Cenários manuais/E2E |
 | `references/test-naming-convention.md` | Identificador em inglês, display em PT-BR |
+| `docs/architecture/ADR-015-loop-engineering-pipeline.md` | Reprovado com achado verificável → reabertura automática de Dev |

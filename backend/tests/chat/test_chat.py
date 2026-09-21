@@ -18,9 +18,11 @@ from tests.chat.fakes import (
     FailIfCalledWebSearchProvider,
     FakeChatCompletionProvider,
     FakeEmbeddingProvider,
+    FakeEmbeddingProviderByText,
     FakeWebSearchProvider,
     RaisingChatCompletionProvider,
     RaisingEmbeddingProvider,
+    SequentialChatCompletionProvider,
 )
 
 client = TestClient(app)
@@ -542,6 +544,144 @@ def test_chat_feedback_does_not_expose_full_question_and_answer_in_log(
     assert "Pergunta sensível qualquer" not in logged[0]
     assert "Resposta qualquer" not in logged[0]
     assert "rating=down" in logged[0]
+
+
+# --- US-15-02: memória conversacional (ADR-014) --------------------------------------
+
+
+def test_chat_resolves_anaphora_reference_using_history(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-001: "onde fica a matriz da empresa?" resolve a referência via `history`."""
+    condensed_question = "Onde fica a matriz da NA Engineering Brasil?"
+    chunk = rag.Chunk(
+        id="experience-0",
+        section="experience",
+        text="A matriz da NA Engineering Brasil fica em São Paulo, SP.",
+    )
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProviderByText(
+        {
+            condensed_question: [1.0, 0.0],
+            "Onde fica a matriz da empresa?": [0.0, 1.0],
+        }
+    )
+    chat_completion_provider = SequentialChatCompletionProvider(
+        [condensed_question, "A matriz fica em São Paulo, SP."]
+    )
+    _override_providers(
+        embedding_provider=embedding_provider,
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
+
+    response = client.post(
+        "/chat",
+        json={
+            "question": "Onde fica a matriz da empresa?",
+            "history": [
+                {"role": "user", "content": "Onde Lucas trabalha?"},
+                {
+                    "role": "assistant",
+                    "content": "Você trabalha na NA Engineering Brasil.",
+                },
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "answer": "A matriz fica em São Paulo, SP.",
+        "source": "resume",
+    }
+
+
+def test_chat_keeps_section_routing_for_follow_up_question_via_condensed_text(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Ressalva do Tech Lead (US-15-01): roteamento por seção (ADR-010) não regride
+    quando a pergunta de acompanhamento passa pela reformulação (ADR-014)."""
+    monkeypatch.setattr(service, "_index_cache", ROUTING_FIXTURE_INDEX)
+    condensed_question = "Onde Lucas estudou?"
+    chat_completion_provider = SequentialChatCompletionProvider(
+        [condensed_question, "Você estudou na Universidade X."]
+    )
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[0.5, 0.5]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
+
+    response = client.post(
+        "/chat",
+        json={
+            "question": "E a formação, onde foi?",
+            "history": [
+                {"role": "user", "content": "Onde Lucas trabalha?"},
+                {"role": "assistant", "content": "Na Empresa Atual."},
+            ],
+        },
+    )
+
+    assert response.status_code == 200
+    sent_prompt = chat_completion_provider.calls[-1]["messages"][-1]["content"]
+    assert "Formação" in sent_prompt
+
+
+def test_chat_accepts_request_without_history_field(stub_index: None) -> None:
+    """Retrocompatibilidade: request sem `history` mantém o comportamento atual."""
+    chat_completion_provider = FakeChatCompletionProvider(
+        answer="Você trabalha na Engineering Brasil."
+    )
+    _override_providers(
+        embedding_provider=FakeEmbeddingProvider(embedding=[1.0, 0.0]),
+        chat_completion_provider=chat_completion_provider,
+        web_search_provider=FailIfCalledWebSearchProvider(),
+    )
+
+    response = client.post("/chat", json={"question": "Onde você trabalha?"})
+
+    assert response.status_code == 200
+    assert chat_completion_provider.call_count == 1
+
+
+def test_chat_returns_422_for_history_exceeding_max_length() -> None:
+    """Retorna 422 quando `history` excede o teto de 20 mensagens (ADR-014)."""
+    history = [{"role": "user", "content": f"mensagem {i}"} for i in range(21)]
+
+    response = client.post(
+        "/chat", json={"question": "Onde você trabalha?", "history": history}
+    )
+
+    assert response.status_code == 422
+
+
+def test_chat_returns_422_for_history_message_content_exceeding_max_length() -> None:
+    """Retorna 422 quando o `content` de uma mensagem do `history` passa de 4000."""
+    response = client.post(
+        "/chat",
+        json={
+            "question": "Onde você trabalha?",
+            "history": [{"role": "user", "content": "x" * 4001}],
+        },
+    )
+
+    assert response.status_code == 422
+
+
+def test_chat_returns_422_for_history_with_invalid_role() -> None:
+    """Retorna 422 quando `role` do `history` não é "user"/"assistant"."""
+    response = client.post(
+        "/chat",
+        json={
+            "question": "Onde você trabalha?",
+            "history": [{"role": "system", "content": "instrução"}],
+        },
+    )
+
+    assert response.status_code == 422
 
 
 def test_chat_feedback_logging_failure_does_not_break_response(

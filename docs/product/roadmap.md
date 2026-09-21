@@ -198,3 +198,30 @@ Reorganização de backend e frontend por domínio de negócio (`resume`, `chat`
 - [ ] Modularização do frontend por domínio (`modules/resume`/`modules/chat`) — [US-14-02](backlog/fase-14/US-14-02-modularizacao-frontend-dominio.md), P2 — Dev/QA/Tech Lead aprovados, validação de preview e aceite do PO pendentes
 - [ ] Ports & Adapters no domínio chat do backend — [US-14-03](backlog/fase-14/US-14-03-ports-adapters-chat-backend.md), P2 — Dev/QA/Tech Lead aprovados, PR para `develop` e aceite do PO pendentes
 - [ ] Port `ChatClient` no domínio chat do frontend — [US-14-04](backlog/fase-14/US-14-04-chat-client-frontend.md), P2 — em implementação
+
+## Fase 15 — Memória Conversacional (RAG)
+
+**Status:** Em andamento — US-15-01 (ADR) e US-15-02 (backend) `Done`; US-15-03 (frontend) Dev/QA/Tech Lead aprovados, aguardando push/PR, preview da Vercel e aceite do PO
+**PRD:** [`PRD-013-memoria-conversacional-rag.md`](PRD-013-memoria-conversacional-rag.md)
+**Backlog:** [`docs/product/backlog/fase-15/`](backlog/fase-15/) (US-15-01 a US-15-03)
+**Branch:** `feature/chat-memoria-conversacional`
+
+O `/chat` é stateless por requisição e não resolve referência anafórica entre turnos (ex.: "onde Lucas trabalha?" → "onde fica a matriz **da empresa**?" não é entendido, porque o retrieval busca só a pergunta isolada e o LLM não recebe histórico). Escopo: `ChatRequest` ganha `history` opcional (janela deslizante), reformulação da pergunta antes do retrieval quando há histórico, histórico incluído no prompt final, e o frontend passa a enviar o histórico que já mantém em `useResumeChat` — mantendo o backend sem sessão persistida em servidor (decisão do autor).
+
+- [x] ADR: memória conversacional no fluxo de RAG — [US-15-01](backlog/fase-15/US-15-01-adr-memoria-conversacional-rag.md), P1 (`Done`; `ADR-014`)
+- [x] Backend: histórico + query condensation + prompt com contexto — [US-15-02](backlog/fase-15/US-15-02-backend-memoria-conversacional.md), P1 (`Done`)
+- [ ] Frontend: enviar histórico ao backend — [US-15-03](backlog/fase-15/US-15-03-frontend-envio-historico.md), P1 — Dev/QA/Tech Lead aprovados, aguardando push/PR, preview e aceite do PO
+
+## Fase 16 — RAG Agêntico (Auto-Crítica)
+
+**Status:** Quase lá — US-16-01 e US-16-02 `Done`; US-16-03 com código/infra prontos, aguardando o autor rodar a avaliação real (precisa de `LLM_API_KEY`, indisponível no ambiente isolado do agente)
+**PRD:** [`PRD-014-rag-agentico-auto-critica.md`](PRD-014-rag-agentico-auto-critica.md)
+**Backlog:** [`docs/product/backlog/fase-16/`](backlog/fase-16/) (US-16-01 a US-16-03)
+**Branch:** `feature/rag-agentico-auto-critica`
+**QA/Tech Lead:** [`docs/qa/QA-007-fase-16-rag-agentico-auto-critica.md`](../qa/QA-007-fase-16-rag-agentico-auto-critica.md)
+
+O dicionário de palavras-chave do roteamento por seção/recência (`ADR-010`, reforçado por `ADR-013`) resolve o caso que motivou sua criação, mas por natureza não cobre perguntas fora do vocabulário previsto (sinônimos, perguntas compostas entre seções, ex.: "que skills usei na Itaú Unibanco?") — essas caem em busca por similaridade pura, que às vezes retorna contexto insuficiente ou da seção errada, sem nenhum sinal de que isso aconteceu. Escopo: passo de auto-crítica seletivo pós-retrieval (uma chamada LLM avalia se o contexto é suficiente; se não, reformula a query/relaxa a seção e tenta de novo, até 2 iterações; se ainda insuficiente, cai no fallback de busca web já existente do `ADR-010`, inalterado) — e um golden-set real de 24 perguntas avaliado por LLM-as-judge, medindo a taxa de acerto antes/depois da auto-crítica.
+
+- [x] ADR: RAG agêntico com auto-crítica seletiva — [US-16-01](backlog/fase-16/US-16-01-adr-rag-agentico-auto-critica.md), P1 (`Done`; `ADR-016`)
+- [x] Backend: passo de auto-crítica + reformulação de query — [US-16-02](backlog/fase-16/US-16-02-backend-auto-critica-retrieval.md), P1 (`Done`; 100% cobertura em `service.py`, 131 testes verdes)
+- [ ] Golden-set + avaliação LLM-as-judge (antes/depois) — [US-16-03](backlog/fase-16/US-16-03-golden-set-avaliacao-llm-judge.md), P1 — golden-set (24 perguntas) e script prontos/validados; execução real com números antes/depois pendente do autor

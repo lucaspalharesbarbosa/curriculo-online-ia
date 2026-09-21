@@ -47,6 +47,10 @@ Detalhes completos (estrutura de pastas, hospedagem, branching) em `docs/agents/
 
 ---
 
+## Loop Engineering (`ADR-015`)
+
+`@orquestrador` pode reabrir esta fase **automaticamente**, sem o autor intervir, quando QA reprovar ou Tech Lead solicitar mudanças com achado objetivamente verificável (teste, cobertura, contrato divergente do DoR). Tratar o achado recebido como entrada do Modo B (passo 4): diagnosticar → corrigir → revalidar, até 3 tentativas. Não escalar antes disso — só na 3ª falha, em falha repetida com a mesma assinatura, ou se o achado for código sensível (chave de API, CORS) que já é Critical no `@tech-lead-review`.
+
 ## Fluxo de trabalho
 
 ### Modo A — Feature com história de usuário (preferencial)
@@ -56,7 +60,7 @@ Detalhes completos (estrutura de pastas, hospedagem, branching) em `docs/agents/
 3. Confirmar se a feature é frontend, backend ou ambos
 4. Implementar; manter `resume.json` como única fonte dos dados do currículo; contrato de API implementado deve bater com o documentado no DoR
 5. Se promoveu a partir de protótipo: no **mesmo PR**, remover rota `/prototipo/<slug>` e componentes em `components/prototypes/` (`docs/agents/PROCESSO-PROTOTIPO.md`)
-6. Escrever/atualizar teste do componente ou endpoint tocado, cobrindo o plano de testes do DoR (unitário, integração, mocks) — piso de 70% de cobertura no código tocado
+6. Escrever/atualizar teste do componente ou endpoint tocado, cobrindo o plano de testes do DoR (unitário, integração, mocks) — piso de 70% de cobertura no código tocado; rodar lint + testes e aplicar o mesmo loop de correção do Modo B (passo 4) até convergir ou esgotar 3 tentativas
 7. Marcar a história como concluída no backlog (Done fica a cargo do `@product-owner`, após DoD fechado)
 
 ### Modo B — Ad-hoc (bug / ajuste pontual)
@@ -64,7 +68,7 @@ Detalhes completos (estrutura de pastas, hospedagem, branching) em `docs/agents/
 1. **Entender** — pedido do usuário, comportamento esperado
 2. **Localizar** — `frontend/components`, `frontend/app`, `frontend/content`, ou `backend/app`
 3. **Implementar** — teste mínimo cobrindo o caso corrigido
-4. **Validar** — rodar lint + testes do serviço tocado
+4. **Validar (loop interno — `ADR-015`)** — rodar lint + testes do serviço tocado; falhou → diagnosticar a partir do erro/stack trace → corrigir → repetir, até passar ou esgotar **3 tentativas**. Na 3ª falha sem convergir, ou se a mesma falha se repetir com a mesma assinatura antes disso, parar e reportar ao `@orquestrador`/autor com o histórico das tentativas em vez de insistir
 5. **Documentar** — só se comportamento público (endpoint, prop de componente) mudou
 
 Consulte `references/implementation-patterns.md` e `references/delivery-checklist.md`.
@@ -217,3 +221,4 @@ Nível de teste proporcional ao projeto: cobrir os componentes/endpoints princip
 | `../qa-engineer/references/test-naming-convention.md` | Convenção de nome de teste (código EN, display PT-BR) |
 | `docs/agents/PROCESSO-PROTOTIPO.md` | Protótipos visuais (sob pedido) e limpeza no mesmo PR |
 | `docs/agents/CONTEXTO-PROJETO.md` | Stack, estrutura, branching, hospedagem |
+| `docs/architecture/ADR-015-loop-engineering-pipeline.md` | Loop de correção autônomo, limite de tentativas, escalonamento |

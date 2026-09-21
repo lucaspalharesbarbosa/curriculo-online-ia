@@ -65,6 +65,8 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 | **Solicitar mudanças** | High ou vários Medium |
 | **Bloquear** | Critical (secret exposto, CORS aberto para qualquer origem, bug que quebra o site) |
 
+**Loop Engineering (`ADR-015`):** **Solicitar mudanças** com achado verificável (teste faltando, cobertura abaixo do piso, contrato divergente do DoR) não fica parado esperando o autor — `@orquestrador` reabre `@senior-developer` automaticamente com a tabela de achados, até 3 tentativas. **Bloquear** (Critical: chave de API, CORS) **nunca** entra no loop automático — sempre escala direto ao autor, mesmo que o resto do pipeline esteja rodando em modo autônomo.
+
 ---
 
 ## Severidades
@@ -136,3 +138,4 @@ Consulte `references/review-checklist.md` e `references/security-checklist.md`.
 | `references/review-example.md` | Exemplo de tom |
 | `../qa-engineer/references/test-naming-convention.md` | Convenção de nome de teste (código EN, display PT-BR) |
 | `docs/agents/CONTEXTO-PROJETO.md` | Convenções |
+| `docs/architecture/ADR-015-loop-engineering-pipeline.md` | Solicitar mudanças → reabertura automática; Bloquear (Critical) nunca auto-loop |

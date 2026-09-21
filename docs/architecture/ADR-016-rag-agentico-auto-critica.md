@@ -1,0 +1,157 @@
+# ADR-016: RAG agêntico com auto-crítica seletiva
+
+## Status
+Aceita
+
+## Contexto
+
+`ADR-010` resolveu perguntas objetivas que caíam fora do que a similaridade de cosseno pura conseguia diferenciar ("onde estudei?", "última empresa") com um roteamento por seção/recência baseado em **dicionário de palavras-chave** (`SECTION_INTENT_KEYWORDS`, `detect_section_intent`, `rag.py`), deliberadamente descartando ali um classificador de intenção via LLM por custo/latência desproporcional ao ganho observado. `ADR-013` reforçou esse mesmo dicionário (casamento por conjunto de tokens em vez de substring literal), corrigindo um bug de roteamento sem reabrir a decisão de fundo.
+
+Essa abordagem cobre bem o vocabulário previsto, mas por definição não cobre o que está fora dele:
+
+- **Sinônimos/frases não previstas**: uma pergunta que não bate em nenhuma keyword de `_EDUCATION_INTENT_KEYWORDS`/`_EXPERIENCE_INTENT_KEYWORDS` cai em `search()` sem `section` restrito (`detect_section_intent` retorna `None`), voltando ao comportamento de similaridade pura que o próprio `ADR-010` documentou como insuficiente para esses casos.
+- **Perguntas compostas entre seções**: ex. "que skills usei na Itaú Unibanco?" cruza `experience` (a empresa) e `skill` (as tecnologias) — nenhuma keyword do dicionário atual mapeia para uma combinação de duas seções, e mesmo se mapeasse, o dicionário é por design uma correspondência 1:1 pergunta→seção (`SECTION_INTENT_KEYWORDS: dict[str, set[str]]`), não uma composição.
+
+Em ambos os casos, o sistema **não tem nenhum sinal interno** de que o contexto recuperado pode estar incompleto ou na seção errada — `service.answer_question` só decide entre responder com o contexto do `top_k` ou cair no fallback de busca web quando `results[0][1] < SIMILARITY_THRESHOLD` (0.2, claramente baixo). Entre "claramente baixo" e "claramente bom", existe uma faixa onde o contexto pode estar incompleto (contém alguns chunks relevantes, mas não todos os necessários) sem que o score agregado sinalize isso.
+
+Restrições que seguem valendo (mesmas de `ADR-010`/`ADR-004`/`ADR-008`): Render free tier, single worker sensível a latência; `/chat` já pode disparar até 3 chamadas de IA por requisição hoje (condensação de histórico quando há `history`, `ADR-014`; embedding; geração) mais a busca web condicional — qualquer chamada nova precisa ser seletiva, não constante.
+
+## Decisão
+
+### 1. Auto-crítica como passo adicional, não substituto do roteamento por palavra-chave
+
+A auto-crítica roda **depois** de `rag.search_with_routing` (que já aplica o roteamento por seção/recência de `ADR-010`/`ADR-013`), nunca no lugar dele. O dicionário de keywords continua sendo o primeiro filtro, de custo zero; a auto-crítica é a rede de segurança para o que ele deixa passar — mesma relação de complementaridade que `ADR-010` já estabeleceu entre similaridade pura e roteamento por seção.
+
+### 2. Critério seletivo de acionamento — só na faixa ambígua
+
+Dois patamares de confiança, acima do `SIMILARITY_THRESHOLD` (0.2, que já decide "tenta busca web"):
+
+```python
+# backend/app/chat/service.py
+SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD = 0.55   # score alto o bastante por si só
+SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD = 0.52  # score "bom" quando já há seção roteada
+```
+
+> Valores calibrados pela execução real do golden-set (`US-16-03`, ver "Resultado real
+> da medição"). A primeira versão desta ADR usava `0.5`/`0.35`, estimados sem dado: com
+> eles a auto-crítica rodava em 3 das 24 perguntas do golden-set e em **nenhuma** das
+> que erravam.
+
+A auto-crítica roda **somente quando todas as condições abaixo são verdadeiras**:
+
+1. `results[0][1] >= SIMILARITY_THRESHOLD` — já passou do patamar mínimo que hoje decide entre resposta local e busca web (não faz sentido gastar uma chamada de auto-crítica quando o contexto já está claramente insuficiente; esse caso já cai direto no fluxo de busca web existente, inalterado)
+2. **E** `results[0][1] < SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD` — um score muito alto (>= 0.55) já é confiável **por si só**, com ou sem seção roteada (uma pergunta pode não bater em nenhuma keyword do dicionário e ainda assim ter uma correspondência de similaridade muito forte — não faz sentido de segunda-adivinhar esse caso)
+3. **E** `not (section_routed and results[0][1] >= SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD)` — quando há seção roteada por keyword (`detect_section_intent` não é `None`), o patamar de corte cai para 0.52 (o próprio roteamento já é um sinal de confiança adicional, então um score mais modesto ainda é aceitável sem checar)
+
+Em outras palavras, a auto-crítica só roda na faixa realmente ambígua: score entre 0.2 e 0.55 **sem** seção roteada (pergunta fora do vocabulário do dicionário, ex. sinônimo ou pergunta composta entre seções), ou score entre 0.2 e 0.52 **com** seção roteada (o roteamento acertou a seção, mas o chunk específico ainda não parece muito bom). Pergunta com seção roteada e score >= 0.52, ou qualquer pergunta com score >= 0.55, são os casos felizes que já funcionam hoje (`ADR-010`/`ADR-013`) — pulam a auto-crítica, zero custo extra. Com esses cortes, 14 das 24 perguntas do golden-set passam pela auto-crítica (contra 3 na calibração original). Pergunta com score já abaixo de 0.2 mantém o comportamento atual (fallback web) sem passar pela auto-crítica.
+
+Os dois valores saíram da distribuição real de scores do índice, medida em `US-16-03`: a mediana fica em torno de 0.54 e os cinco erros do golden-set se concentram entre 0.46 e 0.55. São duas constantes, fáceis de retunar sem mudar contrato, e devem ser revisitadas sempre que o `resume.json` ou o modelo de embedding mudar, porque a distribuição muda junto.
+
+### 3. Iteração: reescrever a query, depois relaxar a seção — teto de 2 iterações
+
+```python
+MAX_SELF_CRITIQUE_ITERATIONS = 2
+```
+
+A cada iteração, uma **única chamada** ao `ChatCompletionProvider` faz o papel de crítico e de reformulador ao mesmo tempo (não duas chamadas separadas de "julgar" + "reformular" — reduz pela metade o custo por iteração): o prompt pede que o modelo responda `SUFICIENTE` se o contexto (chunks recuperados) responde à pergunta, ou `INSUFICIENTE: <query reformulada>` caso contrário. `service.py` faz o parsing dessa resposta (prefixo, case-insensitive) — falha ao parsear (resposta fora do formato esperado) é tratada como `SUFICIENTE` (aceita o contexto que já tem), nunca como erro que interrompe o fluxo.
+
+Mecanismo de cada iteração, para não repetir a mesma busca:
+
+- **Iteração 1** — reformula a query (reescreve incorporando sinônimos/termos que possam faltar) e repete `rag.search_with_routing` com a query reformulada — deixa o roteamento por seção rodar de novo sobre o novo texto (uma reformulação pode, ela mesma, acertar uma keyword do dicionário que a pergunta original não continha)
+- **Iteração 2** (só se a 1ª ainda for `INSUFICIENTE`) — usa a query reformulada da iteração 1, mas chama `rag.search` diretamente com `section=None` (ignora a restrição de seção, mesmo que o roteamento tenha identificado uma) e `top_k` do módulo (3) — cobre o caso de pergunta composta entre seções, onde restringir a uma seção só é exatamente o que está excluindo o chunk certo
+
+Se a 2ª iteração ainda for avaliada como `INSUFICIENTE`, ou se `MAX_SELF_CRITIQUE_ITERATIONS` for atingido, o fluxo segue para o passo 4.
+
+### 4. Esgotou as iterações → abstenção, nunca busca web
+
+Sem convergência dentro do teto de iterações, `service.answer_question` devolve `FALLBACK_ANSWER` com `source="resume"`, **sem** acionar `web_search_provider`.
+
+A primeira versão desta decisão encaminhava esse caminho para o fallback web de `ADR-010` seção 2. A execução real do golden-set (`US-16-03`) mostrou por que isso é perigoso: em *"onde você trabalhava antes da Itaú Unibanco?"*, a auto-crítica esgotava as iterações, a busca web era acionada e o assistente respondia, em primeira pessoa, *"trabalhava no Santander, Bradesco e City Bank"* — empresas que não existem no currículo. O comportamento anterior à auto-crítica era uma abstenção honesta (*"não estão disponíveis no contexto fornecido"*). Trocar abstenção por fabricação sobre a trajetória profissional do autor é pior do que não responder, num chat público de portfólio.
+
+O gatilho de busca web de `ADR-010` continua **inalterado** para o caminho original (score bruto abaixo de `SIMILARITY_THRESHOLD` + entidade conhecida). O que muda é só a saída da auto-crítica esgotada, que passa a ser terminal.
+
+Custo medido dessa escolha: *"onde fica localizado o Itaú Unibanco?"* era respondido corretamente via web e passou a abster. É uma troca deliberada de cobertura por confiabilidade.
+
+### 5. Convivência com a condensação de pergunta (`ADR-014`)
+
+A auto-crítica opera sobre a **pergunta já condensada** (`search_question`, resultado de `_condense_question`), não sobre a `question` crua do usuário — é a mesma variável que já alimenta `rag.search_with_routing` hoje. Isso evita um segundo caminho de reformulação de texto: a condensação (`ADR-14`) resolve correferência de histórico; a auto-crítica (este ADR) resolve insuficiência de contexto dentro de uma única pergunta (já condensada) — são passos sequenciais e ortogonais, não dois mecanismos concorrentes. A cada iteração de auto-crítica, a query reformulada substitui `search_question` só para as chamadas de retrieval subsequentes daquela requisição; a pergunta original do usuário continua sendo a base do prompt final ao LLM (`_build_user_prompt`), como já acontece hoje.
+
+### 6. Reaproveitamento de porta — sem mudança em `ports.py`
+
+A chamada de auto-crítica usa `chat_completion_provider.generate_completion(model=GENERATION_MODEL, messages=[...])` — a mesma assinatura já usada por `_condense_question`/`_generate_answer`/`_generate_web_answer`. Nenhuma porta nova, nenhuma dependência direta de SDK no domínio `chat` (`ADR-012`).
+
+### 7. Resiliência — mesmo padrão de `ADR-004`/`ADR-014`
+
+Falha da chamada de auto-crítica (exceção do provider, resposta vazia) é tratada como `SUFICIENTE` — aceita o contexto que já tem e segue para a geração normal, em vez de propagar erro ou interromper o fluxo. Consistente com o padrão já estabelecido em `_condense_question`: uma chamada auxiliar nunca pode ser o motivo de uma falha visível ao cliente.
+
+### 8. Parâmetro para comparação antes/depois (`US-16-03`)
+
+`service.answer_question` ganha um parâmetro `enable_self_critique: bool = True`. Com `False`, o fluxo é **byte a byte** o comportamento anterior a este ADR (sem a auto-crítica) — usado pelo golden-set (`US-16-03`) para medir "antes" e "depois" contra a mesma implementação, sem duas cópias de código nem dois deploys.
+
+## Alternativas Consideradas
+
+| Alternativa | Prós | Contras | Veredito |
+|---|---|---|---|
+| Auto-crítica seletiva pós-retrieval, teto de 2 iterações, crítico+reformulador numa única chamada (escolhida) | Cobre o gap real (fora de vocabulário/perguntas compostas) sem tocar no dicionário de `ADR-010`/`ADR-013`; custo extra só na faixa ambígua; reaproveita port existente | Introduz uma constante de confiança (`0.35`) sem calibração estatística prévia — mitigado por medir/ajustar com o golden-set real (`US-16-03`) | **Escolhida** |
+| Auto-crítica em toda pergunta, sem critério seletivo | Mais simples de implementar (uma condição a menos) | Dobra o custo/latência de toda pergunta, inclusive as que já funcionam bem hoje — contraria a restrição de custo do Render free tier e o próprio pedido do autor de auto-crítica seletiva | Descartada |
+| Reabrir `ADR-010` e substituir o dicionário por um classificador de intenção via LLM (a alternativa que `ADR-010` já havia descartado) | Resolveria sinônimos/composição de forma mais geral | É exatamente o trade-off de custo/latência que `ADR-010` já rejeitou para o caso comum; descartaria um mecanismo de custo zero que funciona para a maioria das perguntas reais | Descartada |
+| Duas chamadas por iteração (uma para julgar suficiência, outra para reformular a query) | Prompt mais simples cada um, responsabilidade única por chamada | Dobra o custo de cada iteração sem ganho real — um único prompt bem desenhado (`SUFICIENTE` / `INSUFICIENTE: <query>`) resolve as duas tarefas numa chamada | Descartada |
+| Teto de 3+ iterações | Mais chances de convergir | Custo/latência crescente sem ganho proporcional — se 2 iterações (reformular + relaxar seção) não bastarem, o fallback web (`ADR-010`) já é o mecanismo certo para "resume não tem essa informação" | Descartada |
+| Sumarizar/reescrever a query só uma vez, sem a etapa de relaxar a seção | Mais simples | Não cobre o caso de pergunta composta entre seções (ex. "skills na Itaú Unibanco") — é exatamente esse caso que a restrição de seção do `ADR-010` pode estar sabotando, e só relaxar a seção resolve, não só reescrever o texto | Descartada |
+
+## Consequências
+
+- `backend/app/chat/service.py`: novas constantes `SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD` (0.5), `SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD` (0.35) e `MAX_SELF_CRITIQUE_ITERATIONS` (2); nova função de auto-crítica (prompt dedicado, parsing `SUFICIENTE`/`INSUFICIENTE: <query>`); `answer_question` ganha `enable_self_critique: bool = True` e passa a rodar o laço de auto-crítica entre o retrieval inicial e a decisão de fallback web, só dentro da faixa seletiva definida acima
+- `backend/app/chat/rag.py`: nenhuma mudança de assinatura — `search_with_routing`/`search` já aceitam os parâmetros (`section`, `top_k`) que a auto-crítica reaproveita na iteração 2 (relaxamento de seção)
+- `ChatRequest`/`ChatResponse` do `/chat` (`router.py`) — inalterados; a auto-crítica é interna a `service.py`, invisível ao cliente
+- `US-16-02` implementa esta decisão; `US-16-03` mede o resultado real (golden-set + LLM-as-judge) e, depois de rodar, esta ADR deve ser atualizada (seção de Consequências) com o número real de melhoria encontrado e qualquer ajuste feito em `SELF_CRITIQUE_CONFIDENCE_THRESHOLD` a partir do dado real
+- Reavaliar esta ADR se: o golden-set mostrar que `0.5`/`0.35` geram falsos positivos/negativos frequentes (sinal de recalibrar as constantes, não de mudar o mecanismo); o custo médio de chamadas extras por pergunta (medido em `US-16-03`) se mostrar desproporcional ao ganho de precisão; ou se o padrão de perguntas reais mostrar necessidade de mais de 2 iterações — nesse último caso, reavaliar se um classificador de intenção completo (a alternativa que `ADR-010` já descartou) passaria a valer o custo
+
+## Resultado real da medição (US-16-03)
+
+Executado com `LLM_API_KEY` real em 21/09/2026: `cd backend && python -m eval.run_golden_set`,
+24 perguntas, LLM-as-judge (`gpt-4o-mini`), relatórios em `backend/eval/results/`.
+
+| Rodada | Configuração | Sem auto-crítica | Com auto-crítica | Vereditos alterados |
+|---|---|---|---|---|
+| 1 | `0.5` / `0.35` (estimados) | 19/24 | 19/24 | 0 |
+| 2 | `0.55` / `0.52` (recalibrados) | 19/24 | 19/24 | 2 (q15 corrigida, q06 quebrada) |
+| 3 | recalibrados + abstenção (seção 4) | 18/24 | 18/24 | 2 (q15 corrigida, q22 perdida) |
+
+**A taxa agregada não mudou em nenhuma configuração.** O que a medição entregou não foi
+um ganho de placar, e sim quatro fatos que só aparecem olhando caso a caso:
+
+1. **Os cortes originais quase nunca abriam.** Com `0.5`/`0.35`, a auto-crítica rodava em
+   3 das 24 perguntas e em nenhuma das 5 que erravam. Inclusive *"que skills usei na Itaú
+   Unibanco?"*, a pergunta citada como motivação desta ADR, pontua 0.596 e passava direto.
+2. **A recalibração corrigiu um erro real e reprodutível.** *"Onde você trabalha
+   atualmente?"* respondia *"Web Developer na Shift"* (empresa antiga) e passou a responder
+   *"Tech Lead | Senior Software Engineer na Engineering Brasil"*, nas rodadas 2 e 3.
+3. **A auto-crítica abriu um caminho de fabricação** (rodada 2), corrigido na seção 4 desta
+   ADR e verificado na rodada 3: nenhuma resposta vem da web por esse caminho agora.
+4. **±1 caso é ruído, não sinal.** Rodando o **mesmo** código sem auto-crítica três vezes,
+   o resultado foi 19, 19 e 18: q06 (*"que tecnologias eu usei no Banco BV?"*) oscila entre
+   `CORRETO` e `INCORRETO` por não-determinismo de geração e do juiz. Com n=24, diferenças
+   de um caso não sustentam conclusão nenhuma, o que também invalida a leitura inicial de
+   que a auto-crítica havia "quebrado" q06 na rodada 2.
+
+Os 5 erros restantes não são, em sua maioria, problema de recuperação: *"quantos anos de
+experiência eu tenho?"* exige aritmética sobre datas; *"onde trabalhava antes da Itaú?"*
+exige ordenação temporal. Nenhuma quantidade de auto-crítica resolve isso, o que aponta o
+próximo trabalho: raciocínio temporal sobre o currículo, não mais retrieval.
+
+Consequência metodológica para as próximas fases: um golden-set de 24 perguntas serve para
+achar **modos de falha** (foi o que aconteceu aqui), não para comparar taxas agregadas.
+Para isso seria preciso mais perguntas e várias execuções por configuração.
+
+## Referências
+
+- `docs/agents/CONTEXTO-PROJETO.md`
+- `docs/product/PRD-014-rag-agentico-auto-critica.md`, `docs/product/backlog/fase-16/US-16-01-adr-rag-agentico-auto-critica.md`
+- [ADR-003](ADR-003-fluxo-rag.md) (fluxo de RAG original)
+- [ADR-004](ADR-004-resiliencia-backend-chat.md) (padrão de resiliência de chamada auxiliar — reaproveitado aqui)
+- [ADR-010](ADR-010-fluxo-rag-v2-precisao-web.md) (roteamento por seção/recência + fallback web — decisão que este ADR complementa, não substitui)
+- [ADR-012](ADR-012-clean-architecture-chat.md) (Ports & Adapters no domínio `chat` — auto-crítica reaproveita `ChatCompletionProvider`, sem porta nova)
+- [ADR-013](ADR-013-correcao-roteamento-rag-e-melhorias-chunking.md) (casamento por token no roteamento — dicionário que este ADR não reabre)
+- [ADR-014](ADR-014-memoria-conversacional-chat.md) (condensação de pergunta — auto-crítica opera sobre a pergunta já condensada)
+- `backend/app/chat/service.py`, `backend/app/chat/rag.py`, `backend/app/chat/ports.py`

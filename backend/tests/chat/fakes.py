@@ -57,6 +57,22 @@ class FakeChatCompletionProvider:
         return self.answer
 
 
+class SequentialChatCompletionProvider:
+    """Devolve uma resposta por chamada, em sequência — usado quando o teste
+    precisa distinguir chamadas diferentes ao provider (ex.: query condensation
+    seguida da geração final, `ADR-014`), o que `FakeChatCompletionProvider`
+    (uma resposta fixa para todas as chamadas) não permite diferenciar."""
+
+    def __init__(self, answers: list[str]) -> None:
+        self._answers = list(answers)
+        self.calls: list[dict[str, object]] = []
+
+    def generate_completion(self, model: str, messages: list[dict[str, str]]) -> str:
+        self.calls.append({"model": model, "messages": messages})
+        index = min(len(self.calls) - 1, len(self._answers) - 1)
+        return self._answers[index]
+
+
 class RaisingChatCompletionProvider:
     """Levanta a exceção informada — simula falha do provider na geração."""
 
@@ -65,6 +81,22 @@ class RaisingChatCompletionProvider:
 
     def generate_completion(self, model: str, messages: list[dict[str, str]]) -> str:
         raise self._exc
+
+
+class FailFirstThenAnswerChatCompletionProvider:
+    """Levanta `exc` na 1ª chamada (simula falha da query condensation,
+    `ADR-014`) e devolve `answer` fixo nas chamadas seguintes (geração final)."""
+
+    def __init__(self, exc: Exception, answer: str) -> None:
+        self._exc = exc
+        self.answer = answer
+        self.calls: list[dict[str, object]] = []
+
+    def generate_completion(self, model: str, messages: list[dict[str, str]]) -> str:
+        self.calls.append({"model": model, "messages": messages})
+        if len(self.calls) == 1:
+            raise self._exc
+        return self.answer
 
 
 class FakeWebSearchProvider:

@@ -4,10 +4,12 @@ import { useCallback, useState } from "react";
 
 import {
   ChatApiError,
+  MAX_HISTORY_CONTENT_LENGTH,
   RESUME_CHAT_ERROR_MESSAGE,
   RESUME_CHAT_RATE_LIMIT_MESSAGE,
   type ChatClient,
   type ChatFeedbackRating,
+  type ChatHistoryMessage,
 } from "@/modules/chat/lib/chat-client";
 import { httpChatClient } from "@/modules/chat/lib/http-chat-client";
 
@@ -50,6 +52,27 @@ export function useResumeChat(chatClient: ChatClient = httpChatClient) {
         return;
       }
 
+      // ADR-014/US-15-03: trocas já concluídas desta conversa, serializadas
+      // para o ChatClient antes de registrar a nova pergunta — turnos com
+      // erro ficam de fora (não são resposta real para dar de contexto).
+      const history: ChatHistoryMessage[] = messages
+        .filter(
+          (message) => message.status === "done" && message.answer !== null,
+        )
+        .flatMap((message): ChatHistoryMessage[] => [
+          {
+            role: "user",
+            content: message.question.slice(0, MAX_HISTORY_CONTENT_LENGTH),
+          },
+          {
+            role: "assistant",
+            content: (message.answer as string).slice(
+              0,
+              MAX_HISTORY_CONTENT_LENGTH,
+            ),
+          },
+        ]);
+
       const messageId = crypto.randomUUID();
       setMessages((current) => [
         ...current,
@@ -64,7 +87,7 @@ export function useResumeChat(chatClient: ChatClient = httpChatClient) {
       setIsSubmitting(true);
 
       try {
-        const data = await chatClient.sendMessage(trimmedQuestion);
+        const data = await chatClient.sendMessage(trimmedQuestion, history);
 
         setMessages((current) =>
           current.map((message) =>
@@ -98,7 +121,7 @@ export function useResumeChat(chatClient: ChatClient = httpChatClient) {
         setIsSubmitting(false);
       }
     },
-    [chatClient, isSubmitting, question],
+    [chatClient, isSubmitting, messages, question],
   );
 
   const sendFeedback = useCallback(
