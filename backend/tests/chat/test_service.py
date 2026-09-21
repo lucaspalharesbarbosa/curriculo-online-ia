@@ -388,3 +388,193 @@ def test_answer_question_truncates_history_to_last_window() -> None:
     for turn in dropped:
         assert turn.content not in condensation_prompt
         assert turn.content not in final_contents
+
+
+# --- US-16-02: RAG agêntico com auto-crítica seletiva (ADR-016) --------------------
+
+# cos([0.3, 0.9539392014169456], [1.0, 0.0]) == 0.3 — faixa ambígua ([0.2, 0.5)).
+_AMBIGUOUS_EMBEDDING = [0.3, 0.9539392014169456]
+# cos([0.9539392014169456, 0.3], [1.0, 0.0]) == 0.9539... — confiança alta.
+_HIGH_CONFIDENCE_EMBEDDING = [0.9539392014169456, 0.3]
+# cos([0.53, 0.8479976415061542], [1.0, 0.0]) == 0.53 — >= SECTION_CONFIDENCE (0.52),
+# ainda abaixo de HIGH_CONFIDENCE (0.55).
+_SECTION_CONFIDENCE_EMBEDDING = [0.53, 0.8479976415061542]
+
+
+def test_answer_question_skips_self_critique_when_score_already_high(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-016: score >= SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD pula a
+    auto-crítica mesmo sem seção roteada — sem chamada extra ao provider."""
+    chunk = rag.Chunk(id="skill-0", section="skill", text="Skills: Python, Java.")
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProvider(embedding=_HIGH_CONFIDENCE_EMBEDDING)
+    chat_completion_provider = FakeChatCompletionProvider(answer="Sim, uso Python.")
+
+    answer, source = service.answer_question(
+        "Já usou Python em algum projeto pessoal?",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+    )
+
+    assert answer == "Sim, uso Python."
+    assert source == "resume"
+    assert chat_completion_provider.call_count == 1
+
+
+def test_answer_question_skips_self_critique_when_section_routed_with_confidence(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-016: com seção roteada por keyword, o corte de confiança cai para
+    SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD (0.52) — ainda pula a auto-crítica."""
+    chunk = rag.Chunk(
+        id="education-0",
+        section="education",
+        text="Formação: Bacharelado em Ciência da Computação.",
+    )
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProvider(embedding=_SECTION_CONFIDENCE_EMBEDDING)
+    chat_completion_provider = FakeChatCompletionProvider(
+        answer="Você estudou Ciência da Computação."
+    )
+
+    answer, source = service.answer_question(
+        "Onde você estudou?",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+    )
+
+    assert answer == "Você estudou Ciência da Computação."
+    assert source == "resume"
+    assert chat_completion_provider.call_count == 1
+
+
+def test_answer_question_triggers_self_critique_and_converges_after_reformulation(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """CA-001/CA-002 (ADR-016): score ambíguo sem seção roteada aciona a
+    auto-crítica; a reformulação encontra contexto avaliado como suficiente."""
+    raw_question = "Quais skills usei na Itaú Unibanco?"
+    reformulated_question = "Quais tecnologias Lucas usou na Itaú Unibanco?"
+    chunk = rag.Chunk(
+        id="experience-2",
+        section="experience",
+        text="Software Engineer na Itaú Unibanco, tecnologias: Java, Python, AWS.",
+    )
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProviderByText(
+        {
+            raw_question: _AMBIGUOUS_EMBEDDING,
+            reformulated_question: _HIGH_CONFIDENCE_EMBEDDING,
+        }
+    )
+    chat_completion_provider = SequentialChatCompletionProvider(
+        [
+            f"INSUFICIENTE: {reformulated_question}",
+            "SUFICIENTE",
+            "Você usou Java, Python e AWS na Itaú Unibanco.",
+        ]
+    )
+
+    answer, source = service.answer_question(
+        raw_question,
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+    )
+
+    assert answer == "Você usou Java, Python e AWS na Itaú Unibanco."
+    assert source == "resume"
+    assert len(chat_completion_provider.calls) == 3
+
+
+def test_answer_question_abstains_after_exhausting_self_critique_iterations(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-016 (revisão pós-golden-set): auto-crítica insuficiente após
+    MAX_SELF_CRITIQUE_ITERATIONS abstém, sem acionar a busca web.
+
+    Deixar este caminho cair na web (comportamento original de US-16-02) trocava
+    uma abstenção honesta por resposta fabricada sobre a trajetória do autor.
+    """
+    chunk = rag.Chunk(id="skill-0", section="skill", text="Skills: Python, Java.")
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProvider(embedding=_AMBIGUOUS_EMBEDDING)
+    chat_completion_provider = SequentialChatCompletionProvider(
+        [
+            "INSUFICIENTE: pergunta reformulada 1",
+            "INSUFICIENTE: pergunta reformulada 2",
+        ]
+    )
+
+    answer, source = service.answer_question(
+        "O que a Engineering Brasil faz de diferente?",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+    )
+
+    assert source == "resume"
+    assert answer == service.FALLBACK_ANSWER
+    assert len(chat_completion_provider.calls) == 2
+
+
+def test_answer_question_with_self_critique_disabled_skips_it_even_in_ambiguous_band(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """`enable_self_critique=False` reproduz o comportamento anterior ao ADR-016,
+    mesmo em score na faixa ambígua — usado por US-16-03 para comparar antes/depois."""
+    chunk = rag.Chunk(id="skill-0", section="skill", text="Skills: Python, Java.")
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProvider(embedding=_AMBIGUOUS_EMBEDDING)
+    chat_completion_provider = FakeChatCompletionProvider(answer="Resposta direta.")
+
+    answer, source = service.answer_question(
+        "Pergunta ambígua qualquer",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+        enable_self_critique=False,
+    )
+
+    assert answer == "Resposta direta."
+    assert source == "resume"
+    assert chat_completion_provider.call_count == 1
+
+
+def test_answer_question_treats_self_critique_provider_failure_as_sufficient(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Resiliência (ADR-004/ADR-014 aplicada ao ADR-016): falha do provider na
+    auto-crítica não propaga — trata como suficiente e segue a geração normal."""
+    chunk = rag.Chunk(id="skill-0", section="skill", text="Skills: Python, Java.")
+    monkeypatch.setattr(
+        service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
+    )
+    embedding_provider = FakeEmbeddingProvider(embedding=_AMBIGUOUS_EMBEDDING)
+    chat_completion_provider = FailFirstThenAnswerChatCompletionProvider(
+        OpenAIError("falha simulada de auto-crítica"), "Resposta apesar da falha."
+    )
+
+    answer, source = service.answer_question(
+        "Pergunta ambígua qualquer",
+        embedding_provider,
+        chat_completion_provider,
+        FailIfCalledWebSearchProvider(),
+    )
+
+    assert answer == "Resposta apesar da falha."
+    assert source == "resume"
+    assert len(chat_completion_provider.calls) == 2
