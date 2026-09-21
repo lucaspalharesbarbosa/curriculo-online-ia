@@ -396,8 +396,9 @@ def test_answer_question_truncates_history_to_last_window() -> None:
 _AMBIGUOUS_EMBEDDING = [0.3, 0.9539392014169456]
 # cos([0.9539392014169456, 0.3], [1.0, 0.0]) == 0.9539... — confiança alta.
 _HIGH_CONFIDENCE_EMBEDDING = [0.9539392014169456, 0.3]
-# cos([0.4, 0.9165151389911681], [1.0, 0.0]) == 0.4 — >= SECTION_CONFIDENCE (0.35).
-_SECTION_CONFIDENCE_EMBEDDING = [0.4, 0.9165151389911681]
+# cos([0.53, 0.8479976415061542], [1.0, 0.0]) == 0.53 — >= SECTION_CONFIDENCE (0.52),
+# ainda abaixo de HIGH_CONFIDENCE (0.55).
+_SECTION_CONFIDENCE_EMBEDDING = [0.53, 0.8479976415061542]
 
 
 def test_answer_question_skips_self_critique_when_score_already_high(
@@ -428,7 +429,7 @@ def test_answer_question_skips_self_critique_when_section_routed_with_confidence
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """ADR-016: com seção roteada por keyword, o corte de confiança cai para
-    SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD (0.35) — ainda pula a auto-crítica."""
+    SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD (0.52) — ainda pula a auto-crítica."""
     chunk = rag.Chunk(
         id="education-0",
         section="education",
@@ -495,11 +496,15 @@ def test_answer_question_triggers_self_critique_and_converges_after_reformulatio
     assert len(chat_completion_provider.calls) == 3
 
 
-def test_answer_question_falls_back_to_web_after_exhausting_self_critique_iterations(
+def test_answer_question_abstains_after_exhausting_self_critique_iterations(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """CA-003 (ADR-016): auto-crítica insuficiente após MAX_SELF_CRITIQUE_ITERATIONS
-    força o fallback web já existente (ADR-010), mesmo com score bruto >= threshold."""
+    """ADR-016 (revisão pós-golden-set): auto-crítica insuficiente após
+    MAX_SELF_CRITIQUE_ITERATIONS abstém, sem acionar a busca web.
+
+    Deixar este caminho cair na web (comportamento original de US-16-02) trocava
+    uma abstenção honesta por resposta fabricada sobre a trajetória do autor.
+    """
     chunk = rag.Chunk(id="skill-0", section="skill", text="Skills: Python, Java.")
     monkeypatch.setattr(
         service, "_index_cache", [rag.EmbeddedChunk(chunk=chunk, embedding=[1.0, 0.0])]
@@ -509,22 +514,19 @@ def test_answer_question_falls_back_to_web_after_exhausting_self_critique_iterat
         [
             "INSUFICIENTE: pergunta reformulada 1",
             "INSUFICIENTE: pergunta reformulada 2",
-            "A Engineering Brasil atua com soluções de IA para a Claro.",
         ]
     )
-    web_search_provider = FakeWebSearchProvider(result="Contexto público da web.")
 
     answer, source = service.answer_question(
         "O que a Engineering Brasil faz de diferente?",
         embedding_provider,
         chat_completion_provider,
-        web_search_provider,
+        FailIfCalledWebSearchProvider(),
     )
 
-    assert source == "web"
-    assert answer == "A Engineering Brasil atua com soluções de IA para a Claro."
-    assert web_search_provider.calls == ["O que a Engineering Brasil faz de diferente?"]
-    assert len(chat_completion_provider.calls) == 3
+    assert source == "resume"
+    assert answer == service.FALLBACK_ANSWER
+    assert len(chat_completion_provider.calls) == 2
 
 
 def test_answer_question_with_self_critique_disabled_skips_it_even_in_ambiguous_band(

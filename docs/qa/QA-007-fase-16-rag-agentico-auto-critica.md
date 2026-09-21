@@ -111,6 +111,33 @@ Sem achados Critical ou High.
 - [x] Build (`pytest`) ok — `131 passed`; `ruff check .` e `black --check .` limpos
 - [x] Sem protótipo órfão — `N/A`, sem UI nesta entrega
 
+## Execução real do golden-set (21/09/2026)
+
+Rodada pelo autor com `LLM_API_KEY` real, três vezes, após a entrega original desta fase.
+Relatórios em `backend/eval/results/` (não versionados, `.gitignore`).
+
+| Rodada | Configuração | Sem auto-crítica | Com auto-crítica |
+|---|---|---|---|
+| 1 | `0.5` / `0.35` (entrega original) | 19/24 | 19/24 |
+| 2 | `0.55` / `0.52` | 19/24 | 19/24 |
+| 3 | `0.55` / `0.52` + abstenção | 18/24 | 18/24 |
+
+Dois defeitos encontrados na entrega original, ambos corrigidos nesta mesma branch:
+
+| Sev | Local | Achado | Correção |
+|-----|-------|--------|----------|
+| High | `service.py`, constantes de confiança | Cortes `0.5`/`0.35` estimados sem dado deixavam a auto-crítica rodar em 3/24 perguntas e em nenhuma das que erravam, tornando a feature inerte na prática | Recalibrados para `0.55`/`0.52` pela distribuição real de scores; passa a rodar em 14/24 e corrigiu de forma reprodutível *"onde você trabalha atualmente?"* |
+| High | `service.py`, saída de `forced_insufficient` | Auto-crítica esgotada caía na busca web e o assistente fabricou trajetória profissional em primeira pessoa (*"trabalhei no Santander, Bradesco e City Bank"*), no lugar da abstenção honesta que dava antes | Caminho fechado: esgotar as iterações agora devolve `FALLBACK_ANSWER`. Verificado na rodada 3: nenhuma resposta vem da web por esse caminho |
+
+Nota metodológica: rodar o mesmo código três vezes no modo sem auto-crítica deu 19, 19 e 18
+(q06 oscila entre `CORRETO` e `INCORRETO`). Com n=24 e juiz LLM, ±1 caso é ruído. Comparações
+agregadas nesse golden-set não sustentam conclusão; ele serve para achar modo de falha.
+
+Suíte após as correções: `131 passed`, `service.py` 100%, `ruff check .` limpo.
+
 ## Próximos passos
 1. Nenhum bloqueio de merge — PR pode seguir para `develop`
-2. Manter a pendência de execução real do golden-set (US-16-03) visível no PR até o autor rodar com `LLM_API_KEY` real
+2. Pendência de execução real do golden-set: **fechada** (ver seção acima), US-16-03 em Done
+3. Os 5 erros restantes do golden-set concentram-se em raciocínio temporal e aritmético sobre
+   datas (*"quantos anos de experiência eu tenho?"*, *"onde trabalhava antes da Itaú?"*), não
+   em recuperação. É o candidato natural para a próxima fase

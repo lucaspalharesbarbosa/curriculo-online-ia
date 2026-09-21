@@ -32,19 +32,32 @@
 - [x] CA-001: Golden-set com 24 perguntas reais sobre o currículo do autor (`frontend/content/resume.json`) em `backend/eval/golden_set.json` — 13 `fora_vocabulario` (sinônimos, perguntas compostas entre seções, ex. "que skills usei na Itaú Unibanco?"), 1 `fora_vocabulario_hard` (raciocínio temporal, marcada para não inflar o número) e 10 `regressao`, cada uma com `expected_facts` (ground truth) documentado
 - [x] CA-002: Rotina de avaliação via LLM-as-judge (`backend/eval/run_golden_set.py`, `_judge`) que roda `service.answer_question` para cada pergunta e usa uma chamada dedicada de `ChatCompletionProvider` para julgar `CORRETO`/`INCORRETO` frente aos `expected_facts`, registrando o veredito e o motivo
 - [x] CA-003: A rotina roda o golden-set em dois modos (`_run_mode(..., enable_self_critique=False|True)`) usando a mesma `service.answer_question` (`ADR-016`, parâmetro `enable_self_critique`) — sem duas cópias de código
-- [ ] CA-004: Relatório de resultado com taxa de acerto agregada de cada modo e lista de casos que mudaram de veredito — **mecanismo implementado e validado** (`_write_report`, smoke-testado com fakes), mas o relatório com os **números reais** não pôde ser gerado nesta execução (ver "Bloqueio" abaixo)
-- [ ] CA-005: Número reportado sem arredondar/estimar/omitir — **não aplicável ainda**: nenhum número foi reportado nesta execução, exatamente para não violar este critério (ver "Bloqueio")
-- [ ] CA-006: Relatório aponta o custo médio de chamadas extras de auto-crítica por pergunta — pendente da execução real (mesmo bloqueio)
+- [x] CA-004: Relatório de resultado com taxa de acerto agregada de cada modo e lista de casos que mudaram de veredito — gerado em 21/09/2026, três execuções em `backend/eval/results/` (`golden_set_result_20260921T170723Z/171332Z/172037Z.json`)
+- [x] CA-005: Número reportado sem arredondar/estimar/omitir — 19/24 vs 19/24 (cortes originais), 19/24 vs 19/24 (recalibrados), 18/24 vs 18/24 (recalibrados + abstenção). Ganho agregado: nenhum, em nenhuma configuração
+- [x] CA-006: Custo médio de chamadas extras — com os cortes originais, 3 das 24 perguntas acionavam a auto-crítica (0,13 chamada extra por pergunta em média); com os recalibrados, 14 das 24 (0,58 a 1,17 chamada extra, conforme o número de iterações). Perguntas fora da faixa seguem com custo idêntico ao anterior à ADR
 
-### Bloqueio encontrado (sinal verificável — credencial ausente, não código)
+### Resultado da execução real (21/09/2026)
 
-O agente que implementou esta história rodou neste worktree isolado (`c:\dev\study\curriculo-online-ia\.claude\worktrees\agent-a2b4228f2d221c957`), sem `LLM_API_KEY` configurada no ambiente (confirmado: `python -m eval.run_golden_set` sai com `SystemExit` na guarda explícita do script; um teste de rede solto a `https://api.openai.com/v1/models` retornou `HTTP 401`, confirmando que a rede de saída funciona — só falta a credencial). Sem chave real, **não é possível rodar a avaliação de verdade** sem violar a instrução explícita do autor de nunca inventar/arredondar o número.
+Executado pelo autor com `LLM_API_KEY` real: `cd backend && python -m eval.run_golden_set`.
 
-O que foi feito para mitigar, sem fabricar dado:
-- O script foi validado ponta a ponta com um smoke test usando fakes (não a API real) — confirma que a mecânica (carregar golden-set, rodar os dois modos, julgar, gerar relatório, listar mudanças de veredito) funciona sem exceção
-- `golden_set.json` e `run_golden_set.py` estão prontos para rodar assim que uma `LLM_API_KEY` real estiver disponível: `cd backend && python -m eval.run_golden_set`
+| Rodada | Configuração | Sem auto-crítica | Com auto-crítica | Mudaram de veredito |
+|---|---|---|---|---|
+| 1 | `0.5` / `0.35` | 19/24 | 19/24 | 0 |
+| 2 | `0.55` / `0.52` | 19/24 | 19/24 | q15 corrigida, q06 quebrada |
+| 3 | `0.55` / `0.52` + abstenção | 18/24 | 18/24 | q15 corrigida, q22 perdida |
 
-**Ação necessária do autor** (fora do que este pipeline autônomo pode fazer sozinho — segredo, não código): rodar o comando acima localmente/CI manual com a chave real e anexar o `backend/eval/results/golden_set_result_<timestamp>.json` gerado; depois disso, fechar CA-004/CA-005/CA-006 e atualizar `ADR-016` (T06) com o número real.
+Achados que motivaram mudança de código (ver `ADR-016`, "Resultado real da medição"):
+
+- Com os cortes estimados, a auto-crítica rodava em 3/24 perguntas e em nenhuma das que
+  erravam. Recalibrados pela distribuição real, passa a rodar em 14/24.
+- A recalibração corrigiu de forma reprodutível *"onde você trabalha atualmente?"*, que
+  respondia uma empresa antiga.
+- A auto-crítica esgotada empurrava para a busca web e produziu resposta fabricada em
+  *"onde trabalhava antes da Itaú?"*. `ADR-016` seção 4 foi reescrita: esse caminho agora
+  abstém. Custo medido: *"onde fica localizado o Itaú?"* perdeu a resposta que vinha da web.
+- Executar o mesmo código três vezes deu 19, 19 e 18 no modo sem auto-crítica: q06 oscila.
+  Com n=24, ±1 caso é ruído. O golden-set serve para achar modo de falha, não para comparar
+  taxas agregadas.
 
 ### Fora de escopo
 - Alterar a implementação de US-16-02 para "melhorar o número" além do que a auto-crítica já entrega — a US mede, não infla o resultado
@@ -61,20 +74,20 @@ RAG Agêntico (Auto-Crítica) — P1
 - [x] T01 Levantar perguntas reais cobrindo os dois grupos (fora do vocabulário / regressão) a partir do `resume.json` atual, com ground truth — 24 perguntas
 - [x] T02 [P] Criar `backend/eval/golden_set.json` com as perguntas + ground truth
 - [x] T03 Implementar script de avaliação (`backend/eval/run_golden_set.py`) com modo antes/depois e LLM-as-judge — validado com smoke test (fakes), guarda explícita contra rodar sem `LLM_API_KEY`
-- [ ] T04 Rodar a avaliação de verdade (bate na API real) e coletar os números reais antes/depois — **bloqueado neste ambiente** (sem `LLM_API_KEY`, ver seção "Bloqueio" acima); comando pronto: `cd backend && python -m eval.run_golden_set`
-- [ ] T05 Documentar o resultado em `docs/qa/QA-NNN-golden-set-rag-agentico.md` com agregados + casos individuais + exemplos concretos de antes/depois — depende de T04
-- [ ] T06 [P] Atualizar `ADR-016` (seção Consequências) com o número real encontrado — depende de T04
+- [x] T04 Rodar a avaliação de verdade e coletar os números reais antes/depois — 3 execuções em 21/09/2026
+- [x] T05 Documentar o resultado — registrado em `ADR-016` ("Resultado real da medição"), nesta história e em `docs/qa/QA-007`; casos individuais nos JSON de `backend/eval/results/`
+- [x] T06 [P] Atualizar `ADR-016` com o número real e as duas mudanças de código que ele motivou (recalibração e abstenção)
 
 ### DoD (antes de concluir) — precisa estar 100% fechado para Done
 
-- [ ] Todos os critérios de aceite acima `[x]` — CA-004/005/006 pendentes da execução real (T04)
+- [x] Todos os critérios de aceite acima `[x]`
 - [x] Cobertura de testes ≥ 70% no código tocado — `N/A` com justificativa: script de avaliação é ferramenta de medição que bate na API real por natureza, não lógica de produto testável com fakes; mecânica validada por smoke test manual (fora do pytest, não versionado como teste de CI)
 - [x] Build/lint limpo (`ruff check .` no script novo) — `All checks passed!`
 - [x] Review do `@tech-lead-review` sem Critical/High em aberto — Aprovar com ressalvas, 0 Critical/High (pendência é execução, não código)
 - [x] Contrato de API implementado bate com o documentado no DoR — `N/A`: sem endpoint novo
 - [x] Sem chave de API/secret exposto (script usa `LLM_API_KEY` de `os.environ`, nunca hardcoded; guarda explícita impede rodar sem a variável)
-- [ ] Documentação atualizada (`ADR-016` com o resultado real, relatório em `docs/qa/`) — pendente de T04/T06
-- [ ] Deploy/preview verificado — `N/A`
+- [x] Documentação atualizada (`ADR-016` com o resultado real, `QA-007` com a execução)
+- [x] Deploy/preview verificado — `N/A`: ferramenta interna, sem superfície de deploy
 - [x] Vereditos de QA, Tech Lead e PO documentados na tabela "Vereditos" abaixo — sem linha vazia
 - [x] Status da história atualizado no próprio arquivo
 
@@ -84,6 +97,7 @@ RAG Agêntico (Auto-Crítica) — P1
 |---|---|---|---|---|
 | QA | `@qa-engineer` | Aprovado com ressalvas | 2026-09-15 | `docs/qa/QA-007-fase-16-rag-agentico-auto-critica.md` — resultado real do golden-set pendente de `LLM_API_KEY` (ação do autor) |
 | Tech Lead | `@tech-lead-review` | Aprovar com ressalvas | 2026-09-15 | `docs/qa/QA-007-fase-16-rag-agentico-auto-critica.md` (seção Code Review) — código do golden-set/script aprovado; execução real segue pendente (não é achado de código) |
-| PO | `@product-owner` | Quase lá | 2026-09-15 | CA-004/CA-005/CA-006 seguem abertos — golden-set (24 perguntas) e script de avaliação (`backend/eval/run_golden_set.py`) prontos, lintados e validados por smoke test com fakes, mas o número real antes/depois não foi produzido: este ambiente isolado não tem `LLM_API_KEY`. Não é matéria de loop automático (`ADR-015` — credencial, não código) nem pode ser fabricado (instrução explícita do autor). Ação pendente do autor: `cd backend && python -m eval.run_golden_set` com a chave real, depois fechar T04-T06 e os 3 CAs. |
+| PO | `@product-owner` | Quase lá | 2026-09-15 | CA-004/CA-005/CA-006 abertos: sem `LLM_API_KEY` no worktree isolado, o número real não foi produzido nem fabricado. Ação pendente do autor: rodar `python -m eval.run_golden_set` com a chave real. |
+| PO | `@product-owner` | Done | 2026-09-21 | Execução real feita (3 rodadas, ver "Resultado da execução real"). CA-004/005/006 fechados com número não arredondado. A medição não mostrou ganho agregado e revelou dois defeitos que foram corrigidos no código (cortes mal calibrados e caminho de fabricação via web), que é exatamente o resultado que esta história existia para produzir. |
 
-**Status:** Quase lá — golden-set e script prontos e validados por smoke test; execução real com `LLM_API_KEY` pendente do autor (T04-T06)
+**Status:** Done — golden-set executado com chave real (3 rodadas), números registrados sem arredondar, e os dois achados da medição já corrigidos no código (recalibração dos cortes e abstenção no lugar de busca web)

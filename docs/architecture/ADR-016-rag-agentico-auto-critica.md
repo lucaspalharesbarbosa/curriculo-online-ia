@@ -28,19 +28,24 @@ Dois patamares de confiança, acima do `SIMILARITY_THRESHOLD` (0.2, que já deci
 
 ```python
 # backend/app/chat/service.py
-SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD = 0.5   # score alto o bastante por si só
-SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD = 0.35  # score "bom" quando já há seção roteada
+SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD = 0.55   # score alto o bastante por si só
+SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD = 0.52  # score "bom" quando já há seção roteada
 ```
+
+> Valores calibrados pela execução real do golden-set (`US-16-03`, ver "Resultado real
+> da medição"). A primeira versão desta ADR usava `0.5`/`0.35`, estimados sem dado: com
+> eles a auto-crítica rodava em 3 das 24 perguntas do golden-set e em **nenhuma** das
+> que erravam.
 
 A auto-crítica roda **somente quando todas as condições abaixo são verdadeiras**:
 
 1. `results[0][1] >= SIMILARITY_THRESHOLD` — já passou do patamar mínimo que hoje decide entre resposta local e busca web (não faz sentido gastar uma chamada de auto-crítica quando o contexto já está claramente insuficiente; esse caso já cai direto no fluxo de busca web existente, inalterado)
-2. **E** `results[0][1] < SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD` — um score muito alto (>= 0.5) já é confiável **por si só**, com ou sem seção roteada (uma pergunta pode não bater em nenhuma keyword do dicionário e ainda assim ter uma correspondência de similaridade muito forte — não faz sentido de segunda-adivinhar esse caso)
-3. **E** `not (section_routed and results[0][1] >= SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD)` — quando há seção roteada por keyword (`detect_section_intent` não é `None`), o patamar de corte cai para 0.35 (o próprio roteamento já é um sinal de confiança adicional, então um score mais modesto ainda é aceitável sem checar)
+2. **E** `results[0][1] < SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD` — um score muito alto (>= 0.55) já é confiável **por si só**, com ou sem seção roteada (uma pergunta pode não bater em nenhuma keyword do dicionário e ainda assim ter uma correspondência de similaridade muito forte — não faz sentido de segunda-adivinhar esse caso)
+3. **E** `not (section_routed and results[0][1] >= SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD)` — quando há seção roteada por keyword (`detect_section_intent` não é `None`), o patamar de corte cai para 0.52 (o próprio roteamento já é um sinal de confiança adicional, então um score mais modesto ainda é aceitável sem checar)
 
-Em outras palavras, a auto-crítica só roda na faixa realmente ambígua: score entre 0.2 e 0.5 **sem** seção roteada (pergunta fora do vocabulário do dicionário, ex. sinônimo ou pergunta composta entre seções), ou score entre 0.2 e 0.35 **com** seção roteada (o roteamento acertou a seção, mas o chunk específico ainda não parece muito bom). Pergunta com seção roteada e score >= 0.35, ou qualquer pergunta com score >= 0.5, são os casos felizes que já funcionam hoje (`ADR-010`/`ADR-013`) — pulam a auto-crítica, zero custo extra. Pergunta com score já abaixo de 0.2 mantém o comportamento atual (fallback web) sem passar pela auto-crítica.
+Em outras palavras, a auto-crítica só roda na faixa realmente ambígua: score entre 0.2 e 0.55 **sem** seção roteada (pergunta fora do vocabulário do dicionário, ex. sinônimo ou pergunta composta entre seções), ou score entre 0.2 e 0.52 **com** seção roteada (o roteamento acertou a seção, mas o chunk específico ainda não parece muito bom). Pergunta com seção roteada e score >= 0.52, ou qualquer pergunta com score >= 0.55, são os casos felizes que já funcionam hoje (`ADR-010`/`ADR-013`) — pulam a auto-crítica, zero custo extra. Com esses cortes, 14 das 24 perguntas do golden-set passam pela auto-crítica (contra 3 na calibração original). Pergunta com score já abaixo de 0.2 mantém o comportamento atual (fallback web) sem passar pela auto-crítica.
 
-Os dois valores (`0.5`/`0.35`) são estimativa de engenharia inicial, não calibração estatística — `US-16-03` (golden-set + LLM-as-judge) é o mecanismo para validar/ajustar esses números com dado real; são duas constantes, fáceis de tunar sem mudar contrato.
+Os dois valores saíram da distribuição real de scores do índice, medida em `US-16-03`: a mediana fica em torno de 0.54 e os cinco erros do golden-set se concentram entre 0.46 e 0.55. São duas constantes, fáceis de retunar sem mudar contrato, e devem ser revisitadas sempre que o `resume.json` ou o modelo de embedding mudar, porque a distribuição muda junto.
 
 ### 3. Iteração: reescrever a query, depois relaxar a seção — teto de 2 iterações
 
@@ -57,9 +62,15 @@ Mecanismo de cada iteração, para não repetir a mesma busca:
 
 Se a 2ª iteração ainda for avaliada como `INSUFICIENTE`, ou se `MAX_SELF_CRITIQUE_ITERATIONS` for atingido, o fluxo segue para o passo 4.
 
-### 4. Esgotou as iterações → fallback web existente, inalterado
+### 4. Esgotou as iterações → abstenção, nunca busca web
 
-Sem convergência dentro do teto de iterações, `service.answer_question` segue **exatamente** o fluxo já existente de `ADR-010` seção 2: verifica se a pergunta cita uma entidade conhecida (`_mentions_known_entity`) e, se sim, aciona `web_search_provider.search_web`; senão, `FALLBACK_ANSWER`. Nenhuma mudança no gatilho, no provider (Tavily) ou no contrato de `source` (`"resume" | "web"`).
+Sem convergência dentro do teto de iterações, `service.answer_question` devolve `FALLBACK_ANSWER` com `source="resume"`, **sem** acionar `web_search_provider`.
+
+A primeira versão desta decisão encaminhava esse caminho para o fallback web de `ADR-010` seção 2. A execução real do golden-set (`US-16-03`) mostrou por que isso é perigoso: em *"onde você trabalhava antes da Itaú Unibanco?"*, a auto-crítica esgotava as iterações, a busca web era acionada e o assistente respondia, em primeira pessoa, *"trabalhava no Santander, Bradesco e City Bank"* — empresas que não existem no currículo. O comportamento anterior à auto-crítica era uma abstenção honesta (*"não estão disponíveis no contexto fornecido"*). Trocar abstenção por fabricação sobre a trajetória profissional do autor é pior do que não responder, num chat público de portfólio.
+
+O gatilho de busca web de `ADR-010` continua **inalterado** para o caminho original (score bruto abaixo de `SIMILARITY_THRESHOLD` + entidade conhecida). O que muda é só a saída da auto-crítica esgotada, que passa a ser terminal.
+
+Custo medido dessa escolha: *"onde fica localizado o Itaú Unibanco?"* era respondido corretamente via web e passou a abster. É uma troca deliberada de cobertura por confiabilidade.
 
 ### 5. Convivência com a condensação de pergunta (`ADR-014`)
 
@@ -95,6 +106,43 @@ Falha da chamada de auto-crítica (exceção do provider, resposta vazia) é tra
 - `ChatRequest`/`ChatResponse` do `/chat` (`router.py`) — inalterados; a auto-crítica é interna a `service.py`, invisível ao cliente
 - `US-16-02` implementa esta decisão; `US-16-03` mede o resultado real (golden-set + LLM-as-judge) e, depois de rodar, esta ADR deve ser atualizada (seção de Consequências) com o número real de melhoria encontrado e qualquer ajuste feito em `SELF_CRITIQUE_CONFIDENCE_THRESHOLD` a partir do dado real
 - Reavaliar esta ADR se: o golden-set mostrar que `0.5`/`0.35` geram falsos positivos/negativos frequentes (sinal de recalibrar as constantes, não de mudar o mecanismo); o custo médio de chamadas extras por pergunta (medido em `US-16-03`) se mostrar desproporcional ao ganho de precisão; ou se o padrão de perguntas reais mostrar necessidade de mais de 2 iterações — nesse último caso, reavaliar se um classificador de intenção completo (a alternativa que `ADR-010` já descartou) passaria a valer o custo
+
+## Resultado real da medição (US-16-03)
+
+Executado com `LLM_API_KEY` real em 21/09/2026: `cd backend && python -m eval.run_golden_set`,
+24 perguntas, LLM-as-judge (`gpt-4o-mini`), relatórios em `backend/eval/results/`.
+
+| Rodada | Configuração | Sem auto-crítica | Com auto-crítica | Vereditos alterados |
+|---|---|---|---|---|
+| 1 | `0.5` / `0.35` (estimados) | 19/24 | 19/24 | 0 |
+| 2 | `0.55` / `0.52` (recalibrados) | 19/24 | 19/24 | 2 (q15 corrigida, q06 quebrada) |
+| 3 | recalibrados + abstenção (seção 4) | 18/24 | 18/24 | 2 (q15 corrigida, q22 perdida) |
+
+**A taxa agregada não mudou em nenhuma configuração.** O que a medição entregou não foi
+um ganho de placar, e sim quatro fatos que só aparecem olhando caso a caso:
+
+1. **Os cortes originais quase nunca abriam.** Com `0.5`/`0.35`, a auto-crítica rodava em
+   3 das 24 perguntas e em nenhuma das 5 que erravam. Inclusive *"que skills usei na Itaú
+   Unibanco?"*, a pergunta citada como motivação desta ADR, pontua 0.596 e passava direto.
+2. **A recalibração corrigiu um erro real e reprodutível.** *"Onde você trabalha
+   atualmente?"* respondia *"Web Developer na Shift"* (empresa antiga) e passou a responder
+   *"Tech Lead | Senior Software Engineer na Engineering Brasil"*, nas rodadas 2 e 3.
+3. **A auto-crítica abriu um caminho de fabricação** (rodada 2), corrigido na seção 4 desta
+   ADR e verificado na rodada 3: nenhuma resposta vem da web por esse caminho agora.
+4. **±1 caso é ruído, não sinal.** Rodando o **mesmo** código sem auto-crítica três vezes,
+   o resultado foi 19, 19 e 18: q06 (*"que tecnologias eu usei no Banco BV?"*) oscila entre
+   `CORRETO` e `INCORRETO` por não-determinismo de geração e do juiz. Com n=24, diferenças
+   de um caso não sustentam conclusão nenhuma, o que também invalida a leitura inicial de
+   que a auto-crítica havia "quebrado" q06 na rodada 2.
+
+Os 5 erros restantes não são, em sua maioria, problema de recuperação: *"quantos anos de
+experiência eu tenho?"* exige aritmética sobre datas; *"onde trabalhava antes da Itaú?"*
+exige ordenação temporal. Nenhuma quantidade de auto-crítica resolve isso, o que aponta o
+próximo trabalho: raciocínio temporal sobre o currículo, não mais retrieval.
+
+Consequência metodológica para as próximas fases: um golden-set de 24 perguntas serve para
+achar **modos de falha** (foi o que aconteceu aqui), não para comparar taxas agregadas.
+Para isso seria preciso mais perguntas e várias execuções por configuração.
 
 ## Referências
 

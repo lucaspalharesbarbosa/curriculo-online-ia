@@ -26,8 +26,8 @@ MAX_HISTORY_MESSAGES = 6
 # Score >= HIGH_CONFIDENCE é confiável por si só, com ou sem seção roteada.
 # Com seção roteada por keyword (ADR-010), o corte cai para SECTION_CONFIDENCE
 # — o próprio roteamento já é um sinal de confiança adicional.
-SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD = 0.5
-SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD = 0.35
+SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD = 0.55
+SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD = 0.52
 MAX_SELF_CRITIQUE_ITERATIONS = 2
 
 
@@ -326,7 +326,16 @@ def answer_question(
         enable_self_critique,
     )
 
-    if forced_insufficient or not results or results[0][1] < SIMILARITY_THRESHOLD:
+    if forced_insufficient:
+        # ADR-016 (revisão pós-golden-set): esgotar as iterações de auto-crítica
+        # significa "o currículo não responde isso", não "procure na web".
+        # Encaminhar este caminho para a busca web trocava uma abstenção honesta
+        # por resposta fabricada: em "onde trabalhava antes do Itaú Unibanco?" o
+        # assistente passou a citar empresas que não estão no currículo, em
+        # primeira pessoa. Abstenção é o comportamento correto aqui.
+        return FALLBACK_ANSWER, "resume"
+
+    if not results or results[0][1] < SIMILARITY_THRESHOLD:
         # ADR-010 seção 2: RAG local insuficiente — tenta busca web só se a
         # pergunta citar uma entidade que já existe no currículo.
         web_context = None
