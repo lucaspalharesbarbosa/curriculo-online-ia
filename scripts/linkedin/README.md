@@ -52,8 +52,27 @@ Sem `--yes`, o script só mostra a **prévia** (texto exato + imagem) e não pub
 | Arquivo | Papel |
 |---|---|
 | `export_diagram.py` | Rasteriza um diagrama SVG (`docs/content/linkedin/images/*.svg`) para PNG em alta resolução, usando o Edge/Chrome já instalado no sistema — sem dependências novas |
+| `render_video.py` | Renderiza um HTML animado (`docs/content/linkedin/videos/*.html`) em MP4 quadrado para os posts em vídeo. Sobe **uma** instância do Edge/Chrome e conversa com ela pelo DevTools Protocol, chamando `window.renderFrame(n)` frame a frame. Requer `pip install imageio-ffmpeg websockets` |
 | `publish_post.py` | Lê o `.md` do post, garante a imagem exportada, mostra prévia e (com `--yes`) publica via API oficial: Images API (upload) + Posts API (criação do post) |
 | `.env` | Token de acesso (não versionado — você cria a partir deste guia) |
+
+## Vídeo dos posts
+
+Os posts em vídeo são feitos de um HTML animado, para ficarem reproduzíveis e editáveis
+(nada de ferramenta externa). O HTML precisa expor `window.renderFrame(frame)` e desenhar
+o estado daquele frame de forma determinística, sem depender do relógio do navegador.
+
+```bash
+pip install imageio-ffmpeg websockets
+python scripts/linkedin/render_video.py docs/content/linkedin/videos/<post>.html --seconds 60
+```
+
+Saem 1080x1080 (quadrado ocupa mais área no feed que 16:9), H.264/yuv420p, sem áudio.
+Um vídeo de 60s a 30fps leva cerca de 3 minutos para renderizar. Para conferir um frame
+isolado enquanto edita, basta abrir o HTML no navegador com `?f=<frame>`.
+
+Duas coisas que o HTML deve carregar sempre: a assinatura no rodapé (foto, nome e URL do
+perfil) e a marca d'água diagonal de fundo em baixa opacidade, contra cópia.
 
 ## Limitações que valem lembrar
 
