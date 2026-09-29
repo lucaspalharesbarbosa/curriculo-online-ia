@@ -1,12 +1,13 @@
 # C4-002: Componentes do backend (chat, tools e MCP)
 
-Detalha o container `backend` do [C4-001](C4-001-contexto-containers.md) (Nível 3). Decisões: [ADR-012](ADR-012-clean-architecture-chat.md) (Ports & Adapters), [ADR-017](ADR-017-tools-e-mcp-um-nucleo-duas-portas.md) (um núcleo, duas portas) e [ADR-018](ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md) (tools estruturadas, recuperar primeiro, busca híbrida).
+Detalha o container `backend` do [C4-001](C4-001-contexto-containers.md) (Nível 3). Inclui o contrato com o frontend do [ADR-019](ADR-019-redesign-command-center-chat-com-tools.md). Decisões: [ADR-012](ADR-012-clean-architecture-chat.md) (Ports & Adapters), [ADR-017](ADR-017-tools-e-mcp-um-nucleo-duas-portas.md) (um núcleo, duas portas) e [ADR-018](ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md) (tools estruturadas, recuperar primeiro, busca híbrida).
 
 ## Componentes
 
 ```mermaid
 flowchart LR
-    V(["Visitante<br/>(site)"]) -->|POST /chat| ROUTER
+    V(["Visitante<br/>(site)"]) --> FE
+    FE["frontend (Next.js)<br/>chat lateral, chips e cards<br/>parsers de tool-results"] -->|POST /chat<br/>answer, source, tools| ROUTER
     MC(["Cliente MCP<br/>Claude Desktop, Cursor"]) -->|stdio ou POST /mcp| MCPS
 
     subgraph BACKEND["backend (FastAPI)"]
@@ -75,7 +76,7 @@ sequenceDiagram
         T-->>M: fato exato (código, sem LLM)
         M-->>S: resposta final
     end
-    S-->>V: answer + source (resume ou web)
+    S-->>V: answer, source e tools (nome, argumentos, resultado)
     Note over S,M: teto de 3 turnos e 3 execuções.<br/>Falha do provider cai para o pipeline determinístico.
 ```
 

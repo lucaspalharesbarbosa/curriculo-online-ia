@@ -242,3 +242,18 @@ O `/chat` decide no código de onde vem cada resposta e o LLM só redige, o que 
 - [x] Tools estruturadas (`find_technology`, `get_experience`, `career_timeline`, `list_adrs`, `read_adr`), recuperar primeiro e busca híbrida (`ADR-018`, `PRD-016`)
 - [x] Correção da seleção por recência no `rag.search` (a "última empresa" ignorava o cargo atual)
 - [x] Golden-set de capacidades novas e comparador de modos (`eval/compare_modes.py`); `CHAT_TOOL_CALLING` ligada no `render.yaml`
+
+## Fase 18: Redesign command center com chat mostrando as tools
+
+**Status:** Done (`ADR-019`, `PRD-017`)
+**PRD:** [`PRD-017-redesign-command-center.md`](PRD-017-redesign-command-center.md)
+**Branch:** `feature/redesign-a-com-cards-c`
+
+Três protótipos (A, B, C) foram avaliados pelo autor, que escolheu **A como base com os cards do C no chat**. O `/chat` devolve as tools usadas (`tools`, campo aditivo) e o frontend mostra chips expansíveis, cards ricos (experiência, tecnologia, empresa, linha do tempo) e o selo de fonte.
+
+- [x] Contrato aditivo `tools` no `/chat` (`ToolUse`, trace limitado)
+- [x] Home no layout command center, chat lateral fixo no desktop e tela cheia no mobile
+- [x] Chips e cards de tool com parsers puros e fixtures reais
+- [x] Remoção do layout antigo e do código de protótipo
+- [ ] Medir Lighthouse e payload de JS contra o orçamento da US-08-10
+
