@@ -1,117 +1,81 @@
-"use client";
+import { FaGithub } from "react-icons/fa";
 
-import { ExternalLink, Sparkles } from "lucide-react";
-import { motion } from "framer-motion";
-
-import { CollapsibleSection } from "@/modules/resume/components/CollapsibleSection";
-import { LinkButton } from "@/modules/resume/components/LinkButton";
 import type { Article, Project } from "@/content/resume.schema";
+
+import { Reveal } from "./Reveal";
+import { SectionTitle } from "./SectionTitle";
 
 type ProjectsSectionProps = {
   projects: Project[];
   articles: Article[];
 };
 
-const cardEntranceTransition = (delay: number) => ({
-  duration: 0.45,
-  delay,
-  ease: [0.16, 1, 0.3, 1] as const,
-});
-
-const cardHover = { y: -4, scale: 1.015 };
+const CARD = "rounded-[10px] border border-border-subtle bg-surface-raised p-5";
 
 export function ProjectsSection({ projects, articles }: ProjectsSectionProps) {
-  if (projects.length === 0 && articles.length === 0) {
-    return null;
-  }
-
   return (
-    <CollapsibleSection
-      headingId="projects-heading"
-      sectionId="destaques"
-      title="Destaques"
-      subtitle="Projetos e Artigos Publicados"
-      icon={<Sparkles className="h-5 w-5" aria-hidden />}
-      orbClassName="top-1/2 left-0 h-64 w-64 -translate-x-1/2 rounded-full bg-gradient-to-br from-accent-500/10 to-accent-600/10 blur-3xl max-md:opacity-40"
+    <section
+      id="projetos"
+      className="scroll-mt-20 px-4 py-12 sm:px-8"
+      aria-labelledby="projetos-titulo"
     >
-      <div className="grid grid-cols-1 gap-5 xl:grid-cols-2">
-        {projects.map((project, index) => (
-          <motion.div
-            key={project.title}
-            initial={{ opacity: 0, y: 26 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={cardEntranceTransition(index * 0.1)}
-            whileHover={cardHover}
-            className="project-card glass-card group flex flex-col rounded-2xl p-4 sm:p-5"
-          >
-            <span className="project-kind-badge mb-3 w-fit self-start border-accent-500/30 bg-accent-500/15 text-accent-400">
-              Projeto
-            </span>
-
-            <h3 className="type-item-title mb-3 transition-colors group-hover:text-accent-400">
-              {project.title}
-            </h3>
-
-            <p className="type-body mb-4 flex-1">{project.description}</p>
-
-            <div className="mt-auto flex flex-col gap-4">
-              <div className="flex flex-wrap gap-2">
-                {project.technologies.map((tech) => (
-                  <span
-                    key={tech}
-                    className="type-chip rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1 transition-colors hover:border-accent-500/30 hover:text-accent-300"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              <LinkButton
+      <SectionTitle
+        id="projetos-titulo"
+        kicker="// projetos"
+        title="Projetos e artigos"
+      />
+      <div className="grid gap-3 lg:grid-cols-2">
+        {projects.map((project) => (
+          <Reveal key={project.title} className={`${CARD} lg:col-span-2`}>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <h3 className="font-display text-xl font-semibold">
+                {project.title}
+              </h3>
+              <a
                 href={project.repositoryUrl}
-                label="Ver repositório"
-                icon={<ExternalLink className="h-3.5 w-3.5" aria-hidden />}
-                ariaLabel={`Ver repositório de ${project.title}`}
-              />
+                target="_blank"
+                rel="noreferrer"
+                className="tap-target inline-flex min-h-11 items-center gap-2 rounded-full border border-border-subtle px-4 text-sm font-medium hover:bg-surface"
+              >
+                <FaGithub aria-hidden /> Repositório
+                <span className="sr-only"> de {project.title}</span>
+              </a>
             </div>
-          </motion.div>
+            <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted">
+              {project.description}
+            </p>
+            <ul
+              className="mt-3 flex flex-wrap gap-1.5"
+              aria-label="Tecnologias"
+            >
+              {project.technologies.map((tech) => (
+                <li
+                  key={tech}
+                  className="rounded border border-border-subtle bg-surface px-2 py-0.5 font-mono text-[11px]"
+                >
+                  {tech}
+                </li>
+              ))}
+            </ul>
+          </Reveal>
         ))}
-
-        {articles.map((article, index) => (
-          <motion.div
-            key={article.title}
-            initial={{ opacity: 0, y: 26 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={cardEntranceTransition((projects.length + index) * 0.1)}
-            whileHover={cardHover}
-            className="project-card glass-card group flex flex-col rounded-2xl border border-dashed border-accent-500/30 p-4 sm:p-5"
-          >
-            <span className="project-kind-badge mb-3 w-fit self-start border-dashed border-accent-500/35 bg-transparent text-accent-400">
-              Artigo
-            </span>
-
-            <h3 className="type-item-title mb-3 transition-colors group-hover:text-accent-400">
+        {articles.map((article) => (
+          <Reveal key={article.url} className={CARD}>
+            <p className="font-mono text-[11px] tracking-wider text-accent uppercase">
+              artigo · {article.source}
+            </p>
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noreferrer"
+              className="mt-1 block text-base font-semibold underline-offset-4 hover:underline"
+            >
               {article.title}
-            </h3>
-
-            <p className="type-body mb-4 flex-1">{article.description}</p>
-
-            <div className="mt-auto flex flex-col gap-4">
-              <span className="type-chip w-fit rounded-lg border border-neutral-700/50 bg-neutral-800/50 px-2 py-1">
-                {article.source}
-              </span>
-
-              <LinkButton
-                href={article.url}
-                label="Ler artigo"
-                icon={<ExternalLink className="h-3.5 w-3.5" aria-hidden />}
-                ariaLabel={`Ler artigo ${article.title}`}
-              />
-            </div>
-          </motion.div>
+            </a>
+            <p className="mt-1 text-sm text-muted">{article.description}</p>
+          </Reveal>
         ))}
       </div>
-    </CollapsibleSection>
+    </section>
   );
 }

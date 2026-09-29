@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 
 logger = logging.getLogger("uvicorn.error")
 
-_BACKEND_DIR = Path(__file__).resolve().parent.parent
+_BACKEND_DIR = Path(__file__).resolve().parents[2]
 _ENV_PATH = _BACKEND_DIR / ".env"
 _EXAMPLE_PATH = _BACKEND_DIR / ".env.example"
 _PLACEHOLDER_MARKERS = ("xxxxxxxx", "your-key", "change-me")

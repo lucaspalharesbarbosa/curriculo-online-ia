@@ -225,3 +225,35 @@ O dicionário de palavras-chave do roteamento por seção/recência (`ADR-010`, 
 - [x] ADR: RAG agêntico com auto-crítica seletiva — [US-16-01](backlog/fase-16/US-16-01-adr-rag-agentico-auto-critica.md), P1 (`Done`; `ADR-016`)
 - [x] Backend: passo de auto-crítica + reformulação de query — [US-16-02](backlog/fase-16/US-16-02-backend-auto-critica-retrieval.md), P1 (`Done`; 100% cobertura em `service.py`, 131 testes verdes)
 - [ ] Golden-set + avaliação LLM-as-judge (antes/depois) — [US-16-03](backlog/fase-16/US-16-03-golden-set-avaliacao-llm-judge.md), P1 — golden-set (24 perguntas) e script prontos/validados; execução real com números antes/depois pendente do autor
+
+## Fase 17: Tools e MCP (um núcleo, duas portas)
+
+**Status:** Done (`ADR-017` e `ADR-018`). Primeira medição: tool calling genérico sem ganho (71% contra 75%). Depois das tools estruturadas: regressão 21/24 contra 19/24 e capacidades novas 14/15 contra 3/15, então o tool calling foi ligado
+**PRD:** [`PRD-015-tools-e-mcp.md`](PRD-015-tools-e-mcp.md), [`PRD-016-tools-estruturadas-e-busca-hibrida.md`](PRD-016-tools-estruturadas-e-busca-hibrida.md)
+**Branch:** `feature/tools-e-mcp`, `feature/tools-estruturadas-hibrido`
+
+O `/chat` decide no código de onde vem cada resposta e o LLM só redige, o que deixa a aritmética de datas ("quantos anos de Python?") a cargo de estimativa do modelo, e o currículo só é acessível pela interface do site. Escopo: núcleo de tools somente leitura (`search_resume`, `calculate_experience`, `search_web`) exposto por duas portas: tool calling no `/chat` (opt-in por `CHAT_TOOL_CALLING`) e servidor MCP (stdio e `/mcp`, opt-in por `MCP_HTTP_ENABLED`).
+
+- [x] ADR: tools e MCP, um núcleo e duas portas (`ADR-017`)
+- [x] Núcleo de tools + `calculate_experience` determinístico (`app/tools/`)
+- [x] Tool calling no `/chat` com guard rails, atrás de flag (`service._answer_with_tools`)
+- [x] Servidor MCP stdio + Streamable HTTP com rate limit (`app/mcp_server/`)
+- [x] Medir tool calling vs pipeline no golden-set real (`python -m eval.run_golden_set --tools`): 17/24 contra 18/24, flag segue desligada
+- [x] Tools estruturadas (`find_technology`, `get_experience`, `career_timeline`, `list_adrs`, `read_adr`), recuperar primeiro e busca híbrida (`ADR-018`, `PRD-016`)
+- [x] Correção da seleção por recência no `rag.search` (a "última empresa" ignorava o cargo atual)
+- [x] Golden-set de capacidades novas e comparador de modos (`eval/compare_modes.py`); `CHAT_TOOL_CALLING` ligada no `render.yaml`
+
+## Fase 18: Redesign command center com chat mostrando as tools
+
+**Status:** Done (`ADR-019`, `PRD-017`)
+**PRD:** [`PRD-017-redesign-command-center.md`](PRD-017-redesign-command-center.md)
+**Branch:** `feature/redesign-a-com-cards-c`
+
+Três protótipos (A, B, C) foram avaliados pelo autor, que escolheu **A como base com os cards do C no chat**. O `/chat` devolve as tools usadas (`tools`, campo aditivo) e o frontend mostra chips expansíveis, cards ricos (experiência, tecnologia, empresa, linha do tempo) e o selo de fonte.
+
+- [x] Contrato aditivo `tools` no `/chat` (`ToolUse`, trace limitado)
+- [x] Home no layout command center, chat lateral fixo no desktop e tela cheia no mobile
+- [x] Chips e cards de tool com parsers puros e fixtures reais
+- [x] Remoção do layout antigo e do código de protótipo
+- [ ] Medir Lighthouse e payload de JS contra o orçamento da US-08-10
+

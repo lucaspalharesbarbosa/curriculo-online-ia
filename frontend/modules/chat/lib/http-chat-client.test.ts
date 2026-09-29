@@ -50,7 +50,67 @@ describe("HttpChatClient", () => {
         body: JSON.stringify({ question: "Onde você trabalha?" }),
       }),
     );
-    expect(result).toEqual({ answer: "Resposta real.", source: "resume" });
+    expect(result).toEqual({
+      answer: "Resposta real.",
+      source: "resume",
+      tools: [],
+    });
+  });
+
+  it("repassa as tools usadas quando o backend devolve o campo (ADR-018)", async () => {
+    const tool = {
+      name: "calculate_experience",
+      arguments: { skill_or_company: "Python" },
+      result: "Experiência profissional com 'Python': 3 anos e 8 meses",
+    };
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        answer: "3 anos e 8 meses.",
+        source: "resume",
+        tools: [tool],
+      }),
+    } as Response);
+
+    const result = await client.sendMessage("Quantos anos de Python?");
+
+    expect(result.tools).toEqual([tool]);
+  });
+
+  it("descarta entradas de tools malformadas sem quebrar a resposta", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        answer: "ok",
+        tools: [
+          { name: "search_web", arguments: "texto", result: "r" },
+          { name: 42, result: "r" },
+          "lixo",
+          null,
+        ],
+      }),
+    } as Response);
+
+    const result = await client.sendMessage("Pergunta");
+
+    expect(result.answer).toBe("ok");
+    expect(result.tools).toEqual([
+      { name: "search_web", arguments: {}, result: "r" },
+    ]);
+  });
+
+  it("trata tools que não é lista como vazio", async () => {
+    vi.mocked(fetch).mockResolvedValueOnce({
+      ok: true,
+      status: 200,
+      json: async () => ({ answer: "ok", tools: "nada" }),
+    } as Response);
+
+    const result = await client.sendMessage("Pergunta");
+
+    expect(result.tools).toEqual([]);
   });
 
   it("inclui o history no body quando informado (ADR-014)", async () => {

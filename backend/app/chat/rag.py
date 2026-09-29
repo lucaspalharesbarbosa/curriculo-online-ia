@@ -31,6 +31,66 @@ RESUME_JSON_PATH = (
     Path(__file__).resolve().parents[3] / "frontend" / "content" / "resume.json"
 )
 INDEX_CACHE_PATH = Path(__file__).resolve().parent / "rag_index.json"
+# ADR-018: peso do bônus léxico da busca híbrida. Soma até LEXICAL_WEIGHT ao
+# cosseno de um chunk que contém os termos distintivos da pergunta (termo
+# exato, ex.: 'Kubernetes'), que o embedding sozinho às vezes não prioriza.
+LEXICAL_WEIGHT = 0.2
+_STOPWORDS = frozenset(
+    {
+        "que",
+        "qual",
+        "quais",
+        "quando",
+        "onde",
+        "como",
+        "para",
+        "por",
+        "com",
+        "sem",
+        "uma",
+        "uns",
+        "umas",
+        "dos",
+        "das",
+        "nos",
+        "nas",
+        "voce",
+        "meu",
+        "minha",
+        "meus",
+        "minhas",
+        "ele",
+        "ela",
+        "foi",
+        "fui",
+        "era",
+        "sao",
+        "tem",
+        "tenho",
+        "tinha",
+        "fica",
+        "ser",
+        "estar",
+        "mais",
+        "muito",
+        "sobre",
+        "entre",
+        "pelo",
+        "pela",
+        "trabalhou",
+        "trabalhei",
+        "trabalho",
+        "usei",
+        "usou",
+        "uso",
+        "ja",
+        "ainda",
+        "algum",
+        "alguma",
+        "cidade",
+        "empresa",
+    }
+)
 
 
 @dataclass(frozen=True)
@@ -280,14 +340,19 @@ def search(
     top_k: int = 3,
     section: str | None = None,
     sort_by_recency: bool = False,
+    lexical_weight: float = 0.0,
 ) -> list[tuple[Chunk, float]]:
     """Retorna os `top_k` chunks mais similares à pergunta, por similaridade desc.
 
     `section` restringe a busca aos chunks dessa seção antes de aplicar
     `top_k` (ADR-010 seção 1); se a seção não tiver chunks, cai de volta para
-    o índice inteiro. `sort_by_recency` reordena o `top_k` resultante por
-    `Chunk.recency_key` (mais recente/atual primeiro), sem mudar quais chunks
-    foram selecionados — só a ordem em que entram no prompt.
+    o índice inteiro. `sort_by_recency` seleciona os `top_k` chunks de maior
+    `Chunk.recency_key` (mais recente/atual primeiro) entre os candidatos, em
+    vez de os mais similares (ADR-018).
+
+    `lexical_weight` > 0 liga a busca híbrida (ADR-018): o score de cada chunk
+    ganha um bônus proporcional à fração de termos distintivos da pergunta
+    que aparecem no texto dele. Com 0 (padrão) o comportamento é o anterior.
     """
     question_embedding = embedding_provider.embed_text(question)
     candidates = (
@@ -297,17 +362,28 @@ def search(
     )
     if not candidates:
         candidates = index
+    question_tokens = _distinctive_tokens(question) if lexical_weight > 0 else set()
     scored = [
-        (item.chunk, cosine_similarity(question_embedding, item.embedding))
+        (
+            item.chunk,
+            cosine_similarity(question_embedding, item.embedding)
+            + _lexical_bonus(question_tokens, item.chunk.text, lexical_weight),
+        )
         for item in candidates
     ]
     scored.sort(key=lambda scored_item: scored_item[1], reverse=True)
-    top = scored[:top_k]
     if sort_by_recency:
-        top = sorted(
-            top, key=lambda scored_item: scored_item[0].recency_key or "", reverse=True
-        )
-    return top
+        # ADR-018: pergunta de recência ("última empresa") seleciona as mais
+        # recentes, não as mais similares. Escolher o top_k por similaridade e só
+        # então reordenar deixava o cargo atual de fora quando os scores das
+        # experiências ficavam próximos. O sort é estável: empate mantém a ordem
+        # de similaridade.
+        return sorted(
+            scored,
+            key=lambda scored_item: scored_item[0].recency_key or "",
+            reverse=True,
+        )[:top_k]
+    return scored[:top_k]
 
 
 # ADR-010 seção 1: dicionário pequeno de palavras-chave → seção, não um
@@ -354,6 +430,23 @@ def _tokenize(text: str) -> set[str]:
     return set(re.findall(r"\w+", _normalize(text)))
 
 
+def _distinctive_tokens(text: str) -> set[str]:
+    """Tokens que carregam significado na pergunta: sem stopwords e sem
+    palavras curtas demais."""
+    return {
+        token
+        for token in _tokenize(text)
+        if len(token) >= 3 and token not in _STOPWORDS
+    }
+
+
+def _lexical_bonus(question_tokens: set[str], chunk_text: str, weight: float) -> float:
+    if not question_tokens or weight <= 0:
+        return 0.0
+    overlap = len(question_tokens & _tokenize(chunk_text))
+    return weight * overlap / len(question_tokens)
+
+
 def detect_section_intent(question: str) -> str | None:
     """Seção-alvo da pergunta, por palavra-chave (ADR-010); `None` se nenhuma bater.
 
@@ -381,6 +474,7 @@ def search_with_routing(
     index: list[EmbeddedChunk],
     embedding_provider: EmbeddingProvider,
     top_k: int = 3,
+    lexical_weight: float = 0.0,
 ) -> list[tuple[Chunk, float]]:
     """`search()` com roteamento por seção/recência (ADR-010); fallback = busca atual.
 
@@ -396,6 +490,7 @@ def search_with_routing(
         top_k=top_k,
         section=section,
         sort_by_recency=sort_by_recency,
+        lexical_weight=lexical_weight,
     )
 
 

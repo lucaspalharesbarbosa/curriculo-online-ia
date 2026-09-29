@@ -14,9 +14,13 @@ Saída do `arquiteto-ia-senior`: ADRs (Architecture Decision Records) e diagrama
 - [ADR-009 — SonarCloud no CI](ADR-009-sonarcloud-ci.md) — Aceita
 - [ADR-010 — Fluxo de RAG v2: precisão de recuperação + acesso à web](ADR-010-fluxo-rag-v2-precisao-web.md) — Aceita
 - [ADR-013 — Correção do roteamento por seção do RAG + melhorias de chunking (guia AWS)](ADR-013-correcao-roteamento-rag-e-melhorias-chunking.md) — Aceita
+- [ADR-017: Tools e MCP, um núcleo e duas portas](ADR-017-tools-e-mcp-um-nucleo-duas-portas.md) (Aceita)
+- [ADR-018: Tools estruturadas, recuperar primeiro e busca híbrida](ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md) (Aceita)
+- [ADR-019: Redesign command center com chat lateral e resposta com tools](ADR-019-redesign-command-center-chat-com-tools.md) (Aceita)
 
 ## Diagramas
 - [C4-001 — Contexto e Containers](C4-001-contexto-containers.md)
+- [C4-002: Componentes do backend (chat, tools e MCP)](C4-002-componentes-backend-tools-mcp.md)
 
 ## Convenção de nomenclatura
 `ADR-NNN-<titulo>.md` e `C4-NNN-<titulo>.md`, `NNN` nunca reaproveitado. Detalhes: [`docs/agents/CONTEXTO-PROJETO.md`](../agents/CONTEXTO-PROJETO.md#convenção-de-nomenclatura-de-documentos).

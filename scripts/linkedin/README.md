@@ -53,7 +53,7 @@ Sem `--yes`, o script só mostra a **prévia** (texto exato + imagem) e não pub
 |---|---|
 | `export_diagram.py` | Rasteriza um diagrama SVG (`docs/content/linkedin/images/*.svg`) para PNG em alta resolução, usando o Edge/Chrome já instalado no sistema — sem dependências novas |
 | `render_video.py` | Renderiza um HTML animado (`docs/content/linkedin/videos/*.html`) em MP4 quadrado para os posts em vídeo. Sobe **uma** instância do Edge/Chrome e conversa com ela pelo DevTools Protocol, chamando `window.renderFrame(n)` frame a frame. Requer `pip install imageio-ffmpeg websockets` |
-| `publish_post.py` | Lê o `.md` do post, garante a imagem exportada, mostra prévia e (com `--yes`) publica via API oficial: Images API (upload) + Posts API (criação do post) |
+| `publish_post.py` | Lê o `.md` do post, mostra prévia e (com `--yes`) publica via API oficial: Images API ou Videos API (upload) + Posts API (criação do post). Se o `.md` citar um vídeo (`` `videos/<nome>.mp4` ``, gerado por `render_video.py`), o post sai com o vídeo; senão, com a imagem exportada |
 | `.env` | Token de acesso (não versionado — você cria a partir deste guia) |
 
 ## Vídeo dos posts

@@ -7,13 +7,26 @@ mapeamento de exceção→`HTTPException`, `US-14-03`). Depende só dos ports
 
 from __future__ import annotations
 
+import json
+import logging
+import time
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 from openai import OpenAIError
 
 from app.chat import rag
-from app.chat.ports import ChatCompletionProvider, EmbeddingProvider, WebSearchProvider
+from app.chat.ports import (
+    ChatCompletionProvider,
+    EmbeddingProvider,
+    ToolCallingProvider,
+    WebSearchProvider,
+)
+from app.resume.models import Resume
+from app.tools.registry import Tool, execute_tool
+from app.tools.resume_tools import WEB_RESULT_PREFIX, build_resume_tools
+
+logger = logging.getLogger(__name__)
 
 GENERATION_MODEL = "gpt-4o-mini"
 SIMILARITY_THRESHOLD = 0.2
@@ -29,6 +42,21 @@ MAX_HISTORY_MESSAGES = 6
 SELF_CRITIQUE_HIGH_CONFIDENCE_THRESHOLD = 0.55
 SELF_CRITIQUE_SECTION_CONFIDENCE_THRESHOLD = 0.52
 MAX_SELF_CRITIQUE_ITERATIONS = 2
+# ADR-017: guard rails do loop de tool calling. Duas fronteiras independentes:
+# turnos ao modelo e execuções de tool por pergunta.
+# ADR-018: busca híbrida (bônus léxico, `rag.LEXICAL_WEIGHT`) no retrieval.
+HYBRID_RETRIEVAL_ENABLED = True
+MAX_TOOL_ITERATIONS = 3
+MAX_TOOL_CALLS = 3
+# ADR-018: orçamento de tempo do loop. O worker do Render é único (ADR-002), e 3
+# turnos de 20 s com 1 retry (ADR-004) poderiam prendê-lo por minutos. Passado o
+# orçamento, o loop encerra e um turno final sem tools força a resposta.
+TOOL_LOOP_BUDGET_SECONDS = 40.0
+# ADR-019: o /chat devolve as tools usadas para o frontend mostrar chips e
+# cards. O resultado é cortado: a maioria cabe folgada, read_adr é só um sinal.
+TRACE_RESULT_MAX_CHARS = 1500
+TRACE_READ_ADR_MAX_CHARS = 300
+TOOL_LIMIT_MESSAGE = "Limite de chamadas de ferramenta atingido nesta pergunta."
 
 
 @dataclass(frozen=True)
@@ -86,8 +114,33 @@ WEB_SYSTEM_PROMPT = (
     "Nunca invente informação que não esteja no contexto."
 )
 
+# ADR-017: prompt do caminho com tools. O modelo decide quais ferramentas
+# usar, mas só pode responder com base no que elas devolvem.
+TOOLS_SYSTEM_PROMPT = (
+    "Você é o assistente do currículo online de Lucas Palhares Barbosa e do "
+    "projeto que o hospeda. Responda em português, de forma direta, só com "
+    "fatos que vieram do contexto ou das ferramentas. Nunca responda sobre o "
+    "Lucas de memória e nunca invente. Você recebe um contexto do currículo "
+    "(quando há) e ferramentas exatas. Regras: (1) duração ou tempo de "
+    "experiência: calculate_experience, repetindo o resultado sem refazer a "
+    "conta; (2) 'já usou X', 'onde usou X': find_technology; (3) dados de uma "
+    "empresa (cidade, cargo, modalidade, tecnologias): get_experience, e para "
+    "tecnologias use o campo 'Tecnologias usadas', nunca o texto das "
+    "conquistas; (4) ordem da carreira, antes/depois de uma empresa, primeiro "
+    "emprego, quantas empresas, empresa atual, mais recente ou última: "
+    "career_timeline; (5) perguntas sobre 'este projeto', como ele foi "
+    "construído e decisões técnicas: SEMPRE list_adrs e read_adr, porque o "
+    "contexto do currículo não cobre isso, mesmo que haja algum contexto; "
+    "(6) detalhe público "
+    "de uma entidade do currículo que o currículo não tem: search_web, "
+    "deixando claro que vem da web. Se o contexto já responde, responda "
+    "direto, sem ferramentas. Se nada responder, diga que não encontrou no "
+    "currículo."
+)
+
 _index_cache: list[rag.EmbeddedChunk] | None = None
 _entities_cache: list[str] | None = None
+_resume_cache: Resume | None = None
 
 
 def get_index(embedding_provider: EmbeddingProvider) -> list[rag.EmbeddedChunk]:
@@ -96,6 +149,14 @@ def get_index(embedding_provider: EmbeddingProvider) -> list[rag.EmbeddedChunk]:
     if _index_cache is None:
         _index_cache = rag.load_or_build_index(embedding_provider)
     return _index_cache
+
+
+def get_resume() -> Resume:
+    """Currículo validado, cacheado em memória (carregado 1x, ADR-017)."""
+    global _resume_cache
+    if _resume_cache is None:
+        _resume_cache = rag.load_resume()
+    return _resume_cache
 
 
 def get_known_entities() -> list[str]:
@@ -205,6 +266,7 @@ def _search_with_self_critique(
     embedding_provider: EmbeddingProvider,
     chat_completion_provider: ChatCompletionProvider,
     enable_self_critique: bool,
+    lexical_weight: float = 0.0,
 ) -> tuple[list[tuple[rag.Chunk, float]], bool]:
     """Retrieval + auto-crítica seletiva (ADR-016).
 
@@ -216,7 +278,11 @@ def _search_with_self_critique(
     este ADR (usado por `US-16-03` para comparar antes/depois).
     """
     results = rag.search_with_routing(
-        search_question, index, embedding_provider, top_k=TOP_K
+        search_question,
+        index,
+        embedding_provider,
+        top_k=TOP_K,
+        lexical_weight=lexical_weight,
     )
     if not enable_self_critique or not results:
         return results, False
@@ -239,7 +305,11 @@ def _search_with_self_critique(
             # Iteração 1: reescreve a query, mantém o roteamento por seção — a
             # reformulação pode, ela mesma, acertar uma keyword do dicionário.
             results = rag.search_with_routing(
-                current_question, index, embedding_provider, top_k=TOP_K
+                current_question,
+                index,
+                embedding_provider,
+                top_k=TOP_K,
+                lexical_weight=lexical_weight,
             )
         else:
             # Iteração 2: relaxa a restrição de seção — cobre pergunta composta
@@ -250,6 +320,7 @@ def _search_with_self_critique(
                 embedding_provider,
                 top_k=TOP_K,
                 section=None,
+                lexical_weight=lexical_weight,
             )
 
     # Esgotou MAX_SELF_CRITIQUE_ITERATIONS ainda insuficiente → força fallback.
@@ -294,6 +365,88 @@ def _generate_web_answer(
     return answer or FALLBACK_ANSWER
 
 
+def _trace_entry(name: str, raw_arguments: str, result: str) -> dict[str, Any]:
+    """Registro público de uma execução de tool (ADR-019)."""
+    try:
+        arguments = json.loads(raw_arguments) if raw_arguments.strip() else {}
+    except json.JSONDecodeError:
+        arguments = {}
+    limit = TRACE_READ_ADR_MAX_CHARS if name == "read_adr" else TRACE_RESULT_MAX_CHARS
+    return {
+        "name": name,
+        "arguments": arguments if isinstance(arguments, dict) else {},
+        "result": result[:limit],
+    }
+
+
+def _answer_with_tools(
+    question: str,
+    tools: list[Tool],
+    tool_calling_provider: ToolCallingProvider,
+    history: list[HistoryTurn],
+    context_chunks: list[rag.Chunk] | None = None,
+    trace: list[dict[str, Any]] | None = None,
+) -> tuple[str, Literal["resume", "web"]]:
+    """Loop de tool calling (ADR-017): o modelo escolhe as ferramentas, o código
+    executa e devolve o resultado, até o modelo responder em texto.
+
+    ADR-018, recuperar primeiro e usar tools depois: `context_chunks` é o
+    resultado do retrieval do pipeline (com auto-crítica) e vai junto da
+    pergunta, então o modelo nunca ignora o currículo. As tools entram como
+    reforço para o que exige precisão. Sem contexto (retrieval insuficiente), o
+    1º turno exige ao menos uma tool.
+
+    Guard rails: no máximo `MAX_TOOL_ITERATIONS` turnos e `MAX_TOOL_CALLS`
+    execuções por pergunta; esgotado o limite, um turno final sem tools força
+    a resposta. Levanta `OpenAIError` se o provider falhar.
+    """
+    user_content = (
+        _build_user_prompt(question, context_chunks) if context_chunks else question
+    )
+    messages: list[dict[str, Any]] = [
+        {"role": "system", "content": TOOLS_SYSTEM_PROMPT},
+        *_history_messages(history),
+        {"role": "user", "content": user_content},
+    ]
+    executed_calls = 0
+    used_web = False
+    started = time.monotonic()
+
+    for iteration in range(MAX_TOOL_ITERATIONS):
+        if iteration > 0 and time.monotonic() - started > TOOL_LOOP_BUDGET_SECONDS:
+            break
+        completion = tool_calling_provider.generate_with_tools(
+            GENERATION_MODEL,
+            messages,
+            tools,
+            require_tool=iteration == 0 and not context_chunks,
+        )
+        if not completion.tool_calls:
+            source = "web" if used_web else "resume"
+            return completion.content.strip() or FALLBACK_ANSWER, source
+
+        messages.append(completion.message)
+        for call in completion.tool_calls:
+            if executed_calls >= MAX_TOOL_CALLS:
+                result = TOOL_LIMIT_MESSAGE
+            else:
+                executed_calls += 1
+                result = execute_tool(tools, call.name, call.arguments)
+                if trace is not None:
+                    trace.append(_trace_entry(call.name, call.arguments, result))
+                used_web = used_web or (
+                    call.name == "search_web" and result.startswith(WEB_RESULT_PREFIX)
+                )
+            messages.append(
+                {"role": "tool", "tool_call_id": call.id, "content": result}
+            )
+
+    final = tool_calling_provider.generate_with_tools(
+        GENERATION_MODEL, messages, [], require_tool=False
+    )
+    return final.content.strip() or FALLBACK_ANSWER, "web" if used_web else "resume"
+
+
 def answer_question(
     question: str,
     embedding_provider: EmbeddingProvider,
@@ -301,6 +454,9 @@ def answer_question(
     web_search_provider: WebSearchProvider,
     history: list[HistoryTurn] | None = None,
     enable_self_critique: bool = True,
+    tool_calling_provider: ToolCallingProvider | None = None,
+    enable_hybrid: bool | None = None,
+    tool_trace: list[dict[str, Any]] | None = None,
 ) -> tuple[str, Literal["resume", "web"]]:
     """Orquestra busca local → auto-crítica → fallback web → geração (ADR-010,
     ADR-014, ADR-016).
@@ -311,11 +467,57 @@ def answer_question(
     nunca propaga — cai para a pergunta crua / contexto já obtido.
     `enable_self_critique=False` reproduz o comportamento anterior ao
     `ADR-016`, byte a byte (usado por `US-16-03` para comparar antes/depois).
+
+    ADR-017: com `tool_calling_provider`, o modelo decide as fontes por tool
+    calling (`_answer_with_tools`). Se esse caminho falhar por erro do
+    provider, cai para o pipeline determinístico abaixo, que segue sendo o
+    caminho padrão e o plano B.
     """
     truncated_history = (history or [])[-MAX_HISTORY_MESSAGES:]
     search_question = _condense_question(
         question, truncated_history, chat_completion_provider
     )
+    hybrid = HYBRID_RETRIEVAL_ENABLED if enable_hybrid is None else enable_hybrid
+    lexical_weight = rag.LEXICAL_WEIGHT if hybrid else 0.0
+
+    if tool_calling_provider is not None:
+        tools = build_resume_tools(
+            get_resume(),
+            lambda: get_index(embedding_provider),
+            embedding_provider,
+            web_search_provider,
+        )
+        try:
+            tool_results, tool_forced = _search_with_self_critique(
+                search_question,
+                get_index(embedding_provider),
+                embedding_provider,
+                chat_completion_provider,
+                enable_self_critique,
+                lexical_weight,
+            )
+            # Contexto só quando o retrieval é confiável. Abstenção forçada pela
+            # auto-crítica (ADR-016) vira "sem contexto": aqui as tools exatas
+            # ainda podem responder (ex.: linha do tempo), então não abstém.
+            context_chunks = (
+                [chunk for chunk, _score in tool_results]
+                if tool_results
+                and not tool_forced
+                and tool_results[0][1] >= SIMILARITY_THRESHOLD
+                else None
+            )
+            return _answer_with_tools(
+                question,
+                tools,
+                tool_calling_provider,
+                truncated_history,
+                context_chunks,
+                tool_trace,
+            )
+        except OpenAIError:
+            logger.warning("Tool calling falhou; usando o pipeline determinístico.")
+            if tool_trace is not None:
+                tool_trace.clear()
 
     index = get_index(embedding_provider)
     results, forced_insufficient = _search_with_self_critique(
@@ -324,6 +526,7 @@ def answer_question(
         embedding_provider,
         chat_completion_provider,
         enable_self_critique,
+        lexical_weight,
     )
 
     if forced_insufficient:

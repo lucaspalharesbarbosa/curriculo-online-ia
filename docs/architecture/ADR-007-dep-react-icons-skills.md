@@ -32,3 +32,5 @@ O autor pediu ícone/logo por item de `skills[].items` (Java, Apache Kafka, Dock
 
 - `ADR-005-deps-template-personal-resume.md`
 - `frontend/lib/skill-icons.ts`, `frontend/components/ResumeSidebar.tsx`
+
+> Atualização (ADR-019): a seção de stack do redesign mostra o nível em pontos e não usa mais os ícones de cada skill. A dependência `react-icons` continua em uso nos links de contato e de projetos.

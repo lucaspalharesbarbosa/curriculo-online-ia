@@ -25,6 +25,32 @@ function createFakeChatClient(): FakeChatClient {
 }
 
 describe("useResumeChat", () => {
+  it("guarda as tools da resposta na mensagem e usa lista vazia quando o client não devolve o campo", async () => {
+    const chatClient = createFakeChatClient();
+    const tools = [
+      {
+        name: "career_timeline",
+        arguments: {},
+        result: "Linha do tempo",
+      },
+    ];
+    chatClient.sendMessage
+      .mockResolvedValueOnce({ answer: "Com tools.", source: "resume", tools })
+      .mockResolvedValueOnce({ answer: "Sem tools." });
+
+    const { result } = renderHook(() => useResumeChat(chatClient));
+
+    await act(async () => {
+      await result.current.sendQuestion("Primeira?");
+    });
+    await act(async () => {
+      await result.current.sendQuestion("Segunda?");
+    });
+
+    expect(result.current.messages[0].tools).toEqual(tools);
+    expect(result.current.messages[1].tools).toEqual([]);
+  });
+
   it("envia a pergunta e preenche a resposta ao receber sucesso do client", async () => {
     const chatClient = createFakeChatClient();
     chatClient.sendMessage.mockResolvedValueOnce({

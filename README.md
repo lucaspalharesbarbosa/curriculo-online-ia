@@ -59,6 +59,10 @@ O repositório é, ao mesmo tempo, o produto e o método por trás dele:
 
 **💬 Assistente de IA (RAG)** — endpoint `/chat` no FastAPI: os dados do currículo são divididos em chunks, transformados em embeddings e comparados por similaridade a cada pergunta; a resposta é gerada com esse contexto. Perguntas fora do escopo do currículo não geram erro — o assistente responde com um fallback textual.
 
+**🧭 Chat que mostra de onde veio o dado**: a home tem um chat lateral (tela cheia no mobile) e cada resposta traz chips das ferramentas usadas e cards com o dado exato (experiência, tecnologia, empresa, linha do tempo), além do selo de fonte. Ver [ADR-019](docs/architecture/ADR-019-redesign-command-center-chat-com-tools.md).
+
+**🔌 Tools + MCP**: as capacidades do assistente (buscar no currículo, calcular tempo de experiência com precisão, buscar detalhes públicos na web) são um núcleo de 8 tools exatas (duração, busca por tecnologia, dados de empresa, linha do tempo da carreira e leitura dos ADRs do próprio projeto) com duas portas: *tool calling* no chat do site e um **servidor MCP** que qualquer agente compatível (Claude Desktop, Cursor) pode consultar. Medido em golden-set: capacidades novas 14/15 contra 3/15 do pipeline, sem regressão (21/24 contra 19/24). Ver [ADR-017](docs/architecture/ADR-017-tools-e-mcp-um-nucleo-duas-portas.md), [ADR-018](docs/architecture/ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md), [C4-002](docs/architecture/C4-002-componentes-backend-tools-mcp.md) e [`backend/README.md`](backend/README.md#tools-e-mcp).
+
 **📱 Mobile-first** — layout responsivo, auditado em mobile/tablet/desktop.
 
 **♿ Acessível** — contraste adequado, `alt` em todas as imagens, navegação completa por teclado.
@@ -101,6 +105,16 @@ sequenceDiagram
     AI-->>BE: Resposta em texto
     BE-->>FE: 200 { answer }
     FE-->>V: Exibe resposta no widget
+```
+
+Tools e MCP (`ADR-017`): um núcleo de tools, sem conhecer protocolo, e duas portas.
+
+```mermaid
+flowchart LR
+    CHAT["/chat do site<br/>(tool calling, opt-in)"] --> CORE
+    MCPC["Claude Desktop, Cursor<br/>(cliente MCP)"] --> MCPS["Servidor MCP<br/>stdio ou /mcp"]
+    MCPS --> CORE["Núcleo de tools<br/>search_resume, calculate_experience, search_web"]
+    CORE --> JSON[("resume.json")]
 ```
 
 `frontend/` (Next.js, deploy na Vercel) e `backend/` (FastAPI, deploy no Render) vivem no mesmo repositório, mas têm pipelines de CI, dependências e deploys independentes.
@@ -197,6 +211,8 @@ Nenhum valor real é commitado no repositório — cada serviço tem seu `.env.e
 | `NEXT_PUBLIC_SITE_URL` | Frontend | `frontend/.env.local` local (dev) / painel da **Vercel** → Project Settings → Environment Variables (produção) | Não — URL pública do site, usada em metadata/Open Graph |
 | `ENVIRONMENT` | Backend | `backend/.env` local (dev) / Render → `curriculo-online-backend` → Environment (produção) | Não — rótulo de ambiente (`development`/`production`); em `production` desativa `/docs`, `/redoc` e `/openapi.json` — detalhes em [`backend/README.md`](backend/README.md#documentacao-da-api) |
 | `WEB_SEARCH_API_KEY` | Backend | **Dev:** `backend/.env`. **Produção / fonte do valor:** [Tavily](https://app.tavily.com) → API Keys → gerar/copiar → colar no Render → Web Service **`curriculo-online-backend`** → **Environment** → variável **`WEB_SEARCH_API_KEY`** | Sim, mas **opcional** — sem ela o `/chat` simplesmente não aciona busca web (cai no fallback do currículo), sem quebrar a requisição ([ADR-010](docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md) seção 2) |
+| `CHAT_TOOL_CALLING` | Backend | `backend/.env` local (dev) / Render → `curriculo-online-backend` → Environment (produção) | Não. Flag (`true`/`false`, padrão `false` sem a variável; `true` no `render.yaml`) que liga o tool calling no `/chat` ([ADR-018](docs/architecture/ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md)) |
+| `MCP_HTTP_ENABLED` | Backend | `backend/.env` local (dev) / Render → `curriculo-online-backend` → Environment (produção) | Não. Flag (`true`/`false`, padrão `false`) que expõe o servidor MCP em `/mcp` ([ADR-017](docs/architecture/ADR-017-tools-e-mcp-um-nucleo-duas-portas.md)) |
 
 Setup local: o backend cria `backend/.env` a partir de `.env.example` na primeira subida. Preencha `LLM_API_KEY` com o valor da secret no Render (caminho acima) ou com uma chave nova da [OpenAI Platform](https://platform.openai.com/api-keys). Detalhes: [`backend/README.md`](backend/README.md#setup-local-obrigatório-para-o-chat).
 
@@ -252,6 +268,8 @@ Status de execução por fase, do início do projeto até a evolução pós-lan�
 | 10 | Observabilidade | ⏳ Draft |
 | 11 | Chat v2 + RAG Inteligente | 🚧 Em andamento (3/7 — backend Done) |
 | 12 | Área Administrativa | ⏳ Bloqueada (ADRs de auth/persistência) |
+| 17 | Tools e MCP (um núcleo, duas portas) | ✅ Done (tool calling ligado após medição: 14/15 contra 3/15) |
+| 18 | Redesign command center, chat com chips e cards das tools | ✅ Done |
 
 Detalhes de cada fase, com links para as histórias: [`docs/product/roadmap.md`](docs/product/roadmap.md).
 
@@ -266,8 +284,8 @@ Detalhes de cada fase, com links para as histórias: [`docs/product/roadmap.md`]
 - PRDs (11 épicos, `PRD-001` a `PRD-011`) e backlog por fase: índice em [`docs/product/README.md`](docs/product/README.md)
 
 **Arquitetura**
-- ADRs (`ADR-001` a `ADR-010`) e diagramas C4 — índice em [`docs/architecture/README.md`](docs/architecture/README.md)
-- Destaques: [ADR-003 — Fluxo de RAG](docs/architecture/ADR-003-fluxo-rag.md) · [ADR-010 — RAG v2 (precisão + busca web)](docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md)
+- ADRs (`ADR-001` a `ADR-019`) e diagramas C4 — índice em [`docs/architecture/README.md`](docs/architecture/README.md)
+- Destaques: [ADR-003 — Fluxo de RAG](docs/architecture/ADR-003-fluxo-rag.md) · [ADR-010 — RAG v2 (precisão + busca web)](docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md) · [ADR-018: Tools estruturadas, recuperar primeiro e busca híbrida](docs/architecture/ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md)
 
 <br/>
 

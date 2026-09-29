@@ -7,6 +7,7 @@ import {
   type ChatFeedbackPayload,
   type ChatHistoryMessage,
   type ChatResponse,
+  type ChatToolCall,
 } from "./chat-client";
 
 /** Same-origin — Next faz proxy para o FastAPI (`app/api/chat`). */
@@ -21,6 +22,31 @@ function publicErrorMessage(status: number): string {
     return RESUME_CHAT_RATE_LIMIT_MESSAGE;
   }
   return RESUME_CHAT_ERROR_MESSAGE;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+/** Aceita só entradas bem formadas de `tools`: campo ausente ou torto vira lista vazia. */
+function normalizeTools(raw: unknown): ChatToolCall[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((entry): ChatToolCall[] => {
+    if (
+      !isRecord(entry) ||
+      typeof entry.name !== "string" ||
+      typeof entry.result !== "string"
+    ) {
+      return [];
+    }
+    return [
+      {
+        name: entry.name,
+        arguments: isRecord(entry.arguments) ? entry.arguments : {},
+        result: entry.result,
+      },
+    ];
+  });
 }
 
 /** Adapter HTTP (ADR-012): implementa `ChatClient` via `fetch` para os endpoints Next. */
@@ -48,7 +74,8 @@ export class HttpChatClient implements ChatClient {
       throw new ChatApiError(publicErrorMessage(response.status));
     }
 
-    return (await response.json()) as ChatResponse;
+    const data = (await response.json()) as ChatResponse;
+    return { ...data, tools: normalizeTools(data.tools) };
   }
 
   async sendFeedback(payload: ChatFeedbackPayload): Promise<void> {

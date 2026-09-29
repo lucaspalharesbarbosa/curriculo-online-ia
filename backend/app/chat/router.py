@@ -8,7 +8,7 @@ import logging
 import os
 import time
 from collections import defaultdict
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from openai import AuthenticationError, OpenAIError, RateLimitError
@@ -18,9 +18,15 @@ from app.chat import service
 from app.chat.adapters.openai_adapter import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
+    OpenAIToolCallingProvider,
 )
 from app.chat.adapters.tavily_adapter import TavilyWebSearchProvider
-from app.chat.ports import ChatCompletionProvider, EmbeddingProvider, WebSearchProvider
+from app.chat.ports import (
+    ChatCompletionProvider,
+    EmbeddingProvider,
+    ToolCallingProvider,
+    WebSearchProvider,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -52,6 +58,14 @@ def get_web_search_provider() -> WebSearchProvider:
     return TavilyWebSearchProvider()
 
 
+def get_tool_calling_provider() -> ToolCallingProvider | None:
+    """ADR-017: tool calling atrás de flag (`CHAT_TOOL_CALLING=true`). Desligada
+    (padrão), o `/chat` segue o pipeline determinístico de sempre."""
+    if os.environ.get("CHAT_TOOL_CALLING", "").lower() in {"1", "true", "yes"}:
+        return OpenAIToolCallingProvider()
+    return None
+
+
 class HistoryMessage(BaseModel):
     role: Literal["user", "assistant"]
     content: str = Field(min_length=1, max_length=4000)
@@ -65,12 +79,23 @@ class ChatRequest(BaseModel):
     history: list[HistoryMessage] | None = Field(default=None, max_length=20)
 
 
+class ToolUse(BaseModel):
+    """Tool executada para montar a resposta (ADR-019): o frontend mostra
+    chips e cards a partir disto. Somente dados públicos do currículo."""
+
+    name: str
+    arguments: dict[str, Any] = Field(default_factory=dict)
+    result: str
+
+
 class ChatResponse(BaseModel):
     answer: str
     # ADR-010 seção 2: campo aditivo — "web" só quando a resposta usa
     # contexto da busca externa; "resume" em todos os outros casos (default),
     # preservando compatibilidade com clientes que ignoram o campo.
     source: Literal["resume", "web"] = "resume"
+    # ADR-019: campo aditivo. Vazio quando o pipeline determinístico respondeu.
+    tools: list[ToolUse] = Field(default_factory=list)
 
 
 class ChatFeedbackRequest(BaseModel):
@@ -125,6 +150,9 @@ def chat(
         get_chat_completion_provider
     ),
     web_search_provider: WebSearchProvider = Depends(get_web_search_provider),
+    tool_calling_provider: ToolCallingProvider | None = Depends(
+        get_tool_calling_provider
+    ),
 ) -> ChatResponse:
     client_id = http_request.client.host if http_request.client else "unknown"
     if _is_rate_limited(client_id):
@@ -143,6 +171,7 @@ def chat(
         else None
     )
 
+    tool_trace: list[dict[str, Any]] = []
     try:
         answer, source = service.answer_question(
             request.question,
@@ -150,11 +179,17 @@ def chat(
             chat_completion_provider,
             web_search_provider,
             history=history,
+            tool_calling_provider=tool_calling_provider,
+            tool_trace=tool_trace,
         )
     except OpenAIError as exc:
         raise _http_error_from_openai(exc) from exc
 
-    return ChatResponse(answer=answer, source=source)
+    return ChatResponse(
+        answer=answer,
+        source=source,
+        tools=[ToolUse(**entry) for entry in tool_trace],
+    )
 
 
 @router.post("/chat/feedback")
