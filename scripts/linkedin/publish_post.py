@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-"""Publica um post (texto + imagem) no perfil pessoal do LinkedIn, usando a
-Posts API e a Images API oficiais (REST, header Linkedin-Version: YYYYMM).
+"""Publica um post (texto + imagem ou vídeo) no perfil pessoal do LinkedIn, usando a
+Posts API, a Images API e a Videos API oficiais (REST, header Linkedin-Version: YYYYMM).
+
+Se o .md referenciar um vídeo (`videos/<nome>.mp4`, que precisa existir), o post
+sai com o vídeo; senão, com a imagem (`images/<nome>.svg` exportada para PNG).
 
 Sem dependências externas — só a stdlib do Python (urllib).
 
@@ -151,6 +154,73 @@ def upload_image(token: str, owner_urn: str, png_path: Path) -> str:
     return image_urn
 
 
+VIDEO_CHUNK_TIMEOUT_SECONDS = 300
+BROWSER_UA = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/120.0 Safari/537.36"
+)
+
+
+def upload_video(token: str, owner_urn: str, mp4_path: Path) -> str:
+    """Videos API: initializeUpload, PUT de cada parte (guardando o ETag),
+    finalizeUpload e espera do processamento (best-effort)."""
+    data = mp4_path.read_bytes()
+    init_body = {
+        "initializeUploadRequest": {
+            "owner": owner_urn,
+            "fileSizeBytes": len(data),
+            "uploadThumbnail": False,
+            "uploadCaptions": False,
+        }
+    }
+    parsed, _ = api_request("POST", "/rest/videos?action=initializeUpload", token, init_body)
+    value = parsed.get("value", {})
+    video_urn = value.get("video")
+    instructions = value.get("uploadInstructions", [])
+    if not video_urn or not instructions:
+        sys.exit(f"Resposta inesperada de initializeUpload (vídeo): {parsed}")
+
+    part_ids: list[str] = []
+    for part in instructions:
+        chunk = data[part["firstByte"] : part["lastByte"] + 1]
+        req = urllib.request.Request(
+            part["uploadUrl"],
+            data=chunk,
+            # As URLs de upload são pré-assinadas: sem Authorization.
+            headers={"Content-Type": "application/octet-stream", "User-Agent": BROWSER_UA},
+            method="PUT",
+        )
+        with urllib.request.urlopen(req, timeout=VIDEO_CHUNK_TIMEOUT_SECONDS) as resp:
+            if resp.status not in (200, 201):
+                sys.exit(f"Falha no upload do vídeo: HTTP {resp.status}")
+            etag = resp.headers.get("etag") or resp.headers.get("ETag")
+            if not etag:
+                sys.exit("Upload do vídeo sem ETag na resposta; não dá para finalizar.")
+            part_ids.append(etag.strip('"'))
+
+    finalize_body = {
+        "finalizeUploadRequest": {
+            "video": video_urn,
+            "uploadToken": value.get("uploadToken", ""),
+            "uploadedPartIds": part_ids,
+        }
+    }
+    api_request("POST", "/rest/videos?action=finalizeUpload", token, finalize_body)
+
+    encoded_urn = video_urn.replace(":", "%3A")
+    for _ in range(40):  # até ~2 min de processamento
+        status = api_request_soft("GET", f"/rest/videos/{encoded_urn}", token)
+        if status is None:
+            time.sleep(5)
+            break
+        if status.get("status") == "AVAILABLE":
+            break
+        if status.get("status") == "PROCESSING_FAILED":
+            sys.exit(f"O LinkedIn falhou ao processar o vídeo: {status}")
+        time.sleep(3)
+    return video_urn
+
+
 def escape_little_text(text: str) -> str:
     """Escapa os caracteres reservados do "Little Text Format" da Posts API
     do LinkedIn (usados para menções, negrito/itálico etc.). Sem isso, um
@@ -160,7 +230,11 @@ def escape_little_text(text: str) -> str:
     return "".join(f"\\{ch}" if ch in reserved else ch for ch in text)
 
 
-def create_post(token: str, author_urn: str, commentary: str, image_urn: str, alt_text: str) -> tuple[str, str]:
+def create_post(
+    token: str, author_urn: str, commentary: str, media_urn: str, alt_text: str, is_video: bool = False
+) -> tuple[str, str]:
+    # Vídeo aceita "title"; imagem aceita "altText".
+    media = {"id": media_urn, "title": alt_text} if is_video else {"id": media_urn, "altText": alt_text}
     body = {
         "author": author_urn,
         "commentary": escape_little_text(commentary),
@@ -170,7 +244,7 @@ def create_post(token: str, author_urn: str, commentary: str, image_urn: str, al
             "targetEntities": [],
             "thirdPartyDistributionChannels": [],
         },
-        "content": {"media": {"id": image_urn, "altText": alt_text}},
+        "content": {"media": media},
         "lifecycleState": "PUBLISHED",
         "isReshareDisabledByAuthor": False,
     }
@@ -182,7 +256,7 @@ def create_post(token: str, author_urn: str, commentary: str, image_urn: str, al
 
 # --------- parsing do markdown do post ---------
 
-def extract_post(md_path: Path) -> tuple[str, Path, str, str]:
+def extract_post(md_path: Path) -> tuple[str, Path, str, str, Path | None]:
     text = md_path.read_text(encoding="utf-8")
 
     body_match = re.search(r"## Texto do post \(colar direto\)\s*\n\n(.*?)\n\n---", text, re.S)
@@ -201,7 +275,10 @@ def extract_post(md_path: Path) -> tuple[str, Path, str, str]:
     comment_match = re.search(r"## Primeiro comentário sugerido\s*\n\n(.+?)\s*$", text, re.S)
     suggested_comment = comment_match.group(1).strip() if comment_match else ""
 
-    return commentary, svg_path, alt_text, suggested_comment
+    video_match = re.search(r"`(videos/[^`]+\.mp4)`", text)
+    video_path = md_path.parent / video_match.group(1) if video_match else None
+
+    return commentary, svg_path, alt_text, suggested_comment, video_path
 
 
 def main() -> None:
@@ -213,15 +290,21 @@ def main() -> None:
     if not args.post.exists():
         sys.exit(f"Arquivo não encontrado: {args.post}")
 
-    commentary, svg_path, alt_text, suggested_comment = extract_post(args.post)
+    commentary, svg_path, alt_text, suggested_comment, video_path = extract_post(args.post)
     png_path = svg_path.with_suffix(".png")
+    use_video = video_path is not None and video_path.exists()
 
     print("=" * 60)
     print("PRÉVIA DO POST")
     print("=" * 60)
     print(commentary)
     print("-" * 60)
-    print(f"Imagem: {png_path.name} ({'ok' if png_path.exists() else 'AINDA NÃO EXPORTADA — rode export_diagram.py antes'})")
+    if video_path is not None:
+        state = "ok" if use_video else "AINDA NÃO RENDERIZADO, rode render_video.py antes"
+        size = f", {video_path.stat().st_size / 1024 / 1024:.1f} MB" if use_video else ""
+        print(f"Vídeo: {video_path.name} ({state}{size}). O post sai com o vídeo.")
+    else:
+        print(f"Imagem: {png_path.name} ({'ok' if png_path.exists() else 'AINDA NÃO EXPORTADA — rode export_diagram.py antes'})")
     print(f"Caracteres: {len(commentary)}")
     if suggested_comment:
         print(f"Primeiro comentário sugerido (colar manualmente depois): {suggested_comment}")
@@ -231,18 +314,24 @@ def main() -> None:
         print("\nPrévia apenas — nada foi publicado. Rode de novo com --yes para publicar de verdade.")
         return
 
-    if not png_path.exists():
+    if video_path is not None and not use_video:
+        sys.exit(f"Vídeo não encontrado ({video_path}). Rode render_video.py primeiro.")
+    if not use_video and not png_path.exists():
         sys.exit(f"PNG não encontrado ({png_path}). Rode export_diagram.py primeiro.")
 
     token = require_token()
     print("Autenticando…")
     author_urn = get_person_urn(token)
 
-    print("Subindo imagem…")
-    image_urn = upload_image(token, author_urn, png_path)
+    if use_video:
+        print("Subindo vídeo (pode levar alguns minutos)…")
+        media_urn = upload_video(token, author_urn, video_path)
+    else:
+        print("Subindo imagem…")
+        media_urn = upload_image(token, author_urn, png_path)
 
     print("Publicando post…")
-    post_urn, post_url = create_post(token, author_urn, commentary, image_urn, alt_text)
+    post_urn, post_url = create_post(token, author_urn, commentary, media_urn, alt_text, is_video=use_video)
 
     print("\nPublicado com sucesso.")
     print(f"URN: {post_urn}")
