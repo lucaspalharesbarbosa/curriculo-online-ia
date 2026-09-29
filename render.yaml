@@ -29,6 +29,14 @@ services:
       # arquivo; o valor precisa ser definido manualmente no painel do serviço.
       - key: LLM_API_KEY
         sync: false
+      # ADR-017: servidor MCP publico em /mcp (somente leitura, rate limit
+      # de 30 req/min por IP). Desligar = trocar para "false".
+      - key: MCP_HTTP_ENABLED
+        value: "true"
+      # ADR-017: tool calling no /chat. Fica desligado ate o golden-set
+      # (python -m eval.run_golden_set --tools) provar que nao regride.
+      - key: CHAT_TOOL_CALLING
+        value: "false"
       # Origem única — CORS aceita só o valor exato aqui (app/main.py,
       # allow_origins=[ALLOWED_ORIGIN], sem lista). Produção: URL da Vercel.
       # Smoke manual com frontend local: trocar temporariamente para

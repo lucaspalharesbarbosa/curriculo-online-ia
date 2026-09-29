@@ -5,6 +5,7 @@ Python + FastAPI (serviço de API; RAG na Fase 05).
 ## Stack
 
 - Python + FastAPI
+- MCP: SDK oficial `mcp` (servidor stdio e Streamable HTTP, `ADR-017`)
 - Validação do currículo: Pydantic (`app/resume/models.py`), espelhando o Zod do frontend
 - Testes: pytest (AAA), `TestClient` para endpoints
 - Lint/format: ruff + black
@@ -49,7 +50,48 @@ Definidas em `backend/.env` local (a partir de `.env.example`) e no painel do Re
 | Variável | Valores esperados | Default | Efeito |
 |---|---|---|---|
 | `ENVIRONMENT` | `development` \| `production` | `development` (quando ausente) | Em `production`, desativa `/docs`, `/redoc` e `/openapi.json` (404) — ver [Documentação da API](#documentacao-da-api). Não é segredo; configurar `ENVIRONMENT=production` no painel do Render (produção). |
+| `CHAT_TOOL_CALLING` | `true` \| `false` | `false` (quando ausente) | Liga o tool calling no `/chat`: o modelo decide quais tools usar ([ADR-017](../docs/architecture/ADR-017-tools-e-mcp-um-nucleo-duas-portas.md)). Desligado, o `/chat` segue o pipeline determinístico. Em falha do provider, cai sempre para o pipeline. |
+| `MCP_HTTP_ENABLED` | `true` \| `false` | `false` (quando ausente) | Expõe o servidor MCP em `POST /mcp` (Streamable HTTP, com rate limit de 30 req/min por IP). O modo stdio (`python -m app.mcp_server`) não depende desta flag. |
 | `WEB_SEARCH_API_KEY` | Chave da [Tavily](https://app.tavily.com) | Ausente (feature desativada) | Fallback de busca web do `/chat` para dados externos ao `resume.json` ([ADR-010](../docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md)) — opcional, sem ela o chat funciona normalmente só com o currículo. |
+
+## Tools e MCP
+
+O assistente tem um **núcleo de tools** (`app/tools/`) exposto por duas portas ([`ADR-017`](../docs/architecture/ADR-017-tools-e-mcp-um-nucleo-duas-portas.md)):
+
+| Tool | O que faz |
+|---|---|
+| `search_resume(query, section?)` | Busca semântica no currículo (usa embeddings, precisa de `LLM_API_KEY`) |
+| `calculate_experience(skill_or_company)` | Tempo de experiência **calculado** a partir do `resume.json` (períodos sobrepostos contados uma vez; cargo atual conta até hoje) |
+| `search_web(query)` | Busca pública sobre uma entidade citada no currículo (Tavily, opcional) |
+
+Todas são somente leitura.
+
+**Porta 1: tool calling no `/chat`.** Ligue com `CHAT_TOOL_CALLING=true`. Limites: 3 turnos e 3 execuções de tool por pergunta; o 1º turno exige uma tool.
+
+**Porta 2: servidor MCP.**
+
+Local (stdio), por exemplo no `claude_desktop_config.json` (ajuste o caminho):
+
+```json
+{
+  "mcpServers": {
+    "curriculo-lucas": {
+      "command": "python",
+      "args": ["-m", "app.mcp_server"],
+      "cwd": "C:/caminho/para/curriculo-online-ia/backend"
+    }
+  }
+}
+```
+
+Remoto (HTTP): com `MCP_HTTP_ENABLED=true`, aponte um cliente MCP para `https://<backend>/mcp`. Recursos de leitura: `resume://experiencias` e `resume://skills`.
+
+Comparar tool calling com o pipeline no golden-set real (usa a API da OpenAI, custa centavos):
+
+```bash
+cd backend
+python -m eval.run_golden_set --tools
+```
 
 ## OpenAPI (contrato da API)
 
@@ -124,15 +166,23 @@ backend/
 │   │   └── env_bootstrap.py   # bootstrap de .env local
 │   ├── resume/                 # domínio "currículo"
 │   │   └── models.py           # schema Pydantic do currículo
+│   ├── tools/                  # núcleo de tools do ADR-017 (sem openai/mcp)
+│   │   ├── registry.py          # Tool + execute_tool (valida a entrada do LLM)
+│   │   ├── experience.py        # cálculo determinístico de tempo de experiência
+│   │   └── resume_tools.py      # search_resume, calculate_experience, search_web
+│   ├── mcp_server/             # porta MCP do ADR-017
+│   │   ├── server.py            # FastMCP: tools do núcleo + recursos resume://
+│   │   ├── http.py              # Streamable HTTP em /mcp + rate limit
+│   │   └── __main__.py          # stdio: python -m app.mcp_server
 │   └── chat/                   # domínio "chat/RAG" — Ports & Adapters (ADR-012)
 │       ├── router.py            # camada HTTP: endpoint /chat + /chat/feedback, rate limit, Depends()
 │       ├── service.py           # use case: orquestra pergunta → resposta
-│       ├── ports.py             # Protocol: EmbeddingProvider, ChatCompletionProvider, WebSearchProvider
+│       ├── ports.py             # Protocol: EmbeddingProvider, ChatCompletionProvider, WebSearchProvider, ToolCallingProvider
 │       ├── adapters/
-│       │   ├── openai_adapter.py   # EmbeddingProvider + ChatCompletionProvider (openai.OpenAI)
+│       │   ├── openai_adapter.py   # Embedding/ChatCompletion/ToolCalling providers (openai.OpenAI)
 │       │   └── tavily_adapter.py    # WebSearchProvider (Tavily)
 │       └── rag.py               # chunking, ranking, roteamento (recebe EmbeddingProvider por parâmetro)
-├── tests/                    # espelha backend/app/ (tests/chat/, tests/chat/adapters/, tests/resume/)
+├── tests/                    # espelha backend/app/ (tests/chat/, tests/tools/, tests/mcp_server/, tests/resume/)
 └── requirements.txt
 ```
 
