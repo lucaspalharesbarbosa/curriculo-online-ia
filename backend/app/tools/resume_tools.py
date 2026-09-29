@@ -8,11 +8,12 @@ from __future__ import annotations
 
 from collections.abc import Callable
 from datetime import date
+from pathlib import Path
 
 from app.chat import rag
 from app.chat.ports import EmbeddingProvider, WebSearchProvider
 from app.resume.models import Resume
-from app.tools import experience
+from app.tools import career, docs_tools, experience
 from app.tools.registry import Tool
 
 SEARCH_TOP_K = 3
@@ -55,6 +56,7 @@ def build_resume_tools(
     embedding_provider: EmbeddingProvider,
     web_search_provider: WebSearchProvider,
     today: Callable[[], date] = date.today,
+    docs_dir: Path = docs_tools.DOCS_DIR,
 ) -> list[Tool]:
     known_entities = rag.extract_known_entities(resume)
 
@@ -82,6 +84,25 @@ def build_resume_tools(
             resume, skill_or_company, today=today()
         )
         return experience.format_summary(summary)
+
+    def find_technology(name: str) -> str:
+        _check_length(name, "name")
+        return career.find_technology(resume, name, today=today())
+
+    def get_experience(company: str) -> str:
+        _check_length(company, "company")
+        return career.get_experience(resume, company)
+
+    def career_timeline(around: str | None = None) -> str:
+        if around is not None:
+            _check_length(around, "around")
+        return career.career_timeline(resume, around)
+
+    def list_adrs() -> str:
+        return docs_tools.list_adrs(docs_dir)
+
+    def read_adr(number: int) -> str:
+        return docs_tools.read_adr(number, docs_dir)
 
     def search_web(query: str) -> str:
         _check_length(query, "query")
@@ -142,6 +163,108 @@ def build_resume_tools(
                 "additionalProperties": False,
             },
             handler=calculate_experience,
+        ),
+        Tool(
+            name="find_technology",
+            description=(
+                "Diz ONDE e por QUANTO TEMPO o Lucas usou uma tecnologia: cargos "
+                "(empresa e período), skills declaradas e projetos, a partir dos "
+                "campos estruturados do currículo. Use para 'já trabalhou com X?', "
+                "'em quais empresas usou X?' e 'há quanto tempo usa X?'. É mais "
+                "confiável que search_resume para nomes exatos de tecnologia."
+            ),
+            parameters={
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "description": "Nome da tecnologia. Ex.: 'Kubernetes', 'AWS'.",
+                    },
+                },
+                "required": ["name"],
+                "additionalProperties": False,
+            },
+            handler=find_technology,
+        ),
+        Tool(
+            name="get_experience",
+            description=(
+                "Registro estruturado dos cargos do Lucas numa empresa: cargo, "
+                "período, cidade, modalidade (remoto/presencial), tecnologias "
+                "usadas e conquistas, cada um em seu campo. Use para 'onde fica "
+                "a empresa X', 'que tecnologias usou na X', 'qual o cargo na X'. "
+                "Prefira a lista 'Tecnologias usadas' à leitura das conquistas."
+            ),
+            parameters={
+                "type": "object",
+                "properties": {
+                    "company": {
+                        "type": "string",
+                        "description": "Nome da empresa. Ex.: 'Banco BV', 'WebPic'.",
+                    },
+                },
+                "required": ["company"],
+                "additionalProperties": False,
+            },
+            handler=get_experience,
+        ),
+        Tool(
+            name="career_timeline",
+            description=(
+                "Carreira do Lucas em ordem cronológica, com contagem de "
+                "empresas, primeira e mais recente. Com 'around', informa a "
+                "empresa imediatamente ANTES e DEPOIS dela. Use para 'onde "
+                "trabalhou antes/depois de X', 'primeiro emprego', 'quantas "
+                "empresas', 'ordem da carreira'."
+            ),
+            parameters={
+                "type": "object",
+                "properties": {
+                    "around": {
+                        "type": "string",
+                        "description": "Opcional. Empresa de referência.",
+                    },
+                },
+                "required": [],
+                "additionalProperties": False,
+            },
+            handler=career_timeline,
+        ),
+        Tool(
+            name="list_adrs",
+            description=(
+                "Lista as decisões de arquitetura (ADRs) deste projeto de "
+                "currículo com IA: número, título e status. Use para perguntas "
+                "sobre COMO o projeto foi construído, decisões técnicas e "
+                "trade-offs (RAG, resiliência, hospedagem, MCP)."
+            ),
+            parameters={
+                "type": "object",
+                "properties": {},
+                "required": [],
+                "additionalProperties": False,
+            },
+            handler=list_adrs,
+        ),
+        Tool(
+            name="read_adr",
+            description=(
+                "Lê o texto de um ADR pelo número (ex.: 3 para o ADR-003). Use "
+                "depois de list_adrs para explicar uma decisão de arquitetura "
+                "do projeto."
+            ),
+            parameters={
+                "type": "object",
+                "properties": {
+                    "number": {
+                        "type": "integer",
+                        "description": "Número do ADR. Ex.: 3.",
+                    },
+                },
+                "required": ["number"],
+                "additionalProperties": False,
+            },
+            handler=read_adr,
         ),
         Tool(
             name="search_web",
