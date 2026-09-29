@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 from datetime import date
 
 import pytest
@@ -150,3 +151,27 @@ def test_execute_tool_entrada_invalida_nunca_levanta(
 
     assert result.startswith("Erro na ferramenta")
     assert fragment in result
+
+
+@pytest.mark.parametrize(
+    ("name", "argument"),
+    [
+        ("search_resume", "query"),
+        ("search_web", "query"),
+        ("calculate_experience", "skill_or_company"),
+    ],
+)
+def test_argumento_de_texto_acima_do_teto_e_rejeitado(name: str, argument: str) -> None:
+    """O /mcp é público: texto gigante não chega a embedding nem à busca web."""
+    provider = FakeEmbeddingProvider([1.0, 0.0])
+    web = FakeWebSearchProvider("x")
+    resume = make_resume([("Alfa", "2024-01", "2025-07", ["Python"])])
+    tools = build_resume_tools(resume, lambda: [], provider, web)
+    raw = json.dumps({argument: "Alfa " * 200})
+
+    result = execute_tool(tools, name, raw)
+
+    assert result.startswith("Erro na ferramenta")
+    assert "excede" in result
+    assert provider.calls == []
+    assert web.calls == []

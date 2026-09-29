@@ -34,6 +34,7 @@ Guard rails do loop:
 
 - No máximo `MAX_TOOL_ITERATIONS = 3` turnos e `MAX_TOOL_CALLS = 3` execuções por pergunta. Estourado o limite, um turno final **sem tools** força a resposta.
 - O 1º turno usa `tool_choice="required"`: a resposta é sempre ancorada em dado de uma tool, nunca só na memória do modelo.
+- Argumentos de texto têm teto de 300 caracteres (`MAX_QUERY_LENGTH`): o `/mcp` é público e sem isso um cliente gera custo de embedding ou de busca web com texto enorme.
 - Todas as tools são **somente leitura**. Nenhuma escreve estado nem executa código.
 - Argumentos do modelo são não confiáveis: `execute_tool` valida JSON, nome e argumentos contra o schema e converte qualquer erro em texto devolvido ao modelo (nunca levanta).
 - `search_web` mantém o gatilho do `ADR-010`: a consulta precisa conter uma entidade do currículo, senão a tool recusa. Assim o modelo não vira um buscador genérico.

@@ -16,6 +16,9 @@ from app.tools import experience
 from app.tools.registry import Tool
 
 SEARCH_TOP_K = 3
+# Teto de tamanho dos argumentos de texto. O /mcp é público: sem isto, um
+# cliente manda um texto enorme e gera custo de embedding ou de busca web.
+MAX_QUERY_LENGTH = 300
 WEB_RESULT_PREFIX = "Informação pública da web (não faz parte do currículo):"
 WEB_BLOCKED_MESSAGE = (
     "A busca web só é permitida para entidades citadas no currículo (empresa, "
@@ -36,6 +39,11 @@ SECTIONS = [
 ]
 
 
+def _check_length(value: str, field: str) -> None:
+    if len(value) > MAX_QUERY_LENGTH:
+        raise ValueError(f"{field} excede {MAX_QUERY_LENGTH} caracteres.")
+
+
 def _mentions_known_entity(query: str, entities: list[str]) -> bool:
     normalized = query.lower()
     return any(entity.lower() in normalized for entity in entities if entity)
@@ -51,6 +59,7 @@ def build_resume_tools(
     known_entities = rag.extract_known_entities(resume)
 
     def search_resume(query: str, section: str | None = None) -> str:
+        _check_length(query, "query")
         if section is not None and section not in SECTIONS:
             raise ValueError(f"section deve ser uma de {SECTIONS}.")
         index = index_loader()
@@ -68,12 +77,14 @@ def build_resume_tools(
         return "\n".join(f"- [{chunk.section}] {chunk.text}" for chunk in relevant)
 
     def calculate_experience(skill_or_company: str) -> str:
+        _check_length(skill_or_company, "skill_or_company")
         summary = experience.calculate_experience(
             resume, skill_or_company, today=today()
         )
         return experience.format_summary(summary)
 
     def search_web(query: str) -> str:
+        _check_length(query, "query")
         if not _mentions_known_entity(query, known_entities):
             return WEB_BLOCKED_MESSAGE
         context = web_search_provider.search_web(query)
