@@ -83,7 +83,16 @@ def test_initialize_e_lista_de_tools_via_http(client: TestClient) -> None:
     assert init.status_code == 200
     assert init.json()["result"]["serverInfo"]["name"] == "curriculo-lucas-palhares"
     names = [tool["name"] for tool in listed.json()["result"]["tools"]]
-    assert names == ["search_resume", "calculate_experience", "search_web"]
+    assert names == [
+        "search_resume",
+        "calculate_experience",
+        "find_technology",
+        "get_experience",
+        "career_timeline",
+        "list_adrs",
+        "read_adr",
+        "search_web",
+    ]
 
 
 def test_tools_call_via_http(client: TestClient) -> None:

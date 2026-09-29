@@ -1,0 +1,95 @@
+{
+  "description": "Golden-set de capacidades novas (ADR-018): perguntas que o pipeline atual nao consegue responder com precisao (duracao, busca por tecnologia, cronologia, campos de uma empresa, decisoes de arquitetura do projeto). Serve para medir GANHO, separado das 24 perguntas de regressao de golden_set.json. Duracoes foram calculadas com data de referencia 2026-09 e o juiz deve aceitar uma diferenca de ate 1 mes.",
+  "questions": [
+    {
+      "id": "c01",
+      "category": "duracao",
+      "question": "Quantos anos de experiência profissional eu tenho com Python?",
+      "expected_facts": ["cerca de 3 anos e 8 meses (44 meses em set/2026; aceitar 3 anos e 8 ou 9 meses)"]
+    },
+    {
+      "id": "c02",
+      "category": "duracao",
+      "question": "Há quanto tempo eu trabalho com Java?",
+      "expected_facts": ["cerca de 5 anos e 9 meses (69 meses em set/2026; aceitar 5 anos e 9 ou 10 meses)"]
+    },
+    {
+      "id": "c03",
+      "category": "duracao",
+      "question": "Quanto tempo eu trabalhei no Itaú Unibanco?",
+      "expected_facts": ["3 anos e 2 meses (de julho de 2022 a setembro de 2025)"]
+    },
+    {
+      "id": "c04",
+      "category": "duracao",
+      "question": "Quanto tempo de experiência eu tenho com C#?",
+      "expected_facts": ["cerca de 4 anos e 7 meses (55 meses, somando WDG e WebPic; aceitar 4 anos e 6 a 8 meses)"]
+    },
+    {
+      "id": "c05",
+      "category": "tecnologia",
+      "question": "Em quais empresas eu usei Kubernetes?",
+      "expected_facts": ["Engineering Brasil", "Banco BV"]
+    },
+    {
+      "id": "c06",
+      "category": "tecnologia",
+      "question": "Em quais empresas eu usei AWS?",
+      "expected_facts": ["Engineering Brasil", "Itaú Unibanco"]
+    },
+    {
+      "id": "c07",
+      "category": "cronologia",
+      "question": "Qual foi o meu primeiro emprego?",
+      "expected_facts": ["Grupo WDG"]
+    },
+    {
+      "id": "c08",
+      "category": "cronologia",
+      "question": "Em quantas empresas diferentes eu já trabalhei?",
+      "expected_facts": ["6 empresas (Grupo WDG, WebPic, Shift, Itaú Unibanco, Banco BV, Engineering Brasil)"]
+    },
+    {
+      "id": "c09",
+      "category": "cronologia",
+      "question": "Onde eu trabalhei logo depois do Itaú Unibanco?",
+      "expected_facts": ["Banco BV"]
+    },
+    {
+      "id": "c10",
+      "category": "cronologia",
+      "question": "Em qual empresa eu trabalhei antes da Shift?",
+      "expected_facts": ["WebPic"]
+    },
+    {
+      "id": "c11",
+      "category": "empresa_campo",
+      "question": "Qual era a modalidade de trabalho no Banco BV?",
+      "expected_facts": ["Remoto"]
+    },
+    {
+      "id": "c12",
+      "category": "empresa_campo",
+      "question": "Em qual cidade fica a Shift?",
+      "expected_facts": ["São José do Rio Preto, SP"]
+    },
+    {
+      "id": "c13",
+      "category": "projeto_adr",
+      "question": "Por que este projeto não usa um banco vetorial?",
+      "expected_facts": ["o volume é de dezenas de chunks, então complexidade e custo de um banco vetorial não se justificam; a similaridade é feita em memória"]
+    },
+    {
+      "id": "c14",
+      "category": "projeto_adr",
+      "question": "O que este projeto decidiu sobre usar circuit breaker?",
+      "expected_facts": ["foi descartado por ora, porque o tráfego é baixo e o ganho seria marginal frente à complexidade"]
+    },
+    {
+      "id": "c15",
+      "category": "projeto_adr",
+      "question": "Quais decisões de arquitetura este projeto documenta?",
+      "expected_facts": ["ADRs sobre temas como fluxo de RAG, resiliência e Ports & Adapters"]
+    }
+  ]
+}
