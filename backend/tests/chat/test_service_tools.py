@@ -68,23 +68,51 @@ def test_modelo_chama_calculate_experience_e_responde_com_o_resultado() -> None:
     assert "meses" in tool_message["content"]
 
 
-def test_primeiro_turno_exige_tool_e_os_seguintes_nao() -> None:
-    """Guard rail: resposta ancorada em dado exige tool já no 1º turno."""
+def test_sem_contexto_do_retrieval_o_primeiro_turno_exige_tool() -> None:
+    """Guard rail: sem contexto confiável, a resposta precisa de uma tool."""
     provider = ScriptedToolCallingProvider(
         [
-            tool_request(("c1", "search_resume", '{"query": "x"}')),
+            tool_request(("c1", "career_timeline", "{}")),
             final_answer("ok"),
         ]
     )
 
-    _answer(provider)
+    service.answer_question(
+        "onde trabalhou antes?",
+        FakeEmbeddingProvider([0.0, 0.0]),
+        FakeChatCompletionProvider(),
+        FakeWebSearchProvider(),
+        tool_calling_provider=provider,
+    )
 
     assert [call["require_tool"] for call in provider.calls] == [True, False]
+    assert provider.calls[0]["messages"][-1]["content"] == "onde trabalhou antes?"
     assert provider.calls[0]["tools"] == [
         "search_resume",
         "calculate_experience",
+        "find_technology",
+        "get_experience",
+        "career_timeline",
+        "list_adrs",
+        "read_adr",
         "search_web",
     ]
+
+
+def test_com_contexto_do_retrieval_vai_junto_da_pergunta_e_tool_e_opcional() -> None:
+    """ADR-018: recuperar primeiro. O contexto entra no prompt e o modelo pode
+    responder direto, sem chamar tool."""
+    provider = ScriptedToolCallingProvider([final_answer("Engineering Brasil.")])
+
+    answer, source = _answer(provider)
+
+    assert answer == "Engineering Brasil."
+    assert source == "resume"
+    assert len(provider.calls) == 1
+    assert provider.calls[0]["require_tool"] is False
+    user_message = provider.calls[0]["messages"][-1]["content"]
+    assert "Contexto do currículo" in user_message
+    assert "Engineering Brasil" in user_message
 
 
 def test_search_web_bem_sucedido_marca_source_web() -> None:
