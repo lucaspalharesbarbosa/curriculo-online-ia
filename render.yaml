@@ -33,10 +33,11 @@ services:
       # de 30 req/min por IP). Desligar = trocar para "false".
       - key: MCP_HTTP_ENABLED
         value: "true"
-      # ADR-017: tool calling no /chat. Fica desligado ate o golden-set
-      # (python -m eval.run_golden_set --tools) provar que nao regride.
+      # ADR-018: tool calling no /chat, ligado apos o golden-set (regressao sem
+      # queda: 21/24 contra 19/24; capacidades novas: 14/15 contra 3/15).
+      # Desligar = trocar para "false" (o pipeline atual assume).
       - key: CHAT_TOOL_CALLING
-        value: "false"
+        value: "true"
       # Origem única — CORS aceita só o valor exato aqui (app/main.py,
       # allow_origins=[ALLOWED_ORIGIN], sem lista). Produção: URL da Vercel.
       # Smoke manual com frontend local: trocar temporariamente para
