@@ -266,7 +266,7 @@ Status de execução por fase, do início do projeto até a evolução pós-lan�
 | 10 | Observabilidade | ⏳ Draft |
 | 11 | Chat v2 + RAG Inteligente | 🚧 Em andamento (3/7 — backend Done) |
 | 12 | Área Administrativa | ⏳ Bloqueada (ADRs de auth/persistência) |
-| 17 | Tools e MCP (um núcleo, duas portas) | 🚧 Em andamento |
+| 17 | Tools e MCP (um núcleo, duas portas) | ✅ Done (tool calling medido e mantido desligado) |
 
 Detalhes de cada fase, com links para as histórias: [`docs/product/roadmap.md`](docs/product/roadmap.md).
 

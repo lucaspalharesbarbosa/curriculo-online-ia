@@ -228,7 +228,7 @@ O dicionário de palavras-chave do roteamento por seção/recência (`ADR-010`, 
 
 ## Fase 17: Tools e MCP (um núcleo, duas portas)
 
-**Status:** Implementado no backend (`ADR-017`); aguardando medição do tool calling no golden-set real antes de ligar `CHAT_TOOL_CALLING` em produção
+**Status:** Done (`ADR-017`). Tool calling medido no golden-set (71% contra 75% do pipeline) e mantido desligado; servidor MCP ativo
 **PRD:** [`PRD-015-tools-e-mcp.md`](PRD-015-tools-e-mcp.md)
 **Branch:** `feature/tools-e-mcp`
 
@@ -238,5 +238,5 @@ O `/chat` decide no código de onde vem cada resposta e o LLM só redige, o que 
 - [x] Núcleo de tools + `calculate_experience` determinístico (`app/tools/`)
 - [x] Tool calling no `/chat` com guard rails, atrás de flag (`service._answer_with_tools`)
 - [x] Servidor MCP stdio + Streamable HTTP com rate limit (`app/mcp_server/`)
-- [ ] Medir tool calling vs pipeline no golden-set real (`python -m eval.run_golden_set --tools`), pendente do autor (precisa de `LLM_API_KEY`)
+- [x] Medir tool calling vs pipeline no golden-set real (`python -m eval.run_golden_set --tools`): 17/24 contra 18/24, flag segue desligada
 

@@ -1,6 +1,6 @@
 # PRD-015: Tools e MCP (um núcleo, duas portas)
 
-**Status:** implementado no backend (`ADR-017`), aguardando medição no golden-set real
+**Status:** implementado e medido (`ADR-017`); tool calling permanece desligado por decisão baseada no golden-set
 **Épico:** Tools e MCP
 **Prioridade:** P1
 
@@ -37,7 +37,7 @@ Extrair as capacidades do assistente para **tools** somente leitura e expô-las 
 - [x] O mesmo registro de tools alimenta OpenAI e MCP, com teste contra drift de schema
 - [x] Falha do provider no tool calling cai para o pipeline, sem erro ao visitante
 - [x] Cliente MCP real (stdio) lista as tools, chama `calculate_experience` e lê os recursos
-- [ ] Tool calling não regride contra o pipeline no golden-set real (pendente: precisa de `LLM_API_KEY`)
+- [x] Tool calling medido contra o pipeline no golden-set real: 17/24 (71%) contra 18/24 (75%), sem ganho, então a flag fica desligada
 
 ## Riscos
 
