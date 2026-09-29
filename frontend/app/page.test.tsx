@@ -1,58 +1,66 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, render, screen, within } from "@testing-library/react";
+import { afterEach, describe, expect, it } from "vitest";
 
 import Home from "./page";
 
-class MockIntersectionObserver {
-  observe = vi.fn();
-  unobserve = vi.fn();
-  disconnect = vi.fn();
-}
-
 describe("Home page", () => {
-  beforeEach(() => {
-    vi.stubGlobal("IntersectionObserver", MockIntersectionObserver);
-  });
+  afterEach(cleanup);
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-    cleanup();
-  });
-
-  it("renderiza sidebar e seções principais do currículo", () => {
+  it("renderiza os landmarks e as seções principais do currículo", () => {
     render(<Home />);
-    // Timeout maior: com --coverage a árvore inteira (sidebar + seções
-    // colapsáveis) passa dos 5s padrão em máquinas mais lentas.
 
-    // Hero mobile + sidebar desktop (ambos no DOM; CSS esconde um por breakpoint)
     expect(
-      screen.getAllByRole("heading", { name: /lucas palhares barbosa/i })
-        .length,
-    ).toBeGreaterThanOrEqual(1);
+      screen.getByRole("heading", { level: 1, name: /lucas palhares/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("banner")).toBeInTheDocument();
+    expect(screen.getByRole("main")).toBeInTheDocument();
+    expect(screen.getByRole("contentinfo")).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /^perfil$/i }),
+      screen.getByRole("complementary", { name: /assistente de ia/i }),
+    ).toBeInTheDocument();
+
+    for (const name of [
+      /^perfil$/i,
+      /linha do tempo da carreira/i,
+      /matriz de habilidades/i,
+      /projetos e artigos/i,
+      /formação, certificações e reconhecimentos/i,
+    ]) {
+      expect(screen.getByRole("heading", { name })).toBeInTheDocument();
+    }
+  });
+
+  it("oferece navegação por âncoras, link de pular e download do CV", () => {
+    render(<Home />);
+
+    const nav = screen.getByRole("navigation", {
+      name: /seções do currículo/i,
+    });
+    expect(
+      within(nav).getByRole("link", { name: "Trajetória" }),
+    ).toHaveAttribute("href", "#trajetoria");
+    expect(
+      screen.getByRole("link", { name: /pular para o conteúdo/i }),
+    ).toHaveAttribute("href", "#conteudo");
+    expect(
+      screen.getByRole("link", { name: /baixar cv/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("mostra o chat com as perguntas iniciais que acionam as tools", () => {
+    render(<Home />);
+
+    const chat = screen.getByRole("complementary", {
+      name: /assistente de ia/i,
+    });
+    expect(
+      within(chat).getByRole("button", { name: /quantos anos de python/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /^experiência$/i }),
+      within(chat).getByRole("button", { name: /antes do itaú/i }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("heading", { name: /^educação$/i }),
+      within(chat).getByRole("button", { name: /banco vetorial/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /certificações/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /reconhecimentos/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("heading", { name: /^destaques$/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("navigation", { name: /seções do currículo/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getAllByRole("link", { name: /baixar cv/i }).length,
-    ).toBeGreaterThanOrEqual(1);
-    expect(screen.queryByText(/nguyen tran gia si/i)).not.toBeInTheDocument();
-  }, 15_000);
+  });
 });

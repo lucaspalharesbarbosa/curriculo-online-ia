@@ -59,6 +59,8 @@ O repositório é, ao mesmo tempo, o produto e o método por trás dele:
 
 **💬 Assistente de IA (RAG)** — endpoint `/chat` no FastAPI: os dados do currículo são divididos em chunks, transformados em embeddings e comparados por similaridade a cada pergunta; a resposta é gerada com esse contexto. Perguntas fora do escopo do currículo não geram erro — o assistente responde com um fallback textual.
 
+**🧭 Chat que mostra de onde veio o dado**: a home tem um chat lateral (tela cheia no mobile) e cada resposta traz chips das ferramentas usadas e cards com o dado exato (experiência, tecnologia, empresa, linha do tempo), além do selo de fonte. Ver [ADR-019](docs/architecture/ADR-019-redesign-command-center-chat-com-tools.md).
+
 **🔌 Tools + MCP**: as capacidades do assistente (buscar no currículo, calcular tempo de experiência com precisão, buscar detalhes públicos na web) são um núcleo de 8 tools exatas (duração, busca por tecnologia, dados de empresa, linha do tempo da carreira e leitura dos ADRs do próprio projeto) com duas portas: *tool calling* no chat do site e um **servidor MCP** que qualquer agente compatível (Claude Desktop, Cursor) pode consultar. Medido em golden-set: capacidades novas 14/15 contra 3/15 do pipeline, sem regressão (21/24 contra 19/24). Ver [ADR-017](docs/architecture/ADR-017-tools-e-mcp-um-nucleo-duas-portas.md), [ADR-018](docs/architecture/ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md), [C4-002](docs/architecture/C4-002-componentes-backend-tools-mcp.md) e [`backend/README.md`](backend/README.md#tools-e-mcp).
 
 **📱 Mobile-first** — layout responsivo, auditado em mobile/tablet/desktop.
@@ -267,6 +269,7 @@ Status de execução por fase, do início do projeto até a evolução pós-lan�
 | 11 | Chat v2 + RAG Inteligente | 🚧 Em andamento (3/7 — backend Done) |
 | 12 | Área Administrativa | ⏳ Bloqueada (ADRs de auth/persistência) |
 | 17 | Tools e MCP (um núcleo, duas portas) | ✅ Done (tool calling ligado após medição: 14/15 contra 3/15) |
+| 18 | Redesign command center, chat com chips e cards das tools | ✅ Done |
 
 Detalhes de cada fase, com links para as histórias: [`docs/product/roadmap.md`](docs/product/roadmap.md).
 
@@ -281,7 +284,7 @@ Detalhes de cada fase, com links para as histórias: [`docs/product/roadmap.md`]
 - PRDs (11 épicos, `PRD-001` a `PRD-011`) e backlog por fase: índice em [`docs/product/README.md`](docs/product/README.md)
 
 **Arquitetura**
-- ADRs (`ADR-001` a `ADR-018`) e diagramas C4 — índice em [`docs/architecture/README.md`](docs/architecture/README.md)
+- ADRs (`ADR-001` a `ADR-019`) e diagramas C4 — índice em [`docs/architecture/README.md`](docs/architecture/README.md)
 - Destaques: [ADR-003 — Fluxo de RAG](docs/architecture/ADR-003-fluxo-rag.md) · [ADR-010 — RAG v2 (precisão + busca web)](docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md) · [ADR-018: Tools estruturadas, recuperar primeiro e busca híbrida](docs/architecture/ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md)
 
 <br/>

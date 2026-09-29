@@ -244,3 +244,70 @@ def test_orcamento_de_tempo_encerra_o_loop_e_forca_o_turno_final(
     assert answer == "resposta forçada"
     # 1 turno com tools + 1 turno final sem tools (o 2º turno com tools foi cortado).
     assert [call["tools"] == [] for call in provider.calls] == [False, True]
+
+
+def test_trace_registra_as_tools_executadas_com_argumentos_e_resultado() -> None:
+    """ADR-019: o chamador recebe o que foi executado, para chips e cards."""
+    provider = ScriptedToolCallingProvider(
+        [
+            tool_request(
+                ("c1", "calculate_experience", '{"skill_or_company": "Python"}')
+            ),
+            final_answer("1 ano e 6 meses."),
+        ]
+    )
+    trace: list[dict] = []
+
+    service.answer_question(
+        "quantos anos de Python?",
+        FakeEmbeddingProvider([1.0, 0.0]),
+        FakeChatCompletionProvider(),
+        FakeWebSearchProvider(),
+        tool_calling_provider=provider,
+        tool_trace=trace,
+    )
+
+    assert [entry["name"] for entry in trace] == ["calculate_experience"]
+    assert trace[0]["arguments"] == {"skill_or_company": "Python"}
+    assert "meses" in trace[0]["result"]
+
+
+def test_trace_corta_resultado_e_reduz_read_adr() -> None:
+    """O resultado é limitado e o texto do ADR vira só um sinal curto."""
+    long_result = "x" * 5000
+
+    entry = service._trace_entry("career_timeline", "{}", long_result)
+    adr = service._trace_entry("read_adr", '{"number": 3}', long_result)
+
+    assert len(entry["result"]) == service.TRACE_RESULT_MAX_CHARS
+    assert len(adr["result"]) == service.TRACE_READ_ADR_MAX_CHARS
+    assert adr["arguments"] == {"number": 3}
+
+
+def test_trace_com_argumentos_invalidos_nao_quebra() -> None:
+    """Argumentos que não são um objeto JSON viram um dicionário vazio."""
+    assert service._trace_entry("x", "{nao json", "r")["arguments"] == {}
+    assert service._trace_entry("x", "[1, 2]", "r")["arguments"] == {}
+
+
+def test_trace_e_limpo_quando_o_tool_calling_cai_para_o_pipeline() -> None:
+    """Se o loop falhar e o pipeline assumir, nenhuma tool é anunciada."""
+    request = httpx.Request("POST", "https://api.openai.com/v1/chat/completions")
+    provider = ScriptedToolCallingProvider(
+        [
+            tool_request(("c1", "career_timeline", "{}")),
+            APIConnectionError(request=request),
+        ]
+    )
+    trace: list[dict] = []
+
+    service.answer_question(
+        "onde trabalhei antes?",
+        FakeEmbeddingProvider([0.0, 0.0]),
+        FakeChatCompletionProvider(answer="pipeline"),
+        FakeWebSearchProvider(),
+        tool_calling_provider=provider,
+        tool_trace=trace,
+    )
+
+    assert trace == []

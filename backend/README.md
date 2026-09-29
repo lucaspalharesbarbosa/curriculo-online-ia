@@ -109,7 +109,7 @@ Com o servidor no ar (`uvicorn app.main:app --reload`):
 | JSON OpenAPI | http://127.0.0.1:8000/openapi.json |
 
 | `GET /health` | `{"status": "ok"}` |
-| `POST /chat` | Request `{"question": string}` → Response `{"answer": string}`. Erros: `422` (pergunta ausente/vazia), `429` (rate limit excedido), `500` (falha ao gerar — mensagem genérica, sem detalhe interno). Pergunta fora do escopo do currículo não é erro — retorna `200` com fallback textual. |
+| `POST /chat` | Request `{"question": string}` → Response `{"answer": string, "source": "resume"\|"web", "tools": [{"name", "arguments", "result"}]}` (`tools` é aditivo e fica vazio quando o pipeline determinístico respondeu, `ADR-019`). Erros: `422` (pergunta ausente/vazia), `429` (rate limit excedido), `500` (falha ao gerar — mensagem genérica, sem detalhe interno). Pergunta fora do escopo do currículo não é erro — retorna `200` com fallback textual. |
 
 O model `Resume` (Pydantic) valida o `resume.json` nos testes e ainda não aparece no OpenAPI (não há endpoint que o use como request/response).
 

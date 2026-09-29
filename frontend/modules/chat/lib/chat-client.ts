@@ -6,10 +6,23 @@
 
 export type ChatSource = "resume" | "web";
 
+/**
+ * ADR-018: tool que o modelo chamou para montar a resposta. `name` fica como
+ * string (não união fechada) para tolerar tool nova no backend sem quebrar.
+ */
+export type ChatToolCall = {
+  name: string;
+  arguments: Record<string, unknown>;
+  /** Texto que a tool devolveu, já cortado pelo backend. */
+  result: string;
+};
+
 export type ChatResponse = {
   answer: string;
   /** ADR-010/US-11-07: "web" quando a resposta usou busca externa, não o currículo. */
   source?: ChatSource;
+  /** ADR-018: aditivo. Ausente ou vazio quando o pipeline determinístico respondeu. */
+  tools?: ChatToolCall[];
 };
 
 export type ChatFeedbackRating = "up" | "down";

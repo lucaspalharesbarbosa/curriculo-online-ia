@@ -7,6 +7,7 @@ mapeamento de exceção→`HTTPException`, `US-14-03`). Depende só dos ports
 
 from __future__ import annotations
 
+import json
 import logging
 import time
 from dataclasses import dataclass
@@ -51,6 +52,10 @@ MAX_TOOL_CALLS = 3
 # turnos de 20 s com 1 retry (ADR-004) poderiam prendê-lo por minutos. Passado o
 # orçamento, o loop encerra e um turno final sem tools força a resposta.
 TOOL_LOOP_BUDGET_SECONDS = 40.0
+# ADR-019: o /chat devolve as tools usadas para o frontend mostrar chips e
+# cards. O resultado é cortado: a maioria cabe folgada, read_adr é só um sinal.
+TRACE_RESULT_MAX_CHARS = 1500
+TRACE_READ_ADR_MAX_CHARS = 300
 TOOL_LIMIT_MESSAGE = "Limite de chamadas de ferramenta atingido nesta pergunta."
 
 
@@ -360,12 +365,27 @@ def _generate_web_answer(
     return answer or FALLBACK_ANSWER
 
 
+def _trace_entry(name: str, raw_arguments: str, result: str) -> dict[str, Any]:
+    """Registro público de uma execução de tool (ADR-019)."""
+    try:
+        arguments = json.loads(raw_arguments) if raw_arguments.strip() else {}
+    except json.JSONDecodeError:
+        arguments = {}
+    limit = TRACE_READ_ADR_MAX_CHARS if name == "read_adr" else TRACE_RESULT_MAX_CHARS
+    return {
+        "name": name,
+        "arguments": arguments if isinstance(arguments, dict) else {},
+        "result": result[:limit],
+    }
+
+
 def _answer_with_tools(
     question: str,
     tools: list[Tool],
     tool_calling_provider: ToolCallingProvider,
     history: list[HistoryTurn],
     context_chunks: list[rag.Chunk] | None = None,
+    trace: list[dict[str, Any]] | None = None,
 ) -> tuple[str, Literal["resume", "web"]]:
     """Loop de tool calling (ADR-017): o modelo escolhe as ferramentas, o código
     executa e devolve o resultado, até o modelo responder em texto.
@@ -412,6 +432,8 @@ def _answer_with_tools(
             else:
                 executed_calls += 1
                 result = execute_tool(tools, call.name, call.arguments)
+                if trace is not None:
+                    trace.append(_trace_entry(call.name, call.arguments, result))
                 used_web = used_web or (
                     call.name == "search_web" and result.startswith(WEB_RESULT_PREFIX)
                 )
@@ -434,6 +456,7 @@ def answer_question(
     enable_self_critique: bool = True,
     tool_calling_provider: ToolCallingProvider | None = None,
     enable_hybrid: bool | None = None,
+    tool_trace: list[dict[str, Any]] | None = None,
 ) -> tuple[str, Literal["resume", "web"]]:
     """Orquestra busca local → auto-crítica → fallback web → geração (ADR-010,
     ADR-014, ADR-016).
@@ -489,9 +512,12 @@ def answer_question(
                 tool_calling_provider,
                 truncated_history,
                 context_chunks,
+                tool_trace,
             )
         except OpenAIError:
             logger.warning("Tool calling falhou; usando o pipeline determinístico.")
+            if tool_trace is not None:
+                tool_trace.clear()
 
     index = get_index(embedding_provider)
     results, forced_insufficient = _search_with_self_critique(

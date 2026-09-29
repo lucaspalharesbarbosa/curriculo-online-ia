@@ -1,65 +1,60 @@
-import { Certifications } from "@/modules/resume/components/Certifications";
-import { EducationSection } from "@/modules/resume/components/EducationSection";
-import { ExperienceSection } from "@/modules/resume/components/ExperienceSection";
-import { MobileBottomNav } from "@/modules/resume/components/MobileBottomNav";
-import { MobileHero } from "@/modules/resume/components/MobileHero";
-import { ProjectsSection } from "@/modules/resume/components/ProjectsSection";
-import { Recognitions } from "@/modules/resume/components/Recognitions";
-import { ResumeSidebar } from "@/modules/resume/components/ResumeSidebar";
-import { SummarySection } from "@/modules/resume/components/SummarySection";
 import { resume } from "@/content/resume";
+import { currentMonthIndex } from "@/lib/period";
+import { AskAssistantButton } from "@/modules/chat/components/AskAssistantButton";
+import { ChatAside } from "@/modules/chat/components/ChatAside";
+import { AboutSection } from "@/modules/resume/components/AboutSection";
+import { CareerTimeline } from "@/modules/resume/components/CareerTimeline";
+import { CredentialsSection } from "@/modules/resume/components/CredentialsSection";
+import { Hero } from "@/modules/resume/components/Hero";
+import { ProjectsSection } from "@/modules/resume/components/ProjectsSection";
+import { SiteHeader } from "@/modules/resume/components/SiteHeader";
+import { SkillsSection } from "@/modules/resume/components/SkillsSection";
+import { careerStats, ganttAxis } from "@/modules/resume/lib/career";
 
 export default function Home() {
+  // Página estática: o mês de referência ("atual") é o do build.
+  const refIndex = currentMonthIndex();
+  const stats = careerStats(resume, refIndex);
+  const axis = ganttAxis(resume, refIndex);
+  const current = resume.experiences[0];
+
   return (
-    <div className="gradient-bg relative min-h-[100dvh] overflow-x-hidden">
-      {/* Crédito visual: layout adaptado de giasinguyen/personal-resume (MIT) */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden max-lg:hidden">
-        <div className="orb-drift absolute top-1/4 -left-20 h-96 w-96 rounded-full bg-accent-500/10 blur-3xl" />
-        <div className="animate-pulse-slow absolute top-3/4 -right-20 h-80 w-80 rounded-full bg-accent-600/10 blur-3xl" />
-        <div className="orb-drift-delayed absolute bottom-1/4 left-1/3 h-72 w-72 rounded-full bg-accent-400/5 blur-3xl" />
-        <div
-          className="absolute inset-0 opacity-[0.015]"
-          style={{
-            backgroundImage: `linear-gradient(rgba(56,189,248,0.12) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(56,189,248,0.12) 1px, transparent 1px)`,
-            backgroundSize: "50px 50px",
-          }}
-        />
-      </div>
+    <div className="min-h-[100dvh] bg-background">
+      <a
+        href="#conteudo"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-accent-foreground"
+      >
+        Pular para o conteúdo
+      </a>
+      <SiteHeader contact={resume.contact} />
 
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] max-w-[1800px] flex-col lg:flex-row">
-        <MobileHero
-          hero={resume.hero}
-          contact={resume.contact}
-          skills={resume.skills}
-        />
-
-        <ResumeSidebar
-          hero={resume.hero}
-          contact={resume.contact}
-          skills={resume.skills}
-        />
-
-        <main className="flex-1 p-3 pb-[calc(5.25rem+env(safe-area-inset-bottom,0px))] sm:p-4 lg:p-8 lg:pb-8">
-          <div className="space-y-4 sm:space-y-6">
-            <SummarySection
-              name={resume.hero.name}
-              title={resume.hero.title}
-              about={resume.about}
-            />
-            <ExperienceSection experiences={resume.experiences} />
-            <EducationSection items={resume.education} />
-            <Certifications items={resume.certifications} />
-            <Recognitions items={resume.recognitions} />
-            <ProjectsSection
-              projects={resume.projects}
-              articles={resume.articles}
-            />
-          </div>
+      <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_26rem] 2xl:grid-cols-[minmax(0,1fr)_30rem]">
+        <main id="conteudo" className="min-w-0 pb-24 lg:pb-0">
+          <Hero
+            hero={resume.hero}
+            contact={resume.contact}
+            stats={stats}
+            current={{ company: current.company, role: current.role }}
+            askAction={<AskAssistantButton />}
+          />
+          <AboutSection about={resume.about} />
+          <CareerTimeline experiences={resume.experiences} axis={axis} />
+          <SkillsSection skills={resume.skills} />
+          <ProjectsSection
+            projects={resume.projects}
+            articles={resume.articles}
+          />
+          <CredentialsSection
+            education={resume.education}
+            certifications={resume.certifications}
+            recognitions={resume.recognitions}
+          />
+          <footer className="border-t border-border-subtle px-4 py-8 text-xs text-muted sm:px-8">
+            {resume.hero.name} · {resume.hero.location}
+          </footer>
         </main>
+        <ChatAside />
       </div>
-
-      <MobileBottomNav />
     </div>
   );
 }
