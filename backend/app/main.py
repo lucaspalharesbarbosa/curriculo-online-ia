@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -19,7 +20,34 @@ ALLOWED_ORIGIN = os.environ.get("ALLOWED_ORIGIN", "http://localhost:3000")
 ENVIRONMENT = os.environ.get("ENVIRONMENT", "development")
 IS_PRODUCTION = ENVIRONMENT == "production"
 
+# ADR-017: porta HTTP do servidor MCP em /mcp, opt-in por env. Import tardio
+# para que o SDK `mcp` só carregue quando a feature está ligada.
+MCP_HTTP_ENABLED = os.environ.get("MCP_HTTP_ENABLED", "").lower() in {
+    "1",
+    "true",
+    "yes",
+}
+mcp_http_app = None
+mcp_server = None
+if MCP_HTTP_ENABLED:
+    from app.mcp_server.http import create_mcp_http
+
+    mcp_http_app, mcp_server = create_mcp_http()
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    # O session manager do MCP precisa rodar durante a vida do app; apps
+    # montados não têm o lifespan executado pelo FastAPI.
+    if mcp_server is None:
+        yield
+        return
+    async with mcp_server.session_manager.run():
+        yield
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title="Curriculo Online API",
     docs_url=None if IS_PRODUCTION else "/docs",
     redoc_url=None if IS_PRODUCTION else "/redoc",
@@ -63,3 +91,9 @@ async def add_security_headers(request: Request, call_next):
 @app.get("/health")
 def health_check() -> dict[str, str]:
     return {"status": "ok"}
+
+
+# Por último: o mount em "/" só recebe o que nenhuma rota acima atendeu (o app
+# do MCP responde em /mcp).
+if mcp_http_app is not None:
+    app.mount("/", mcp_http_app)
