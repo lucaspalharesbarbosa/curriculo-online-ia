@@ -86,7 +86,7 @@ Local (stdio), por exemplo no `claude_desktop_config.json` (ajuste o caminho):
 
 Remoto (HTTP): com `MCP_HTTP_ENABLED=true`, aponte um cliente MCP para `https://<backend>/mcp`. Recursos de leitura: `resume://experiencias` e `resume://skills`.
 
-Comparar tool calling com o pipeline no golden-set real (usa a API da OpenAI, custa centavos):
+Tool calling foi medido contra o pipeline no golden-set real (17/24 contra 18/24, sem ganho), por isso a flag fica desligada. Para repetir a medição (usa a API da OpenAI, custa centavos):
 
 ```bash
 cd backend

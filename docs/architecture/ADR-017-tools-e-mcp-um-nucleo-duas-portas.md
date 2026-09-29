@@ -67,7 +67,25 @@ Uma única fonte de verdade para o schema: o JSON Schema do registro alimenta o 
 - (-) Nova dependência `mcp` (e `pydantic` sobe de `2.10.4` para `2.11.10`, exigido pelo SDK). Mais superfície de dependência no free tier.
 - (-) Tool calling custa uma chamada a mais ao LLM por pergunta. Por isso é opt-in.
 - (-) `/mcp` é uma superfície pública nova. Mitigada por rate limit, somente leitura e ausência de segredos nas respostas, mas vale monitorar o custo de embeddings.
-- **Pendente:** medir tool calling contra o pipeline no golden-set real. Comando: `cd backend && python -m eval.run_golden_set --tools` (precisa de `LLM_API_KEY`). A decisão de ligar `CHAT_TOOL_CALLING` em produção depende desse número.
+- Tool calling foi medido contra o pipeline no golden-set real (ver abaixo): sem ganho de acerto, por isso segue desligado.
+
+## Resultado real da medição (golden-set, 2026-09-29)
+
+`python -m eval.run_golden_set --tools`, 24 perguntas, `gpt-4o-mini`, julgamento por LLM-as-judge.
+
+| Modo | Acertos |
+|---|---|
+| Pipeline determinístico atual (`ADR-016`) | **18/24 (75%)** |
+| Tool calling (`ADR-017`) | **17/24 (71%)** |
+
+Quatro veredictos mudaram, dois para cada lado:
+
+- **Tool calling acertou e o pipeline errou:** q14 ("onde trabalhava antes do Itaú Unibanco?") e q22 ("onde fica o Itaú Unibanco em que trabalhei?"). São perguntas de duas etapas, que o modelo resolve encadeando tools; o pipeline se abstém.
+- **Pipeline acertou e tool calling errou:** q06 (listou "Java 21" entre as tecnologias do Banco BV, que não consta no currículo), q07 e q18 (disse "não encontrei" para a cidade da WebPic e para Kubernetes, que existem no currículo, provavelmente por buscar com termos ruins).
+
+Leitura: com 24 perguntas, um acerto de diferença está dentro do ruído. A conclusão defensável é que o tool calling é **equivalente em acerto, com mais chamadas ao LLM por pergunta**, sem ganho que justifique ligá-lo em produção. Ele ajuda em perguntas encadeadas e piora em recuperação simples, onde o modelo escolhe mal a consulta ou inventa detalhe.
+
+**Decisão:** `CHAT_TOOL_CALLING` permanece **desligada** (padrão). O caminho fica no código, testado, como opção. Reabrir quando houver um golden-set maior ou uma versão do loop que force a busca inicial no currículo e deixe ao modelo só o encadeamento. O `calculate_experience` e o servidor MCP não dependem dessa flag e seguem ativos.
 
 ## Referências
 
