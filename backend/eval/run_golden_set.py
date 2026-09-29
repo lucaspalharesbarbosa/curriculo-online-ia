@@ -6,7 +6,8 @@ pytest/CI (por isso vive fora de `app/` e de `tests/`).
 
 Uso:
     cd backend
-    python -m eval.run_golden_set
+    python -m eval.run_golden_set          # antes/depois da auto-crítica (ADR-016)
+    python -m eval.run_golden_set --tools  # pipeline atual vs tool calling (ADR-017)
 
 Requer `LLM_API_KEY` no ambiente (mesma variável usada pelo `/chat`, ver
 `.env.example`). `WEB_SEARCH_API_KEY` é opcional — sem ela, o fallback de busca
@@ -31,11 +32,13 @@ from app.chat import rag, service  # noqa: E402
 from app.chat.adapters.openai_adapter import (  # noqa: E402
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
+    OpenAIToolCallingProvider,
 )
 from app.chat.adapters.tavily_adapter import TavilyWebSearchProvider  # noqa: E402
 from app.chat.ports import (  # noqa: E402
     ChatCompletionProvider,
     EmbeddingProvider,
+    ToolCallingProvider,
     WebSearchProvider,
 )
 
@@ -104,6 +107,7 @@ def _run_mode(
     embedding_provider: EmbeddingProvider,
     chat_completion_provider: ChatCompletionProvider,
     web_search_provider: WebSearchProvider,
+    tool_calling_provider: ToolCallingProvider | None = None,
 ) -> list[CaseResult]:
     results: list[CaseResult] = []
     for item in questions:
@@ -113,6 +117,7 @@ def _run_mode(
             chat_completion_provider,
             web_search_provider,
             enable_self_critique=enable_self_critique,
+            tool_calling_provider=tool_calling_provider,
         )
         verdict, reason = _judge(
             item["question"],
@@ -181,6 +186,7 @@ def main() -> None:
             "(nunca rode este script em CI/pytest, é medição sob demanda)."
         )
 
+    compare_tools = "--tools" in sys.argv[1:]
     questions = _load_golden_set()
     embedding_provider = OpenAIEmbeddingProvider()
     chat_completion_provider = OpenAIChatCompletionProvider()
@@ -191,23 +197,47 @@ def main() -> None:
     index = rag.load_or_build_index(embedding_provider, resume=resume)
     service._index_cache = index
     service._entities_cache = rag.extract_known_entities(resume)
+    service._resume_cache = resume
 
-    print(f"Golden-set: {len(questions)} perguntas — modo ANTES (sem auto-crítica)...")
-    before = _run_mode(
-        questions,
-        False,
-        embedding_provider,
-        chat_completion_provider,
-        web_search_provider,
-    )
-    print("Golden-set — modo DEPOIS (com auto-crítica, ADR-016)...")
-    after = _run_mode(
-        questions,
-        True,
-        embedding_provider,
-        chat_completion_provider,
-        web_search_provider,
-    )
+    if compare_tools:
+        # ADR-017: ANTES = pipeline determinístico atual (com auto-crítica);
+        # DEPOIS = o modelo decide as fontes por tool calling.
+        print(f"Golden-set: {len(questions)} perguntas, ANTES (pipeline atual)...")
+        before = _run_mode(
+            questions,
+            True,
+            embedding_provider,
+            chat_completion_provider,
+            web_search_provider,
+        )
+        print("Golden-set: DEPOIS (tool calling, ADR-017)...")
+        after = _run_mode(
+            questions,
+            True,
+            embedding_provider,
+            chat_completion_provider,
+            web_search_provider,
+            tool_calling_provider=OpenAIToolCallingProvider(),
+        )
+    else:
+        print(
+            f"Golden-set: {len(questions)} perguntas — modo ANTES (sem auto-crítica)..."
+        )
+        before = _run_mode(
+            questions,
+            False,
+            embedding_provider,
+            chat_completion_provider,
+            web_search_provider,
+        )
+        print("Golden-set — modo DEPOIS (com auto-crítica, ADR-016)...")
+        after = _run_mode(
+            questions,
+            True,
+            embedding_provider,
+            chat_completion_provider,
+            web_search_provider,
+        )
 
     report_path = _write_report(before, after)
     before_correct = sum(1 for r in before if r.verdict == "CORRETO")

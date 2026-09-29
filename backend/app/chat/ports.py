@@ -9,7 +9,10 @@ mypy/pyright, sem necessidade de herança).
 
 from __future__ import annotations
 
-from typing import Protocol
+from dataclasses import dataclass
+from typing import Any, Protocol
+
+from app.tools.registry import Tool
 
 
 class EmbeddingProvider(Protocol):
@@ -39,3 +42,41 @@ class WebSearchProvider(Protocol):
     """
 
     def search_web(self, query: str) -> str | None: ...
+
+
+@dataclass(frozen=True)
+class ToolCall:
+    """Pedido do modelo para executar uma tool (`ADR-017`)."""
+
+    id: str
+    name: str
+    arguments: str  # JSON bruto, não confiável: validado em `execute_tool`
+
+
+@dataclass(frozen=True)
+class ToolCompletion:
+    """Resposta de um turno com tools: texto final OU pedidos de tool.
+
+    `message` é a mensagem do assistente já no formato de chat (com
+    `tool_calls`), pronta para voltar ao histórico do próximo turno.
+    """
+
+    content: str
+    tool_calls: list[ToolCall]
+    message: dict[str, Any]
+
+
+class ToolCallingProvider(Protocol):
+    """Gera um turno de chat oferecendo `tools` ao modelo (function calling).
+
+    `require_tool=True` obriga o modelo a pedir ao menos uma tool neste turno
+    (ancora a resposta em dado real). `tools=[]` desliga o function calling.
+    """
+
+    def generate_with_tools(
+        self,
+        model: str,
+        messages: list[dict[str, Any]],
+        tools: list[Tool],
+        require_tool: bool = False,
+    ) -> ToolCompletion: ...

@@ -18,9 +18,15 @@ from app.chat import service
 from app.chat.adapters.openai_adapter import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
+    OpenAIToolCallingProvider,
 )
 from app.chat.adapters.tavily_adapter import TavilyWebSearchProvider
-from app.chat.ports import ChatCompletionProvider, EmbeddingProvider, WebSearchProvider
+from app.chat.ports import (
+    ChatCompletionProvider,
+    EmbeddingProvider,
+    ToolCallingProvider,
+    WebSearchProvider,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -50,6 +56,14 @@ def get_chat_completion_provider() -> ChatCompletionProvider:
 
 def get_web_search_provider() -> WebSearchProvider:
     return TavilyWebSearchProvider()
+
+
+def get_tool_calling_provider() -> ToolCallingProvider | None:
+    """ADR-017: tool calling atrás de flag (`CHAT_TOOL_CALLING=true`). Desligada
+    (padrão), o `/chat` segue o pipeline determinístico de sempre."""
+    if os.environ.get("CHAT_TOOL_CALLING", "").lower() in {"1", "true", "yes"}:
+        return OpenAIToolCallingProvider()
+    return None
 
 
 class HistoryMessage(BaseModel):
@@ -125,6 +139,9 @@ def chat(
         get_chat_completion_provider
     ),
     web_search_provider: WebSearchProvider = Depends(get_web_search_provider),
+    tool_calling_provider: ToolCallingProvider | None = Depends(
+        get_tool_calling_provider
+    ),
 ) -> ChatResponse:
     client_id = http_request.client.host if http_request.client else "unknown"
     if _is_rate_limited(client_id):
@@ -150,6 +167,7 @@ def chat(
             chat_completion_provider,
             web_search_provider,
             history=history,
+            tool_calling_provider=tool_calling_provider,
         )
     except OpenAIError as exc:
         raise _http_error_from_openai(exc) from exc
