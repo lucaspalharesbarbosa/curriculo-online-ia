@@ -10,6 +10,7 @@ import {
   type ChatClient,
   type ChatFeedbackRating,
   type ChatHistoryMessage,
+  type ChatToolCall,
 } from "@/modules/chat/lib/chat-client";
 import { httpChatClient } from "@/modules/chat/lib/http-chat-client";
 
@@ -22,6 +23,8 @@ export type ResumeChatMessage = {
   status: "loading" | "done" | "error";
   /** ADR-010/US-11-07: "web" quando a resposta usou busca externa, não o currículo. */
   source?: "resume" | "web";
+  /** ADR-018: tools usadas na resposta; vazio quando o pipeline determinístico respondeu. */
+  tools?: ChatToolCall[];
   /** US-11-04: voto do visitante nesta resposta, `null`/ausente até ele avaliar. */
   feedback?: ResumeChatFeedback | null;
 };
@@ -97,6 +100,7 @@ export function useResumeChat(chatClient: ChatClient = httpChatClient) {
                   answer: data.answer,
                   status: "done",
                   source: data.source,
+                  tools: data.tools ?? [],
                 }
               : message,
           ),
