@@ -1,6 +1,6 @@
 import { MotionConfig } from "framer-motion";
 import type { Metadata, Viewport } from "next";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, JetBrains_Mono, Outfit } from "next/font/google";
 
 import { resume } from "@/content/resume";
 
@@ -13,6 +13,11 @@ const inter = Inter({
 
 const outfit = Outfit({
   variable: "--font-outfit",
+  subsets: ["latin"],
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jbm",
   subsets: ["latin"],
 });
 
@@ -62,7 +67,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${inter.variable} ${outfit.variable} h-full antialiased`}
+      className={`${inter.variable} ${outfit.variable} ${jetbrainsMono.variable} h-full antialiased`}
     >
       <body className="min-h-full font-sans">
         {/* reducedMotion="user" — US-07-06: whileHover/whileInView do
