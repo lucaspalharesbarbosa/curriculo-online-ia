@@ -81,8 +81,10 @@ def test_chat_usa_tool_calling_quando_o_provider_esta_ligado() -> None:
     response = client.post("/chat", json={"question": "Quantos anos de Python?"})
 
     assert response.status_code == 200
-    assert response.json() == {
-        "answer": "1 ano e 6 meses de Python.",
-        "source": "resume",
-    }
+    body = response.json()
+    assert body["answer"] == "1 ano e 6 meses de Python."
+    assert body["source"] == "resume"
+    assert [tool["name"] for tool in body["tools"]] == ["calculate_experience"]
+    assert body["tools"][0]["arguments"] == {"skill_or_company": "Python"}
+    assert "meses" in body["tools"][0]["result"]
     assert len(provider.calls) == 2

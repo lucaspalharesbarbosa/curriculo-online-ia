@@ -142,6 +142,7 @@ def test_chat_returns_response_with_relevant_context(stub_index: None) -> None:
     assert response.json() == {
         "answer": "Você trabalha na Engineering Brasil.",
         "source": "resume",
+        "tools": [],
     }
     assert chat_completion_provider.call_count == 1
 
@@ -160,7 +161,11 @@ def test_chat_returns_fallback_for_out_of_scope_question(
     response = client.post("/chat", json={"question": "Qual a previsão do tempo?"})
 
     assert response.status_code == 200
-    assert response.json() == {"answer": service.FALLBACK_ANSWER, "source": "resume"}
+    assert response.json() == {
+        "answer": service.FALLBACK_ANSWER,
+        "source": "resume",
+        "tools": [],
+    }
     assert chat_completion_provider.call_count == 0
 
 
@@ -394,6 +399,7 @@ def test_chat_without_keyword_keeps_current_similarity_behavior(
     assert response.json() == {
         "answer": "Sim, já trabalhei com Python.",
         "source": "resume",
+        "tools": [],
     }
 
 
@@ -421,6 +427,7 @@ def test_chat_triggers_web_search_when_similarity_low_and_entity_known(
     assert response.json() == {
         "answer": "A Engineering Brasil atua com IA.",
         "source": "web",
+        "tools": [],
     }
     sent_messages = chat_completion_provider.last_messages
     assert sent_messages[0]["content"] == service.WEB_SYSTEM_PROMPT
@@ -443,7 +450,11 @@ def test_chat_graceful_fallback_when_web_search_fails(
     )
 
     assert response.status_code == 200
-    assert response.json() == {"answer": service.FALLBACK_ANSWER, "source": "resume"}
+    assert response.json() == {
+        "answer": service.FALLBACK_ANSWER,
+        "source": "resume",
+        "tools": [],
+    }
     assert chat_completion_provider.call_count == 0
 
 
@@ -461,7 +472,11 @@ def test_chat_does_not_trigger_web_search_without_known_entity(
     response = client.post("/chat", json={"question": "Qual a previsão do tempo?"})
 
     assert response.status_code == 200
-    assert response.json() == {"answer": service.FALLBACK_ANSWER, "source": "resume"}
+    assert response.json() == {
+        "answer": service.FALLBACK_ANSWER,
+        "source": "resume",
+        "tools": [],
+    }
 
 
 def test_chat_returns_503_when_generation_fails_after_web_search(
@@ -595,6 +610,7 @@ def test_chat_resolves_anaphora_reference_using_history(
     assert response.json() == {
         "answer": "A matriz fica em São Paulo, SP.",
         "source": "resume",
+        "tools": [],
     }
 
 
