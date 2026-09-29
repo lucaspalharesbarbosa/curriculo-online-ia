@@ -228,9 +228,9 @@ O dicionário de palavras-chave do roteamento por seção/recência (`ADR-010`, 
 
 ## Fase 17: Tools e MCP (um núcleo, duas portas)
 
-**Status:** Done (`ADR-017`). Tool calling medido no golden-set (71% contra 75% do pipeline) e mantido desligado; servidor MCP ativo
-**PRD:** [`PRD-015-tools-e-mcp.md`](PRD-015-tools-e-mcp.md)
-**Branch:** `feature/tools-e-mcp`
+**Status:** Done (`ADR-017` e `ADR-018`). Primeira medição: tool calling genérico sem ganho (71% contra 75%). Depois das tools estruturadas: regressão 21/24 contra 19/24 e capacidades novas 14/15 contra 3/15, então o tool calling foi ligado
+**PRD:** [`PRD-015-tools-e-mcp.md`](PRD-015-tools-e-mcp.md), [`PRD-016-tools-estruturadas-e-busca-hibrida.md`](PRD-016-tools-estruturadas-e-busca-hibrida.md)
+**Branch:** `feature/tools-e-mcp`, `feature/tools-estruturadas-hibrido`
 
 O `/chat` decide no código de onde vem cada resposta e o LLM só redige, o que deixa a aritmética de datas ("quantos anos de Python?") a cargo de estimativa do modelo, e o currículo só é acessível pela interface do site. Escopo: núcleo de tools somente leitura (`search_resume`, `calculate_experience`, `search_web`) exposto por duas portas: tool calling no `/chat` (opt-in por `CHAT_TOOL_CALLING`) e servidor MCP (stdio e `/mcp`, opt-in por `MCP_HTTP_ENABLED`).
 
@@ -239,4 +239,6 @@ O `/chat` decide no código de onde vem cada resposta e o LLM só redige, o que 
 - [x] Tool calling no `/chat` com guard rails, atrás de flag (`service._answer_with_tools`)
 - [x] Servidor MCP stdio + Streamable HTTP com rate limit (`app/mcp_server/`)
 - [x] Medir tool calling vs pipeline no golden-set real (`python -m eval.run_golden_set --tools`): 17/24 contra 18/24, flag segue desligada
-
+- [x] Tools estruturadas (`find_technology`, `get_experience`, `career_timeline`, `list_adrs`, `read_adr`), recuperar primeiro e busca híbrida (`ADR-018`, `PRD-016`)
+- [x] Correção da seleção por recência no `rag.search` (a "última empresa" ignorava o cargo atual)
+- [x] Golden-set de capacidades novas e comparador de modos (`eval/compare_modes.py`); `CHAT_TOOL_CALLING` ligada no `render.yaml`

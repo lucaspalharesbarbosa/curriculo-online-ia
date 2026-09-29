@@ -1,7 +1,7 @@
 # ADR-017: Tools e MCP, um núcleo e duas portas
 
 ## Status
-Aceita
+Aceita. A decisão de manter o tool calling desligado foi revista pelo [ADR-018](ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md), que passou a ligá-lo depois de tornar as tools estruturadas.
 
 ## Contexto
 
@@ -85,7 +85,7 @@ Quatro veredictos mudaram, dois para cada lado:
 
 Leitura: com 24 perguntas, um acerto de diferença está dentro do ruído. A conclusão defensável é que o tool calling é **equivalente em acerto, com mais chamadas ao LLM por pergunta**, sem ganho que justifique ligá-lo em produção. Ele ajuda em perguntas encadeadas e piora em recuperação simples, onde o modelo escolhe mal a consulta ou mistura detalhes soltos com fatos.
 
-**Decisão:** `CHAT_TOOL_CALLING` permanece **desligada** (padrão). O caminho fica no código, testado, como opção. Reabrir quando houver um golden-set maior ou uma versão do loop que force a busca inicial no currículo e deixe ao modelo só o encadeamento. O `calculate_experience` e o servidor MCP não dependem dessa flag e seguem ativos.
+**Decisão (revista pelo ADR-018):** `CHAT_TOOL_CALLING` permaneceu **desligada** nesta etapa. O caminho fica no código, testado, como opção. Reabrir quando houver um golden-set maior ou uma versão do loop que force a busca inicial no currículo e deixe ao modelo só o encadeamento. O `calculate_experience` e o servidor MCP não dependem dessa flag e seguem ativos.
 
 ## Referências
 

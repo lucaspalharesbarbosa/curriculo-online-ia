@@ -31,13 +31,13 @@ class ExperienceSummary:
     total_months: int
 
 
-def _tokens(text: str) -> set[str]:
+def text_tokens(text: str) -> set[str]:
     decomposed = unicodedata.normalize("NFKD", text.lower())
     plain = "".join(char for char in decomposed if not unicodedata.combining(char))
     return set(_TOKEN_PATTERN.findall(plain))
 
 
-def _month_index(year_month: str) -> int:
+def month_index(year_month: str) -> int:
     year, month = year_month.split("-")
     return int(year) * 12 + int(month) - 1
 
@@ -45,12 +45,12 @@ def _month_index(year_month: str) -> int:
 def _matches_query(experience: Experience, query_tokens: set[str]) -> bool:
     """Casa por conjunto de tokens, não por substring: "java" casa "Java 11" mas
     não "JavaScript"; "spring boot" casa "Java (Spring Boot)"."""
-    if query_tokens <= _tokens(experience.company):
+    if query_tokens <= text_tokens(experience.company):
         return True
-    return any(query_tokens <= _tokens(tech) for tech in experience.technologies)
+    return any(query_tokens <= text_tokens(tech) for tech in experience.technologies)
 
 
-def _merge_intervals(intervals: list[tuple[int, int]]) -> list[tuple[int, int]]:
+def merge_intervals(intervals: list[tuple[int, int]]) -> list[tuple[int, int]]:
     """Une períodos sobrepostos ou contíguos, para não contar o mesmo mês duas vezes."""
     merged: list[tuple[int, int]] = []
     for start, end in sorted(intervals):
@@ -71,7 +71,7 @@ def calculate_experience(
     """
     reference = today or date.today()
     current_month = reference.year * 12 + reference.month - 1
-    query_tokens = _tokens(query)
+    query_tokens = text_tokens(query)
     if not query_tokens:
         raise ValueError("informe uma tecnologia ou empresa.")
 
@@ -82,12 +82,12 @@ def calculate_experience(
     ]
     intervals = [
         (
-            _month_index(experience.start_date),
-            _month_index(experience.end_date) if experience.end_date else current_month,
+            month_index(experience.start_date),
+            month_index(experience.end_date) if experience.end_date else current_month,
         )
         for experience in matches
     ]
-    total_months = sum(end - start for start, end in _merge_intervals(intervals))
+    total_months = sum(end - start for start, end in merge_intervals(intervals))
     return ExperienceSummary(
         query=query.strip(),
         matches=[

@@ -62,11 +62,16 @@ def test_schema_declarado_bate_com_a_assinatura_do_handler() -> None:
         }, tool.name
 
 
-def test_tools_expostas_sao_as_tres_esperadas() -> None:
-    """O núcleo tem exatamente as três tools do ADR-017."""
+def test_tools_expostas_sao_as_esperadas() -> None:
+    """O núcleo expõe as tools dos ADR-017 e ADR-018, nem mais nem menos."""
     assert [tool.name for tool in _tools()] == [
         "search_resume",
         "calculate_experience",
+        "find_technology",
+        "get_experience",
+        "career_timeline",
+        "list_adrs",
+        "read_adr",
         "search_web",
     ]
 

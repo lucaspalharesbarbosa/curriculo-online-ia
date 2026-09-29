@@ -50,7 +50,7 @@ Definidas em `backend/.env` local (a partir de `.env.example`) e no painel do Re
 | Variável | Valores esperados | Default | Efeito |
 |---|---|---|---|
 | `ENVIRONMENT` | `development` \| `production` | `development` (quando ausente) | Em `production`, desativa `/docs`, `/redoc` e `/openapi.json` (404) — ver [Documentação da API](#documentacao-da-api). Não é segredo; configurar `ENVIRONMENT=production` no painel do Render (produção). |
-| `CHAT_TOOL_CALLING` | `true` \| `false` | `false` (quando ausente) | Liga o tool calling no `/chat`: o modelo decide quais tools usar ([ADR-017](../docs/architecture/ADR-017-tools-e-mcp-um-nucleo-duas-portas.md)). Desligado, o `/chat` segue o pipeline determinístico. Em falha do provider, cai sempre para o pipeline. |
+| `CHAT_TOOL_CALLING` | `true` \| `false` | `false` (quando ausente); `true` no `render.yaml` | Liga o tool calling no `/chat`: recupera primeiro e o modelo usa as tools exatas como reforço ([ADR-018](../docs/architecture/ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md)). Desligado, o `/chat` segue o pipeline determinístico. Em falha do provider, cai sempre para o pipeline. |
 | `MCP_HTTP_ENABLED` | `true` \| `false` | `false` (quando ausente) | Expõe o servidor MCP em `POST /mcp` (Streamable HTTP, com rate limit de 30 req/min por IP). O modo stdio (`python -m app.mcp_server`) não depende desta flag. |
 | `WEB_SEARCH_API_KEY` | Chave da [Tavily](https://app.tavily.com) | Ausente (feature desativada) | Fallback de busca web do `/chat` para dados externos ao `resume.json` ([ADR-010](../docs/architecture/ADR-010-fluxo-rag-v2-precisao-web.md)) — opcional, sem ela o chat funciona normalmente só com o currículo. |
 
@@ -58,15 +58,19 @@ Definidas em `backend/.env` local (a partir de `.env.example`) e no painel do Re
 
 O assistente tem um **núcleo de tools** (`app/tools/`) exposto por duas portas ([`ADR-017`](../docs/architecture/ADR-017-tools-e-mcp-um-nucleo-duas-portas.md)):
 
-| Tool | O que faz |
-|---|---|
-| `search_resume(query, section?)` | Busca semântica no currículo (usa embeddings, precisa de `LLM_API_KEY`) |
-| `calculate_experience(skill_or_company)` | Tempo de experiência **calculado** a partir do `resume.json` (períodos sobrepostos contados uma vez; cargo atual conta até hoje) |
-| `search_web(query)` | Busca pública sobre uma entidade citada no currículo (Tavily, opcional) |
+| Tool | O que faz | Precisa de LLM? |
+|---|---|---|
+| `calculate_experience(skill_or_company)` | Tempo de experiência **calculado** (períodos sobrepostos contados uma vez; cargo atual conta até hoje) | não |
+| `find_technology(name)` | Onde e por quanto tempo uma tecnologia aparece: cargos, skills e projetos (casa por token inteiro na lista de tecnologias) | não |
+| `get_experience(company)` | Registro estruturado da empresa: cargo, período, cidade, modalidade, tecnologias e conquistas em campos separados | não |
+| `career_timeline(around?)` | Carreira em ordem, contagem de empresas, primeira e mais recente. Com `around`, quem veio antes e depois | não |
+| `list_adrs()` / `read_adr(number)` | Lista e lê as decisões de arquitetura do projeto (`docs/architecture/`), para o chat explicar como o projeto foi construído | não |
+| `search_resume(query, section?)` | Busca semântica no currículo (embeddings, precisa de `LLM_API_KEY`) | embedding |
+| `search_web(query)` | Busca pública sobre uma entidade citada no currículo (Tavily, opcional) | não |
 
 Todas são somente leitura.
 
-**Porta 1: tool calling no `/chat`.** Ligue com `CHAT_TOOL_CALLING=true`. Limites: 3 turnos e 3 execuções de tool por pergunta; o 1º turno exige uma tool.
+**Porta 1: tool calling no `/chat`.** Ligue com `CHAT_TOOL_CALLING=true`. O retrieval do pipeline roda primeiro e o contexto vai junto da pergunta; as tools entram como reforço. Limites: 3 turnos e 3 execuções de tool por pergunta; sem contexto confiável, o 1º turno exige uma tool.
 
 **Porta 2: servidor MCP.**
 
@@ -86,11 +90,12 @@ Local (stdio), por exemplo no `claude_desktop_config.json` (ajuste o caminho):
 
 Remoto (HTTP): com `MCP_HTTP_ENABLED=true`, aponte um cliente MCP para `https://<backend>/mcp`. Recursos de leitura: `resume://experiencias` e `resume://skills`.
 
-Tool calling foi medido contra o pipeline no golden-set real (17/24 contra 18/24, sem ganho), por isso a flag fica desligada. Para repetir a medição (usa a API da OpenAI, custa centavos):
+Medição no golden-set real (`ADR-018`): regressão (24 perguntas) 21/24 contra 19/24 do pipeline, e capacidades novas (15) 14/15 contra 3/15. Para repetir (usa a API da OpenAI, custa centavos):
 
 ```bash
 cd backend
-python -m eval.run_golden_set --tools
+python -m eval.compare_modes                       # 4 modos, 2 conjuntos
+python -m eval.compare_modes --modes pipeline,tools-hybrid --sets original
 ```
 
 ## OpenAPI (contrato da API)
@@ -169,7 +174,9 @@ backend/
 │   ├── tools/                  # núcleo de tools do ADR-017 (sem openai/mcp)
 │   │   ├── registry.py          # Tool + execute_tool (valida a entrada do LLM)
 │   │   ├── experience.py        # cálculo determinístico de tempo de experiência
-│   │   └── resume_tools.py      # search_resume, calculate_experience, search_web
+│   │   ├── career.py            # find_technology, get_experience, career_timeline (ADR-018)
+│   │   ├── docs_tools.py        # list_adrs, read_adr (ADR-018)
+│   │   └── resume_tools.py      # monta as 8 tools com as dependências injetadas
 │   ├── mcp_server/             # porta MCP do ADR-017
 │   │   ├── server.py            # FastMCP: tools do núcleo + recursos resume://
 │   │   ├── http.py              # Streamable HTTP em /mcp + rate limit

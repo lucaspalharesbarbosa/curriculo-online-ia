@@ -1,6 +1,6 @@
 # PRD-015: Tools e MCP (um núcleo, duas portas)
 
-**Status:** implementado e medido (`ADR-017`); tool calling permanece desligado por decisão baseada no golden-set
+**Status:** implementado e medido (`ADR-017`); a evolução que liga o tool calling está no [PRD-016](PRD-016-tools-estruturadas-e-busca-hibrida.md)
 **Épico:** Tools e MCP
 **Prioridade:** P1
 
