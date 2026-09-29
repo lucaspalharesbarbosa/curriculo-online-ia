@@ -81,9 +81,9 @@ Uma única fonte de verdade para o schema: o JSON Schema do registro alimenta o 
 Quatro veredictos mudaram, dois para cada lado:
 
 - **Tool calling acertou e o pipeline errou:** q14 ("onde trabalhava antes do Itaú Unibanco?") e q22 ("onde fica o Itaú Unibanco em que trabalhei?"). São perguntas de duas etapas, que o modelo resolve encadeando tools; o pipeline se abstém.
-- **Pipeline acertou e tool calling errou:** q06 (listou "Java 21" entre as tecnologias do Banco BV, que não consta no currículo), q07 e q18 (disse "não encontrei" para a cidade da WebPic e para Kubernetes, que existem no currículo, provavelmente por buscar com termos ruins).
+- **Pipeline acertou e tool calling errou:** q06 (listou "Java 21" entre as tecnologias do Banco BV: o termo aparece no currículo, mas só dentro de um highlight sobre pipelines quebrando com essa versão, não na lista de tecnologias usadas, então o modelo tratou um detalhe solto como tecnologia), q07 e q18 (disse "não encontrei" para a cidade da WebPic e para Kubernetes, que existem no currículo, provavelmente por buscar com termos ruins).
 
-Leitura: com 24 perguntas, um acerto de diferença está dentro do ruído. A conclusão defensável é que o tool calling é **equivalente em acerto, com mais chamadas ao LLM por pergunta**, sem ganho que justifique ligá-lo em produção. Ele ajuda em perguntas encadeadas e piora em recuperação simples, onde o modelo escolhe mal a consulta ou inventa detalhe.
+Leitura: com 24 perguntas, um acerto de diferença está dentro do ruído. A conclusão defensável é que o tool calling é **equivalente em acerto, com mais chamadas ao LLM por pergunta**, sem ganho que justifique ligá-lo em produção. Ele ajuda em perguntas encadeadas e piora em recuperação simples, onde o modelo escolhe mal a consulta ou mistura detalhes soltos com fatos.
 
 **Decisão:** `CHAT_TOOL_CALLING` permanece **desligada** (padrão). O caminho fica no código, testado, como opção. Reabrir quando houver um golden-set maior ou uma versão do loop que force a busca inicial no currículo e deixe ao modelo só o encadeamento. O `calculate_experience` e o servidor MCP não dependem dessa flag e seguem ativos.
 
