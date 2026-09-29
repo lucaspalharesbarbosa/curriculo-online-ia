@@ -8,6 +8,7 @@ mapeamento de exceção→`HTTPException`, `US-14-03`). Depende só dos ports
 from __future__ import annotations
 
 import logging
+import time
 from dataclasses import dataclass
 from typing import Any, Literal
 
@@ -46,6 +47,10 @@ MAX_SELF_CRITIQUE_ITERATIONS = 2
 HYBRID_RETRIEVAL_ENABLED = True
 MAX_TOOL_ITERATIONS = 3
 MAX_TOOL_CALLS = 3
+# ADR-018: orçamento de tempo do loop. O worker do Render é único (ADR-002), e 3
+# turnos de 20 s com 1 retry (ADR-004) poderiam prendê-lo por minutos. Passado o
+# orçamento, o loop encerra e um turno final sem tools força a resposta.
+TOOL_LOOP_BUDGET_SECONDS = 40.0
 TOOL_LIMIT_MESSAGE = "Limite de chamadas de ferramenta atingido nesta pergunta."
 
 
@@ -385,8 +390,11 @@ def _answer_with_tools(
     ]
     executed_calls = 0
     used_web = False
+    started = time.monotonic()
 
     for iteration in range(MAX_TOOL_ITERATIONS):
+        if iteration > 0 and time.monotonic() - started > TOOL_LOOP_BUDGET_SECONDS:
+            break
         completion = tool_calling_provider.generate_with_tools(
             GENERATION_MODEL,
             messages,

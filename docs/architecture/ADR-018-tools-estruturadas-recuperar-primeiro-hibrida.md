@@ -52,7 +52,7 @@ Para perguntas de recência ("última empresa"), o `rag.search` escolhia os `top
 
 ### 5. Guard rails mantidos
 
-Teto de 3 turnos e 3 execuções, tools somente leitura, entrada do LLM validada, teto de 300 caracteres nos argumentos de texto, fallback para o pipeline se o provider falhar, e `search_web` só para entidades do currículo.
+Teto de 3 turnos, 3 execuções e 40 segundos de orçamento de tempo (o worker do Render é único, e 3 turnos de 20 s com retry o prenderiam por minutos), tools somente leitura, entrada do LLM validada, teto de 300 caracteres nos argumentos de texto, fallback para o pipeline se o provider falhar, e `search_web` só para entidades do currículo.
 
 ## Alternativas Consideradas
 

@@ -228,3 +228,19 @@ def test_historico_entra_entre_o_system_prompt_e_a_pergunta() -> None:
 
     roles = [m["role"] for m in provider.calls[0]["messages"]]
     assert roles == ["system", "user", "assistant", "user"]
+
+
+def test_orcamento_de_tempo_encerra_o_loop_e_forca_o_turno_final(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """ADR-018: estourado o orçamento, não abre novo turno com tools."""
+    clock = iter([0.0, 100.0, 100.0, 100.0])
+    monkeypatch.setattr(service.time, "monotonic", lambda: next(clock))
+    looping = tool_request(("c", "career_timeline", "{}"))
+    provider = ScriptedToolCallingProvider([looping, final_answer("resposta forçada")])
+
+    answer, _ = _answer(provider)
+
+    assert answer == "resposta forçada"
+    # 1 turno com tools + 1 turno final sem tools (o 2º turno com tools foi cortado).
+    assert [call["tools"] == [] for call in provider.calls] == [False, True]
