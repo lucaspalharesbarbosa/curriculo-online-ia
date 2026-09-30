@@ -141,12 +141,14 @@ def career_timeline(resume: Resume, around: str | None = None) -> str:
         f"{i}. {e.company}: {e.role} ({_period(e)}), {_place(e)}"
         for i, e in enumerate(ordered, start=1)
     ]
-    companies = _company_names(resume)
+    companies = list(dict.fromkeys(e.company for e in ordered))
     summary = (
         f"Linha do tempo (da mais antiga para a mais recente), "
-        f"{len(companies)} empresas distintas:\n" + "\n".join(lines)
+        f"{len(companies)} empresas distintas e {len(ordered)} cargos "
+        "(cada linha abaixo é um cargo, não uma empresa):\n" + "\n".join(lines)
     )
     summary += (
+        f"\nEmpresas ({len(companies)}): {', '.join(companies)}."
         f"\nPrimeira empresa: {ordered[0].company}. "
         f"Mais recente: {ordered[-1].company}."
     )

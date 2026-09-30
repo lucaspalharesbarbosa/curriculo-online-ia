@@ -6,6 +6,7 @@ from datetime import date
 
 import pytest
 
+from app.chat import rag
 from app.resume.models import Resume
 from app.tools import career
 
@@ -151,8 +152,21 @@ def test_career_timeline_em_ordem_e_com_contagem() -> None:
     text = career.career_timeline(_resume())
 
     assert "4 empresas distintas" in text
+    assert "Empresas (4):" in text
     assert text.index("Delta") < text.index("Gama") < text.index("Alfa")
     assert "Primeira empresa: Delta. Mais recente: Beta." in text
+
+
+def test_career_timeline_nao_confunde_cargos_com_empresas() -> None:
+    """Regressão: o modelo respondia '8 empresas' contando as linhas (cargos),
+    quando eram 6 empresas com 2 delas em dois cargos."""
+    resume = rag.load_resume()
+
+    text = career.career_timeline(resume)
+
+    assert "6 empresas distintas e 8 cargos" in text
+    assert "cada linha abaixo é um cargo" in text
+    assert "Empresas (6): Grupo WDG, WebPic, Shift," in text
 
 
 def test_career_timeline_around_informa_antes_e_depois() -> None:
