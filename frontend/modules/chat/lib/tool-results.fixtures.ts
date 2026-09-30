@@ -19,7 +19,7 @@ export const FIXTURES = {
     "    - Participei ativamente da reconstrução do produto de Cashback para suportar a nova processadora de cartões Pismo, utilizando ",
   ].join("\n"),
   timeline: [
-    "Linha do tempo (da mais antiga para a mais recente), 6 empresas distintas:",
+    "Linha do tempo (da mais antiga para a mais recente), 6 empresas distintas e 8 cargos (cada linha abaixo é um cargo, não uma empresa):",
     "1. Grupo WDG: Junior Web Developer (2015-11 a 2016-08), São José do Rio Preto, SP (Presencial)",
     "2. WebPic: Junior Web Developer (2016-11 a 2018-05), São José do Rio Preto, SP (Presencial)",
     "3. WebPic: Web Developer (2018-05 a 2020-09), São José do Rio Preto, SP (Presencial)",
@@ -28,6 +28,7 @@ export const FIXTURES = {
     "6. Itaú Unibanco: Software Engineer (2022-07 a 2025-09), São Paulo, SP (Remoto)",
     "7. Banco BV: Senior Software Engineer (Outsourcing) (2025-10 a 2026-01), São Paulo, SP (Remoto)",
     "8. Engineering Brasil: Tech Lead | Senior Software Engineer (2026-03 a o momento), São Paulo, SP (Remoto)",
+    "Empresas (6): Grupo WDG, WebPic, Shift, Itaú Unibanco, Banco BV, Engineering Brasil.",
     "Primeira empresa: Grupo WDG. Mais recente: Engineering Brasil.",
   ].join("\n"),
   around: [

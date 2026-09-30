@@ -299,6 +299,36 @@
         "Tech Lead",
         "Engineering Brasil"
       ]
+    },
+    {
+      "id": "q33",
+      "category": "basicas",
+      "question": "Quem é o Lucas?",
+      "expected_facts": [
+        "Tech Lead",
+        "Engineering Brasil"
+      ]
+    },
+    {
+      "id": "q34",
+      "category": "basicas",
+      "question": "Quantas empresas o Lucas já trabalhou?",
+      "expected_facts": [
+        "6 empresas"
+      ]
+    },
+    {
+      "id": "q35",
+      "category": "basicas",
+      "question": "Qual a linha do tempo da carreira dele?",
+      "expected_facts": [
+        "Grupo WDG",
+        "WebPic",
+        "Shift",
+        "Itaú Unibanco",
+        "Banco BV",
+        "Engineering Brasil"
+      ]
     }
   ]
 }
