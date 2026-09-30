@@ -86,6 +86,21 @@ describe("ChatAside", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("renderiza markdown da resposta (negrito e lista) sem mostrar os asteriscos", async () => {
+    mockChatResponse({
+      answer: "Lucas trabalha na **Engineering Brasil**.\n- **Python**\n- Java",
+      source: "resume",
+    });
+    render(<ChatAside />);
+
+    ask("Onde Lucas trabalha hoje?");
+
+    const answer = await screen.findByTestId("chat-answer");
+    expect(answer.querySelectorAll("strong")).toHaveLength(2);
+    expect(answer.querySelectorAll("li")).toHaveLength(2);
+    expect(answer.textContent).not.toContain("**");
+  });
+
   it("resposta com tools mostra chips, detalhe expansível e o card de experiência", async () => {
     mockChatResponse({
       answer: "Lucas tem 3 anos e 8 meses de Python.",

@@ -128,8 +128,10 @@ TOOLS_SYSTEM_PROMPT = (
     "tecnologias use o campo 'Tecnologias usadas', nunca o texto das "
     "conquistas; (4) ordem da carreira, antes/depois de uma empresa, primeiro "
     "emprego, quantas empresas, empresa atual, mais recente ou última: "
-    "career_timeline; (5) perguntas sobre 'este projeto', como ele foi "
-    "construído e decisões técnicas: SEMPRE list_adrs e read_adr, porque o "
+    "career_timeline, e nunca diga que algo foi o primeiro emprego, o anterior "
+    "ou o atual a partir de um trecho solto; (5) perguntas sobre 'este "
+    "projeto', como ele foi construído e decisões técnicas: SEMPRE list_adrs "
+    "e read_adr, porque o "
     "contexto do currículo não cobre isso, mesmo que haja algum contexto; "
     "(6) detalhe público "
     "de uma entidade do currículo que o currículo não tem: search_web, "
@@ -165,6 +167,11 @@ def get_known_entities() -> list[str]:
     if _entities_cache is None:
         _entities_cache = rag.extract_known_entities(rag.load_resume())
     return _entities_cache
+
+
+def _company_names() -> list[str]:
+    """Empresas do currículo: o roteamento por seção de lista as respeita (ADR-020)."""
+    return [experience.company for experience in get_resume().experiences]
 
 
 def _mentions_known_entity(question: str, entities: list[str]) -> bool:
@@ -277,17 +284,21 @@ def _search_with_self_critique(
     top-k. `enable_self_critique=False` reproduz o comportamento anterior a
     este ADR (usado por `US-16-03` para comparar antes/depois).
     """
+    company_names = _company_names()
     results = rag.search_with_routing(
         search_question,
         index,
         embedding_provider,
         top_k=TOP_K,
         lexical_weight=lexical_weight,
+        company_names=company_names,
     )
     if not enable_self_critique or not results:
         return results, False
 
-    section_routed = rag.detect_section_intent(search_question) is not None
+    section_routed = (
+        rag.detect_section_intent(search_question, company_names) is not None
+    )
     if not _should_run_self_critique(results[0][1], section_routed):
         return results, False
 
@@ -310,6 +321,7 @@ def _search_with_self_critique(
                 embedding_provider,
                 top_k=TOP_K,
                 lexical_weight=lexical_weight,
+                company_names=company_names,
             )
         else:
             # Iteração 2: relaxa a restrição de seção — cobre pergunta composta

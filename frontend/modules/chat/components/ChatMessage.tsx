@@ -10,6 +10,7 @@ import {
   type ResumeChatMessage,
 } from "@/hooks/useResumeChat";
 
+import { renderMarkdown } from "../lib/markdown";
 import { SourceBadge } from "./SourceBadge";
 import { ToolChips } from "./ToolChips";
 
@@ -115,9 +116,12 @@ export function ChatMessage({ message, onFeedback }: ChatMessageProps) {
       {message.status === "done" ? (
         <div className="flex min-w-0 flex-col gap-2.5">
           <ToolChips tools={tools} />
-          <p className="text-[15px] leading-relaxed whitespace-pre-line text-neutral-100">
-            {message.answer}
-          </p>
+          <div
+            data-testid="chat-answer"
+            className="space-y-2 text-[15px] leading-relaxed text-neutral-100"
+          >
+            {renderMarkdown(message.answer ?? "")}
+          </div>
           {message.source ? (
             <div>
               <SourceBadge source={message.source} />

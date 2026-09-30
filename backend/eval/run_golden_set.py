@@ -82,7 +82,10 @@ def _judge(
     chat_completion_provider: ChatCompletionProvider,
 ) -> tuple[str, str | None]:
     facts_text = "; ".join(expected_facts)
+    # Sem a data, o juiz tratava "até setembro de 2025" como futuro e reprovava
+    # respostas corretas (q18/q21).
     prompt = (
+        f"Data de hoje: {datetime.now(UTC).date().isoformat()}\n"
         f"Pergunta: {question}\n"
         f"Fatos esperados na resposta correta: {facts_text}\n"
         f"Resposta do assistente: {answer}"

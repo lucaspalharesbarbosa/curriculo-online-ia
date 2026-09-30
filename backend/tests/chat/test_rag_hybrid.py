@@ -79,7 +79,9 @@ def test_service_liga_a_busca_hibrida_pelo_parametro(
     """`enable_hybrid` decide o peso lexical enviado ao retrieval."""
     captured: dict[str, float] = {}
 
-    def fake_search(question, index, provider, top_k=3, lexical_weight=0.0):
+    def fake_search(
+        question, index, provider, top_k=3, lexical_weight=0.0, company_names=()
+    ):
         captured["weight"] = lexical_weight
         return [(KUBERNETES_CHUNK, 0.9)]
 
