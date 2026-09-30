@@ -17,6 +17,7 @@ Saída do `arquiteto-ia-senior`: ADRs (Architecture Decision Records) e diagrama
 - [ADR-017: Tools e MCP, um núcleo e duas portas](ADR-017-tools-e-mcp-um-nucleo-duas-portas.md) (Aceita)
 - [ADR-018: Tools estruturadas, recuperar primeiro e busca híbrida](ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md) (Aceita)
 - [ADR-019: Redesign command center com chat lateral e resposta com tools](ADR-019-redesign-command-center-chat-com-tools.md) (Aceita)
+- [ADR-020: Perguntas básicas, listas completas e markdown no chat](ADR-020-perguntas-basicas-contato-listas-e-markdown.md) (Aceita)
 
 ## Diagramas
 - [C4-001 — Contexto e Containers](C4-001-contexto-containers.md)
