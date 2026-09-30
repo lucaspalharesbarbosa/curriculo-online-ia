@@ -462,19 +462,19 @@ _RECENCY_INTENT_KEYWORDS = {"ultima", "ultimo", "atual", "recente", "hoje", "ago
 
 # ADR-020: intenções que antes caíam na similaridade pura e erravam perguntas
 # básicas (contato, cidade, "quem é") ou truncavam listas em TOP_K itens.
-_CONTACT_INTENT_KEYWORDS = {
-    "email",
-    "e-mail",
-    "linkedin",
-    "github",
-    "whatsapp",
-    "contato",
-    "telefone",
-    "celular",
-}
+_CONTACT_INTENT_KEYWORDS = {"contato", "telefone", "celular"}
+# Nome de plataforma sozinho é ambíguo ("experiência com GitHub Actions",
+# "artigos no LinkedIn"): só roteia para contato junto de um pedido de endereço.
+_CONTACT_PLATFORM_KEYWORDS = {"email", "e-mail", "linkedin", "github", "whatsapp"}
+_CONTACT_REQUEST_TOKENS = frozenset(
+    {"qual", "link", "perfil", "endereco", "encontro", "encontrar", "achar"}
+)
 _SUMMARY_INTENT_KEYWORDS = {
     "mora",
     "moro",
+    "cidade",
+    "vive",
+    "de onde ele e",
     "reside",
     "localizacao",
     "quem e lucas",
@@ -506,13 +506,13 @@ _SKILL_INTENT_KEYWORDS = {"skills", "habilidades", "competencias"}
 SECTION_INTENT_KEYWORDS: dict[str, set[str]] = {
     "education": _EDUCATION_INTENT_KEYWORDS,
     "experience": _EXPERIENCE_INTENT_KEYWORDS,
-    "contact": _CONTACT_INTENT_KEYWORDS,
     "summary": _SUMMARY_INTENT_KEYWORDS,
     "certification": _CERTIFICATION_INTENT_KEYWORDS,
     "article": _ARTICLE_INTENT_KEYWORDS,
     "recognition": _RECOGNITION_INTENT_KEYWORDS,
     "project": _PROJECT_INTENT_KEYWORDS,
     "skill": _SKILL_INTENT_KEYWORDS,
+    "contact": _CONTACT_INTENT_KEYWORDS,
 }
 # Seções cuja pergunta pede o conjunto inteiro ("quais certificações?"): a
 # busca devolve todos os itens da seção (até MAX_LIST_TOP_K), não só TOP_K.
@@ -520,6 +520,11 @@ LIST_SECTIONS = frozenset(
     {"certification", "article", "recognition", "project", "skill"}
 )
 MAX_LIST_TOP_K = 12
+# Seções que uma empresa na pergunta desliga (a resposta está na experiência).
+_COMPANY_GUARDED_SECTIONS = LIST_SECTIONS | {"summary", "contact"}
+# Seções que "este projeto"/ADR desligam (o assunto é o repositório).
+_PROJECT_GUARDED_SECTIONS = LIST_SECTIONS | {"contact"}
+_THIS_TOKENS = frozenset({"este", "deste", "neste", "esse", "desse", "nesse"})
 # Com uma empresa na pergunta ("que skills usei no Itaú?") a resposta está no
 # chunk da experiência, então o roteamento por seção de lista é ignorado.
 _GENERIC_COMPANY_TOKENS = frozenset({"banco", "grupo", "engineering", "de", "da", "do"})
@@ -552,6 +557,18 @@ def _lexical_bonus(question_tokens: set[str], chunk_text: str, weight: float) ->
     return weight * overlap / len(question_tokens)
 
 
+def _is_about_this_project(question_tokens: set[str]) -> bool:
+    """ "Este projeto" e ADRs são assunto das tools de ADR, não do currículo."""
+    if any(token.startswith("adr") for token in question_tokens):
+        return True
+    return "projeto" in question_tokens and bool(question_tokens & _THIS_TOKENS)
+
+
+def _asks_for_contact_link(question_tokens: set[str]) -> bool:
+    platform = any(_tokenize(k) <= question_tokens for k in _CONTACT_PLATFORM_KEYWORDS)
+    return platform and bool(question_tokens & _CONTACT_REQUEST_TOKENS)
+
+
 def _mentions_company(question_tokens: set[str], company_names: Iterable[str]) -> bool:
     return any(
         (_tokenize(company) - _GENERIC_COMPANY_TOKENS) & question_tokens
@@ -574,12 +591,16 @@ def detect_section_intent(
     """
     question_tokens = _tokenize(question)
     company_named = _mentions_company(question_tokens, company_names)
+    about_this_project = _is_about_this_project(question_tokens)
     for section, keywords in SECTION_INTENT_KEYWORDS.items():
-        if section in LIST_SECTIONS and company_named:
+        if section in _COMPANY_GUARDED_SECTIONS and company_named:
             continue
-        for keyword in keywords:
-            if _tokenize(keyword) <= question_tokens:
-                return section
+        if section in _PROJECT_GUARDED_SECTIONS and about_this_project:
+            continue
+        if any(_tokenize(keyword) <= question_tokens for keyword in keywords):
+            return section
+        if section == "contact" and _asks_for_contact_link(question_tokens):
+            return section
     return None
 
 

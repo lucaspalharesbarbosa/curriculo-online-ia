@@ -16,7 +16,7 @@ type Block =
   | { kind: "ordered"; items: string[]; start: number };
 
 const UNORDERED_ITEM = /^\s*[-*•]\s+(.*)$/;
-const ORDERED_ITEM = /^\s*\d+[.)]\s+(.*)$/;
+const ORDERED_ITEM = /^\s*\d{1,3}[.)]\s+(.*)$/;
 
 // Ordem importa: `código` e **negrito** antes de *itálico*, para o `**` não
 // ser lido como dois `*`.

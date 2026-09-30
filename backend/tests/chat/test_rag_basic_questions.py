@@ -114,6 +114,28 @@ def test_perguntas_ambiguas_nao_sao_desviadas_para_secoes_de_lista(
     assert section != "summary"
 
 
+@pytest.mark.parametrize(
+    ("question", "section"),
+    [
+        ("Ele tem experiência com GitHub Actions?", None),
+        ("Quais artigos ele publicou no LinkedIn?", "article"),
+        ("Qual o repositório deste projeto no GitHub?", None),
+        ("Quais skills ele usou neste projeto?", None),
+        ("Qual o escopo dos projetos do ADR-018?", None),
+        ("Qual a cidade dele?", "summary"),
+        ("Em qual cidade ele vive?", "summary"),
+        ("De onde ele é?", "summary"),
+        ("Qual a cidade da WebPic?", None),
+        ("Qual o GitHub dele?", "contact"),
+        ("Qual o link do LinkedIn?", "contact"),
+    ],
+)
+def test_revisao_do_pr_falsos_positivos_e_negativos_do_roteamento(
+    question: str, section: str | None
+) -> None:
+    assert detect_section_intent(question, COMPANIES + ["WebPic"]) == section
+
+
 def test_experiencia_e_formacao_seguem_antes_das_novas_secoes() -> None:
     assert detect_section_intent("Onde ele trabalha e mora?", COMPANIES) == "experience"
     assert detect_section_intent("Onde ele estudou?", COMPANIES) == "education"

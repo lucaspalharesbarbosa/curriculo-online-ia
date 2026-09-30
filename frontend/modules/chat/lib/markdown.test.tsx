@@ -53,6 +53,11 @@ describe("renderMarkdown", () => {
     ]);
   });
 
+  it("não trata um ano no começo da linha como item de lista", () => {
+    const container = html("2024. Foi promovido");
+    expect(container.querySelector("ol")).toBeNull();
+  });
+
   it("separa parágrafos por linha em branco e mantém quebra simples", () => {
     const container = html("linha 1\nlinha 2\n\nsegundo");
     expect(container.querySelectorAll("p")).toHaveLength(2);
