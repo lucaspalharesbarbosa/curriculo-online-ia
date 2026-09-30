@@ -12,6 +12,7 @@ import json
 import math
 import re
 import unicodedata
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from pathlib import Path
 
@@ -118,13 +119,50 @@ def load_resume(path: Path = RESUME_JSON_PATH) -> Resume:
 EXPERIENCE_ONGOING_RECENCY_KEY = "9999-99"
 
 
+# Travessão do título do hero ("Cargo, áreas"), escrito por código para não
+# depender do caractere no fonte.
+TITLE_SEPARATOR = " " + chr(0x2014) + " "
+
+
+def _describe_title(title: str) -> str:
+    """Só o cargo do título do hero ("Cargo, travessão, áreas separadas por barra").
+
+    As áreas ("AI Engineering | Agentic AI") já estão no texto do resumo. Em
+    lista crua, o modelo as lia como nome de empresa ("especializado na
+    empresa Agentic AI").
+    """
+    role = title.partition(TITLE_SEPARATOR)[0].replace(" | ", ", ")
+    return f"Cargo: {role}."
+
+
 def _chunk_resume_summary(resume: Resume) -> Chunk:
     # ADR-013: chunk dedicado ao resumo/bio (hero.summary + about) — texto
     # livre que já descreve a atuação atual em prosa, como sinal redundante
     # ao roteamento por seção/recência para perguntas gerais ("o que você
     # faz hoje?").
-    text = f"{resume.hero.summary} {resume.about}"
+    # ADR-020: também carrega nome, cargo e cidade, que não estavam em nenhum
+    # chunk ("onde ele mora?" não tinha resposta).
+    hero = resume.hero
+    text = (
+        f"{hero.name}. {_describe_title(hero.title)} Mora em {hero.location}. "
+        f"{hero.summary} {resume.about}"
+    )
     return Chunk(id="summary-0", section="summary", text=text)
+
+
+def _chunk_contact(resume: Resume) -> Chunk:
+    # ADR-020: contatos públicos (os mesmos links do cabeçalho do site).
+    contact = resume.contact
+    parts = []
+    if contact.email:
+        parts.append(f"e-mail: {contact.email}")
+    parts.append(f"LinkedIn: {contact.linkedin}")
+    if contact.github:
+        parts.append(f"GitHub: {contact.github}")
+    if contact.whatsapp:
+        parts.append(f"WhatsApp: {contact.whatsapp}")
+    text = f"Contato de {resume.hero.name}: " + "; ".join(parts) + "."
+    return Chunk(id="contact-0", section="contact", text=text)
 
 
 def _chunk_experience(index: int, experience: Experience) -> Chunk:
@@ -218,7 +256,7 @@ def build_chunks(resume: Resume) -> list[Chunk]:
     """Um chunk de resumo/bio + um chunk por experiência, grupo de skills, projeto,
     certificação, reconhecimento, formação e artigo (ADR-003 seção 1, ampliado
     pela ADR-006, seu addendum e pela ADR-013)."""
-    chunks = [_chunk_resume_summary(resume)]
+    chunks = [_chunk_resume_summary(resume), _chunk_contact(resume)]
     chunks += [
         _chunk_experience(i, experience)
         for i, experience in enumerate(resume.experiences)
@@ -250,10 +288,18 @@ def embed_chunks(
 
 
 def resume_hash(resume: Resume) -> str:
-    """Hash do conteúdo do currículo — usado para invalidar o cache do índice
-    quando o `resume.json` muda (ver `load_or_build_index`)."""
-    payload = resume.model_dump_json(by_alias=True).encode("utf-8")
-    return hashlib.sha256(payload).hexdigest()
+    """Hash do que vira índice: o currículo E o texto dos chunks gerados.
+
+    Invalida o cache do índice quando o `resume.json` muda ou quando a lógica de
+    chunking muda (ADR-020: o chunk novo de contato não entrava num índice
+    antigo em disco, pois só o conteúdo do currículo era hasheado).
+    """
+    payload = resume.model_dump_json(by_alias=True)
+    chunk_texts = json.dumps(
+        [(chunk.id, chunk.text) for chunk in build_chunks(resume)],
+        ensure_ascii=False,
+    )
+    return hashlib.sha256(f"{payload}|{chunk_texts}".encode()).hexdigest()
 
 
 def save_index(
@@ -414,10 +460,70 @@ _EXPERIENCE_INTENT_KEYWORDS = {
 }
 _RECENCY_INTENT_KEYWORDS = {"ultima", "ultimo", "atual", "recente", "hoje", "agora"}
 
+# ADR-020: intenções que antes caíam na similaridade pura e erravam perguntas
+# básicas (contato, cidade, "quem é") ou truncavam listas em TOP_K itens.
+_CONTACT_INTENT_KEYWORDS = {
+    "email",
+    "e-mail",
+    "linkedin",
+    "github",
+    "whatsapp",
+    "contato",
+    "telefone",
+    "celular",
+}
+_SUMMARY_INTENT_KEYWORDS = {
+    "mora",
+    "moro",
+    "reside",
+    "localizacao",
+    "quem e lucas",
+    "quem e ele",
+    "quem e voce",
+    "sobre ele",
+    "sobre voce",
+    "apresente",
+    "apresentacao",
+    "resumo",
+    "perfil",
+}
+_CERTIFICATION_INTENT_KEYWORDS = {
+    "certificacoes",
+    "certificacao",
+    "certificados",
+    "certificado",
+    "cursos",
+}
+_ARTICLE_INTENT_KEYWORDS = {"artigos", "artigo", "publicacoes", "escreveu"}
+_RECOGNITION_INTENT_KEYWORDS = {
+    "reconhecimentos",
+    "reconhecimento",
+    "premios",
+    "premio",
+}
+_PROJECT_INTENT_KEYWORDS = {"projetos"}
+_SKILL_INTENT_KEYWORDS = {"skills", "habilidades", "competencias", "stack"}
+
 SECTION_INTENT_KEYWORDS: dict[str, set[str]] = {
     "education": _EDUCATION_INTENT_KEYWORDS,
     "experience": _EXPERIENCE_INTENT_KEYWORDS,
+    "contact": _CONTACT_INTENT_KEYWORDS,
+    "summary": _SUMMARY_INTENT_KEYWORDS,
+    "certification": _CERTIFICATION_INTENT_KEYWORDS,
+    "article": _ARTICLE_INTENT_KEYWORDS,
+    "recognition": _RECOGNITION_INTENT_KEYWORDS,
+    "project": _PROJECT_INTENT_KEYWORDS,
+    "skill": _SKILL_INTENT_KEYWORDS,
 }
+# Seções cuja pergunta pede o conjunto inteiro ("quais certificações?"): a
+# busca devolve todos os itens da seção (até MAX_LIST_TOP_K), não só TOP_K.
+LIST_SECTIONS = frozenset(
+    {"certification", "article", "recognition", "project", "skill"}
+)
+MAX_LIST_TOP_K = 12
+# Com uma empresa na pergunta ("que skills usei no Itaú?") a resposta está no
+# chunk da experiência, então o roteamento por seção de lista é ignorado.
+_GENERIC_COMPANY_TOKENS = frozenset({"banco", "grupo", "de", "da", "do"})
 
 
 def _normalize(text: str) -> str:
@@ -447,16 +553,31 @@ def _lexical_bonus(question_tokens: set[str], chunk_text: str, weight: float) ->
     return weight * overlap / len(question_tokens)
 
 
-def detect_section_intent(question: str) -> str | None:
+def _mentions_company(question_tokens: set[str], company_names: Iterable[str]) -> bool:
+    return any(
+        (_tokenize(company) - _GENERIC_COMPANY_TOKENS) & question_tokens
+        for company in company_names
+    )
+
+
+def detect_section_intent(
+    question: str, company_names: Iterable[str] = ()
+) -> str | None:
     """Seção-alvo da pergunta, por palavra-chave (ADR-010); `None` se nenhuma bater.
 
     Casa por conjunto de tokens, não substring literal — tolera palavras
     inseridas entre os termos da keyword (ex. "onde Lucas trabalha" ainda
     casa com a keyword "onde trabalha", que exige só os tokens "onde" e
     "trabalha" em qualquer posição da pergunta).
+
+    `company_names` (ADR-020) desliga o roteamento para seções de lista quando
+    a pergunta cita uma empresa do currículo.
     """
     question_tokens = _tokenize(question)
+    company_named = _mentions_company(question_tokens, company_names)
     for section, keywords in SECTION_INTENT_KEYWORDS.items():
+        if section in LIST_SECTIONS and company_named:
+            continue
         for keyword in keywords:
             if _tokenize(keyword) <= question_tokens:
                 return section
@@ -475,14 +596,19 @@ def search_with_routing(
     embedding_provider: EmbeddingProvider,
     top_k: int = 3,
     lexical_weight: float = 0.0,
+    company_names: Iterable[str] = (),
 ) -> list[tuple[Chunk, float]]:
     """`search()` com roteamento por seção/recência (ADR-010); fallback = busca atual.
 
     Pergunta sem palavra-chave reconhecida chama `search()` sem restrição de
-    seção — comportamento idêntico ao pré-ADR-010, sem regressão.
+    seção, comportamento idêntico ao pré-ADR-010, sem regressão. Em seção de
+    lista (ADR-020) o `top_k` cresce para cobrir a seção inteira.
     """
-    section = detect_section_intent(question)
+    section = detect_section_intent(question, company_names)
     sort_by_recency = section == "experience" and wants_recency(question)
+    if section in LIST_SECTIONS:
+        section_size = sum(1 for item in index if item.chunk.section == section)
+        top_k = max(top_k, min(section_size, MAX_LIST_TOP_K))
     return search(
         question,
         index,

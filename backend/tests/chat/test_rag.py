@@ -114,6 +114,7 @@ def test_build_chunks_generates_one_chunk_per_resume_section() -> None:
 
     total_esperado = (
         1  # ADR-013: chunk de resumo/bio (hero.summary + about)
+        + 1  # ADR-020: chunk de contato
         + len(FIXTURE_RESUME.experiences)
         + len(FIXTURE_RESUME.skills)
         + len(FIXTURE_RESUME.projects)
@@ -132,13 +133,14 @@ def test_build_chunks_does_not_generate_empty_text() -> None:
     assert all(chunk.text.strip() for chunk in chunks)
 
 
-def test_build_chunks_covers_all_eight_sections() -> None:
-    """Cobre as oito seções do currículo, incluindo o resumo/bio (ADR-013)."""
+def test_build_chunks_covers_all_nine_sections() -> None:
+    """Cobre as nove seções do currículo: resumo/bio (ADR-013) e contato (ADR-020)."""
     chunks = build_chunks(FIXTURE_RESUME)
 
     sections = {chunk.section for chunk in chunks}
     assert sections == {
         "summary",
+        "contact",
         "experience",
         "skill",
         "project",
@@ -565,9 +567,8 @@ EDUCATION_QUESTION_VARIANTS = [
 NON_EXPERIENCE_NON_EDUCATION_QUESTIONS = [
     "Já trabalhou com Kubernetes?",
     "O Lucas sabe Python?",
-    "Quais certificações o Lucas tem?",
     "Me conta sobre o projeto X do Lucas.",
-    "O Lucas escreveu algum artigo?",
+    "Qual foi o primeiro emprego do Lucas?",
 ]
 
 
@@ -696,3 +697,23 @@ def test_extract_known_entities_returns_citable_names_from_resume() -> None:
     assert "Instituto Exemplo" in entities
     assert "Python" in entities
     assert "Projeto X" in entities
+
+
+def test_resume_hash_muda_quando_a_logica_de_chunking_muda(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Regressão (ADR-020): índice antigo em disco não podia sobreviver a uma
+    mudança no texto dos chunks, mesmo com o `resume.json` idêntico."""
+    antes = rag.resume_hash(FIXTURE_RESUME)
+
+    original = rag._chunk_contact
+    monkeypatch.setattr(
+        rag,
+        "_chunk_contact",
+        lambda resume: Chunk(id="contact-0", section="contact", text="outro texto"),
+    )
+    depois = rag.resume_hash(FIXTURE_RESUME)
+    monkeypatch.setattr(rag, "_chunk_contact", original)
+
+    assert antes != depois
+    assert rag.resume_hash(FIXTURE_RESUME) == antes

@@ -91,6 +91,7 @@ class Contact(BaseModel):
     linkedin: HttpUrl
     email: EmailStr | None = None
     github: HttpUrl | None = None
+    whatsapp: HttpUrl | None = None
     resume_pdf_url: str | None = Field(default=None, alias="resumePdfUrl")
 
 

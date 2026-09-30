@@ -37,6 +37,7 @@ SECTIONS = [
     "recognition",
     "education",
     "article",
+    "contact",
 ]
 
 
@@ -67,7 +68,11 @@ def build_resume_tools(
         index = index_loader()
         if section is None:
             results = rag.search_with_routing(
-                query, index, embedding_provider, top_k=SEARCH_TOP_K
+                query,
+                index,
+                embedding_provider,
+                top_k=SEARCH_TOP_K,
+                company_names=[e.company for e in resume.experiences],
             )
         else:
             results = rag.search(
