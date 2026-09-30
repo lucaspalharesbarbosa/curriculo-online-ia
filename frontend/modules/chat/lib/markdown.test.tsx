@@ -41,6 +41,18 @@ describe("renderMarkdown", () => {
     expect(container.querySelectorAll("ol > li")).toHaveLength(2);
   });
 
+  it("mantém a numeração quando sub-itens interrompem a lista numerada", () => {
+    const container = html(
+      "1. Itaú\n   - Java\n2. Banco BV\n   - Kubernetes\n3. Engineering",
+    );
+    const lists = Array.from(container.querySelectorAll("ol"));
+    expect(lists.map((list) => list.getAttribute("start"))).toEqual([
+      "1",
+      "2",
+      "3",
+    ]);
+  });
+
   it("separa parágrafos por linha em branco e mantém quebra simples", () => {
     const container = html("linha 1\nlinha 2\n\nsegundo");
     expect(container.querySelectorAll("p")).toHaveLength(2);

@@ -12,7 +12,8 @@ import type { ReactNode } from "react";
 
 type Block =
   | { kind: "paragraph"; lines: string[] }
-  | { kind: "unordered" | "ordered"; items: string[] };
+  | { kind: "unordered"; items: string[] }
+  | { kind: "ordered"; items: string[]; start: number };
 
 const UNORDERED_ITEM = /^\s*[-*•]\s+(.*)$/;
 const ORDERED_ITEM = /^\s*\d+[.)]\s+(.*)$/;
@@ -31,11 +32,15 @@ function parseBlocks(text: string): Block[] {
     const last = blocks.at(-1);
 
     if (listMatch) {
-      const kind = unordered ? "unordered" : "ordered";
-      if (last && last.kind === kind) {
+      if (last && last.kind === (unordered ? "unordered" : "ordered")) {
         last.items.push(listMatch[1]);
+      } else if (unordered) {
+        blocks.push({ kind: "unordered", items: [listMatch[1]] });
       } else {
-        blocks.push({ kind, items: [listMatch[1]] });
+        // Mantém o número da fonte: "1. a / - sub / 2. b" vira <ol>, <ul>, <ol
+        // start=2>, senão a numeração reiniciaria em 1 depois do sub-item.
+        const start = Number.parseInt(/\d+/.exec(line)?.[0] ?? "1", 10);
+        blocks.push({ kind: "ordered", items: [listMatch[1]], start });
       }
       continue;
     }
@@ -119,18 +124,26 @@ export function renderMarkdown(text: string): ReactNode {
         </p>
       );
     }
-    const Tag = block.kind === "ordered" ? "ol" : "ul";
+    const items = block.items.map((item, itemIndex) => (
+      <li key={`${key}-${itemIndex}`}>
+        {renderInline(item, `${key}-${itemIndex}`)}
+      </li>
+    ));
+    if (block.kind === "ordered") {
+      return (
+        <ol
+          key={key}
+          start={block.start}
+          className="list-decimal space-y-1 pl-5"
+        >
+          {items}
+        </ol>
+      );
+    }
     return (
-      <Tag
-        key={key}
-        className={`space-y-1 pl-5 ${block.kind === "ordered" ? "list-decimal" : "list-disc"}`}
-      >
-        {block.items.map((item, itemIndex) => (
-          <li key={`${key}-${itemIndex}`}>
-            {renderInline(item, `${key}-${itemIndex}`)}
-          </li>
-        ))}
-      </Tag>
+      <ul key={key} className="list-disc space-y-1 pl-5">
+        {items}
+      </ul>
     );
   });
 }

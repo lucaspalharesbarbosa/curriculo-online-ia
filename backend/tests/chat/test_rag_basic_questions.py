@@ -95,6 +95,25 @@ def test_pergunta_de_lista_com_empresa_nao_e_desviada_para_a_lista(
     assert detect_section_intent(question, COMPANIES) is None
 
 
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Faz um resumo do ADR-018.",
+        "Qual a stack deste projeto?",
+        "Quais skills de AI Engineering ele tem?",
+    ],
+)
+def test_perguntas_ambiguas_nao_sao_desviadas_para_secoes_de_lista(
+    question: str,
+) -> None:
+    """Regressão da revisão: 'resumo' e 'stack' desviariam perguntas sobre ADRs e
+    o projeto; 'Engineering' (de AI Engineering) não conta como empresa."""
+    section = detect_section_intent(question, COMPANIES)
+
+    assert section in (None, "skill")
+    assert section != "summary"
+
+
 def test_experiencia_e_formacao_seguem_antes_das_novas_secoes() -> None:
     assert detect_section_intent("Onde ele trabalha e mora?", COMPANIES) == "experience"
     assert detect_section_intent("Onde ele estudou?", COMPANIES) == "education"

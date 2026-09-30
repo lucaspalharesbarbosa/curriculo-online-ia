@@ -484,7 +484,6 @@ _SUMMARY_INTENT_KEYWORDS = {
     "sobre voce",
     "apresente",
     "apresentacao",
-    "resumo",
     "perfil",
 }
 _CERTIFICATION_INTENT_KEYWORDS = {
@@ -502,7 +501,7 @@ _RECOGNITION_INTENT_KEYWORDS = {
     "premio",
 }
 _PROJECT_INTENT_KEYWORDS = {"projetos"}
-_SKILL_INTENT_KEYWORDS = {"skills", "habilidades", "competencias", "stack"}
+_SKILL_INTENT_KEYWORDS = {"skills", "habilidades", "competencias"}
 
 SECTION_INTENT_KEYWORDS: dict[str, set[str]] = {
     "education": _EDUCATION_INTENT_KEYWORDS,
@@ -523,7 +522,7 @@ LIST_SECTIONS = frozenset(
 MAX_LIST_TOP_K = 12
 # Com uma empresa na pergunta ("que skills usei no Itaú?") a resposta está no
 # chunk da experiência, então o roteamento por seção de lista é ignorado.
-_GENERIC_COMPANY_TOKENS = frozenset({"banco", "grupo", "de", "da", "do"})
+_GENERIC_COMPANY_TOKENS = frozenset({"banco", "grupo", "engineering", "de", "da", "do"})
 
 
 def _normalize(text: str) -> str:
