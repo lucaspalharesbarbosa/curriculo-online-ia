@@ -112,7 +112,7 @@ def build_resume_tools(
     def career_timeline(around: str | None = None) -> str:
         if around is not None:
             _check_length(around, "around")
-        return career.career_timeline(resume, around)
+        return career.career_timeline(resume, around, today=today())
 
     def list_adrs() -> str:
         return docs_tools.list_adrs(docs_dir)
