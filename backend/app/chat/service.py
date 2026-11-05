@@ -15,7 +15,7 @@ from typing import Any, Literal
 
 from openai import OpenAIError
 
-from app.chat import rag
+from app.chat import guardrails, rag
 from app.chat.ports import (
     ChatCompletionProvider,
     EmbeddingProvider,
@@ -24,7 +24,11 @@ from app.chat.ports import (
 )
 from app.resume.models import Resume
 from app.tools.registry import Tool, execute_tool
-from app.tools.resume_tools import WEB_RESULT_PREFIX, build_resume_tools
+from app.tools.resume_tools import (
+    TOOL_NAMES,
+    WEB_RESULT_PREFIX,
+    build_resume_tools,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -101,6 +105,7 @@ SYSTEM_PROMPT = (
     "Você é o assistente do currículo online de Lucas Palhares Barbosa. "
     "Responda em português, de forma direta, usando só as informações do "
     "contexto abaixo. Nunca invente informação que não esteja no contexto."
+    + guardrails.SECURITY_RULES
 )
 # ADR-010 seção 2 (T03): prompt usado quando a resposta vem da busca web, não
 # do currículo — instrui o modelo a deixar a fonte explícita na resposta.
@@ -111,7 +116,7 @@ WEB_SYSTEM_PROMPT = (
     "sozinho não tem esse detalhe. Responda em português, de forma direta, "
     "usando só o contexto de busca pública abaixo. Deixe claro que essa "
     "informação é pública, encontrada na web, e não faz parte do currículo. "
-    "Nunca invente informação que não esteja no contexto."
+    "Nunca invente informação que não esteja no contexto." + guardrails.SECURITY_RULES
 )
 
 # ADR-017: prompt do caminho com tools. O modelo decide quais ferramentas
@@ -139,7 +144,7 @@ TOOLS_SYSTEM_PROMPT = (
     "de uma entidade do currículo que o currículo não tem: search_web, "
     "deixando claro que vem da web. Se o contexto já responde, responda "
     "direto, sem ferramentas. Se nada responder, diga que não encontrou no "
-    "currículo."
+    "currículo." + guardrails.SECURITY_RULES
 )
 
 _index_cache: list[rag.EmbeddedChunk] | None = None
@@ -364,8 +369,10 @@ def _generate_web_answer(
     chat_completion_provider: ChatCompletionProvider,
     history: list[HistoryTurn],
 ) -> str:
+    safe_web = guardrails.neutralize_untrusted(web_context)
     user_prompt = (
-        f"Informação pública encontrada na web:\n{web_context}\n\n"
+        "Informação pública encontrada na web:\n"
+        f"{guardrails.wrap_untrusted('resultado_web', safe_web)}\n\n"
         f"Pergunta: {question}"
     )
     messages = [
@@ -461,7 +468,7 @@ def _answer_with_tools(
     return final.content.strip() or FALLBACK_ANSWER, "web" if used_web else "resume"
 
 
-def answer_question(
+def _answer_question_core(
     question: str,
     embedding_provider: EmbeddingProvider,
     chat_completion_provider: ChatCompletionProvider,
@@ -572,3 +579,61 @@ def answer_question(
         question, relevant_chunks, chat_completion_provider, truncated_history
     )
     return answer, "resume"
+
+
+def _guard_output(answer: str) -> str:
+    """Última camada (ADR-021): vazamento do prompt vira recusa e links, imagens e
+    HTML fora da lista permitida são neutralizados."""
+    if guardrails.leaks_prompt(
+        answer,
+        [SYSTEM_PROMPT, WEB_SYSTEM_PROMPT, TOOLS_SYSTEM_PROMPT],
+        list(TOOL_NAMES),
+    ):
+        logger.warning("guardrail_blocked reason=prompt_leak")
+        return guardrails.REFUSAL_MESSAGE
+    sanitized = guardrails.sanitize_output(answer)
+    if sanitized != answer:
+        logger.warning("guardrail_sanitized reason=unsafe_output")
+    return sanitized or FALLBACK_ANSWER
+
+
+def answer_question(
+    question: str,
+    embedding_provider: EmbeddingProvider,
+    chat_completion_provider: ChatCompletionProvider,
+    web_search_provider: WebSearchProvider,
+    history: list[HistoryTurn] | None = None,
+    enable_self_critique: bool = True,
+    tool_calling_provider: ToolCallingProvider | None = None,
+    enable_hybrid: bool | None = None,
+    tool_trace: list[dict[str, Any]] | None = None,
+) -> tuple[str, Literal["resume", "web"]]:
+    """Responde a pergunta com as defesas do ADR-021 em volta do núcleo.
+
+    Antes: pedido óbvio de injeção é recusado sem gastar chamada ao modelo, e
+    turnos de histórico que forjam obediência são descartados (o histórico vem
+    do cliente e não é confiável). Depois: a resposta passa pelo filtro de saída.
+    O comportamento para perguntas legítimas não muda.
+    """
+    if guardrails.looks_like_injection(question):
+        logger.warning("guardrail_blocked reason=input_injection")
+        return guardrails.REFUSAL_MESSAGE, "resume"
+    safe_history = [
+        turn
+        for turn in (history or [])
+        if guardrails.is_safe_history_turn(turn.content)
+    ]
+    if len(safe_history) != len(history or []):
+        logger.warning("guardrail_sanitized reason=history_turn_dropped")
+    answer, source = _answer_question_core(
+        question,
+        embedding_provider,
+        chat_completion_provider,
+        web_search_provider,
+        history=safe_history or None,
+        enable_self_critique=enable_self_critique,
+        tool_calling_provider=tool_calling_provider,
+        enable_hybrid=enable_hybrid,
+        tool_trace=tool_trace,
+    )
+    return _guard_output(answer), source
