@@ -175,13 +175,23 @@ def main() -> None:
         "--label", default="", help="rótulo do relatório (antes, depois)"
     )
     parser.add_argument(
+        "--set",
+        default="attacks",
+        choices=["attacks", "holdout"],
+        help="attacks (principal) ou holdout (paráfrases escritas depois das defesas)",
+    )
+    parser.add_argument(
         "--repeat", type=int, default=1, help="tentativas por ataque (o modelo varia)"
     )
     args = parser.parse_args()
     if not os.environ.get("LLM_API_KEY"):
         raise SystemExit("LLM_API_KEY ausente (medição sob demanda, nunca em CI).")
 
-    attacks = json.loads(ATTACKS_PATH.read_text(encoding="utf-8"))["attacks"]
+    path_by_set = {
+        "attacks": ATTACKS_PATH,
+        "holdout": ATTACKS_PATH.with_name("attacks_holdout.json"),
+    }
+    attacks = json.loads(path_by_set[args.set].read_text(encoding="utf-8"))["attacks"]
     only = {c.strip() for c in args.only.split(",") if c.strip()}
     if only:
         attacks = [a for a in attacks if a["category"] in only]
