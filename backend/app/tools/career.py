@@ -134,9 +134,22 @@ def get_experience(resume: Resume, company: str) -> str:
     return "\n\n".join(blocks)
 
 
-def career_timeline(resume: Resume, around: str | None = None) -> str:
-    """Carreira em ordem cronológica. Com `around`, diz quem veio antes e depois."""
+def career_timeline(
+    resume: Resume, around: str | None = None, today: date | None = None
+) -> str:
+    """Carreira em ordem cronológica, com o tempo total de carreira. Com `around`,
+    diz quem veio antes e depois."""
     ordered = _chronological(resume)
+    reference = today or date.today()
+    current_month = reference.year * 12 + reference.month - 1
+    intervals = [
+        (
+            month_index(e.start_date),
+            month_index(e.end_date) if e.end_date else current_month,
+        )
+        for e in ordered
+    ]
+    total_months = sum(end - start for start, end in merge_intervals(intervals))
     lines = [
         f"{i}. {e.company}: {e.role} ({_period(e)}), {_place(e)}"
         for i, e in enumerate(ordered, start=1)
@@ -151,6 +164,9 @@ def career_timeline(resume: Resume, around: str | None = None) -> str:
         f"\nEmpresas ({len(companies)}): {', '.join(companies)}."
         f"\nPrimeira empresa: {ordered[0].company}. "
         f"Mais recente: {ordered[-1].company}."
+        f"\nTempo total de carreira profissional: {format_duration(total_months)} "
+        f"({total_months} meses desde {ordered[0].start_date}, períodos "
+        "sobrepostos contados uma vez)."
     )
     if not around:
         return summary

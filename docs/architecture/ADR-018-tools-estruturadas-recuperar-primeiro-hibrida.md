@@ -79,6 +79,21 @@ Modos intermediários (mesma medição, rodadas anteriores): a busca híbrida so
 
 **Decisão:** `CHAT_TOOL_CALLING` passa a `true` no `render.yaml`, e `HYBRID_RETRIEVAL_ENABLED = True`.
 
+## Atualização (2026-11-05): dados do golden-set e tempo total de carreira
+
+Ao investigar por que o golden-set não chegava a 100% (31/35 e 13/15), cada falha foi aberta. Nenhuma era "o modelo erra": das seis, **uma era defeito real do chat** e cinco eram **defeito do teste**.
+
+| Falha | Causa | Correção |
+|---|---|---|
+| q12 "quantos anos de experiência eu tenho?" | Defeito real: o chat respondia o tempo de uma tecnologia (5 anos e 11 meses) em vez do tempo total de carreira. Não havia tool para isso. | `career_timeline` passou a informar o **tempo total de carreira** (períodos unidos, desde o primeiro cargo), e o prompt manda usá-lo para essa pergunta. Agora responde "mais de 10 anos". |
+| c01 e c02 (duração de Python e Java) | O valor esperado foi fixado em setembro e envelheceu: em novembro as respostas corretas (46 e 71 meses) reprovavam. | Fatos esperados **dinâmicos** (`{duration:Python}`, `{months:Java}`), resolvidos com o `resume.json` e a data de hoje (`eval/dynamic_facts.py`). |
+| q02 | Expectativa incompleta: o chat listava mais tecnologias, todas corretas. | Fatos esperados completados com as tecnologias reais do cargo. |
+| q29 | O chat lista as 9 certificações corretamente (3 tentativas); o juiz se confundia com "Design Patterns em Java", que são duas. | Lista esperada com os 9 nomes. |
+| q32 | O cargo real é "Tech Lead | Senior Software Engineer"; a expectativa só trazia o primeiro. | Expectativa com os dois. |
+| q24 | A pergunta é se há experiência com Scrum, não o nível. | Expectativa reduzida a "sim" e "Scrum". |
+
+Resultado: **original 35/35** e **capacidades 14/15**. O c13 ("por que não usa banco vetorial?") oscila entre rodadas (15/15, 13/15 e 14/15 em medições seguidas) porque o modelo às vezes não lê o ADR-003 até o motivo: é instabilidade do modelo, não do dado. **Ressalva honesta:** parte da melhora vem de corrigir o teste, e não do chat; só o q12 mudou o comportamento do chat. Os números do ADR-021 ("31/35 antes e depois") foram medidos com os dados antigos nos dois lados e continuam válidos como comparação.
+
 ## Consequências
 
 - (+) O chat responde duração, "já usou X", cronologia e decisões do projeto com fatos exatos.

@@ -40,6 +40,7 @@ from app.chat.adapters.openai_adapter import (  # noqa: E402
     OpenAIToolCallingProvider,
 )
 from app.chat.adapters.tavily_adapter import TavilyWebSearchProvider  # noqa: E402
+from eval.dynamic_facts import resolve_questions  # noqa: E402
 from eval.run_golden_set import RESULTS_DIR, _judge  # noqa: E402
 
 EVAL_DIR = Path(__file__).resolve().parent
@@ -161,7 +162,9 @@ def main() -> None:
 
     report: dict[str, Any] = {}
     for set_name in sets:
-        questions = json.loads(SETS[set_name].read_text(encoding="utf-8"))["questions"]
+        questions = resolve_questions(
+            json.loads(SETS[set_name].read_text(encoding="utf-8"))["questions"], resume
+        )
         report[set_name] = {}
         for mode in modes:
             print(f"\n[{set_name}] modo {mode} ({len(questions)} perguntas)")
