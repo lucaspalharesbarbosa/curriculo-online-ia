@@ -41,9 +41,13 @@ async def http_exception_handler(request: Request, exc: HTTPException) -> JSONRe
 async def validation_exception_handler(
     request: Request, exc: RequestValidationError
 ) -> JSONResponse:
-    return _error_response(
-        422, "validation_error", "Dados inválidos.", details=exc.errors()
-    )
+    # ADR-021: só campo, mensagem e tipo. `input` devolveria de volta uma entrada
+    # de 200 mil caracteres e `ctx` pode trazer exceção não serializável (500).
+    details = [
+        {"loc": list(e.get("loc", [])), "msg": e.get("msg"), "type": e.get("type")}
+        for e in exc.errors()
+    ]
+    return _error_response(422, "validation_error", "Dados inválidos.", details=details)
 
 
 def register_exception_handlers(app: FastAPI) -> None:
