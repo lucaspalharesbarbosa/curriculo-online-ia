@@ -21,6 +21,9 @@
         "Angular",
         "Kubernetes",
         "AWS",
+        "AI Engineering",
+        "Claude Code",
+        "Cursor",
         "Engineering Brasil"
       ]
     },
@@ -224,8 +227,8 @@
       "category": "regressao",
       "question": "Você tem experiência com Scrum?",
       "expected_facts": [
-        "Scrum",
-        "nível 5"
+        "sim",
+        "Scrum"
       ]
     },
     {
@@ -267,10 +270,13 @@
       "expected_facts": [
         "AWS Certified Cloud Practitioner",
         "Scrum Fundamentals Certified",
+        "Codificação e criação de Agentes na prática",
         "Formação Angular",
+        "SOLID com Java",
+        "Design Patterns em Java 1",
+        "Design Patterns em Java 2",
         "Claude Desktop",
-        "OpenClaw",
-        "Design Patterns em Java"
+        "Dominando o OpenClaw"
       ]
     },
     {
@@ -297,6 +303,7 @@
       "question": "Qual o cargo atual dele?",
       "expected_facts": [
         "Tech Lead",
+        "Senior Software Engineer",
         "Engineering Brasil"
       ]
     },
