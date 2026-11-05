@@ -1,6 +1,6 @@
 # C4-002: Componentes do backend (chat, tools e MCP)
 
-Detalha o container `backend` do [C4-001](C4-001-contexto-containers.md) (Nível 3). Inclui o contrato com o frontend do [ADR-019](ADR-019-redesign-command-center-chat-com-tools.md). Decisões: [ADR-012](ADR-012-clean-architecture-chat.md) (Ports & Adapters), [ADR-017](ADR-017-tools-e-mcp-um-nucleo-duas-portas.md) (um núcleo, duas portas) e [ADR-018](ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md) (tools estruturadas, recuperar primeiro, busca híbrida).
+Detalha o container `backend` do [C4-001](C4-001-contexto-containers.md) (Nível 3). Inclui o contrato com o frontend do [ADR-019](ADR-019-redesign-command-center-chat-com-tools.md) e as defesas do [ADR-021](ADR-021-defesas-contra-prompt-injection-e-abuso.md). Decisões: [ADR-012](ADR-012-clean-architecture-chat.md) (Ports & Adapters), [ADR-017](ADR-017-tools-e-mcp-um-nucleo-duas-portas.md) (um núcleo, duas portas) e [ADR-018](ADR-018-tools-estruturadas-recuperar-primeiro-hibrida.md) (tools estruturadas, recuperar primeiro, busca híbrida).
 
 ## Componentes
 
@@ -14,6 +14,7 @@ flowchart LR
         ROUTER["chat/router.py<br/>HTTP, rate limit, Depends()"]
         SERVICE["chat/service.py<br/>orquestra a resposta"]
         RAG["chat/rag.py<br/>chunking, ranking,<br/>busca híbrida"]
+        GUARD["chat/guardrails.py<br/>entrada, padrões, web como dado,<br/>filtro de saída"]
         MCPS["mcp_server/<br/>FastMCP + rate limit"]
 
         subgraph CORE["tools/ (núcleo, sem openai e sem mcp)"]
@@ -30,6 +31,8 @@ flowchart LR
     end
 
     ROUTER --> SERVICE
+    SERVICE -->|antes e depois| GUARD
+    RT -->|resultado da web| GUARD
     SERVICE --> RAG
     SERVICE --> REG
     SERVICE --> PORTS
@@ -63,7 +66,8 @@ sequenceDiagram
     participant M as Modelo (tool calling)
     participant T as Tools (núcleo)
 
-    V->>S: pergunta + histórico
+    V->>S: pergunta + histórico (já limitados em tamanho no router)
+    S->>S: guardrails: recusa injeção óbvia, descarta histórico forjado
     S->>S: condensa a pergunta (se há histórico)
     S->>R: busca híbrida + auto-crítica seletiva
     R-->>S: chunks e score
@@ -76,6 +80,7 @@ sequenceDiagram
         T-->>M: fato exato (código, sem LLM)
         M-->>S: resposta final
     end
+    S->>S: guardrails: filtro de saída (HTML, links, vazamento do prompt)
     S-->>V: answer, source e tools (nome, argumentos, resultado)
     Note over S,M: teto de 3 turnos e 3 execuções.<br/>Falha do provider cai para o pipeline determinístico.
 ```

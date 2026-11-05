@@ -257,3 +257,16 @@ Três protótipos (A, B, C) foram avaliados pelo autor, que escolheu **A como ba
 - [x] Remoção do layout antigo e do código de protótipo
 - [ ] Medir Lighthouse e payload de JS contra o orçamento da US-08-10
 
+## Fase 19: Defesas contra prompt injection e abuso do chat
+
+**Status:** Done (`ADR-021`, `PRD-018`)
+**PRD:** [`PRD-018-defesas-contra-prompt-injection.md`](PRD-018-defesas-contra-prompt-injection.md)
+**Branch:** `feature/guardrails-prompt-injection`
+
+O chat público foi atacado e medido antes de qualquer defesa: 20 de 102 tentativas (20%) tiveram sucesso no código original, incluindo injeção pela busca web e link de phishing na resposta. Depois das defesas em camadas, 0 de 102 no conjunto principal e 0 de 39 num conjunto reservado, sem regressão nos golden-sets.
+
+- [x] Conjunto de ataques (34 principais, 13 reservados) e avaliador `eval/run_attacks.py` com `--repeat`
+- [x] Camadas determinísticas em `app/chat/guardrails.py` (entrada, padrões, web e histórico como dado, prompts, filtro de saída)
+- [x] Correção do handler de validação (sem `500`, sem eco da entrada)
+- [x] ADR-021, PRD-018, C4-002 e READMEs
+
