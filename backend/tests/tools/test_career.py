@@ -199,3 +199,13 @@ def test_career_timeline_around_desconhecida() -> None:
 
     assert "não consta no currículo" in text
     assert "Linha do tempo" in text
+
+
+def test_career_timeline_informa_o_tempo_total_de_carreira() -> None:
+    """'Quantos anos de experiência no total?': períodos unidos, sem contar o
+    intervalo sem trabalho nem a sobreposição (ADR-018)."""
+    text = career.career_timeline(_resume(), today=date(2026, 9, 15))
+
+    # Delta 9 meses + (Gama e Alfa contíguos) 60 meses + Beta 6 meses
+    assert "Tempo total de carreira profissional: 6 anos e 3 meses" in text
+    assert "(75 meses desde 2015-11" in text

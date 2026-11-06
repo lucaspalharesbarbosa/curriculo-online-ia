@@ -10,7 +10,7 @@ from collections.abc import Callable
 from datetime import date
 from pathlib import Path
 
-from app.chat import rag
+from app.chat import guardrails, rag
 from app.chat.ports import EmbeddingProvider, WebSearchProvider
 from app.resume.models import Resume
 from app.tools import career, docs_tools, experience
@@ -21,6 +21,17 @@ SEARCH_TOP_K = 3
 # cliente manda um texto enorme e gera custo de embedding ou de busca web.
 MAX_QUERY_LENGTH = 300
 WEB_RESULT_PREFIX = "Informação pública da web (não faz parte do currículo):"
+# Nomes das tools (ADR-021): o detector de vazamento do prompt usa esta lista.
+TOOL_NAMES = (
+    "search_resume",
+    "calculate_experience",
+    "find_technology",
+    "get_experience",
+    "career_timeline",
+    "list_adrs",
+    "read_adr",
+    "search_web",
+)
 WEB_BLOCKED_MESSAGE = (
     "A busca web só é permitida para entidades citadas no currículo (empresa, "
     "instituição, curso, certificação, habilidade ou projeto)."
@@ -101,7 +112,7 @@ def build_resume_tools(
     def career_timeline(around: str | None = None) -> str:
         if around is not None:
             _check_length(around, "around")
-        return career.career_timeline(resume, around)
+        return career.career_timeline(resume, around, today=today())
 
     def list_adrs() -> str:
         return docs_tools.list_adrs(docs_dir)
@@ -116,7 +127,11 @@ def build_resume_tools(
         context = web_search_provider.search_web(query)
         if not context:
             return WEB_NO_RESULT_MESSAGE
-        return f"{WEB_RESULT_PREFIX}\n{context}"
+        # ADR-021: o texto da web é de terceiros. Frases de comando saem e o
+        # resto vai delimitado como dado não confiável.
+        safe = guardrails.neutralize_untrusted(context)
+        wrapped = guardrails.wrap_untrusted("resultado_web", safe)
+        return f"{WEB_RESULT_PREFIX}\n{wrapped}"
 
     return [
         Tool(

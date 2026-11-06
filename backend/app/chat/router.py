@@ -12,9 +12,9 @@ from typing import Any, Literal
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from openai import AuthenticationError, OpenAIError, RateLimitError
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
-from app.chat import service
+from app.chat import guardrails, service
 from app.chat.adapters.openai_adapter import (
     OpenAIChatCompletionProvider,
     OpenAIEmbeddingProvider,
@@ -72,11 +72,23 @@ class HistoryMessage(BaseModel):
 
 
 class ChatRequest(BaseModel):
-    question: str = Field(min_length=1)
+    # ADR-021: teto de tamanho. Sem ele, uma pergunta gigante vira custo de
+    # embedding e de tokens a cada request.
+    question: str = Field(min_length=1, max_length=guardrails.MAX_QUESTION_CHARS)
     # ADR-014: teto de validação (20 mensagens) — a janela funcional usada pelo
     # service é menor (MAX_HISTORY_MESSAGES, service.py); histórico entre os
     # dois é truncado à cauda, não rejeitado.
     history: list[HistoryMessage] | None = Field(default=None, max_length=20)
+
+    @field_validator("history")
+    @classmethod
+    def _history_total_size(
+        cls, value: list[HistoryMessage] | None
+    ) -> list[HistoryMessage] | None:
+        total = sum(len(message.content) for message in value or [])
+        if total > guardrails.MAX_HISTORY_TOTAL_CHARS:
+            raise ValueError("histórico grande demais")
+        return value
 
 
 class ToolUse(BaseModel):
@@ -99,8 +111,8 @@ class ChatResponse(BaseModel):
 
 
 class ChatFeedbackRequest(BaseModel):
-    question: str = Field(min_length=1)
-    answer: str = Field(min_length=1)
+    question: str = Field(min_length=1, max_length=guardrails.MAX_QUESTION_CHARS)
+    answer: str = Field(min_length=1, max_length=8000)
     rating: Literal["up", "down"]
 
 
